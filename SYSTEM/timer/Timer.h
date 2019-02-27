@@ -6,8 +6,8 @@ extern volatile uint32_t global_times;
 extern volatile uint32_t delay_ms_const;
 
 void Timer_Init(uint16_t arr,uint16_t psc);
-u32 gt_get_sub(u32 c);
-u32 gt_get(void);
+uint32_t gt_get_sub(uint32_t c);
+uint32_t gt_get(void);
 
 #endif
 

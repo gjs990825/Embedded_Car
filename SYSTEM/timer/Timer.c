@@ -38,12 +38,14 @@ void TIM1_UP_TIM10_IRQHandler(void)
 	TIM_ClearITPendingBit(TIM10,TIM_IT_Update);
 }
 
-u32 gt_get(void)
+// 获取当前时间（ms）
+uint32_t gt_get(void)
 {
 	return global_times;
 }
 
-u32 gt_get_sub(u32 c)
+// 获取与当前时间的差值
+uint32_t gt_get_sub(uint32_t c)
 {
 	if(c > global_times)
 		c -= global_times;

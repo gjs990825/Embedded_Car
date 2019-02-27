@@ -3,7 +3,7 @@
 <title>Static Call Graph - [..\OUTPUT\Embedded_Car.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image ..\OUTPUT\Embedded_Car.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Tue Feb 26 13:57:23 2019
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Wed Feb 27 14:23:41 2019
 <BR><P>
 <H3>Maximum Stack Usage =        200 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -588,9 +588,9 @@ Global Symbols
 
 <P><STRONG><a name="[14b]"></a>__scatterload_rt2</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, init.o(.text), UNUSED)
 
-<P><STRONG><a name="[14c]"></a>__decompress</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __dclz77c.o(.text), UNUSED)
+<P><STRONG><a name="[14c]"></a>__decompress</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __dczerorl2.o(.text), UNUSED)
 
-<P><STRONG><a name="[14d]"></a>__decompress2</STRONG> (Thumb, 94 bytes, Stack size unknown bytes, __dclz77c.o(.text), UNUSED)
+<P><STRONG><a name="[14d]"></a>__decompress1</STRONG> (Thumb, 86 bytes, Stack size unknown bytes, __dczerorl2.o(.text), UNUSED)
 
 <P><STRONG><a name="[d1]"></a>ADC_ClearFlag</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, stm32f4xx_adc.o(i.ADC_ClearFlag))
 <BR><BR>[Called By]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_ADC_Value
@@ -939,9 +939,9 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_tba_WheelLED
 <LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_tba_Beep
 <LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_ZigbeeData_To_Fifo
+<LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Infrared_Send
 <LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gt_get_sub
 <LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_UpMotor
-<LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Infrared_Send
 <LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Normal_data
 <LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Abnormal_data
 <LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Roadway_nav_syn
@@ -1290,7 +1290,7 @@ Global Symbols
 <LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Timer_Init
 <LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Tba_Init
 <LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYN7318_Init
-<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Readcard_daivce_Init
+<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Readcard_Device_Init
 <LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NVIC_PriorityGroupConfig
 <LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Infrared_Init
 <LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Hard_Can_Init
@@ -1322,8 +1322,8 @@ Global Symbols
 <LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_ms
 </UL>
 <BR>[Called By]<UL><LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Yu_Yin_Asr
-<LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Can_WifiRx_Check
 <LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KEY_Check
+<LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Can_WifiRx_Check
 </UL>
 
 <P><STRONG><a name="[f0]"></a>InitRc522</STRONG> (Thumb, 48 bytes, Stack size 8 bytes, rc522.o(i.InitRc522))
@@ -1335,15 +1335,15 @@ Global Symbols
 <LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PcdAntennaOff
 <LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;M500PcdConfigISOType
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Readcard_daivce_Init
+<BR>[Called By]<UL><LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Readcard_Device_Init
 </UL>
 
-<P><STRONG><a name="[f5]"></a>KEY_Check</STRONG> (Thumb, 202 bytes, Stack size 8 bytes, main.o(i.KEY_Check))
+<P><STRONG><a name="[f5]"></a>KEY_Check</STRONG> (Thumb, 214 bytes, Stack size 8 bytes, cba.o(i.KEY_Check))
 <BR><BR>[Stack]<UL><LI>Max Depth = 200<LI>Call Chain = KEY_Check &rArr; Read_Card &rArr; PcdAuthState &rArr; PcdComMF522 &rArr; SetBitMask &rArr; WriteRawRC_HDL &rArr; Rece_data
 </UL>
-<BR>[Calls]<UL><LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_ms
+<BR>[Calls]<UL><LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Read_Card
 <LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYN7318_Test
-<LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Read_Card
+<LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_ms
 <LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Infrared_Send
 </UL>
 <BR>[Called By]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -1529,7 +1529,7 @@ Global Symbols
 <LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_AHB1PeriphClockCmd
 <LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Init
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Readcard_daivce_Init
+<BR>[Called By]<UL><LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Readcard_Device_Init
 </UL>
 
 <P><STRONG><a name="[72]"></a>RCC_AHB1PeriphClockCmd</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, stm32f4xx_rcc.o(i.RCC_AHB1PeriphClockCmd))
@@ -1619,8 +1619,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KEY_Check
 </UL>
 
-<P><STRONG><a name="[ef]"></a>Readcard_daivce_Init</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, rc522.o(i.Readcard_daivce_Init))
-<BR><BR>[Stack]<UL><LI>Max Depth = 108<LI>Call Chain = Readcard_daivce_Init &rArr; RC522_Uart_init &rArr; USART_Init &rArr; RCC_GetClocksFreq
+<P><STRONG><a name="[ef]"></a>Readcard_Device_Init</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, rc522.o(i.Readcard_Device_Init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 108<LI>Call Chain = Readcard_Device_Init &rArr; RC522_Uart_init &rArr; USART_Init &rArr; RCC_GetClocksFreq
 </UL>
 <BR>[Calls]<UL><LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_ms
 <LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RC522_Uart_init
@@ -1817,7 +1817,7 @@ Global Symbols
 <LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Can_WifiRx_Check
 </UL>
 
-<P><STRONG><a name="[108]"></a>Send_data</STRONG> (Thumb, 46 bytes, Stack size 8 bytes, rc522.o(i.Send_data))
+<P><STRONG><a name="[108]"></a>Send_data</STRONG> (Thumb, 42 bytes, Stack size 8 bytes, rc522.o(i.Send_data))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Send_data
 </UL>
 <BR>[Calls]<UL><LI><a href="#[11c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_SendData
@@ -2342,10 +2342,10 @@ Global Symbols
 
 <P><STRONG><a name="[d8]"></a>delay_ms</STRONG> (Thumb, 72 bytes, Stack size 0 bytes, delay.o(i.delay_ms))
 <BR><BR>[Called By]<UL><LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Yu_Yin_Asr
-<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultrasonic_Ranging
 <LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYN7318_Test
-<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Readcard_daivce_Init
 <LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Infrared_Send
+<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultrasonic_Ranging
+<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Readcard_Device_Init
 <LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KEY_Check
 <LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;M500PcdConfigISOType
 <LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;InitRc522
@@ -2363,8 +2363,8 @@ Global Symbols
 <LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BH1750_SendACK
 <LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BH1750_RecvByte
 <LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BH1750_RecvACK
-<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultrasonic_Ranging
 <LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Infrared_Send
+<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ultrasonic_Ranging
 </UL>
 
 <P><STRONG><a name="[bc]"></a>gt_get</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, timer.o(i.gt_get))
@@ -2383,7 +2383,7 @@ Global Symbols
 <LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Rece_data
 </UL>
 
-<P><STRONG><a name="[5c]"></a>main</STRONG> (Thumb, 448 bytes, Stack size 0 bytes, main.o(i.main))
+<P><STRONG><a name="[5c]"></a>main</STRONG> (Thumb, 438 bytes, Stack size 0 bytes, main.o(i.main))
 <BR><BR>[Stack]<UL><LI>Max Depth = 200<LI>Call Chain = main &rArr; KEY_Check &rArr; Read_Card &rArr; PcdAuthState &rArr; PcdComMF522 &rArr; SetBitMask &rArr; WriteRawRC_HDL &rArr; Rece_data
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gt_get_sub
@@ -2394,15 +2394,15 @@ Global Symbols
 <LI><a href="#[12b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UartA72_TxAddStr
 <LI><a href="#[11b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_WifiData_To_Fifo
 <LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Send_UpMotor
-<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Readcard_daivce_Init
+<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Readcard_Device_Init
 <LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Rc522_LinkTest
 <LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Rc522_GetLinkFlag
 <LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Power_Check
+<LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KEY_Check
 <LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_tba_phsis_value
 <LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_Bh_Value
 <LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Can_ZigBeeRx_Check
 <LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Can_WifiRx_Check
-<LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;KEY_Check
 <LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Hardware_Init
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> entry9a.o(.ARM.Collect$$$$0000000B)

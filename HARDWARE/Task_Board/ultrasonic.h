@@ -9,7 +9,7 @@
 void Ultrasonic_Init(void);
 void Ultrasonic_Ranging(void);
 
-extern uint16_t dis;
+extern uint16_t distance;
 
 #endif
 

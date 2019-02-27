@@ -1,7 +1,0 @@
---c99 -c --cpu Cortex-M4.fp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\CMSIS -I ..\FWLIB\inc -I ..\USER -I ..\HARDWARE\Task_Board -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\HARDWARE\Core_Board -I ..\HARDWARE\CAN -I ..\my_lib -I ..\SYSTEM\timer -I ..\HARDWARE\Full
--I.\RTE\_Embedded_Car
--IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
--IC:\Keil_v5\ARM\CMSIS\Include
--IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Device\Include
--D__UVISION_VERSION="526" -DSTM32F407xx -DUSE_STDPERIPH_DRIVER -DSTM32F40_41xxx
--o ..\output\system_stm32f4xx.o --omf_browse ..\output\system_stm32f4xx.crf --depend ..\output\system_stm32f4xx.d "..\CMSIS\system_stm32f4xx.c"

@@ -5,9 +5,9 @@
 
 float Ultrasonic_Value = 0;
 uint32_t Ultrasonic_Num=0;						// º∆ ˝÷µ
-uint16_t dis =0 ;
+uint16_t distance = 0;
 
-void Ultrasonic_Port()
+void Ultrasonic_Port(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
@@ -63,7 +63,7 @@ void Ultrasonic_TIM(uint16_t arr,uint16_t psc)
 	TIM_Cmd(TIM6, DISABLE);
 }
 
-void Ultrasonic_EXTI()
+void Ultrasonic_EXTI(void)
 {
 	EXTI_InitTypeDef EXTI_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
@@ -87,7 +87,7 @@ void Ultrasonic_EXTI()
 	NVIC_Init(&NVIC_InitStructure);
 }
 
-void Ultrasonic_Init()
+void Ultrasonic_Init(void)
 {
 	Ultrasonic_Port();
 	Ultrasonic_TIM(9,83);
@@ -96,7 +96,7 @@ void Ultrasonic_Init()
 
 
 //≥¨…˘≤®≤‚æ‡
-void Ultrasonic_Ranging()
+void Ultrasonic_Ranging(void)
 {
     INC = 1;            
 	delay_us(3);
@@ -113,7 +113,7 @@ void Ultrasonic_Ranging()
 	delay_ms(5);
 }
 
-void TIM6_DAC_IRQHandler()
+void TIM6_DAC_IRQHandler(void)
 {
 	if(TIM_GetITStatus(TIM6,TIM_IT_Update) == SET)
 	{
@@ -133,7 +133,7 @@ void EXTI4_IRQHandler(void)
 			TIM_Cmd(TIM6,DISABLE);
 			Ultrasonic_Value = Ultrasonic_Num;
 			Ultrasonic_Value =(float)Ultrasonic_Value*1.72-20;       // º∆À„æ‡¿Î∂® ±10us£¨S=Vt/2£®ºı2 «ŒÛ≤Ó≤π≥¢£©
-			dis = (uint16_t) Ultrasonic_Value;
+			distance = (uint16_t) Ultrasonic_Value;
 		}
 		EXTI_ClearITPendingBit(EXTI_Line4);
 	}

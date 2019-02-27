@@ -33,7 +33,7 @@ extern void RC522Port_Init(void);
 extern char InitRc522(void);
 extern void Reset_RC522(void);
 extern void RC522_Uart_init(uint32_t baudrate);
-extern void Readcard_daivce_Init(void);	
+extern void Readcard_Device_Init(void);
 
 extern uint8_t Rc522_GetLinkFlag(void);				 
 extern void Rc522_LinkTest(void);	

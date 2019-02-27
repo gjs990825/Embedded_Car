@@ -142,7 +142,7 @@ char InitRc522(void)
 	  return MI_OK;
 }
 
-void Readcard_daivce_Init(void)
+void Readcard_Device_Init(void)
 {
 	RC522_Uart_init(9600);	// 串口初始化为9600
 	delay_ms(500);
@@ -477,10 +477,13 @@ Return:
 **************************************************/
 void Send_data(unsigned char ch)
 {	
-	USART1->SR;
-	while (!(USART1->SR & USART_FLAG_TXE))
-    USART_SendData(USART1,ch); 
-	while(USART_GetFlagStatus(USART1,USART_FLAG_TC)!=SET);	
+    while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+    USART_SendData(USART1, ch);
+    while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+	// USART1->SR;
+	// while (!(USART1->SR & USART_FLAG_TXE))
+    // USART_SendData(USART1,ch); 
+	// while(USART_GetFlagStatus(USART1,USART_FLAG_TC)!=SET);	
 }
 
 /*************************************************

@@ -4,6 +4,21 @@
 #include "stm32f4xx.h"
 #include "sys.h"
 
+// 按键设置启动程序
+
+#include "infrared.h"
+#include "data_base.h"
+#include "syn7318.h"
+#include "Rc522.h"
+
+#define Action_S1() Infrared_Send(HW_K, 6) //打开测试红外报警
+#define Action_S2() Infrared_Send(H_1, 4)  //调光
+#define Action_S3() SYN7318_Test()
+#define Action_S4() Read_Card()
+
+
+// 按键配置
+
 #define S1 PIin(4)
 #define S2 PIin(5)
 #define S3 PIin(6)
@@ -14,8 +29,9 @@
 #define LED3 PHout(14)
 #define LED4 PHout(15)
 
-#define MP_SPK PHout(5)		//蜂鸣器
+#define MP_SPK PHout(5) //蜂鸣器
+
 void Cba_Init(void);
+void KEY_Check(void);
 
 #endif
-
