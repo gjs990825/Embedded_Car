@@ -33,6 +33,9 @@ DebugConfig/
 *.uvoptx
 *.lst
 
+#Gao added
+*.crf
+
 #SW4STM32
 .metadata/
 RemoteSystemsTempFiles/
