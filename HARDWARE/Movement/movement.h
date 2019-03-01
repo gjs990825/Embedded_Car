@@ -4,6 +4,8 @@
 #include "sys.h"
 
 
+void autorun(void);
+
 void go_Test(uint16_t setMP);    
 void back_Test(uint16_t setMP);
 void stop_Test(void);

@@ -27,6 +27,19 @@
 #include "Rc522.h"
 #include "malloc.h"
 #include "a_star.h"
+#include "debug.h"
+
+// 循迹状态
+#define TRACKING 0x00
+// 十字路口
+#define CROSSROAD 0x01
+// 转弯完成
+#define TURNCOMPLETE 0x02
+// 前进后退完成
+#define FORBACKCOMPLETE 0x03
+// 出线
+#define OUTTRACK 0x04
+
 
 void Hardware_Init(void);
 

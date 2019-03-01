@@ -30,11 +30,6 @@ int main(void)
 
 	while (1)
 	{
-		KEY_Check();
-	}
-
-	while (1)
-	{
 		KEY_Check(); //°´¼ü¼ì²â
 
 		Can_WifiRx_Check();

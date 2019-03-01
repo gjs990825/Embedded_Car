@@ -5,36 +5,67 @@
 #include "cba.h"
 #include "tba.h"
 #include "movement.h"
+#include "debug.h"
+#include "hardware.h"
 // #include "mba.h"
 // #include "pid.h"
 // #include "includes.h"
 
-uint8_t wheel_L_Flag = 0, wheel_R_Flag = 0;
-uint8_t Right45_Flag = 0, Left45_Flag = 0, Right90_Flag = 0, Left90_Flag = 0, Right180_Flag = 0;
-uint8_t wheel_Nav_Flag = 0;
-uint8_t Go_Flag = 0, Back_Flag = 0;
-uint8_t Track_Flag = 0;
-uint8_t Track_Back_Flag = 0;
-uint8_t DX_Flag = 0;
-uint8_t Line_Flag = 0;
-uint16_t count = 0;
+#define _TRACK_OUTPUT_ 0
 
+#define ALL_WHITE 14
+#define ALL_BLACK 2
+
+
+
+// Gao added
+bool Q7[7] = {0};
+bool H8[8] = {0};
+
+uint8_t NumberOfWhite = 0;
+
+int DirectionWights = 0;
+
+// (Get_Host_UpTrack(TRACK_Q7)) & 0xff;
+
+// 左右转向
+uint8_t wheel_L_Flag = 0, wheel_R_Flag = 0;
+// 转向角度
+uint8_t Right45_Flag = 0, Left45_Flag = 0, Right90_Flag = 0, Left90_Flag = 0, Right180_Flag = 0;
+// 转向
+uint8_t wheel_Nav_Flag = 0;
+// 前进后退
+uint8_t Go_Flag = 0, Back_Flag = 0;
+// 循迹
+uint8_t Track_Flag = 0;
+// 倒退循迹
+uint8_t Track_Back_Flag = 0;
+uint8_t Line_Flag = 0;
+
+// 运行状态
 uint8_t Stop_Flag = 0;
+// 左右速度
 int LSpeed = 0, RSpeed = 0;
+// 设定车速
 int Car_Spend = 0;
+
+// 设定码盘值
 uint16_t temp_MP = 0;
 uint16_t temp_Nav = 0;
 
 uint8_t Wheel_flag = 0;
 
+// 循迹结果
 u8 gd1, gd2;
+// 调整车身
 u8 h = 0;
+// 循迹模式
 u8 track_mode = 0;
+// 获取的码盘值
 uint16_t Mp_Value = 0;
 
 void Track(uint8_t gd1, uint8_t gd2);
-
-//_________________________________________________________
+// 码盘中间变量
 int16_t Roadway_cmp;
 extern int16_t CanHost_Mp;
 
@@ -110,10 +141,10 @@ void Go_and_Back_Check(void)
         {
             //			stop_Test();
             Go_Flag = 0;
-            Stop_Flag = 3;
+            Stop_Flag = FORBACKCOMPLETE;
             Send_UpMotor(0, 0);
             // OSSemPost(&GOSEM, OS_OPT_POST_1, &err);
-            go_Test(38);
+            //go_Test(38);
         }
     }
     else if (Back_Flag == 1)
@@ -122,10 +153,10 @@ void Go_and_Back_Check(void)
         {
             //			stop_Test();
             Back_Flag = 0;
-            Stop_Flag = 3;
+            Stop_Flag = FORBACKCOMPLETE;
             Send_UpMotor(0, 0);
             // OSSemPost(&BACKSEM, OS_OPT_POST_1, &err);
-            back_Test(38);
+            //back_Test(38);
         }
     }
     else if (Left45_Flag == 1)
@@ -188,7 +219,7 @@ void wheel_Nav_check(void)
         if (Mp_Value >= temp_Nav)
         {
             wheel_Nav_Flag = 0;
-            Stop_Flag = 2;
+            Stop_Flag = TURNCOMPLETE;
             Send_UpMotor(0, 0);
         }
     }
@@ -211,7 +242,7 @@ void wheel_Track_check(void)
             {
                 wheel_L_Flag = 0;
                 Wheel_flag = 0;
-                Stop_Flag = 2;
+                Stop_Flag = TURNCOMPLETE;
                 Send_UpMotor(0, 0);
             }
         }
@@ -230,7 +261,7 @@ void wheel_Track_check(void)
             {
                 wheel_R_Flag = 0;
                 Wheel_flag = 0;
-                Stop_Flag = 2;
+                Stop_Flag = TURNCOMPLETE;
                 Send_UpMotor(0, 0);
             }
         }
@@ -272,7 +303,8 @@ void Track_Check()
 
 void Roadway_Check(void)
 {
-    Track_Check();
+    TRACK_LINE();
+    // Track_Check();
     Go_and_Back_Check();
     //	wheel_mp_check();
     //	wheel_Nav_check();
@@ -368,7 +400,7 @@ void Track(uint8_t gd1, uint8_t gd2)
             read_xj_values(gd1, gd2);
             calculate_pid();
 #else
-            Stop_Flag = 0;
+            Stop_Flag = TRACKING;
             if (gd2 == 0XE7 || gd1 == 0x77) //1、中间3/4传感器检测到黑线，全速运行
             {
                 LSpeed = Car_Spend;
@@ -531,12 +563,12 @@ void Track(uint8_t gd1, uint8_t gd2)
             }
 #endif
         }
-//        else if (track_mode == 1)
-//        {
-//            read_xj_values2(gd1);
+        //        else if (track_mode == 1)
+        //        {
+        //            read_xj_values2(gd1);
 
-////            calculate_pid();
-//        }
+        ////            calculate_pid();
+        //        }
 
         if (gd1 == 0xFF || gd2 == 0xFF)
         { //循迹灯全亮
@@ -554,6 +586,93 @@ void Track(uint8_t gd1, uint8_t gd2)
         //	{
         //		Send_UpMotor(0,0);
         //	}
+    }
+}
+
+void Get_Track(void)
+{
+    uint16_t tmp = Get_Host_UpTrack(TRACK_ALL);
+	
+	NumberOfWhite = 0;
+    
+	for (uint8_t i = 0; i < 7; i++)
+    {
+        Q7[i] = (tmp >> i) & 0x01;
+        NumberOfWhite += Q7[i] ? 1 : 0;
+    }
+    for (uint8_t i = 0; i < 8; i++)
+    {
+        H8[i] = (tmp >> (8 + i)) & 0x01;
+        NumberOfWhite += H8[i] ? 1 : 0;
+    }
+
+#if _TRACK_OUTPUT_
+
+    for (int i = 6; i >= 0; i--)
+    {
+        print_info("%d", Q7[i] ? 1 : 0);
+    }
+    print_info("\r\n");
+    for (int i = 7; i >= 0; i--)
+    {
+        print_info("%d", H8[i] ? 1 : 0);
+    }
+    print_info("\r\n");
+    print_info("N_O_W_:%d\r\n", NumberOfWhite);
+
+#endif // _TRACK_OUTPUT_
+}
+
+void Get_DirectionWights(void)
+{
+    static int PreviousWights = 0;
+
+    int HWights = 0, QWeights = 0;
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        HWights += (H8[4 + i] * i * i) + (H8[3 - i] * i * (-i));
+    }
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        QWeights += (Q7[3 + i] * i * i) + (Q7[3 - i] * i * (-i));
+    }
+    DirectionWights = HWights + QWeights;
+
+    DirectionWights = (DirectionWights + PreviousWights) / 2; // 滤波
+    PreviousWights = DirectionWights;
+
+#if _TRACK_OUTPUT_
+
+    print_info("H:%d,Q:%d,T:%d\r\n", HWights, QWeights, DirectionWights);
+
+#endif // _TRACK_OUTPUT_
+}
+
+void TRACK_LINE(void)
+{
+    if (!Track_Flag) // 不用循迹，跳出
+    {
+        return;
+    }
+
+    Get_Track();
+    Get_DirectionWights();
+
+    if ((DirectionWights == 0) && (NumberOfWhite >= ALL_WHITE)) // 全白
+    {
+        // Track_MP(55);
+        Stop_Flag = OUTTRACK;
+    }
+    else if ((DirectionWights == 0) && (NumberOfWhite <= ALL_BLACK)) // 全黑
+    {
+        Stop_Flag = CROSSROAD;
+        
+    }
+    else
+    {
+        LSpeed = Car_Spend + DirectionWights * 5;
+        RSpeed = Car_Spend - DirectionWights * 5;
+        Control(LSpeed, RSpeed);
     }
 }
 
@@ -583,14 +702,14 @@ void roadway_check_TimInit(uint16_t arr, uint16_t psc)
 
 void TIM1_BRK_TIM9_IRQHandler(void)
 {
-//    OSIntEnter();
+    //    OSIntEnter();
     if (TIM_GetITStatus(TIM9, TIM_IT_Update) == SET)
     {
         Mp_Value = Roadway_mp_Get();
         Roadway_Check(); //路况检测
     }
     TIM_ClearITPendingBit(TIM9, TIM_IT_Update);
-//    OSIntExit();
+    //    OSIntExit();
 }
 
 //end file

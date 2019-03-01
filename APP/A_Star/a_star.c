@@ -400,18 +400,17 @@ void Auto_Drive(void)
 	Beep(2);
 	print_info("START TEST\r\n");
 
-	go_Test(100);
-	Track_Flag = 1;
+	Track_MP(LongTrack_Vale);
 	delay_ms(500);
 	delay_ms(500);
 	delay_ms(500);
 
-	left45_Test();
+	right90_Test();
 	delay_ms(500);
 	delay_ms(500);
 	delay_ms(500);
 
-	right45_Test();
+	Track_MP(ShortTrack_Vale);
 	delay_ms(500);
 	delay_ms(500);
 	delay_ms(500);

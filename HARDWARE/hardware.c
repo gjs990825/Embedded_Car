@@ -29,4 +29,8 @@ void Hardware_Init(void)
 			delay_ms(500);
 		}
 	}
+
+	DebugTimer_Init(7199, 4999);
+
+	delay_ms(500); // µÈ´ýRFIDÉÏµç
 }
