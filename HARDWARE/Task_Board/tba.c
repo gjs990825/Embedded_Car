@@ -100,11 +100,7 @@ void Set_tba_WheelLED(uint8_t LorR,uint8_t swch)
 	}
 }
 
-/**
-函数功能: 任务板初始化
-参    数：无
-返 回 值: 无
-*/
+// 任务板初始化
 void Tba_Init(void)
 {
 	Tba_Photoresistance_Config();

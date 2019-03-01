@@ -2,6 +2,7 @@
 #include "Hard_Can.h"
 #include "cba.h"
 
+// CAN总线检测初始化（TIM7）
 void Can_check_Init(uint16_t arr,uint16_t psc)
 {
 	TIM_TimeBaseInitTypeDef TIM_InitStructure;
@@ -24,7 +25,6 @@ void Can_check_Init(uint16_t arr,uint16_t psc)
 
 	TIM_ITConfig(TIM7,TIM_IT_Update,ENABLE);
 	TIM_Cmd(TIM7, ENABLE);
-
 }
 
 

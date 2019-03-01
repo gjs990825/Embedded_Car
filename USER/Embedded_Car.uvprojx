@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F40_41xxx</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CMSIS;..\FWLIB\inc;..\USER;..\HARDWARE\Task_Board;..\SYSTEM\delay;..\SYSTEM\sys;..\HARDWARE\Core_Board;..\HARDWARE\CAN;..\my_lib;..\SYSTEM\timer;..\HARDWARE\Full</IncludePath>
+              <IncludePath>..\CMSIS;..\FWLIB\inc;..\USER;..\HARDWARE\Task_Board;..\SYSTEM\delay;..\SYSTEM\sys;..\HARDWARE\Core_Board;..\HARDWARE\CAN;..\my_lib;..\SYSTEM\timer;..\HARDWARE\Full;..\HARDWARE;..\MALLOC;..\HARDWARE\Movement;..\APP\A_Star;..\APP\Debug</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -390,8 +390,28 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>APP</GroupName>
+          <Files>
+            <File>
+              <FileName>a_star.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\A_Star\a_star.c</FilePath>
+            </File>
+            <File>
+              <FileName>debug.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\Debug\debug.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>HARDWARE</GroupName>
           <Files>
+            <File>
+              <FileName>hardware.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\hardware.c</FilePath>
+            </File>
             <File>
               <FileName>infrared.c</FileName>
               <FileType>1</FileType>
@@ -446,6 +466,11 @@
               <FileName>RC522.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\Core_Board\RC522.C</FilePath>
+            </File>
+            <File>
+              <FileName>movement.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\Movement\movement.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -756,6 +781,16 @@
               <FileName>Can_check.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\CAN\Can_check.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>MALLOC</GroupName>
+          <Files>
+            <File>
+              <FileName>malloc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\MALLOC\malloc.c</FilePath>
             </File>
           </Files>
         </Group>

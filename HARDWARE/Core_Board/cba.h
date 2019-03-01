@@ -10,8 +10,9 @@
 #include "data_base.h"
 #include "syn7318.h"
 #include "Rc522.h"
+#include "a_star.h"
 
-#define Action_S1() Infrared_Send(HW_K, 6) //打开测试红外报警
+#define Action_S1() Auto_Drive()// Infrared_Send(HW_K, 6) //打开测试红外报警
 #define Action_S2() Infrared_Send(H_1, 4)  //调光
 #define Action_S3() SYN7318_Test()
 #define Action_S4() Read_Card()
@@ -32,6 +33,7 @@
 #define MP_SPK PHout(5) //蜂鸣器
 
 void Cba_Init(void);
+void Beep(uint8_t times);
 void KEY_Check(void);
 
 #endif

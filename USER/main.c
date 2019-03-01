@@ -1,59 +1,11 @@
-#include <stdio.h>
-#include "stm32f4xx.h"
-#include "delay.h"
-#include "infrared.h"
-#include "cba.h"
-#include "ultrasonic.h"
-#include "canp_hostcom.h"
-#include "hard_can.h"
-#include "bh1750.h"
-#include "syn7318.h"
-#include "power_check.h"
-#include "can_user.h"
-#include "data_base.h"
-#include "roadway_check.h"
-#include "tba.h"
-#include "data_base.h"
-#include "swopt_drv.h"
-#include "uart_a72.h"
-#include "Can_check.h"
-#include "delay.h"
-#include "can_user.h"
-#include "Timer.h"
-#include "Rc522.h"
-
-
-/**
-函数功能：硬件初始化
-参    数：无
-返 回 值：无
-*/
-void Hardware_Init(void)
-{
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0); //中断分组
-
-	delay_init(168);
-
-	Tba_Init();			//任务板初始化
-	Infrared_Init();	//红外初始化
-	Cba_Init();			//核心板初始化
-	Ultrasonic_Init();  //超声波初始化
-	Hard_Can_Init();	//CAN总线初始化
-	BH1750_Configure(); //BH1750初始化配置
-	SYN7318_Init();		//语音识别初始化
-	Electricity_Init(); //电量检测初始化
-
-	UartA72_Init();
-	Can_check_Init(83, 7);			  //CAN总线定时器初始化
-	roadway_check_TimInit(167, 1999); //路况检测
-	Timer_Init(167, 999);			  //串行数据通讯时间帧
-	Readcard_Device_Init();			  //RFID初始化
-}
+#include "hardware.h"
+#include "movement.h"
 
 static uint32_t Power_check_times; //电量检测周期
 // static uint32_t LED_twinkle_times;		//LED闪烁周期
 static uint32_t WIFI_Upload_data_times; //通过Wifi上传数据周期
 static uint32_t RFID_Init_Check_times;
+
 
 int main(void)
 {
@@ -75,6 +27,11 @@ int main(void)
 	Follower_Tab[1] = 0x02;
 
 	Send_UpMotor(0, 0);
+
+	while (1)
+	{
+		KEY_Check();
+	}
 
 	while (1)
 	{

@@ -22,111 +22,16 @@ Dialog DLL:      TCM.DLL V1.36.1.0
  
 <h2>Project:</h2>
 D:\PERSONAL\Documents\Embedded_Car\USER\Embedded_Car.uvprojx
-Project File Date:  02/26/2019
+Project File Date:  03/01/2019
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Embedded_Car'
-compiling RC522.C...
-..\HARDWARE\Core_Board\RC522.C(42): warning:  #68-D: integer conversion resulted in a change of sign
-  	char status = MI_ERR;
-..\HARDWARE\Core_Board\RC522.C(58): warning:  #68-D: integer conversion resulted in a change of sign
-  			status=MI_ERR;
-..\HARDWARE\Core_Board\RC522.C(63): warning:  #68-D: integer conversion resulted in a change of sign
-  				status=MI_ERR;
-..\HARDWARE\Core_Board\RC522.C(68): warning:  #68-D: integer conversion resulted in a change of sign
-  					status=MI_ERR;	
-..\HARDWARE\Core_Board\RC522.C(74): warning:  #68-D: integer conversion resulted in a change of sign
-  						status = MI_ERR;
-..\HARDWARE\Core_Board\RC522.C(79): warning:  #68-D: integer conversion resulted in a change of sign
-  							status = MI_ERR;
-..\HARDWARE\Core_Board\RC522.C(84): warning:  #68-D: integer conversion resulted in a change of sign
-  							status = MI_ERR;
-..\HARDWARE\Core_Board\RC522.C(47): warning:  #177-D: variable "RXRFIDH"  was declared but never referenced
-  	uint8_t RXRFIDH[8];
-..\HARDWARE\Core_Board\RC522.C(135): warning:  #68-D: integer conversion resulted in a change of sign
-  		  return MI_ERR;
-..\HARDWARE\Core_Board\RC522.C(140): warning:  #68-D: integer conversion resulted in a change of sign
-  		  return MI_ERR;
-..\HARDWARE\Core_Board\RC522.C(179): warning:  #68-D: integer conversion resulted in a change of sign
-     WriteRawRC(BitFramingReg,0x07);
-..\HARDWARE\Core_Board\RC522.C(199): warning:  #68-D: integer conversion resulted in a change of sign
-     {   status = MI_ERR;   }
-..\HARDWARE\Core_Board\RC522.C(217): warning:  #68-D: integer conversion resulted in a change of sign
-      WriteRawRC(BitFramingReg,0x00);
-..\HARDWARE\Core_Board\RC522.C(233): warning:  #68-D: integer conversion resulted in a change of sign
-           {   status = MI_ERR;    }
-..\HARDWARE\Core_Board\RC522.C(269): warning:  #68-D: integer conversion resulted in a change of sign
-      {   status = MI_ERR;    }
-..\HARDWARE\Core_Board\RC522.C(301): warning:  #68-D: integer conversion resulted in a change of sign
-      {   status = MI_ERR;   }
-..\HARDWARE\Core_Board\RC522.C(330): warning:  #68-D: integer conversion resulted in a change of sign
-      {   status = MI_ERR;   }
-..\HARDWARE\Core_Board\RC522.C(354): warning:  #68-D: integer conversion resulted in a change of sign
-      {   status = MI_ERR;   }
-..\HARDWARE\Core_Board\RC522.C(365): warning:  #68-D: integer conversion resulted in a change of sign
-          {   status = MI_ERR;   }
-..\HARDWARE\Core_Board\RC522.C(399): warning:  #68-D: integer conversion resulted in a change of sign
-      WriteRawRC(CommandReg,PCD_IDLE);
-..\HARDWARE\Core_Board\RC522.C(402): warning:  #68-D: integer conversion resulted in a change of sign
-      {   WriteRawRC(FIFODataReg, *(pIndata+i));   }
-..\HARDWARE\Core_Board\RC522.C(403): warning:  #68-D: integer conversion resulted in a change of sign
-      WriteRawRC(CommandReg, PCD_CALCCRC);
-..\HARDWARE\Core_Board\RC522.C(430): warning:  #68-D: integer conversion resulted in a change of sign
-      WriteRawRC(CommandReg,PCD_RESETPHASE);
-..\HARDWARE\Core_Board\RC522.C(433): warning:  #68-D: integer conversion resulted in a change of sign
-      WriteRawRC(ModeReg,0x3D);            //和Mifare卡通讯，CRC初始值0x6363
-..\HARDWARE\Core_Board\RC522.C(434): warning:  #68-D: integer conversion resulted in a change of sign
-      WriteRawRC(TReloadRegL,30);           
-..\HARDWARE\Core_Board\RC522.C(435): warning:  #68-D: integer conversion resulted in a change of sign
-      WriteRawRC(TReloadRegH,0);
-..\HARDWARE\Core_Board\RC522.C(436): warning:  #68-D: integer conversion resulted in a change of sign
-      WriteRawRC(TModeReg,0x8D);
-..\HARDWARE\Core_Board\RC522.C(437): warning:  #68-D: integer conversion resulted in a change of sign
-      WriteRawRC(TPrescalerReg,0x3E);
-..\HARDWARE\Core_Board\RC522.C(438): warning:  #68-D: integer conversion resulted in a change of sign
-      WriteRawRC(TxAutoReg,0x40); 
-..\HARDWARE\Core_Board\RC522.C(451): warning:  #68-D: integer conversion resulted in a change of sign
-         WriteRawRC(ModeReg,0x3D);//3F
-..\HARDWARE\Core_Board\RC522.C(452): warning:  #68-D: integer conversion resulted in a change of sign
-         WriteRawRC(RxSelReg,0x86);//84
-..\HARDWARE\Core_Board\RC522.C(453): warning:  #68-D: integer conversion resulted in a change of sign
-         WriteRawRC(RFCfgReg,0x7F);   //4F
-..\HARDWARE\Core_Board\RC522.C(454): warning:  #68-D: integer conversion resulted in a change of sign
-     	   WriteRawRC(TReloadRegL,30);//tmoLength);// TReloadVal = 'h6a =tmoLength(dec) 
-..\HARDWARE\Core_Board\RC522.C(455): warning:  #68-D: integer conversion resulted in a change of sign
-  			 WriteRawRC(TReloadRegH,0);
-..\HARDWARE\Core_Board\RC522.C(456): warning:  #68-D: integer conversion resulted in a change of sign
-         WriteRawRC(TModeReg,0x8D);
-..\HARDWARE\Core_Board\RC522.C(457): warning:  #68-D: integer conversion resulted in a change of sign
-  	     WriteRawRC(TPrescalerReg,0x3E);
-..\HARDWARE\Core_Board\RC522.C(465): warning:  #68-D: integer conversion resulted in a change of sign
-     else{ return -1; }
-..\HARDWARE\Core_Board\RC522.C(599): warning:  #68-D: integer conversion resulted in a change of sign
-      WriteRawRC(reg,tmp | mask);  // set bit mask
-..\HARDWARE\Core_Board\RC522.C(612): warning:  #68-D: integer conversion resulted in a change of sign
-      WriteRawRC(reg, tmp & ~mask);  // clear bit mask
-..\HARDWARE\Core_Board\RC522.C(630): warning:  #68-D: integer conversion resulted in a change of sign
-      char status = MI_ERR;
-..\HARDWARE\Core_Board\RC522.C(650): warning:  #68-D: integer conversion resulted in a change of sign
-      WriteRawRC(ComIEnReg,irqEn|0x80);
-..\HARDWARE\Core_Board\RC522.C(652): warning:  #68-D: integer conversion resulted in a change of sign
-      WriteRawRC(CommandReg,PCD_IDLE);
-..\HARDWARE\Core_Board\RC522.C(656): warning:  #68-D: integer conversion resulted in a change of sign
-      {   WriteRawRC(FIFODataReg, pInData[i]);    }
-..\HARDWARE\Core_Board\RC522.C(657): warning:  #68-D: integer conversion resulted in a change of sign
-      WriteRawRC(CommandReg, Command);
-..\HARDWARE\Core_Board\RC522.C(679): warning:  #68-D: integer conversion resulted in a change of sign
-               {   status = MI_NOTAGERR;   }
-..\HARDWARE\Core_Board\RC522.C(697): warning:  #68-D: integer conversion resulted in a change of sign
-           {   status = MI_ERR;   }
-..\HARDWARE\Core_Board\RC522.C(703): warning:  #68-D: integer conversion resulted in a change of sign
-     WriteRawRC(CommandReg,PCD_IDLE); 
-..\HARDWARE\Core_Board\RC522.C: 47 warnings, 0 errors
+compiling debug.c...
 linking...
-Program Size: Code=22036 RO-data=696 RW-data=1108 ZI-data=2484  
+Program Size: Code=24412 RO-data=944 RW-data=1280 ZI-data=1121584  
 FromELF: creating hex file...
-"..\OUTPUT\Embedded_Car.axf" - 0 Error(s), 47 Warning(s).
+"..\OUTPUT\Embedded_Car.axf" - 0 Error(s), 0 Warning(s).
 
 <h2>Software Packages used:</h2>
 

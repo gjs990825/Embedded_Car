@@ -33,6 +33,17 @@ void Cba_Init(void)
 	GPIO_Init(GPIOH, &GPIO_InitStructure);
 }
 
+void Beep(uint8_t times)
+{
+	for(uint8_t i = 0; i < times; i++)
+	{
+		MP_SPK = 1;
+		delay_ms(200);
+		MP_SPK = 0;
+		delay_ms(200);
+	}
+}
+
 // °´¼ü¼ì²â
 void KEY_Check(void)
 {
