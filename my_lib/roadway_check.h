@@ -41,10 +41,8 @@ typedef enum
     ENCODER_RIGHT180
 } Moving_ByEncoder_t;
 
-
-// Gao added
 // 循迹信息
-extern bool Q7[7], H8[8];
+extern int8_t Q7[7], H8[8];
 // 白色个数
 extern uint8_t NumberOfWhite;
 // 方向权重
@@ -59,7 +57,6 @@ extern int Car_Speed;
 extern uint16_t temp_MP;
 
 
-/////
 void Get_Track(void);
 void Get_DirectionWights(void);
 void TRACK_LINE(void);

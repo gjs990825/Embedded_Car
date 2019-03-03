@@ -32,7 +32,7 @@ int main(void)
 	{
 		KEY_Check(); //°´¼ü¼ì²â
 
-		continue;
+		// continue;
 
 		Can_WifiRx_Check();
 		Can_ZigBeeRx_Check();

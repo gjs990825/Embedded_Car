@@ -15,7 +15,7 @@ void Hardware_Init(void)
 	SYN7318_Init();					  // 语音识别初始化
 	Electricity_Init();				  // 电量检测初始化
 	UartA72_Init();					  // 至A72开发板的串口
-	Can_check_Init(83, 7);			  // CAN总线定时器初始化
+	Can_check_Init(83, 999);			  // CAN总线定时器初始化 (83, 7)??????
 	roadway_check_TimInit(167, 1999); // 路况检测
 	Timer_Init(167, 999);			  // 串行数据通讯时间帧
 	Readcard_Device_Init();			  // RFID初始化
@@ -30,7 +30,7 @@ void Hardware_Init(void)
 		}
 	}
 
-	// DebugTimer_Init(7199, 4999);
+	DebugTimer_Init(16799, 1999);
 
-	delay_ms(500); // 等待RFID上电
+	// delay_ms(500); // 等待RFID上电
 }

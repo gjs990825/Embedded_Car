@@ -42,7 +42,7 @@ void DebugTimer_Init(uint16_t arr, uint16_t psc)
 
     NVIC_InitStructure.NVIC_IRQChannel = TIM5_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 5;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 6;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
 
@@ -66,10 +66,10 @@ void TIM5_IRQHandler(void)
 {
     if (TIM_GetITStatus(TIM5, TIM_IT_Update) == SET)
     {
-        // if (Track_Flag)
-        // {
-        //     print_info("W:%4f\r\n", DirectionWights);
-        // }
+        if (Track_Mode == TrackMode_NORMAL)
+        {
+            print_info("W:%d\r\n", DirectionWights);
+        }
         TIM_ClearITPendingBit(TIM5, TIM_IT_Update);
     }
 }

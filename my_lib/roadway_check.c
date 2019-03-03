@@ -16,8 +16,8 @@
 #define WEIGHTS_MULTIPLE 6
 
 // Gao added
-bool Q7[7] = {0};
-bool H8[8] = {0};
+int8_t Q7[7] = {0};
+int8_t H8[8] = {0};
 // 白色数量
 uint8_t NumberOfWhite = 0;
 // 方向权重
@@ -34,7 +34,7 @@ Moving_ByEncoder_t Moving_ByEncoder = ENCODER_NONE;
 
 // 左右速度
 int LSpeed = 0, RSpeed = 0;
-// 设定车速
+// 循迹时车速
 int Car_Speed = 0;
 
 // 设定码盘值
@@ -166,9 +166,9 @@ void Roadway_Check(void)
 {
     if (Track_Mode != TrackMode_NONE)
     {
-		TRACK_LINE();
+        TRACK_LINE();
     }
-	Moving_ByEncoderCheck();
+    Moving_ByEncoderCheck();
     Control(LSpeed, RSpeed);
 }
 
@@ -244,19 +244,31 @@ void Get_Track(void)
 #endif // _TRACK_OUTPUT_
 }
 
+// 计算方向权重
 void Get_DirectionWights(void)
 {
     static int PreviousWights = 0;
 
     int HWights = 0, QWeights = 0;
+
     for (uint8_t i = 1; i <= 4; i++)
     {
-        HWights += (H8[3 + i] * i) + (H8[4 - i] * (-i));
+        HWights += H8[3 + i] - H8[4 - i];
     }
     for (uint8_t i = 1; i <= 4; i++)
     {
-        QWeights += (Q7[2 + i] * i) + (Q7[4 - i] * (-i));
+        QWeights += Q7[2 + i] - Q7[4 - i];
     }
+
+
+    // for (uint8_t i = 1; i <= 4; i++)
+    // {
+    //     HWights += (H8[3 + i] * i) + (H8[4 - i] * (-i));
+    // }
+    // for (uint8_t i = 1; i <= 4; i++)
+    // {
+    //     QWeights += (Q7[2 + i] * i) + (Q7[4 - i] * (-i));
+    // }
     DirectionWights = HWights + QWeights;
 
     DirectionWights = (DirectionWights + PreviousWights) >> 1; // 简单滤波
@@ -300,7 +312,7 @@ void TRACK_LINE(void)
     {
         LSpeed = Car_Speed + PID_value;
         RSpeed = Car_Speed - PID_value;
-        Control(LSpeed, RSpeed);
+        // Control(LSpeed, RSpeed);
     }
 }
 
