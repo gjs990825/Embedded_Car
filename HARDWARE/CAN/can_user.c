@@ -131,147 +131,147 @@ void Can_WifiRx_Check(void)
                 Send_UpMotor(0, 0);
                 Roadway_Flag_clean(); //清除标志位状态
                 break;
-            case 0x02:            //前进
-                Roadway_mp_syn(); //码盘同步
-                Stop_Flag = 0;
-                Go_Flag = 1;
-                wheel_L_Flag = 0;
-                wheel_R_Flag = 0;
-                wheel_Nav_Flag = 0;
-                Back_Flag = 0;
-                Track_Flag = 0;
-                temp_MP = Wifi_Rx_Buf[5];
-                temp_MP <<= 8;
-                temp_MP |= Wifi_Rx_Buf[4];
-                Car_Spend = Wifi_Rx_Buf[3];
-                //set_Test_Times();
-                Control(Car_Spend, Car_Spend);
-                break;
-            case 0x03:            //后退
-                Roadway_mp_syn(); //码盘同步
-                Stop_Flag = 0;
-                Go_Flag = 0;
-                wheel_L_Flag = 0;
-                wheel_R_Flag = 0;
-                wheel_Nav_Flag = 0;
-                Back_Flag = 1;
-                Track_Flag = 0;
-                temp_MP = Wifi_Rx_Buf[5];
-                temp_MP <<= 8;
-                temp_MP |= Wifi_Rx_Buf[4];
-                Car_Spend = Wifi_Rx_Buf[3];
-                Control(-Car_Spend, -Car_Spend);
-                break;
-            case 0x04: //左转
-                Stop_Flag = 0;
-                Go_Flag = 0;
-                wheel_L_Flag = 1;
-                wheel_R_Flag = 0;
-                wheel_Nav_Flag = 0;
-                Back_Flag = 0;
-                Track_Flag = 0;
-                Car_Spend = Wifi_Rx_Buf[3];
-                Control(-Car_Spend, Car_Spend);
-                break;
-            case 0x05: //右转
-                Stop_Flag = 0;
-                Go_Flag = 0;
-                wheel_L_Flag = 0;
-                wheel_R_Flag = 1;
-                wheel_Nav_Flag = 0;
-                Back_Flag = 0;
-                Track_Flag = 0;
-                Car_Spend = Wifi_Rx_Buf[3];
-                Control(Car_Spend, -Car_Spend);
-                break;
-            case 0x06: //循迹
-                Stop_Flag = 0;
-                Go_Flag = 0;
-                wheel_L_Flag = 0;
-                wheel_R_Flag = 0;
-                wheel_Nav_Flag = 0;
-                Back_Flag = 0;
-                Track_Flag = 1;
-                Car_Spend = Wifi_Rx_Buf[3];
-                //set_Test_Times();
-                break;
-            case 0x07: //码盘清零
+//            case 0x02:            //前进
+//                Roadway_mp_syn(); //码盘同步
+//                Stop_Flag = 0;
+//                Go_Flag = 1;
+//                wheel_L_Flag = 0;
+//                wheel_R_Flag = 0;
+//                wheel_Nav_Flag = 0;
+//                Back_Flag = 0;
+//                Track_Flag = 0;
+//                temp_MP = Wifi_Rx_Buf[5];
+//                temp_MP <<= 8;
+//                temp_MP |= Wifi_Rx_Buf[4];
+//                Car_Speed = Wifi_Rx_Buf[3];
+//                //set_Test_Times();
+//                Control(Car_Speed, Car_Speed);
+//                break;
+//            case 0x03:            //后退
+//                Roadway_mp_syn(); //码盘同步
+//                Stop_Flag = 0;
+//                Go_Flag = 0;
+//                wheel_L_Flag = 0;
+//                wheel_R_Flag = 0;
+//                wheel_Nav_Flag = 0;
+//                Back_Flag = 1;
+//                Track_Flag = 0;
+//                temp_MP = Wifi_Rx_Buf[5];
+//                temp_MP <<= 8;
+//                temp_MP |= Wifi_Rx_Buf[4];
+//                Car_Speed = Wifi_Rx_Buf[3];
+//                Control(-Car_Speed, -Car_Speed);
+//                break;
+//            case 0x04: //左转
+//                Stop_Flag = 0;
+//                Go_Flag = 0;
+//                wheel_L_Flag = 1;
+//                wheel_R_Flag = 0;
+//                wheel_Nav_Flag = 0;
+//                Back_Flag = 0;
+//                Track_Flag = 0;
+//                Car_Speed = Wifi_Rx_Buf[3];
+//                Control(-Car_Speed, Car_Speed);
+//                break;
+//            case 0x05: //右转
+//                Stop_Flag = 0;
+//                Go_Flag = 0;
+//                wheel_L_Flag = 0;
+//                wheel_R_Flag = 1;
+//                wheel_Nav_Flag = 0;
+//                Back_Flag = 0;
+//                Track_Flag = 0;
+//                Car_Speed = Wifi_Rx_Buf[3];
+//                Control(Car_Speed, -Car_Speed);
+//                break;
+//            case 0x06: //循迹
+//                Stop_Flag = 0;
+//                Go_Flag = 0;
+//                wheel_L_Flag = 0;
+//                wheel_R_Flag = 0;
+//                wheel_Nav_Flag = 0;
+//                Back_Flag = 0;
+//                Track_Flag = 1;
+//                Car_Speed = Wifi_Rx_Buf[3];
+//                //set_Test_Times();
+//                break;
+//            case 0x07: //码盘清零
 
-                break;
-            case 0x08:             //左转弯--角度
-                Roadway_nav_syn(); //角度同步
-                Roadway_mp_syn();  //码盘同步
-                Stop_Flag = 0;
-                Go_Flag = 0;
-                wheel_L_Flag = 0;
-                wheel_R_Flag = 0;
-                wheel_Nav_Flag = 1;
-                Back_Flag = 0;
-                Track_Flag = 0;
-                temp_Nav = Wifi_Rx_Buf[5];
-                temp_Nav <<= 8;
-                temp_Nav |= Wifi_Rx_Buf[4];
-                Car_Spend = Wifi_Rx_Buf[3];
-                Send_UpMotor(-Car_Spend, Car_Spend);
-                break;
-            case 0x09:             //右转弯--角度
-                Roadway_nav_syn(); //角度同步
-                Roadway_mp_syn();  //码盘同步
-                Stop_Flag = 0;
-                Go_Flag = 0;
-                wheel_L_Flag = 0;
-                wheel_R_Flag = 0;
-                wheel_Nav_Flag = 1;
-                Back_Flag = 0;
-                Track_Flag = 0;
-                temp_Nav = Wifi_Rx_Buf[5];
-                temp_Nav <<= 8;
-                temp_Nav |= Wifi_Rx_Buf[4];
-                Car_Spend = Wifi_Rx_Buf[3];
-                Send_UpMotor(Car_Spend, -Car_Spend);
-                break;
-            case 0x10: //红外前三位数据
-                Infrared_Tab[0] = Wifi_Rx_Buf[3];
-                Infrared_Tab[1] = Wifi_Rx_Buf[4];
-                Infrared_Tab[2] = Wifi_Rx_Buf[5];
-                break;
-            case 0x11:                            //红外后三位数据
-                Infrared_Tab[3] = Wifi_Rx_Buf[3]; //数据第四位
-                Infrared_Tab[4] = Wifi_Rx_Buf[4]; //低位校验码
-                Infrared_Tab[5] = Wifi_Rx_Buf[5]; //高位校验码
-                break;
-            case 0x12: //通知小车单片机发送红外线
-                Infrared_Send(Infrared_Tab, 6);
+//                break;
+//            case 0x08:             //左转弯--角度
+//                Roadway_nav_syn(); //角度同步
+//                Roadway_mp_syn();  //码盘同步
+//                Stop_Flag = 0;
+//                Go_Flag = 0;
+//                wheel_L_Flag = 0;
+//                wheel_R_Flag = 0;
+//                wheel_Nav_Flag = 1;
+//                Back_Flag = 0;
+//                Track_Flag = 0;
+//                temp_Nav = Wifi_Rx_Buf[5];
+//                temp_Nav <<= 8;
+//                temp_Nav |= Wifi_Rx_Buf[4];
+//                Car_Speed = Wifi_Rx_Buf[3];
+//                Send_UpMotor(-Car_Speed, Car_Speed);
+//                break;
+//            case 0x09:             //右转弯--角度
+//                Roadway_nav_syn(); //角度同步
+//                Roadway_mp_syn();  //码盘同步
+//                Stop_Flag = 0;
+//                Go_Flag = 0;
+//                wheel_L_Flag = 0;
+//                wheel_R_Flag = 0;
+//                wheel_Nav_Flag = 1;
+//                Back_Flag = 0;
+//                Track_Flag = 0;
+//                temp_Nav = Wifi_Rx_Buf[5];
+//                temp_Nav <<= 8;
+//                temp_Nav |= Wifi_Rx_Buf[4];
+//                Car_Speed = Wifi_Rx_Buf[3];
+//                Send_UpMotor(Car_Speed, -Car_Speed);
+//                break;
+//            case 0x10: //红外前三位数据
+//                Infrared_Tab[0] = Wifi_Rx_Buf[3];
+//                Infrared_Tab[1] = Wifi_Rx_Buf[4];
+//                Infrared_Tab[2] = Wifi_Rx_Buf[5];
+//                break;
+//            case 0x11:                            //红外后三位数据
+//                Infrared_Tab[3] = Wifi_Rx_Buf[3]; //数据第四位
+//                Infrared_Tab[4] = Wifi_Rx_Buf[4]; //低位校验码
+//                Infrared_Tab[5] = Wifi_Rx_Buf[5]; //高位校验码
+//                break;
+//            case 0x12: //通知小车单片机发送红外线
+//                Infrared_Send(Infrared_Tab, 6);
 
-                break;
-            case 0x20: //转向灯控制
-                Set_tba_WheelLED(L_LED, Wifi_Rx_Buf[3]);
-                Set_tba_WheelLED(R_LED, Wifi_Rx_Buf[4]);
-                break;
-            case 0x30:
-                Set_tba_Beep(Wifi_Rx_Buf[3]); //蜂鸣器
-                break;
-            case 0x40: //暂未使用
+//                break;
+//            case 0x20: //转向灯控制
+//                Set_tba_WheelLED(L_LED, Wifi_Rx_Buf[3]);
+//                Set_tba_WheelLED(R_LED, Wifi_Rx_Buf[4]);
+//                break;
+//            case 0x30:
+//                Set_tba_Beep(Wifi_Rx_Buf[3]); //蜂鸣器
+//                break;
+//            case 0x40: //暂未使用
 
-                break;
-            case 0x50: //红外发射控制相片上翻
-                Infrared_Send(H_S, 4);
-                break;
-            case 0x51: //红外发射控制相片下翻
-                Infrared_Send(H_X, 4);
-                break;
-            case 0x61: //红外发射控制光源强度档位加1
-                Infrared_Send(H_1, 4);
-                break;
-            case 0x62: //红外发射控制光源强度档位加2
-                Infrared_Send(H_2, 4);
-                break;
-            case 0x63: //红外发射控制光源强度档位加3
-                Infrared_Send(H_3, 4);
-                break;
-            case 0x80:                                 //运动标志物数据返回允许位
-                Host_AGV_Return_Flag = Wifi_Rx_Buf[3]; //SET 允许 / RESET 禁止
-                break;
+//                break;
+//            case 0x50: //红外发射控制相片上翻
+//                Infrared_Send(H_S, 4);
+//                break;
+//            case 0x51: //红外发射控制相片下翻
+//                Infrared_Send(H_X, 4);
+//                break;
+//            case 0x61: //红外发射控制光源强度档位加1
+//                Infrared_Send(H_1, 4);
+//                break;
+//            case 0x62: //红外发射控制光源强度档位加2
+//                Infrared_Send(H_2, 4);
+//                break;
+//            case 0x63: //红外发射控制光源强度档位加3
+//                Infrared_Send(H_3, 4);
+//                break;
+//            case 0x80:                                 //运动标志物数据返回允许位
+//                Host_AGV_Return_Flag = Wifi_Rx_Buf[3]; //SET 允许 / RESET 禁止
+//                break;
             default:
                 break;
             }

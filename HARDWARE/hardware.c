@@ -30,7 +30,7 @@ void Hardware_Init(void)
 		}
 	}
 
-	DebugTimer_Init(7199, 4999);
+	// DebugTimer_Init(7199, 4999);
 
 	delay_ms(500); // µÈ´ýRFIDÉÏµç
 }

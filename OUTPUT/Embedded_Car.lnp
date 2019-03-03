@@ -2,6 +2,7 @@
 "..\output\main.o"
 "..\output\a_star.o"
 "..\output\debug.o"
+"..\output\pid.o"
 "..\output\hardware.o"
 "..\output\infrared.o"
 "..\output\syn7318.o"

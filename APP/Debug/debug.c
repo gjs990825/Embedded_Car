@@ -7,12 +7,12 @@
 #include "cba.h"
 #include "roadway_check.h"
 
-#define varNumber 2
-#define var1 Go_Flag
-#define var2 Stop_Flag
+// #define varNumber 2
+// #define var1 Go_Flag
+// #define var2 Stop_Flag
 
-uint8_t *watch[5] = {&var1, &var2};
-uint8_t var_tmp[5] = {0};
+// uint8_t *watch[5] = {&var1, &var2};
+// uint8_t var_tmp[5] = {0};
 
 void print_info(char *str, ...)
 {
@@ -50,27 +50,26 @@ void DebugTimer_Init(uint16_t arr, uint16_t psc)
     TIM_Cmd(TIM5, ENABLE);
 }
 
-void Debug_CheckVar(void)
-{
-    for (uint8_t i = 0; i < varNumber; i++)
-    {
-        if (*(int *)watch[i] != var_tmp[i])
-        {
-            print_info("V%d>%d->%d\r\n", i, var_tmp[i], *watch[i]);
-            var_tmp[i] = *watch[i];
-        }
-    }
-}
+// void Debug_CheckVar(void)
+// {
+//     for (uint8_t i = 0; i < varNumber; i++)
+//     {
+//         if (*(int *)watch[i] != var_tmp[i])
+//         {
+//             print_info("V%d>%d->%d\r\n", i, var_tmp[i], *watch[i]);
+//             var_tmp[i] = *watch[i];
+//         }
+//     }
+// }
 
 void TIM5_IRQHandler(void)
 {
     if (TIM_GetITStatus(TIM5, TIM_IT_Update) == SET)
     {
-        // LED1 = !LED1;
-        // Debug_CheckVar();
-        // print_info("STOP:%X\r\n", Stop_Flag);
-        // Get_Track();
-        // Get_DirectionWights();
+        // if (Track_Flag)
+        // {
+        //     print_info("W:%4f\r\n", DirectionWights);
+        // }
         TIM_ClearITPendingBit(TIM5, TIM_IT_Update);
     }
 }

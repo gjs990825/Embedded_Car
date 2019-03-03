@@ -3,354 +3,310 @@
 #include "CanP_Hostcom.h"
 #include "cba.h"
 #include "hardware.h"
+#include "a_star.h"
+#include "pid.h"
 
-void autorun(void);					 //全自动函数声明
-void zhuche_xunji(int speed);		 //主车循迹函数
-void go_ahead(int speed, u16 mapan); //前进函数声明
-void back_off(int speed, u16 mapan); //后退函数声明
-void turn_left(int speed);			 //左转函数声明
-void turn_right(int speed);			 //右转函数声明
-void stop(void);					 //停止函数声明
+#define WaitForFlag(flag, status) while (flag != status){}
 
-/***************************************************************
-** 功能：     主车全自动程序
-** 参数：	  无
-** 返回值：   无
-** 说明：     主车全自动函数
-****************************************************************/
+// 测试用
 void autorun(void)
 {
-
-	zhuche_xunji(50);
-	while (Stop_Flag != CROSSROAD)
-		;
-	stop_Test();
-	Beep(1);
+	// Start_Tracking(Track_Speed);
+	// WaitForFlag(Stop_Flag, CROSSROAD);
+	// Stop();
 	
-	go_ahead(30, 300);
-	while (Stop_Flag != FORBACKCOMPLETE)
-		;
-	stop_Test();
-	Beep(1);
+	// // Go_Ahead(50, ToCrossroadCenter);
+	// // WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
+	// // Stop();
 
-	zhuche_xunji(70);
-	while (Stop_Flag != CROSSROAD)
-		;
-	stop_Test();
-	Beep(1);
-	// go_ahead(80, 400);
-	// while (Stop_Flag != 3)
-	// {
-	// 	;
-	// }
-	// zhuche_xunji(60);
-	// while (Stop_Flag != 1)
-	// {
-	// 	;
-	// }
+	// Go_Ahead(Track_Speed, ToCrossroadCenter);
+	// WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
+	// Stop();
+
+	// Track_ByEncoder(Track_Speed, LongTrack_Value);
+	// WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
+	// Stop();
+
+	CurrentStaus.x = 1;
+	CurrentStaus.y = 0;
+	CurrentStaus.dir = DIR_UP;
+
+	for(uint8_t i = 0; i < Final_StepCount; i++)
+	{
+		print_info("NOW:(%d,%d)\r\n", Final_Route[i].x, Final_Route[i].y);
+		Go_ToNextNode(Final_Route[i]);
+	}
 }
 
-/***************************************************************
-** 功能：     主车前进
-** 参数：	  speed，整型，主车速度；mapan，u16型，码盘值
-** 返回值：   无
-** 说明：     码盘值越大，前进距离越长，码盘值最大为65535 
-****************************************************************/
-void go_ahead(int speed, u16 mapan)
+// 行驶到下一个节点
+void Go_ToNextNode(RouteNode next)
 {
-	Roadway_mp_syn(); //码盘同步
-	Stop_Flag = 0;
-	Go_Flag = 1;
-	wheel_L_Flag = 0;
-	wheel_R_Flag = 0;
-	wheel_Nav_Flag = 0;
-	Back_Flag = 0;
-	Track_Flag = 0;
-	temp_MP = mapan;
-	Car_Spend = speed;
-	Control(Car_Spend, Car_Spend);
-}
-/***************************************************************
-** 功能：     主车后退
-** 参数：	  speed，整型，主车速度；mapan，u16型，码盘值
-** 返回值：   无
-** 说明：     码盘值越大，前进距离越长，码盘值最大为65535 
-****************************************8************************/
-void back_off(int speed, u16 mapan)
-{
-	Roadway_mp_syn(); //码盘同步
-	Stop_Flag = 0;
-	Go_Flag = 0;
-	wheel_L_Flag = 0;
-	wheel_R_Flag = 0;
-	wheel_Nav_Flag = 0;
-	Back_Flag = 1;
-	Track_Flag = 0;
-	temp_MP = mapan;
-	Car_Spend = speed;
-	Control(-Car_Spend, -Car_Spend);
+	int8_t finalDir = 0;
+	int8_t x = next.x - CurrentStaus.x;
+	int8_t y = next.y - CurrentStaus.y;
+
+	if ((x > 1 || y > 1) || (x != 0 && y != 0))
+	{
+		print_info("NODE ERROR!!\r\n");
+		return;
+	}
+
+	if (x > 0)
+	{
+		finalDir = DIR_RIGHT;
+	}
+	else if (x < 0)
+	{
+		finalDir = DIR_LEFT;
+	}
+	else if (y > 0)
+	{
+		finalDir = DIR_UP;
+	}
+	else if (y < 0)
+	{
+		finalDir = DIR_DOWN;
+	}
+	else
+	{
+		print_info("FIN DIR ERROR\r\n");
+		return;
+	}
+
+	if ((finalDir == DIR_RIGHT || finalDir == DIR_LEFT))
+	{
+		switch (CurrentStaus.dir)
+		{
+		case DIR_UP:
+			(finalDir == DIR_RIGHT) ? Turn_Right90() : Turn_Left90();
+			break;
+		case DIR_DOWN:
+			(finalDir == DIR_RIGHT) ? Turn_Left90() : Turn_Right90();
+			break;
+		case DIR_LEFT:
+			(finalDir == DIR_RIGHT) ? Turn_Right180() : (void)0;
+			break;
+		case DIR_RIGHT:
+			(finalDir == DIR_RIGHT) ? (void)0 : Turn_Right180();
+			break;
+		default:
+			print_info("CurrentDir NOT SET!\r\n");
+			break;
+		}
+	}
+	else
+	{
+		switch (CurrentStaus.dir)
+		{
+		case DIR_UP:
+			(finalDir == DIR_UP) ? (void)0 : Turn_Right180();
+			break;
+		case DIR_DOWN:
+			(finalDir == DIR_UP) ? Turn_Right180() : (void)0;
+			break;
+		case DIR_LEFT:
+			(finalDir == DIR_UP) ? Turn_Right90() : Turn_Left90();
+			break;
+		case DIR_RIGHT:
+			(finalDir == DIR_UP) ? Turn_Left90() : Turn_Right90();
+			break;
+		default:
+			print_info("CurrentDir NOT SET!\r\n");
+			break;
+		}
+	}
+
+	if (Moving_ByEncoder != ENCODER_NONE)
+	{
+		WaitForFlag(Stop_Flag, TURNCOMPLETE);
+	}
+
+	Start_Tracking(Track_Speed);
+	WaitForFlag(Stop_Flag, CROSSROAD);
+	Stop();
+
+	Go_Ahead(Track_Speed, ToCrossroadCenter);
+	WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
+	Stop();
+
+	CurrentStaus.x = next.x;
+	CurrentStaus.y = next.y;
+	CurrentStaus.dir = finalDir;
 }
 
-/***************************************************************
-** 功能：     主车左转
-** 参数：	  speed，整型，主车速度
-** 返回值：   无 
-****************************************************************/
-void turn_left(int speed)
-{
-	Stop_Flag = 0;
-	Go_Flag = 0;
-	wheel_L_Flag = 1;
-	wheel_R_Flag = 0;
-	wheel_Nav_Flag = 0;
-	Back_Flag = 0;
-	Track_Flag = 0;
-	Car_Spend = speed;
-	Control(-Car_Spend, Car_Spend);
-}
-
-/***************************************************************
-** 功能：     主车右转
-** 参数：	  speed，整型，主车速度
-** 返回值：   无 
-****************************************************************/
-void turn_right(int speed)
-{
-	Stop_Flag = 0;
-	Go_Flag = 0;
-	wheel_L_Flag = 0;
-	wheel_R_Flag = 1;
-	wheel_Nav_Flag = 0;
-	Back_Flag = 0;
-	Track_Flag = 0;
-	Car_Spend = speed;
-	Control(Car_Spend, -Car_Spend);
-}
-
-/***************************************************************
-** 功能：     主车停止
-** 参数：	  无参数
-** 返回值：   无 
-****************************************************************/
-void stop(void)
-{
-	Roadway_Flag_clean(); //清除标志位状态
-}
-/***************************************************************
-** 功能：   主车寻迹
-** 参数：	  speed，整型，主车速度
-** 返回值：   无 
-****************************************************************/
-void zhuche_xunji(int speed)
-{
-	Go_Flag = 0;
-	Stop_Flag = 0;
-	Car_Spend = speed; //主车速度
-	Track_Flag = 1;
-	// TIM_Cmd(TIM2, ENABLE);
-}
-
-void go_Test(uint16_t setMP)
-{					  //码盘控制前进
-					  //	OSTimeDlyHMSM(0,0,1,0,OS_OPT_TIME_HMSM_STRICT,&err);
-	Roadway_mp_syn(); //码盘同步
-	Mp_Value = Roadway_mp_Get();
-	Stop_Flag = 0;
-	Go_Flag = 1;
-	wheel_L_Flag = 0;
-	wheel_R_Flag = 0;
-	wheel_Nav_Flag = 0;
-	Back_Flag = 0;
-	Track_Flag = 0;
-	Car_Spend = Track_Speed;
-	temp_MP = setMP * 10;
-	Control(Car_Spend, Car_Spend);
-}
-
-void back_Test(uint16_t setMP)
-{					  //码盘控制后退
-					  //	OSTimeDlyHMSM(0,0,1,0,OS_OPT_TIME_HMSM_STRICT,&err);
-	Roadway_mp_syn(); //码盘同步
-					  //	Mp_Value = Roadway_mp_Get();
-	Stop_Flag = 0;
-	Go_Flag = 0;
-	wheel_L_Flag = 0;
-	wheel_R_Flag = 0;
-	wheel_Nav_Flag = 0;
-	Back_Flag = 1;
-	Track_Flag = 0;
-	temp_MP = setMP * 10;
-	Car_Spend = Track_Speed;
-	Control(-Car_Spend, -Car_Spend);
-}
-
-void stop_Test(void)
+// 停止运行，清空标志位，清空PID数据
+void Stop(void)
 {
 	Roadway_Flag_clean(); //清除标志位状态
-	Mp_Value = 0;
-	h = 0;
-	Send_UpMotor(0, 0);
+	// Mp_Value = 0;
+	Control(0, 0);
+	PidData_Clear();
+	// Beep(1);
 }
 
-void right_Test(uint16_t setNav) //角度控制右转
-{
-	Roadway_nav_syn(); //角度同步
-	Roadway_mp_syn();  //码盘同步
-	Stop_Flag = 0;
-	Go_Flag = 0;
-	wheel_L_Flag = 0;
-	wheel_R_Flag = 0;
-	wheel_Nav_Flag = 1;
-	Back_Flag = 0;
-	Track_Flag = 0;
-	temp_Nav = setNav;
-	Car_Spend = Turn_Speed;
-	Send_UpMotor(Car_Spend, -Car_Spend);
-	//	TIM_Cmd(TIM9,ENABLE);
-}
-
-void left_Test(uint16_t setNav) //角度控制左转
-{
-	Roadway_nav_syn(); //角度0同步
-	Roadway_mp_syn();  //码盘同步
-	Stop_Flag = 0;
-	Go_Flag = 0;
-	wheel_L_Flag = 0;
-	wheel_R_Flag = 0;
-	wheel_Nav_Flag = 1;
-	Back_Flag = 0;
-	Track_Flag = 0;
-	temp_Nav = setNav;
-	Car_Spend = Turn_Speed;
-	Send_UpMotor(-Car_Spend, Car_Spend);
-	//	TIM_Cmd(TIM9,ENABLE);
-}
-
-void left45_Test(void)
+// 前进
+void Go_Ahead(int speed, uint16_t mp)
 {
 	Roadway_mp_syn();
-	//	Mp_Value = Roadway_mp_Get();
-	Stop_Flag = 0;
-	Go_Flag = 0;
-	wheel_L_Flag = 0;
-	wheel_R_Flag = 0;
-	wheel_Nav_Flag = 0;
-	Right45_Flag = 0, Left45_Flag = 1, Right90_Flag = 0, Left90_Flag = 0;
-	Right180_Flag = 0; //转弯控制
-	Back_Flag = 0;
-	Track_Flag = 0;
-	Car_Spend = Turn_Speed;
-	Control(-Car_Spend, Car_Spend);
-	//  TIM_Cmd(TIM9,ENABLE);
+	Stop_Flag = TRACKING;
+	Moving_ByEncoder = ENCODER_GO;
+	temp_MP = mp;
+	Car_Speed = speed;
+	Track_Mode = TrackMode_NONE;
+	Control(Car_Speed, Car_Speed);
 }
 
-void left90_Test(void)
+// 后退
+void Back_Off(int speed, uint16_t mp)
 {
 	Roadway_mp_syn();
-	//	Mp_Value = Roadway_mp_Get();
-	Stop_Flag = 0;
-	Go_Flag = 0;
-	wheel_L_Flag = 0;
-	wheel_R_Flag = 0;
-	wheel_Nav_Flag = 0;
-	Right45_Flag = 0, Left45_Flag = 0, Right90_Flag = 0, Left90_Flag = 1;
-	Right180_Flag = 0; //转弯控制
-	Back_Flag = 0;
-	Track_Flag = 0;
-	Car_Spend = Turn_Speed;
-	Control(-Car_Spend, Car_Spend);
-	//  TIM_Cmd(TIM9,ENABLE);
+	Stop_Flag = TRACKING;
+	Moving_ByEncoder = ENCODER_BACK;
+	temp_MP = mp;
+	Car_Speed = speed;
+	Track_Mode = TrackMode_NONE;
+	Control(-Car_Speed, -Car_Speed);
 }
 
-void right45_Test(void)
+// 开始循迹
+void Start_Tracking(int speed)
 {
-	Roadway_mp_syn();
-	//	Mp_Value = Roadway_mp_Get();
-	Stop_Flag = 0;
-	Go_Flag = 0;
-	wheel_L_Flag = 0;
-	wheel_R_Flag = 0;
-	wheel_Nav_Flag = 0;
-	Right45_Flag = 1, Left45_Flag = 0, Right90_Flag = 0, Left90_Flag = 0;
-	Right180_Flag = 0; //转弯控制
-	Back_Flag = 0;
-	Track_Flag = 0;
-	Car_Spend = Turn_Speed;
-	Control(Car_Spend, -Car_Spend);
-	//	TIM_Cmd(TIM9,ENABLE);
+	Stop_Flag = TRACKING;
+	Track_Mode = TrackMode_NORMAL;
+	Moving_ByEncoder = ENCODER_NONE;
+	Car_Speed = speed;
 }
 
-void right90_Test(void)
+// 根据码盘设定值循迹
+void Track_ByEncoder(int speed, uint16_t setMP)
 {
 	Roadway_mp_syn();
-	//	Mp_Value = Roadway_mp_Get();
-	Stop_Flag = 0;
-	Go_Flag = 0;
-	wheel_L_Flag = 0;
-	wheel_R_Flag = 0;
-	wheel_Nav_Flag = 0;
-	Right45_Flag = 0, Left45_Flag = 0, Right90_Flag = 1, Left90_Flag = 0;
-	Right180_Flag = 0; //转弯控制
-	Back_Flag = 0;
-	Track_Flag = 0;
-	Car_Spend = Turn_Speed;
-	Control(Car_Spend, -Car_Spend);
-	//	TIM_Cmd(TIM9,ENABLE);
+	Stop_Flag = TRACKING;
+	Track_Mode = TrackMode_ENCODER;
+	temp_MP = setMP;
+	Car_Speed = speed;
 }
 
-void right180_Test(void)
+void Turn_Left45(void)
 {
 	Roadway_mp_syn();
-	//	Mp_Value = Roadway_mp_Get();
-	Stop_Flag = 0;
-	Go_Flag = 0;
-	wheel_L_Flag = 0;
-	wheel_R_Flag = 0;
-	wheel_Nav_Flag = 0;
-	Right45_Flag = 0, Left45_Flag = 0, Right90_Flag = 0, Left90_Flag = 0;
-	Right180_Flag = 1; //转弯控制
-	Back_Flag = 0;
-	Track_Flag = 0;
-	Car_Spend = Turn_Speed;
-	Control(Car_Spend, -Car_Spend);
-	//  TIM_Cmd(TIM9,ENABLE);
+	Stop_Flag = TRACKING;
+	Track_Mode = TrackMode_NONE;
+	Moving_ByEncoder = ENCODER_LEFT45;
+	Car_Speed = Turn_Speed;
+	Control(-Car_Speed, Car_Speed);
 }
 
-void Track_MP(uint16_t setMP)
+void Turn_Left90(void)
 {
 	Roadway_mp_syn();
-	//	Mp_Value = Roadway_mp_Get();
-	Stop_Flag = 0;
-	Go_Flag = 0;
-	wheel_L_Flag = 0;
-	wheel_R_Flag = 0;
-	wheel_Nav_Flag = 0;
-	Right45_Flag = 0, Left45_Flag = 0, Right90_Flag = 0, Left90_Flag = 0;
-	Right180_Flag = 0; //转弯控制
-	Back_Flag = 0;
-	Track_Flag = 1;
-	temp_MP = 0;
-	temp_MP = setMP * 10;
-	Car_Spend = Track_Speed;
-	//	TIM_Cmd(TIM9,ENABLE);
+	Stop_Flag = TRACKING;
+	Track_Mode = TrackMode_NONE;
+	Moving_ByEncoder = ENCODER_LEFT90;
+	Car_Speed = Turn_Speed;
+	Control(-Car_Speed, Car_Speed);
 }
 
-void Track_Back(uint16_t setMP)
+void Turn_Right45(void)
 {
 	Roadway_mp_syn();
-	//	Mp_Value = Roadway_mp_Get();
-	Stop_Flag = 0;
-	Go_Flag = 0;
-	wheel_L_Flag = 0;
-	wheel_R_Flag = 0;
-	wheel_Nav_Flag = 0;
-	Right45_Flag = 0, Left45_Flag = 0, Right90_Flag = 0, Left90_Flag = 0;
-	Right180_Flag = 0; //转弯控制
-	Back_Flag = 0;
-	Track_Flag = 1;
-	temp_MP = 0;
-	Track_Back_Flag = 1;
-	temp_MP = setMP * 10;
-	Car_Spend = Track_Speed;
-	//	TIM_Cmd(TIM9,ENABLE);
+	Stop_Flag = TRACKING;
+	Track_Mode = TrackMode_NONE;
+	Moving_ByEncoder = ENCODER_RIGHT45;
+	Car_Speed = Turn_Speed;
+	Control(Car_Speed, -Car_Speed);
 }
+
+void Turn_Right90(void)
+{
+	Roadway_mp_syn();
+	Stop_Flag = TRACKING;
+	Track_Mode = TrackMode_NONE;
+	Moving_ByEncoder = ENCODER_RIGHT90;
+	Car_Speed = Turn_Speed;
+	Control(Car_Speed, -Car_Speed);
+}
+
+void Turn_Right180(void)
+{
+	Roadway_mp_syn();
+	Stop_Flag = TRACKING;
+	Track_Mode = TrackMode_NONE;
+	Moving_ByEncoder = ENCODER_RIGHT180;
+	Car_Speed = Turn_Speed;
+	Control(Car_Speed, -Car_Speed);
+}
+
+
+// void Turn_Left90(void)
+// {
+// 	Roadway_mp_syn();
+// 	//	Mp_Value = Roadway_mp_Get();
+// 	Stop_Flag = TRACKING;
+// 	Go_Flag = 0;
+	
+	
+// 	wheel_Nav_Flag = 0;
+// 	Right45_Flag = 0, Left45_Flag = 0, Right90_Flag = 0, Left90_Flag = 1;
+// 	Right180_Flag = 0; //转弯控制
+// 	Back_Flag = 0;
+// 	Track_Flag = 0;
+// 	Car_Speed = Turn_Speed;
+// 	Control(-Car_Speed, Car_Speed);
+// 	//  TIM_Cmd(TIM9,ENABLE);
+// }
+
+// void Turn_Right45(void)
+// {
+// 	Roadway_mp_syn();
+// 	//	Mp_Value = Roadway_mp_Get();
+// 	Stop_Flag = TRACKING;
+// 	Go_Flag = 0;
+	
+	
+// 	wheel_Nav_Flag = 0;
+// 	Right45_Flag = 1, Left45_Flag = 0, Right90_Flag = 0, Left90_Flag = 0;
+// 	Right180_Flag = 0; //转弯控制
+// 	Back_Flag = 0;
+// 	Track_Flag = 0;
+// 	Car_Speed = Turn_Speed;
+// 	Control(Car_Speed, -Car_Speed);
+// 	//	TIM_Cmd(TIM9,ENABLE);
+// }
+
+// void Turn_Right90(void)
+// {
+// 	Roadway_mp_syn();
+// 	//	Mp_Value = Roadway_mp_Get();
+// 	Stop_Flag = TRACKING;
+// 	Go_Flag = 0;
+	
+	
+// 	wheel_Nav_Flag = 0;
+// 	Right45_Flag = 0, Left45_Flag = 0, Right90_Flag = 1, Left90_Flag = 0;
+// 	Right180_Flag = 0; //转弯控制
+// 	Back_Flag = 0;
+// 	Track_Flag = 0;
+// 	Car_Speed = Turn_Speed;
+// 	Control(Car_Speed, -Car_Speed);
+// 	//	TIM_Cmd(TIM9,ENABLE);
+// }
+
+// void Turn_Right180(void)
+// {
+// 	Roadway_mp_syn();
+// 	//	Mp_Value = Roadway_mp_Get();
+// 	Stop_Flag = TRACKING;
+// 	Go_Flag = 0;
+	
+	
+// 	wheel_Nav_Flag = 0;
+// 	Right45_Flag = 0, Left45_Flag = 0, Right90_Flag = 0, Left90_Flag = 0;
+// 	Right180_Flag = 1; //转弯控制
+// 	Back_Flag = 0;
+// 	Track_Flag = 0;
+// 	Car_Speed = Turn_Speed;
+// 	Control(Car_Speed, -Car_Speed);
+// 	//  TIM_Cmd(TIM9,ENABLE);
+// }
+

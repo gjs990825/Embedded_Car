@@ -16,31 +16,24 @@
 
 
 // 路径设置
-const char Route_Setting[][2] = {
-	{1, 0},
-	{0, 5},
-	{5, 6},
-	{6, 1},
-	{0, 5},
-	{5, 6},
-	{6, 1}
+const int8_t Route_Setting[][2] = {
+	{1, 1},
+	{3, 0},
+	{1, 2}
 };
 
-typedef struct RouteNode
-{
-	uint8_t x;
-	uint8_t y;
-	uint8_t dir;
-} RouteNode;
+// 当前位置和状态
+RouteNode CurrentStaus;
 
 // 最多10个点 * 10
 RouteNode Final_Route[sizeof(Route_Setting) / 2 * 10];
+// 路径计数
 int Final_StepCount = 0;
 
 #define X_LENTH 7
 #define Y_LENTH 7
 
-// 使能输出（需要printf函数）
+// 使能输出
 #define _A_STAR_ENABLE_OUTPUT_ 1
 
 // 生成路径
@@ -60,19 +53,8 @@ const int maze[X_LENTH][Y_LENTH] = {
 	{0, 0, 0, 0, 0, 0, 0},
 	{3, 0, 3, 0, 3, 0, 3},
 	{0, 0, 0, 0, 0, 0, 0},
-	{3, 0, 3, 0, 3, 0, 3} };
-
-typedef struct AStarNode
-{
-	int s_x;                    // x坐标(最终输出路径需要)
-	int s_y;                    // y坐标
-	int s_g;                    // 起点到此点的距离( 由g和h可以得到f，此处f省略，f=g+h )
-	int s_h;                    // 启发函数预测的此点到终点的距离
-	int s_style;                // 结点类型：起始点，终点，障碍物
-	struct AStarNode *s_parent; // 父节点
-	int s_is_in_closetable;     // 是否在close表中
-	int s_is_in_opentable;      // 是否在open表中
-} AStarNode, *pAStarNode;
+	{3, 0, 3, 0, 3, 0, 3}
+};
 
 AStarNode map_maze[X_LENTH][Y_LENTH];      // 结点数组
 pAStarNode open_table[X_LENTH * Y_LENTH];  // open表
@@ -215,9 +197,9 @@ void get_neighbors(pAStarNode curr_node, pAStarNode end_node)
 // 初始化地图
 void A_Star_InitMap(void)
 {
-	for (char i = 0; i < X_LENTH; ++i)
+	for (int8_t i = 0; i < X_LENTH; ++i)
 	{
-		for (char j = 0; j < Y_LENTH; ++j)
+		for (int8_t j = 0; j < Y_LENTH; ++j)
 		{
 			map_maze[i][j].s_g = 0;
 			map_maze[i][j].s_h = 0;
@@ -313,7 +295,7 @@ void A_Star_GetStepCount(void)
 	step_count = top;
 }
 
-#ifdef _A_STAR_ENABLE_OUTPUT_
+#if _A_STAR_ENABLE_OUTPUT_
 
 void A_Star_PrintRoute(void)
 {
@@ -321,7 +303,7 @@ void A_Star_PrintRoute(void)
 
 	if (step_count == -1)
 	{
-		printf("error ! no route or didn't caculate\r\n");
+		print_info("error ! no route or didn't caculate\r\n");
 		return;
 	}
 
@@ -329,15 +311,15 @@ void A_Star_PrintRoute(void)
 	{
 		if (top > 0)
 		{
-			printf("(%d,%d)-->", path_array[top][0], path_array[top][1]);
+			print_info("(%d,%d)-->", path_array[top][0], path_array[top][1]);
 		}
 		else
 		{
-			printf("(%d,%d)", path_array[top][0], path_array[top][1]);
+			print_info("(%d,%d)", path_array[top][0], path_array[top][1]);
 		}
 		top--;
 	}
-	printf("\r\n");
+	print_info("\r\n");
 }
 
 #endif // _A_STAR_ENABLE_OUTPUT_
@@ -369,7 +351,7 @@ bool A_Star_GetRoute(void)
 			return false;
 		}
 		A_Star_GetStepCount();
-		// A_Star_PrintRoute();
+		A_Star_PrintRoute();
 		Pop_Array();
 	}
 
@@ -383,13 +365,13 @@ bool A_Star_GetRoute(void)
 
 // int main()
 // {
-// 	printf("%d\r\n", A_Star_GetRoute());
+// 	print_info("%d\r\n", A_Star_GetRoute());
 
-// 	printf("%d\r\n", Final_StepCount);
+// 	print_info("%d\r\n", Final_StepCount);
 
 // 	for (size_t i = 0; i < Final_StepCount; i++)
 // 	{
-// 		printf("(%d,%d)-->", Final_Route[i].x, Final_Route[i].y);
+// 		print_info("(%d,%d)-->", Final_Route[i].x, Final_Route[i].y);
 // 	}
 
 // 	return 0;
@@ -397,29 +379,29 @@ bool A_Star_GetRoute(void)
 
 void Auto_Drive(void)
 {
-	Beep(2);
-	print_info("START TEST\r\n");
+//	Beep(2);
+//	print_info("START TEST\r\n");
 
-	Track_MP(LongTrack_Vale);
-	delay_ms(500);
-	delay_ms(500);
-	delay_ms(500);
+//	Track_MP(LongTrack_Vale);
+//	delay_ms(500);
+//	delay_ms(500);
+//	delay_ms(500);
 
-	right90_Test();
-	delay_ms(500);
-	delay_ms(500);
-	delay_ms(500);
+//	right90_Test();
+//	delay_ms(500);
+//	delay_ms(500);
+//	delay_ms(500);
 
-	Track_MP(ShortTrack_Vale);
-	delay_ms(500);
-	delay_ms(500);
-	delay_ms(500);
+//	Track_MP(ShortTrack_Vale);
+//	delay_ms(500);
+//	delay_ms(500);
+//	delay_ms(500);
 
-	stop_Test();
+//	stop_Test();
 
-	
+//	
 
-	Beep(2);
-	print_info("START END\r\n");
+//	Beep(2);
+//	print_info("START END\r\n");
 }
 

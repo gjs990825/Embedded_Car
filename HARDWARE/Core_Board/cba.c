@@ -38,9 +38,9 @@ void Beep(uint8_t times)
 	for(uint8_t i = 0; i < times; i++)
 	{
 		MP_SPK = 1;
-		delay_ms(200);
+		delay_ms(70);
 		MP_SPK = 0;
-		delay_ms(200);
+		delay_ms(30);
 	}
 }
 

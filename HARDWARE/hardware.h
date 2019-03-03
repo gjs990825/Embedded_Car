@@ -35,7 +35,7 @@
 #define CROSSROAD 0x01
 // 转弯完成
 #define TURNCOMPLETE 0x02
-// 前进后退完成
+// 前进后退完成(定长循迹)
 #define FORBACKCOMPLETE 0x03
 // 出线
 #define OUTTRACK 0x04
