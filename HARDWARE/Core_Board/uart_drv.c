@@ -1,7 +1,7 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "stm32lib.h"
+#include "stm32f4xx.h"
 #include "delay.h"
 #include "my_lib.h"
 #include "Timer.h"
