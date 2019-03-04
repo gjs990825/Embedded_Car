@@ -6,7 +6,10 @@
 #include "a_star.h"
 #include "pid.h"
 
-#define WaitForFlag(flag, status) while (flag != status){}
+#define WaitForFlag(flag, status) \
+	while (flag != status)        \
+	{                             \
+	}
 
 // 测试用
 void autorun(void)
@@ -14,7 +17,7 @@ void autorun(void)
 	// Start_Tracking(Track_Speed);
 	// WaitForFlag(Stop_Flag, CROSSROAD);
 	// Stop();
-	
+
 	// // Go_Ahead(50, ToCrossroadCenter);
 	// // WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
 	// // Stop();
@@ -27,6 +30,18 @@ void autorun(void)
 	// WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
 	// Stop();
 
+	// Start_Tracking(Track_Speed);
+	// WaitForFlag(Stop_Flag, CROSSROAD);
+	// Go_Ahead(Track_Speed, ToCrossroadCenter);
+	// WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
+	// Stop();
+
+	// Track_ByEncoder(Track_Speed, LongTrack_Value);
+	// WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
+	// Stop();
+
+
+	// 自动规划路径
 	CurrentStaus.x = 1;
 	CurrentStaus.y = 0;
 	CurrentStaus.dir = DIR_UP;
@@ -116,19 +131,33 @@ void Go_ToNextNode(RouteNode next)
 		}
 	}
 
-	if (Moving_ByEncoder != ENCODER_NONE)
+	if (Moving_ByEncoder != ENCODER_NONE) // 有转向任务，等待
 	{
 		WaitForFlag(Stop_Flag, TURNCOMPLETE);
 	}
 
-	Start_Tracking(Track_Speed);
-	WaitForFlag(Stop_Flag, CROSSROAD);
-	// Stop();
+	if (next.x % 2 == 0) // X轴为偶数的坐标
+	{
+		Track_ByEncoder(Track_Speed, LongTrack_Value);
+		WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
+		Stop();
+	}
+	else if (next.y % 2 == 0) // Y轴为偶数的坐标
+	{
+		Track_ByEncoder(Track_Speed, ShortTrack_Value);
+		WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
+		Stop();
+	}
+	else // 前方十字路口
+	{
+		Start_Tracking(Track_Speed); // 循迹到十字路口
+		WaitForFlag(Stop_Flag, CROSSROAD);
+		Go_Ahead(Track_Speed, ToCrossroadCenter); // 前进到十字路口中心
+		WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
+		Stop();
+	}
 
-	Go_Ahead(Track_Speed, ToCrossroadCenter);
-	WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
-	Stop();
-
+	// 更新当前位置信息和状态
 	CurrentStaus.x = next.x;
 	CurrentStaus.y = next.y;
 	CurrentStaus.dir = finalDir;

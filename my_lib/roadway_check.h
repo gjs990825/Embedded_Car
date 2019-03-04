@@ -11,7 +11,7 @@
 #define Turn_L90_MPval 860
 #define Turn_R90_MPval 880
 
-#define Turn_MP180 1960 //ÂëÅÌ¿ØÖÆ180¶È×ªÍä
+#define Turn_MP180 1900 //ÂëÅÌ¿ØÖÆ180¶È×ªÍä
 
 #define LongTrack_Value 1100 //XÖáÑ­¼£
 #define ShortTrack_Value 950 //YÖáÑ­¼£
@@ -64,6 +64,6 @@ void TRACK_LINE(void);
 void Control(int LSpeed, int RSpeed);
 
 extern uint8_t Roadway_GoBack_Check(void);
-void roadway_check_TimInit(uint16_t arr, uint16_t psc);
+void Roadway_CheckTimInit(uint16_t arr, uint16_t psc);
 
 #endif

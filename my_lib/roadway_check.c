@@ -316,7 +316,7 @@ void TRACK_LINE(void)
     }
 }
 
-void roadway_check_TimInit(uint16_t arr, uint16_t psc)
+void Roadway_CheckTimInit(uint16_t arr, uint16_t psc)
 {
     TIM_TimeBaseInitTypeDef TIM_InitStructure;
     NVIC_InitTypeDef NVIC_InitStructure;
