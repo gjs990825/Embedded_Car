@@ -31,7 +31,7 @@ void Hardware_Init(void)
 		}
 	}
 
-	DebugTimer_Init(16799, 1999); // 调试输出
+	// DebugTimer_Init(16799, 1999); // 调试输出
 
 	print_info("\r\nSystem running...\r\n");
 }

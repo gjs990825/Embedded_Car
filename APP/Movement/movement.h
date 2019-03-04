@@ -4,11 +4,10 @@
 #include "sys.h"
 #include "a_star.h"
 
+void Auto_Run(void);
 
-void autorun(void);
 
-
-void Go_ToNextNode(RouteNode next);
+void Go_ToNextNode(Route_Task_t next);
 void Start_Tracking(int speed);	
 
 void Stop(void);

@@ -11,7 +11,7 @@
 #define Turn_L90_MPval 860
 #define Turn_R90_MPval 880
 
-#define Turn_MP180 1900 //码盘控制180度转弯
+#define Turn_MP180 1800 //码盘控制180度转弯
 
 #define LongTrack_Value 1100 //X轴循迹
 #define ShortTrack_Value 950 //Y轴循迹

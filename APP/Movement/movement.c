@@ -5,6 +5,7 @@
 #include "hardware.h"
 #include "a_star.h"
 #include "pid.h"
+#include "task.h"
 
 #define WaitForFlag(flag, status) \
 	while (flag != status)        \
@@ -12,7 +13,7 @@
 	}
 
 // 测试用
-void autorun(void)
+void Auto_Run(void)
 {
 	// Start_Tracking(Track_Speed);
 	// WaitForFlag(Stop_Flag, CROSSROAD);
@@ -40,25 +41,36 @@ void autorun(void)
 	// WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
 	// Stop();
 
+	CurrentStaus = Route_Task[0].node; // 初始化当前位置
 
-	// 自动规划路径
-	CurrentStaus.x = 1;
-	CurrentStaus.y = 0;
-	CurrentStaus.dir = DIR_UP;
 
+	// 走自动规划的路径
 	for(uint8_t i = 0; i < Final_StepCount; i++)
 	{
-		print_info("NOW:(%d,%d)\r\n", Final_Route[i].x, Final_Route[i].y);
+		print_info("NOW:(%d,%d)\r\n", Final_Route[i].node.x, Final_Route[i].node.y);
 		Go_ToNextNode(Final_Route[i]);
 	}
 }
 
+// int8_t Check_Task(int8_t coordinate[2])
+// {
+// 	int8_t count = (sizeof(Route_Task) / sizeof(Route_Task[0]));
+// 	for(size_t i = 0; i < count; i++)
+// 	{
+// 		if ((Route_Task[i].node.x == coordinate[0]) && (Route_Task[i].node.y == coordinate[1]))
+// 		{
+// 			return i;
+// 		}
+// 	}
+// 	return -1;
+// }
+
 // 行驶到下一个节点
-void Go_ToNextNode(RouteNode next)
+void Go_ToNextNode(Route_Task_t next)
 {
 	int8_t finalDir = 0;
-	int8_t x = next.x - CurrentStaus.x;
-	int8_t y = next.y - CurrentStaus.y;
+	int8_t x = next.node.x - CurrentStaus.x;
+	int8_t y = next.node.y - CurrentStaus.y;
 
 	if ((x > 1 || y > 1) || (x != 0 && y != 0))
 	{
@@ -84,7 +96,7 @@ void Go_ToNextNode(RouteNode next)
 	}
 	else
 	{
-		print_info("FIN DIR ERROR\r\n");
+		print_info("Same coordinate\r\n");
 		return;
 	}
 
@@ -136,13 +148,13 @@ void Go_ToNextNode(RouteNode next)
 		WaitForFlag(Stop_Flag, TURNCOMPLETE);
 	}
 
-	if (next.x % 2 == 0) // X轴为偶数的坐标
+	if (next.node.x % 2 == 0) // X轴为偶数的坐标
 	{
 		Track_ByEncoder(Track_Speed, LongTrack_Value);
 		WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
 		Stop();
 	}
-	else if (next.y % 2 == 0) // Y轴为偶数的坐标
+	else if (next.node.y % 2 == 0) // Y轴为偶数的坐标
 	{
 		Track_ByEncoder(Track_Speed, ShortTrack_Value);
 		WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
@@ -158,9 +170,24 @@ void Go_ToNextNode(RouteNode next)
 	}
 
 	// 更新当前位置信息和状态
-	CurrentStaus.x = next.x;
-	CurrentStaus.y = next.y;
+	CurrentStaus.x = next.node.x;
+	CurrentStaus.y = next.node.y;
 	CurrentStaus.dir = finalDir;
+
+	// CurrentStaus = next.node;
+	// CurrentStaus.dir = finalDir;
+
+	if (next.Task != NULL) // 检查是否有任务
+	{
+		next.Task();
+	}
+	
+	
+	// int8_t n = Check_Task(next); // 检查是否有任务
+	// if (n != -1)
+	// {
+	// 	Route_Task[n].Task();
+	// }
 }
 
 // 停止运行，清空标志位，清空PID数据

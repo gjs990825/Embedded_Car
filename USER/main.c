@@ -1,11 +1,9 @@
 #include "hardware.h"
-#include "movement.h"
 
 static uint32_t Power_check_times; //电量检测周期
 // static uint32_t LED_twinkle_times;		//LED闪烁周期
 static uint32_t WIFI_Upload_data_times; //通过Wifi上传数据周期
 static uint32_t RFID_Init_Check_times;
-
 
 int main(void)
 {

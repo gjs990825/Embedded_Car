@@ -6,6 +6,8 @@
 #include "canp_hostcom.h"
 #include "cba.h"
 #include "roadway_check.h"
+#include "tba.h"
+#include "delay.h"
 
 // #define varNumber 2
 // #define var1 Go_Flag

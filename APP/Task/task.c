@@ -1,6 +1,4 @@
-#if !defined(_HARDWARE_H_)
-#define _HARDWARE_H_
-
+#include "task.h"
 #include "sys.h"
 #include <stdio.h>
 #include "stm32f4xx.h"
@@ -30,20 +28,36 @@
 #include "debug.h"
 #include "movement.h"
 
-// 循迹状态
-#define TRACKING 0x00
-// 十字路口
-#define CROSSROAD 0x01
-// 转弯完成
-#define TURNCOMPLETE 0x02
-// 前进后退完成(定长循迹)
-#define FORBACKCOMPLETE 0x03
-// 出线
-#define OUTTRACK 0x04
 
 
-void Hardware_Init(void);
+void Test_Task_1(void)
+{
+    Set_tba_WheelLED(L_LED, SET);
+    delay_ms(500);
+    Set_tba_WheelLED(L_LED, RESET);
+}
+
+void Test_Task_2(void)
+{
+    Set_tba_WheelLED(R_LED, SET);
+    delay_ms(500);
+    Set_tba_WheelLED(R_LED, RESET);
+}
+
+void Test_Task_3(void)
+{
+    Set_tba_WheelLED(L_LED, SET);
+    delay_ms(500);
+    Set_tba_WheelLED(L_LED, RESET);
+    Set_tba_WheelLED(R_LED, SET);
+    delay_ms(500);
+    Set_tba_WheelLED(R_LED, RESET);
+}
 
 
-#endif // _HARDWARE_H_
+
+
+
+
+
 

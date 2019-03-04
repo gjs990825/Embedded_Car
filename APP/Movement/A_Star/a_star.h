@@ -3,17 +3,27 @@
 
 #include "sys.h"
 
-#define DIR_UP 1
-#define DIR_LEFT 2
-#define DIR_DOWN 3
-#define DIR_RIGHT 4
-
 typedef struct RouteNode
 {
 	int8_t x;
 	int8_t y;
 	int8_t dir;
 } RouteNode;
+
+typedef struct Route_Task_Struct
+{
+	RouteNode node;
+	void (*Task)(void);
+} Route_Task_t;
+
+typedef enum
+{
+	DIR_NOTSET = 0,
+	DIR_UP,
+	DIR_LEFT,
+	DIR_DOWN,
+	DIR_RIGHT
+} Driection_t;
 
 typedef struct AStarNode
 {
@@ -27,13 +37,13 @@ typedef struct AStarNode
 	int s_is_in_opentable;      // 是否在open表中
 } AStarNode, *pAStarNode;
 
-
+extern const Route_Task_t Route_Task[4];
 extern RouteNode CurrentStaus;
-extern RouteNode Final_Route[];
-extern int Final_StepCount;
+// extern int8_t Final_Route[][2];
+extern Route_Task_t Final_Route[];
+extern int16_t Final_StepCount;
 
 bool A_Star_GetRoute(void);
 
-void Auto_Drive(void);
 
 #endif // _A_STAR_H_

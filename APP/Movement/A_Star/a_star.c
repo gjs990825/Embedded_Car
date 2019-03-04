@@ -12,23 +12,24 @@
 #include "delay.h"
 #include "roadway_check.h"
 #include "debug.h"
+#include "task.h"
 
-
-
-// 路径设置
-const int8_t Route_Setting[][2] = {
-	{1, 1},
-	{3, 0},
-	{1, 2}
-};
+// 路径和任务设置
+const Route_Task_t Route_Task[] = {
+	{.node.x = 5, .node.y = 6, .node.dir = DIR_DOWN, .Task = NULL}, // 初始状态
+	{.node.x = 1, .node.y = 6, .node.dir = DIR_NOTSET, .Task = Test_Task_1},
+	{.node.x = 3, .node.y = 6, .node.dir = DIR_NOTSET, .Task = Test_Task_2},
+	{.node.x = 5, .node.y = 6, .node.dir = DIR_DOWN, .Task = Test_Task_3}};
 
 // 当前位置和状态
 RouteNode CurrentStaus;
 
-// 最多10个点 * 10
-RouteNode Final_Route[sizeof(Route_Setting) / 2 * 10];
+// 每个任务最多10个点 * 10
+// int8_t Final_Route[sizeof(Route_Task) / sizeof(Route_Task[0]) * 10][2];
+Route_Task_t Final_Route[sizeof(Route_Task) / sizeof(Route_Task[0]) * 10];
+
 // 路径计数
-int Final_StepCount = 0;
+int16_t Final_StepCount = 0;
 
 #define X_LENTH 7
 #define Y_LENTH 7
@@ -37,32 +38,31 @@ int Final_StepCount = 0;
 #define _A_STAR_ENABLE_OUTPUT_ 1
 
 // 生成路径
-int path_array[X_LENTH * Y_LENTH][2];
+int8_t path_array[X_LENTH * Y_LENTH][2];
 // 步数
-int step_count = -1;
+int8_t step_count = -1;
 
 #define STARTNODE 1 // 起点
 #define ENDNODE 2   // 终点
 #define BARRIER 3   // 障碍
 
-// 地图
-const int maze[X_LENTH][Y_LENTH] = {
+// 地图障碍设置
+const int8_t maze[X_LENTH][Y_LENTH] = {
 	{3, 0, 3, 0, 3, 0, 3},
 	{0, 0, 0, 0, 0, 0, 0},
 	{3, 0, 3, 0, 3, 0, 3},
 	{0, 0, 0, 0, 0, 0, 0},
 	{3, 0, 3, 0, 3, 0, 3},
 	{0, 0, 0, 0, 0, 0, 0},
-	{3, 0, 3, 0, 3, 0, 3}
-};
+	{3, 0, 3, 0, 3, 0, 3}};
 
-AStarNode map_maze[X_LENTH][Y_LENTH];      // 结点数组
+AStarNode map_maze[X_LENTH][Y_LENTH];	  // 结点数组
 pAStarNode open_table[X_LENTH * Y_LENTH];  // open表
 pAStarNode close_table[X_LENTH * Y_LENTH]; // close表
-int open_node_count;                       // open表中节点数量
-int close_node_count;                      // close表中结点数量
-AStarNode *start_node = NULL;              // 起始点
-AStarNode *end_node = NULL;                // 结束点
+int8_t open_node_count;					   // open表中节点数量
+int8_t close_node_count;				   // close表中结点数量
+AStarNode *start_node = NULL;			   // 起始点
+AStarNode *end_node = NULL;				   // 结束点
 
 // 交换两个元素
 void swap(int idx1, int idx2)
@@ -76,7 +76,7 @@ void swap(int idx1, int idx2)
 void adjust_heap(int /*i*/ nIndex)
 {
 	int curr = nIndex;
-	int child = curr * 2 + 1;    // 得到左孩子idx( 下标从0开始，所有做孩子是curr*2+1 )
+	int child = curr * 2 + 1;	// 得到左孩子idx( 下标从0开始，所有做孩子是curr*2+1 )
 	int parent = (curr - 1) / 2; // 得到双亲idx
 
 	if (nIndex < 0 || nIndex >= open_node_count)
@@ -99,8 +99,8 @@ void adjust_heap(int /*i*/ nIndex)
 		}
 		else
 		{
-			swap(child, curr);    // 交换节点
-			curr = child;         // 再判断当前孩子节点
+			swap(child, curr);	// 交换节点
+			curr = child;		  // 再判断当前孩子节点
 			child = curr * 2 + 1; // 再判断左孩子
 		}
 	}
@@ -218,8 +218,8 @@ void A_Star_SetStartEnd(int start_x, int start_y, int end_x, int end_y)
 {
 	A_Star_InitMap();
 
-	memset(open_table, 0, sizeof(open_table));
-	memset(close_table, 0, sizeof(close_table));
+	// memset(open_table, 0, sizeof(open_table));
+	// memset(close_table, 0, sizeof(close_table));
 
 	open_node_count = 0;
 	close_node_count = 0;
@@ -252,12 +252,12 @@ bool A_Star_CalaculateRoute(void)
 
 	while (1)
 	{
-		curr_node = open_table[0];                     // open表的第一个点一定是f值最小的点(通过堆排序得到的)
+		curr_node = open_table[0];					   // open表的第一个点一定是f值最小的点(通过堆排序得到的)
 		open_table[0] = open_table[--open_node_count]; // 最后一个点放到第一个点，然后进行堆调整
-		adjust_heap(0);                                // 调整堆
+		adjust_heap(0);								   // 调整堆
 
 		close_table[close_node_count++] = curr_node; // 当前点加入close表
-		curr_node->s_is_in_closetable = 1;           // 已经在close表中了
+		curr_node->s_is_in_closetable = 1;			 // 已经在close表中了
 
 		if (curr_node->s_x == end_node->s_x && curr_node->s_y == end_node->s_y) // 终点在close中，结束
 		{
@@ -280,7 +280,7 @@ bool A_Star_CalaculateRoute(void)
 void A_Star_GetStepCount(void)
 {
 	AStarNode *curr_node; // 当前点
-	int top = -1;         // 栈顶
+	int top = -1;		  // 栈顶
 
 	curr_node = end_node;
 
@@ -311,13 +311,14 @@ void A_Star_PrintRoute(void)
 	{
 		if (top > 0)
 		{
-			print_info("(%d,%d)-->", path_array[top][0], path_array[top][1]);
+			print_info("(%d,%d)->", path_array[top][0], path_array[top][1]);
 		}
 		else
 		{
 			print_info("(%d,%d)", path_array[top][0], path_array[top][1]);
 		}
 		top--;
+		delay_ms(50); // CAN总线响应时间
 	}
 	print_info("\r\n");
 }
@@ -330,8 +331,8 @@ void Pop_Array(void)
 
 	while (i > 0)
 	{
-		Final_Route[Final_StepCount].x = path_array[i][0];
-		Final_Route[Final_StepCount].y = path_array[i][1];
+		Final_Route[Final_StepCount].node.x = path_array[i][0];
+		Final_Route[Final_StepCount].node.y = path_array[i][1];
 
 		i--;
 		Final_StepCount++;
@@ -341,23 +342,43 @@ void Pop_Array(void)
 // 生成路线 返回 0 错误 1 成功
 bool A_Star_GetRoute(void)
 {
-	uint16_t tmp = sizeof(Route_Setting) / 2;
+	uint16_t tmp = sizeof(Route_Task) / sizeof(Route_Task[0]);
+
+	CurrentStaus = Route_Task[0].node; // 初始化当前位置
 
 	for (uint16_t i = 0; i < tmp - 1; i++)
 	{
-		A_Star_SetStartEnd(Route_Setting[i][0], Route_Setting[i][1], Route_Setting[i + 1][0], Route_Setting[i + 1][1]);
+		A_Star_SetStartEnd(Route_Task[i].node.x, Route_Task[i].node.y, Route_Task[i + 1].node.x, Route_Task[i + 1].node.y);
 		if (A_Star_CalaculateRoute() == false)
 		{
 			return false;
 		}
 		A_Star_GetStepCount();
 		A_Star_PrintRoute();
-		Pop_Array();
+
+		int count = step_count;
+		while (count > 0)
+		{
+			if (count == step_count) // 节点开始，有任务
+			{
+				Final_Route[Final_StepCount].Task = Route_Task[i].Task; // 添加任务
+			}
+			else
+			{
+				Final_Route[Final_StepCount].Task = NULL;
+			}
+			Final_Route[Final_StepCount].node.x = path_array[count][0]; // 添加点
+			Final_Route[Final_StepCount].node.y = path_array[count][1];
+			count--;
+			Final_StepCount++;
+		}
 	}
 
 	// 添加终点
-	Final_Route[Final_StepCount].x = path_array[0][0];
-	Final_Route[Final_StepCount].y = path_array[0][1];
+	// Final_Route[Final_StepCount].node.x = path_array[0][0];
+	// Final_Route[Final_StepCount].node.y = path_array[0][1];
+	// Final_Route[Final_StepCount].Task = Route_Task[tmp - 1].Task;
+	Final_Route[Final_StepCount] = Route_Task[tmp - 1]; // 添加终点
 	Final_StepCount++;
 
 	return true;
@@ -376,32 +397,3 @@ bool A_Star_GetRoute(void)
 
 // 	return 0;
 // }
-
-void Auto_Drive(void)
-{
-//	Beep(2);
-//	print_info("START TEST\r\n");
-
-//	Track_MP(LongTrack_Vale);
-//	delay_ms(500);
-//	delay_ms(500);
-//	delay_ms(500);
-
-//	right90_Test();
-//	delay_ms(500);
-//	delay_ms(500);
-//	delay_ms(500);
-
-//	Track_MP(ShortTrack_Vale);
-//	delay_ms(500);
-//	delay_ms(500);
-//	delay_ms(500);
-
-//	stop_Test();
-
-//	
-
-//	Beep(2);
-//	print_info("START END\r\n");
-}
-

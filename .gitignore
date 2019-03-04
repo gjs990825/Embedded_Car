@@ -36,6 +36,8 @@ DebugConfig/
 #Gao added
 *.crf
 JLinkLog.txt
+*.htm
+
 
 
 #SW4STM32
