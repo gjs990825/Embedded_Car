@@ -1,10 +1,8 @@
 #include "stm32f4xx.h"
 #include "tba.h"
-/**
-函数功能：任务板光敏电阻配置
-参    数：无
-返 回 值：无
-*/
+
+
+// 任务板光敏电阻配置
 void Tba_Photoresistance_Config(void)
 {
 	GPIO_InitTypeDef  GPIO_TypeDefStructure;
@@ -21,11 +19,7 @@ uint8_t Get_tba_phsis_value(void)
 	return GPIO_ReadInputDataBit(GPIOG,GPIO_Pin_8);
 }
 
-/**
-函数功能：任务板蜂鸣器配置
-参    数：无
-返 回 值：无
-*/
+// 任务板蜂鸣器配置
 void Tba_Beep_Config(void)
 {
 	GPIO_InitTypeDef  GPIO_TypeDefStructure;
@@ -56,11 +50,7 @@ void Set_tba_Beep(uint8_t swch)
 }
 
 
-/**
-函数功能：任务板转向灯配置
-参    数: 无
-返 回 值：无
-*/
+// 任务板转向灯配置
 void Tba_WheelLED_Config(void)
 {
 	GPIO_InitTypeDef  GPIO_TypeDefStructure;

@@ -14,11 +14,14 @@
 #include "debug.h"
 #include "task.h"
 
+// 使能路径输出
+#define _A_STAR_ENABLE_OUTPUT_ 1
+
 // 路径和任务设置
 const Route_Task_t Route_Task[] = {
 	{.node.x = 5, .node.y = 6, .node.dir = DIR_DOWN, .Task = LED_TimerStart}, // 初始状态
-	{.node.x = 1, .node.y = 6, .node.dir = DIR_NOTSET, .Task = Test_Task_1},
-	{.node.x = 3, .node.y = 6, .node.dir = DIR_NOTSET, .Task = Test_Task_2},
+	{.node.x = 1, .node.y = 6, .node.dir = DIR_NOTSET, .Task = Test_Task_3},
+	{.node.x = 3, .node.y = 6, .node.dir = DIR_NOTSET, .Task = Test_Task_3},
 	{.node.x = 5, .node.y = 6, .node.dir = DIR_DOWN, .Task = LED_TimerStop}};
 
 // 任务完成情况
@@ -28,7 +31,6 @@ int8_t RouteTask_Finished[sizeof(Route_Task) / sizeof(Route_Task[0])] = {0};
 RouteNode CurrentStaus;
 
 // 每个任务最多10个点 * 10
-// int8_t Final_Route[sizeof(Route_Task) / sizeof(Route_Task[0]) * 10][2];
 Route_Task_t Final_Route[sizeof(Route_Task) / sizeof(Route_Task[0]) * 10];
 
 // 路径计数
@@ -36,9 +38,6 @@ int16_t Final_StepCount = 0;
 
 #define X_LENTH 7
 #define Y_LENTH 7
-
-// 使能输出
-#define _A_STAR_ENABLE_OUTPUT_ 1
 
 // 生成路径
 int8_t path_array[X_LENTH * Y_LENTH][2];
@@ -342,7 +341,7 @@ void Pop_Array(void)
 	}
 }
 
-// 生成两个任务间的路线
+// 生成两个任务间的路线 返回 0 错误 1 成功
 bool A_Star_GetRouteBewteenTasks(RouteNode current, Route_Task_t nextTask)
 {
 	Final_StepCount = 0; // 清空上一次路径计算数据

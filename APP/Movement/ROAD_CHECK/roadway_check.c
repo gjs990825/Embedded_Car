@@ -9,15 +9,27 @@
 #include "hardware.h"
 #include "pid.h"
 
+#define CheckTurnComplete(EncoderValue) \
+    if (Mp_Value >= EncoderValue)       \
+    {                                   \
+        Stop();                         \
+        Stop_Flag = TURNCOMPLETE;       \
+    }
+
+
+// 使能循迹输出
 #define _TRACK_OUTPUT_ 0
 
+// 超过此数判定出线
 #define ALL_WHITE 15
+// 低于此数判定撞线
 #define ALL_BLACK 7
-#define WEIGHTS_MULTIPLE 6
 
-// Gao added
+// 前七个循迹传感器
 int8_t Q7[7] = {0};
+// 后八个循迹传感器
 int8_t H8[8] = {0};
+
 // 白色数量
 uint8_t NumberOfWhite = 0;
 // 方向权重
@@ -121,39 +133,19 @@ void Moving_ByEncoderCheck(void)
         }
         break;
     case ENCODER_LEFT90:
-        if (Mp_Value >= Turn_L90_MPval)
-        {
-            Stop();
-            Stop_Flag = TURNCOMPLETE;
-        }
+        CheckTurnComplete(Turn_L90_MPval);
         break;
     case ENCODER_LEFT45:
-        if (Mp_Value >= Turn_L45_MPval)
-        {
-            Stop();
-            Stop_Flag = TURNCOMPLETE;
-        }
+        CheckTurnComplete(Turn_L45_MPval);
         break;
     case ENCODER_RIGHT90:
-        if (Mp_Value >= Turn_R90_MPval)
-        {
-            Stop();
-            Stop_Flag = TURNCOMPLETE;
-        }
+        CheckTurnComplete(Turn_R90_MPval);
         break;
     case ENCODER_RIGHT45:
-        if (Mp_Value >= Turn_R45_MPval)
-        {
-            Stop();
-            Stop_Flag = TURNCOMPLETE;
-        }
+        CheckTurnComplete(Turn_R45_MPval);
         break;
     case ENCODER_RIGHT180:
-        if (Mp_Value >= Turn_MP180)
-        {
-            Stop();
-            Stop_Flag = TURNCOMPLETE;
-        }
+        CheckTurnComplete(Turn_MP180);
         break;
 
     default:
@@ -172,36 +164,28 @@ void Roadway_Check(void)
     Control(LSpeed, RSpeed);
 }
 
-// 电机控制（速度区间 -100-5, 5-100)
+// 电机控制（速度区间 -100 ~ 100)
 void Control(int L_Speed, int R_Speed)
 {
     if (L_Speed >= 0)
     {
         if (L_Speed > 100)
             L_Speed = 100;
-        // if (L_Speed < 5)
-        //     L_Speed = 5; //限制速度参数
     }
     else
     {
         if (L_Speed < -100)
             L_Speed = -100;
-        // if (L_Speed > -5)
-        //     L_Speed = -5; //限制速度参数
     }
     if (R_Speed >= 0)
     {
         if (R_Speed > 100)
             R_Speed = 100;
-        // if (R_Speed < 5)
-        //     R_Speed = 5; //限制速度参数
     }
     else
     {
         if (R_Speed < -100)
             R_Speed = -100;
-        // if (R_Speed > -5)
-        //     R_Speed = -5; //限制速度参数
     }
 
     LSpeed = L_Speed;
@@ -210,6 +194,7 @@ void Control(int L_Speed, int R_Speed)
     Send_UpMotor(L_Speed, R_Speed);
 }
 
+// 获取循迹信息，计算白色的数量
 void Get_Track(void)
 {
     uint16_t tmp = Get_Host_UpTrack(TRACK_ALL);
@@ -249,27 +234,16 @@ void Get_DirectionWights(void)
 {
     static int PreviousWights = 0;
 
-    int HWights = 0, QWeights = 0;
+    DirectionWights = 0;
 
     for (uint8_t i = 1; i <= 4; i++)
     {
-        HWights += H8[3 + i] - H8[4 - i];
+        DirectionWights += (H8[3 + i] - H8[4 - i]);
     }
     for (uint8_t i = 1; i <= 4; i++)
     {
-        QWeights += Q7[2 + i] - Q7[4 - i];
+        DirectionWights += (Q7[2 + i] - Q7[4 - i]);
     }
-
-
-    // for (uint8_t i = 1; i <= 4; i++)
-    // {
-    //     HWights += (H8[3 + i] * i) + (H8[4 - i] * (-i));
-    // }
-    // for (uint8_t i = 1; i <= 4; i++)
-    // {
-    //     QWeights += (Q7[2 + i] * i) + (Q7[4 - i] * (-i));
-    // }
-    DirectionWights = HWights + QWeights;
 
     DirectionWights = (DirectionWights + PreviousWights) >> 1; // 简单滤波
     PreviousWights = DirectionWights;
@@ -278,11 +252,12 @@ void Get_DirectionWights(void)
 
 #if _TRACK_OUTPUT_
 
-    print_info("H:%d,Q:%d,T:%d\r\n", HWights, QWeights, DirectionWights);
+    print_info("T:%d\r\n", DirectionWights);
 
 #endif // _TRACK_OUTPUT_
 }
 
+// 循迹
 void TRACK_LINE(void)
 {
     if (Track_Mode == TrackMode_ENCODER)
@@ -313,6 +288,7 @@ void TRACK_LINE(void)
         LSpeed = Car_Speed + PID_value;
         RSpeed = Car_Speed - PID_value;
         // Control(LSpeed, RSpeed);
+        // 因CAN发送出现过没有送达的现象，速度控制在中断内实现
     }
 }
 
@@ -349,5 +325,3 @@ void TIM1_BRK_TIM9_IRQHandler(void)
     }
     TIM_ClearITPendingBit(TIM9, TIM_IT_Update);
 }
-
-//end file

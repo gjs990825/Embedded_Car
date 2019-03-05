@@ -39,7 +39,6 @@ typedef struct AStarNode
 
 extern const Route_Task_t Route_Task[4];
 extern RouteNode CurrentStaus;
-// extern int8_t Final_Route[][2];
 extern Route_Task_t Final_Route[];
 extern int16_t Final_StepCount;
 extern int8_t RouteTask_Finished[sizeof(Route_Task) / sizeof(Route_Task[0])];

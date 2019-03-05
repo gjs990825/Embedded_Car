@@ -30,20 +30,16 @@
 #include "debug.h"
 #include "movement.h"
 
-// 循迹状态
-#define TRACKING 0x00
-// 十字路口
-#define CROSSROAD 0x01
-// 转弯完成
-#define TURNCOMPLETE 0x02
-// 前进后退完成(定长循迹)
-#define FORBACKCOMPLETE 0x03
-// 出线
-#define OUTTRACK 0x04
+typedef enum
+{
+    TRACKING = 0x00,        // 循迹状态
+    CROSSROAD = 0x01,       // 十字路口
+    TURNCOMPLETE = 0x02,    // 转弯完成
+    FORBACKCOMPLETE = 0x03, // 前进后退完成(定长循迹)
+    OUTTRACK = 0x04         // 出线
+} StopFlag_t;
 
 
 void Hardware_Init(void);
 
-
 #endif // _HARDWARE_H_
-
