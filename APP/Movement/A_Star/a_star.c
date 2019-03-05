@@ -16,10 +16,13 @@
 
 // 路径和任务设置
 const Route_Task_t Route_Task[] = {
-	{.node.x = 5, .node.y = 6, .node.dir = DIR_DOWN, .Task = NULL}, // 初始状态
+	{.node.x = 5, .node.y = 6, .node.dir = DIR_DOWN, .Task = LED_TimerStart}, // 初始状态
 	{.node.x = 1, .node.y = 6, .node.dir = DIR_NOTSET, .Task = Test_Task_1},
 	{.node.x = 3, .node.y = 6, .node.dir = DIR_NOTSET, .Task = Test_Task_2},
-	{.node.x = 5, .node.y = 6, .node.dir = DIR_DOWN, .Task = Test_Task_3}};
+	{.node.x = 5, .node.y = 6, .node.dir = DIR_DOWN, .Task = LED_TimerStop}};
+
+// 任务完成情况
+int8_t RouteTask_Finished[sizeof(Route_Task) / sizeof(Route_Task[0])] = {0};
 
 // 当前位置和状态
 RouteNode CurrentStaus;
@@ -339,7 +342,35 @@ void Pop_Array(void)
 	}
 }
 
-// 生成路线 返回 0 错误 1 成功
+// 生成两个任务间的路线
+bool A_Star_GetRouteBewteenTasks(RouteNode current, Route_Task_t nextTask)
+{
+	Final_StepCount = 0; // 清空上一次路径计算数据
+	step_count = 0;
+
+	A_Star_SetStartEnd(current.x, current.y, nextTask.node.x, nextTask.node.y);
+	if (A_Star_CalaculateRoute() == false)
+	{
+		return false;
+	}
+	A_Star_GetStepCount();
+	A_Star_PrintRoute();
+
+	int count = step_count;
+	while (count >= 0)
+	{
+		Final_Route[Final_StepCount].Task = NULL;
+		Final_Route[Final_StepCount].node.x = path_array[count][0]; // 添加点
+		Final_Route[Final_StepCount].node.y = path_array[count][1];
+		count--;
+		Final_StepCount++;
+	}
+	Final_Route[step_count].Task = nextTask.Task; // 添加任务
+
+	return true;
+}
+
+// 生成全部路线路线 返回 0 错误 1 成功
 bool A_Star_GetRoute(void)
 {
 	uint16_t tmp = sizeof(Route_Task) / sizeof(Route_Task[0]);
@@ -375,9 +406,6 @@ bool A_Star_GetRoute(void)
 	}
 
 	// 添加终点
-	// Final_Route[Final_StepCount].node.x = path_array[0][0];
-	// Final_Route[Final_StepCount].node.y = path_array[0][1];
-	// Final_Route[Final_StepCount].Task = Route_Task[tmp - 1].Task;
 	Final_Route[Final_StepCount] = Route_Task[tmp - 1]; // 添加终点
 	Final_StepCount++;
 

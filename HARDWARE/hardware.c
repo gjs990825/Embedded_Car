@@ -21,16 +21,7 @@ void Hardware_Init(void)
 	Readcard_Device_Init();			 // RFID初始化
 
 	my_mem_init(SRAMIN);		// 初始化内部内存池
-	if (A_Star_GetRoute() != 1) // 路径计算，失败时蜂鸣
-	{
-		print_info("\r\nRoute calculate failed!\r\n");
-		while (1)
-		{
-			MP_SPK = !MP_SPK;
-			delay_ms(500);
-		}
-	}
-
+	
 	// DebugTimer_Init(16799, 1999); // 调试输出
 
 	print_info("\r\nSystem running...\r\n");

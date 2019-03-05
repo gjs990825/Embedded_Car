@@ -15,55 +15,51 @@
 // 测试用
 void Auto_Run(void)
 {
-	// Start_Tracking(Track_Speed);
-	// WaitForFlag(Stop_Flag, CROSSROAD);
-	// Stop();
-
-	// // Go_Ahead(50, ToCrossroadCenter);
-	// // WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
-	// // Stop();
-
-	// Go_Ahead(Track_Speed, ToCrossroadCenter);
-	// WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
-	// Stop();
-
-	// Track_ByEncoder(Track_Speed, LongTrack_Value);
-	// WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
-	// Stop();
-
-	// Start_Tracking(Track_Speed);
-	// WaitForFlag(Stop_Flag, CROSSROAD);
-	// Go_Ahead(Track_Speed, ToCrossroadCenter);
-	// WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
-	// Stop();
-
-	// Track_ByEncoder(Track_Speed, LongTrack_Value);
-	// WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
-	// Stop();
-
 	CurrentStaus = Route_Task[0].node; // 初始化当前位置
 
+	Auto_RouteTask(CurrentStaus, 0); // 初始任务
 
-	// 走自动规划的路径
-	for(uint8_t i = 0; i < Final_StepCount; i++)
+	Auto_RouteTask(CurrentStaus, 2); // 提前执行的任务
+
+	uint8_t count = sizeof(Route_Task) / sizeof(Route_Task[0]);
+	for (size_t i = 0; i < count; i++)
 	{
-		print_info("NOW:(%d,%d)\r\n", Final_Route[i].node.x, Final_Route[i].node.y);
-		Go_ToNextNode(Final_Route[i]);
+		if (RouteTask_Finished[i] == 0)
+		{
+			Auto_RouteTask(CurrentStaus, i);
+		}
 	}
+
+	// CurrentStaus = Route_Task[0].node; // 初始化当前位置
+
+	// A_Star_GetRoute();
+
+	// // 走自动规划的路径
+	// for(uint8_t i = 0; i < Final_StepCount; i++)
+	// {
+	// 	print_info("NOW:(%d,%d)\r\n", Final_Route[i].node.x, Final_Route[i].node.y);
+	// 	Go_ToNextNode(Final_Route[i]);
+	// }
 }
 
-// int8_t Check_Task(int8_t coordinate[2])
-// {
-// 	int8_t count = (sizeof(Route_Task) / sizeof(Route_Task[0]));
-// 	for(size_t i = 0; i < count; i++)
-// 	{
-// 		if ((Route_Task[i].node.x == coordinate[0]) && (Route_Task[i].node.y == coordinate[1]))
-// 		{
-// 			return i;
-// 		}
-// 	}
-// 	return -1;
-// }
+void Auto_RouteTask(RouteNode current, uint8_t taskN)
+{
+	print_info("Route %s\r\n", (A_Star_GetRouteBewteenTasks(current, Route_Task[taskN]) == true) ? "OK" : "ERROR OR SAME");
+	if (Final_StepCount != 0)
+	{
+		for (uint8_t i = 0; i < Final_StepCount; i++)
+		{
+			print_info("NOW:(%d,%d)\r\n", Final_Route[i].node.x, Final_Route[i].node.y);
+			Go_ToNextNode(Final_Route[i]);
+		}
+	}
+	else if (taskN == 0) // 步数为零，执行初始任务
+	{
+		Go_ToNextNode(Route_Task[taskN]);
+	}
+
+	RouteTask_Finished[taskN] = 1;
+}
 
 // 行驶到下一个节点
 void Go_ToNextNode(Route_Task_t next)
@@ -97,6 +93,10 @@ void Go_ToNextNode(Route_Task_t next)
 	else
 	{
 		print_info("Same coordinate\r\n");
+		if (next.Task != NULL) // 检查是否有任务
+		{
+			next.Task();
+		}
 		return;
 	}
 
@@ -181,13 +181,6 @@ void Go_ToNextNode(Route_Task_t next)
 	{
 		next.Task();
 	}
-	
-	
-	// int8_t n = Check_Task(next); // 检查是否有任务
-	// if (n != -1)
-	// {
-	// 	Route_Task[n].Task();
-	// }
 }
 
 // 停止运行，清空标志位，清空PID数据

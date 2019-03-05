@@ -12,6 +12,7 @@
 #include "Rc522.h"
 #include "a_star.h"
 #include "movement.h"
+#include "task.h"
 
 #define Action_S1() Auto_Run()// Infrared_Send(HW_K, 6) //打开测试红外报警
 #define Action_S2() Infrared_Send(H_1, 4)  //调光

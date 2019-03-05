@@ -21,4 +21,7 @@ void Turn_Right180(void);
 
 void Track_ByEncoder(int speed, uint16_t setMP);
 
+
+void Auto_RouteTask(RouteNode current, uint8_t taskN);
+
 #endif // _MOVEMENT_H_

@@ -28,7 +28,26 @@
 #include "debug.h"
 #include "movement.h"
 
+#define ExcuteNTimes(task, N)       \
+    for (uint8_t i = 0; i < N; i++) \
+    {                               \
+        task;                       \
+    }
 
+void LED_Timer(bool status)
+{
+    Send_ZigbeeData_To_Fifo(status ? SMG_JSK : SMG_JSG, 8);
+}
+
+void LED_TimerStart(void)
+{
+    ExcuteNTimes(Send_ZigbeeData_To_Fifo(SMG_JSK, 8); delay_ms(20), 3);
+}
+
+void LED_TimerStop(void)
+{
+    ExcuteNTimes(Send_ZigbeeData_To_Fifo(SMG_JSG, 8); delay_ms(20), 3);
+}
 
 void Test_Task_1(void)
 {
@@ -53,11 +72,3 @@ void Test_Task_3(void)
     delay_ms(500);
     Set_tba_WheelLED(R_LED, RESET);
 }
-
-
-
-
-
-
-
-
