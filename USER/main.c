@@ -32,14 +32,22 @@ int main(void)
 
 		// continue;
 
-		Can_WifiRx_Check();
-		Can_ZigBeeRx_Check();
+		// 现在放在中断中
+		// Can_WifiRx_Check();
+		// Can_ZigBeeRx_Check();
 
 		// if(gt_get_sub(LED_twinkle_times) == 0) 			
 		// {
 		// 	LED_twinkle_times =  gt_get() + 50;			//LED4状态取反
 		// 	LED4 = !LED4;
 		// }
+		extern uint8_t autoRunEnable;
+		if (autoRunEnable)
+		{
+			Auto_Run();
+			autoRunEnable = 0;
+		}
+		
 
 		if (gt_get_sub(Power_check_times) == 0)
 		{

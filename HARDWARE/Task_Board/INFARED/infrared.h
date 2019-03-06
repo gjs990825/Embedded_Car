@@ -4,6 +4,7 @@
 #ifndef __INFRARED_H
 #define __INFRARED_H
 
+// ∫ÏÕ‚∑¢ÀÕ
 #define RI_TXD PFout(11)  
 
 void Infrared_Init(void);

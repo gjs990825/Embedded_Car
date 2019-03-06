@@ -7,21 +7,15 @@
 #include "pid.h"
 #include "task.h"
 
-#define WaitForFlag(flag, status) \
-	while (flag != status)        \
-	{                             \
-	}
+
+// extern const Route_Task_t Route_Task[];
 
 // 测试用
 void Auto_Run(void)
 {
 	CurrentStaus = Route_Task[0].node; // 初始化当前位置
 
-	Auto_RouteTask(CurrentStaus, 0); // 初始任务
-
-	Auto_RouteTask(CurrentStaus, 2); // 提前执行的任务
-
-	uint8_t count = sizeof(Route_Task) / sizeof(Route_Task[0]);
+	uint8_t count = Route_TaskCount;
 	for (size_t i = 0; i < count; i++)
 	{
 		if (RouteTask_Finished[i] == 0)
@@ -29,8 +23,6 @@ void Auto_Run(void)
 			Auto_RouteTask(CurrentStaus, i);
 		}
 	}
-
-	// CurrentStaus = Route_Task[0].node; // 初始化当前位置
 
 	// A_Star_GetRoute();
 

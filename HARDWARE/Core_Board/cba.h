@@ -13,9 +13,13 @@
 #include "a_star.h"
 #include "movement.h"
 #include "task.h"
+#include "can_user.h"
+#include "canp_hostcom.h"
+#include "data_base.h"
+#include "protocol.h"
 
 #define Action_S1() Auto_Run()// Infrared_Send(HW_K, 6) //打开测试红外报警
-#define Action_S2() Infrared_Send(H_1, 4)  //调光
+#define Action_S2() ExcuteNTimes(Send_ZigbeeData_To_Fifo(TFTPage_Next, 8), 2) //Infrared_Send(H_1, 4)  //调光
 #define Action_S3() SYN7318_Test()
 #define Action_S4() Read_Card()
 

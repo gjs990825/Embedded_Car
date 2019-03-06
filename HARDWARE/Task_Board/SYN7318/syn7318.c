@@ -9,7 +9,6 @@
 //190226 added
 #include "canp_hostcom.h"
 
-
 uint8_t Back[4] = {0}; //接收命令回传的数组
 uint8_t ASR[6] = {0};  //接收识别结果回传的数组
 uint8_t S[4] = {0};    //接收模块当前工作状态回传的数组
@@ -183,8 +182,8 @@ void SYN_TTS(uint8_t *Pst)
     uint8_t Length;
     uint8_t Frame[5]; //保存发送命令的数组
 
-    Length = strlen(Pst);
-    Frame[0] = 0xFD; //帧头
+    Length = strlen((char *)Pst); // GAO edited 2019年3月7日
+    Frame[0] = 0xFD;              //帧头
     Frame[1] = 0x00;
     Frame[2] = Length + 2;
     Frame[3] = 0x01; //语音合成播放命令
@@ -402,14 +401,14 @@ void Yu_Yin_Asr(void) // 语音识别处理函数
         }
         case 0x07:
         {
-            Infrared_Send(HW_K, 6); //打开测试红外报警
+            Infrared_Send(Infrared_AlarmON, 6); //打开测试红外报警
             SYN_TTS("报警器已打开，等待下一步指令");
             SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
             break;
         }
         case 0x08:
         {
-            Send_ZigbeeData_To_Fifo(DZ_K, 8); // 开启道闸
+            Send_ZigbeeData_To_Fifo(BarrierGate_OPEN, 8); // 开启道闸
             SYN_TTS("道闸已打开，等待下一步指令");
             SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
             break;
@@ -417,21 +416,21 @@ void Yu_Yin_Asr(void) // 语音识别处理函数
         case 0x09:
         {
 
-            Send_ZigbeeData_To_Fifo(DZ_G, 8); // 开启道闸
+            Send_ZigbeeData_To_Fifo(BarrierGate_CLOSE, 8); // 关闭道闸
             SYN_TTS("道闸已关闭，等待下一步指令");
             SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
             break;
         }
         case 0x0a:
         {
-            Send_ZigbeeData_To_Fifo(SMG_SHOW, 8); // 数码管显示
+            Send_ZigbeeData_To_Fifo(LED_Display_Data, 8); // 数码管显示
             SYN_TTS("LED显示已开，等待下一步指令");
             SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
             break;
         }
         case 0x0b:
         {
-            Send_ZigbeeData_To_Fifo(SMG_JSK, 8); // 数码管计时
+            Send_ZigbeeData_To_Fifo(LED_Display_StartTimer, 8); // 数码管计时
             SYN_TTS("计时系统已打开，等待下一步指令");
             SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
             break;
@@ -439,7 +438,7 @@ void Yu_Yin_Asr(void) // 语音识别处理函数
         case 0x0c:
         {
 
-            Send_ZigbeeData_To_Fifo(SMG_JSG, 8); // 数码管关闭
+            Send_ZigbeeData_To_Fifo(LED_Display_StopTimer, 8); // 数码管关闭
             SYN_TTS("计时系统已关闭，等待下一步指令");
             SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
             break;
@@ -447,7 +446,7 @@ void Yu_Yin_Asr(void) // 语音识别处理函数
         case 0x0d:
         {
 
-            Send_ZigbeeData_To_Fifo(SMG_JL, 8); // 数码管显示距离
+            Send_ZigbeeData_To_Fifo(LED_Display_Distance, 8); // 数码管显示距离
             SYN_TTS("LED显示距离已完成，等待下一步指令");
             SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
             break;
@@ -497,9 +496,9 @@ void Yu_Yin_Asr(void) // 语音识别处理函数
         }
         case 0x13:
         {
-            Infrared_Send(CP_SHOW1, 6);
+            Infrared_Send(Infrared_PlateData1, 6);
             delay_ms(500);
-            Infrared_Send(CP_SHOW2, 6);
+            Infrared_Send(Infrared_PlateData2, 6);
 
             SYN_TTS("车牌已显示，等待下一步指令");
             SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
@@ -507,7 +506,7 @@ void Yu_Yin_Asr(void) // 语音识别处理函数
         }
         case 0x14:
         {
-            Infrared_Send(H_SD, 4);
+            Infrared_Send(Infrared_TunnelFanOn, 4);
 
             SYN_TTS("隧道排风系统已打开，等待下一步指令");
             SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
@@ -516,7 +515,7 @@ void Yu_Yin_Asr(void) // 语音识别处理函数
         }
         case 0x15:
         {
-            Infrared_Send(H_S, 4);
+            Infrared_Send(Infrared_PhotoPrevious, 4);
 
             SYN_TTS("图片翻页完成，等待下一步指令");
             SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
@@ -526,7 +525,7 @@ void Yu_Yin_Asr(void) // 语音识别处理函数
         case 0x16:
         {
 
-            Infrared_Send(H_1, 4);
+            Infrared_Send(Infrared_LightAdd1, 4);
 
             SYN_TTS("调[=tiao2]光档[=dang3]位已加1，等待下一步指令");
             SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别

@@ -3,6 +3,18 @@
 
 #include "sys.h"
 
+#define ExcuteNTimes(task, N)       \
+    for (uint8_t i = 0; i < N; i++) \
+    {                               \
+        task;                       \
+    }
+
+
+void Start_Task(void);
+void End_Task(void);
+void TFT_Task(void);
+
+void QRCode_Task(void);
 
 void LED_Timer(bool status);
 void LED_TimerStart(void);

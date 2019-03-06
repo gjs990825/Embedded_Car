@@ -37,11 +37,13 @@ typedef struct AStarNode
 	int s_is_in_opentable;      // 是否在open表中
 } AStarNode, *pAStarNode;
 
-extern const Route_Task_t Route_Task[4];
+
 extern RouteNode CurrentStaus;
+extern Route_Task_t Route_Task[];
 extern Route_Task_t Final_Route[];
 extern int16_t Final_StepCount;
-extern int8_t RouteTask_Finished[sizeof(Route_Task) / sizeof(Route_Task[0])];
+extern int8_t RouteTask_Finished[];
+extern const uint8_t Route_TaskCount;
 
 bool A_Star_GetRouteBewteenTasks(RouteNode current, Route_Task_t nextTask);
 

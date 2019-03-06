@@ -17,21 +17,26 @@
 // 使能路径输出
 #define _A_STAR_ENABLE_OUTPUT_ 1
 
+// 当前位置和状态
+RouteNode CurrentStaus;
+
 // 路径和任务设置
-const Route_Task_t Route_Task[] = {
-	{.node.x = 5, .node.y = 6, .node.dir = DIR_DOWN, .Task = LED_TimerStart}, // 初始状态
-	{.node.x = 1, .node.y = 6, .node.dir = DIR_NOTSET, .Task = Test_Task_3},
-	{.node.x = 3, .node.y = 6, .node.dir = DIR_NOTSET, .Task = Test_Task_3},
-	{.node.x = 5, .node.y = 6, .node.dir = DIR_DOWN, .Task = LED_TimerStop}};
+Route_Task_t Route_Task[] = {
+	{.node.x = 5, .node.y = 6, .node.dir = DIR_DOWN, .Task = Start_Task}, // 起始点
+	{.node.x = 5, .node.y = 5, .node.dir = DIR_NOTSET, .Task = TFT_Task},
+	{.node.x = 3, .node.y = 6, .node.dir = DIR_NOTSET, .Task = End_Task},
+	// {.node.x = 5, .node.y = 6, .node.dir = DIR_DOWN, .Task = LED_TimerStop}
+};
 
 // 任务完成情况
 int8_t RouteTask_Finished[sizeof(Route_Task) / sizeof(Route_Task[0])] = {0};
 
-// 当前位置和状态
-RouteNode CurrentStaus;
-
 // 每个任务最多10个点 * 10
 Route_Task_t Final_Route[sizeof(Route_Task) / sizeof(Route_Task[0]) * 10];
+
+// 任务个数（通过此变量传递任务个数因为sizeof(Route_Task)在不完整声明时候不可用
+// 若要完整声明头文件也需要修改，所以使用此办法，暂时有较好的方法）
+const uint8_t Route_TaskCount = sizeof(Route_Task) / sizeof(Route_Task[0]);
 
 // 路径计数
 int16_t Final_StepCount = 0;
@@ -44,11 +49,13 @@ int8_t path_array[X_LENTH * Y_LENTH][2];
 // 步数
 int8_t step_count = -1;
 
+
+// 定义点类型
 #define STARTNODE 1 // 起点
 #define ENDNODE 2   // 终点
 #define BARRIER 3   // 障碍
 
-// 地图障碍设置
+// 地图设置
 const int8_t maze[X_LENTH][Y_LENTH] = {
 	{3, 0, 3, 0, 3, 0, 3},
 	{0, 0, 0, 0, 0, 0, 0},
@@ -58,7 +65,7 @@ const int8_t maze[X_LENTH][Y_LENTH] = {
 	{0, 0, 0, 0, 0, 0, 0},
 	{3, 0, 3, 0, 3, 0, 3}};
 
-AStarNode map_maze[X_LENTH][Y_LENTH];	  // 结点数组
+AStarNode map_maze[X_LENTH][Y_LENTH];	   // 结点数组
 pAStarNode open_table[X_LENTH * Y_LENTH];  // open表
 pAStarNode close_table[X_LENTH * Y_LENTH]; // close表
 int8_t open_node_count;					   // open表中节点数量
@@ -75,7 +82,7 @@ void swap(int idx1, int idx2)
 }
 
 // 堆调整
-void adjust_heap(int /*i*/ nIndex)
+void adjust_heap(int nIndex)
 {
 	int curr = nIndex;
 	int child = curr * 2 + 1;	// 得到左孩子idx( 下标从0开始，所有做孩子是curr*2+1 )

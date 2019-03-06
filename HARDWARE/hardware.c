@@ -21,8 +21,12 @@ void Hardware_Init(void)
 	Readcard_Device_Init();			 // RFID初始化
 
 	my_mem_init(SRAMIN);		// 初始化内部内存池
+
+
 	
 	// DebugTimer_Init(16799, 1999); // 调试输出
+	CanTimer_Init(16799, 499); // 100ms CAN数据检查
+	
 
 	print_info("\r\nSystem running...\r\n");
 }

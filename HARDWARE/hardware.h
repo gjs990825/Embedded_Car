@@ -29,15 +29,7 @@
 #include "a_star.h"
 #include "debug.h"
 #include "movement.h"
-
-typedef enum
-{
-    TRACKING = 0x00,        // 循迹状态
-    CROSSROAD = 0x01,       // 十字路口
-    TURNCOMPLETE = 0x02,    // 转弯完成
-    FORBACKCOMPLETE = 0x03, // 前进后退完成(定长循迹)
-    OUTTRACK = 0x04         // 出线
-} StopFlag_t;
+#include "can_timer.h"
 
 
 void Hardware_Init(void);
