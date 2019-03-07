@@ -132,7 +132,7 @@ void EXTI4_IRQHandler(void)
 		{	
 			TIM_Cmd(TIM6,DISABLE);
 			Ultrasonic_Value = Ultrasonic_Num;
-			Ultrasonic_Value =(float)Ultrasonic_Value*1.72-20;       // º∆À„æ‡¿Î∂® ±10us£¨S=Vt/2£®ºı2 «ŒÛ≤Ó≤π≥¢£©
+			Ultrasonic_Value =(float)Ultrasonic_Value*1.72f-20.0f;       // º∆À„æ‡¿Î∂® ±10us£¨S=Vt/2£®ºı2 «ŒÛ≤Ó≤π≥¢£©// edited
 			distance = (uint16_t) Ultrasonic_Value;
 		}
 		EXTI_ClearITPendingBit(EXTI_Line4);

@@ -6,6 +6,8 @@
 
 // 定义连接模式
 #define CONNECTION_MODE CONNECTION_WIFI
+// 使用宏定义的函数（程序可能会增大）
+#define USE_MACRO_FUNCTIONS true
 
 enum
 {
@@ -21,15 +23,17 @@ enum
 #endif // CONNECTION_MODE
 
 // 执行N次，带延迟
-#define ExcuteNTimes(task, N, delay)    \
+#define ExcuteNTimes(Task, N, delay)    \
     do                                  \
     {                                   \
         for (uint8_t i = 0; i < N; i++) \
         {                               \
-            task;                       \
+            Task;                       \
             delay_ms(delay);            \
         }                               \
     } while (0)
+
+#if USE_MACRO_FUNCTIONS
 
 // 发送N次ZigBee数据（默认八位数据）
 #define Send_ZigBeeData(data, ntimes, delay)                           \
@@ -45,6 +49,14 @@ enum
         Request_ToHostArray[Pack_Ending] = request; \
         Send_ToHost(Request_ToHostArray, 8);        \
     } while (0)
+
+#else // USE_MACRO_FUNCTIONS
+
+// void ExcuteNTimes(void(Task *)(void), N, delay);
+void Send_ZigBeeData(uint8_t *data, uint8_t ntimes, uint16_t delay);
+void Request_ToHost(uint8_t request);
+
+#endif // USE_MACRO_FUNCTIONS
 
 // 上传数据包结构
 typedef enum
