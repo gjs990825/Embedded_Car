@@ -408,7 +408,7 @@ void Yu_Yin_Asr(void) // 语音识别处理函数
         }
         case 0x08:
         {
-            Send_ZigbeeData_To_Fifo(BarrierGate_OPEN, 8); // 开启道闸
+            Send_ZigbeeData_To_Fifo(ZigBee_BarrierGateOPEN, 8); // 开启道闸
             SYN_TTS("道闸已打开，等待下一步指令");
             SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
             break;
@@ -416,21 +416,21 @@ void Yu_Yin_Asr(void) // 语音识别处理函数
         case 0x09:
         {
 
-            Send_ZigbeeData_To_Fifo(BarrierGate_CLOSE, 8); // 关闭道闸
+            Send_ZigbeeData_To_Fifo(ZigBee_BarrierGateCLOSE, 8); // 关闭道闸
             SYN_TTS("道闸已关闭，等待下一步指令");
             SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
             break;
         }
         case 0x0a:
         {
-            Send_ZigbeeData_To_Fifo(LED_Display_Data, 8); // 数码管显示
+            Send_ZigbeeData_To_Fifo(ZigBee_LEDDisplayData, 8); // 数码管显示
             SYN_TTS("LED显示已开，等待下一步指令");
             SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
             break;
         }
         case 0x0b:
         {
-            Send_ZigbeeData_To_Fifo(LED_Display_StartTimer, 8); // 数码管计时
+            Send_ZigbeeData_To_Fifo(ZigBee_LEDDisplayStartTimer, 8); // 数码管计时
             SYN_TTS("计时系统已打开，等待下一步指令");
             SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
             break;
@@ -438,7 +438,7 @@ void Yu_Yin_Asr(void) // 语音识别处理函数
         case 0x0c:
         {
 
-            Send_ZigbeeData_To_Fifo(LED_Display_StopTimer, 8); // 数码管关闭
+            Send_ZigbeeData_To_Fifo(ZigBee_LEDDisplayStopTimer, 8); // 数码管关闭
             SYN_TTS("计时系统已关闭，等待下一步指令");
             SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
             break;
@@ -446,7 +446,7 @@ void Yu_Yin_Asr(void) // 语音识别处理函数
         case 0x0d:
         {
 
-            Send_ZigbeeData_To_Fifo(LED_Display_Distance, 8); // 数码管显示距离
+            Send_ZigbeeData_To_Fifo(ZigBee_LEDDisplayDistance, 8); // 数码管显示距离
             SYN_TTS("LED显示距离已完成，等待下一步指令");
             SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
             break;

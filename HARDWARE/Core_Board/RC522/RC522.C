@@ -39,7 +39,7 @@ uint8_t RXRFID[16];
 **/
 void Read_Card(void)
 {
-	char status = MI_ERR;
+	int8_t status = MI_ERR;
 	uint8_t CT[2];									//卡类型
 	uint8_t SN[4]; 									//卡号
 	uint8_t KEY[6]={0xff,0xff,0xff,0xff,0xff,0xff}; //密钥
@@ -129,7 +129,7 @@ void RC522_Uart_init(u32 baudrate)
 	Rc522_LinkFlag = 0;
 }
 
-char InitRc522(void)
+int8_t InitRc522(void)
 {
 	  if(PcdReset() != MI_OK)
 		  return MI_ERR;
@@ -169,12 +169,12 @@ void Reset_RC522(void)
 //                0x4403 = Mifare_DESFire
 //返    回: 成功返回MI_OK
 /////////////////////////////////////////////////////////////////////
-char PcdRequest(unsigned char req_code,unsigned char *pTagType)
+int8_t PcdRequest(uint8_t req_code,uint8_t *pTagType)
 {
-   char status;  
-   unsigned int  unLen;
-   unsigned char ucComMF522Buf[MAXRLEN]; 
-//  unsigned char xTest ;
+   int8_t status;  
+   uint32_t  unLen;
+   uint8_t ucComMF522Buf[MAXRLEN]; 
+//  uint8_t xTest ;
    ClearBitMask(Status2Reg,0x08);
    WriteRawRC(BitFramingReg,0x07);
 
@@ -205,12 +205,12 @@ char PcdRequest(unsigned char req_code,unsigned char *pTagType)
 //参数说明: pSnr[OUT]:卡片序列号，4字节
 //返    回: 成功返回MI_OK
 /////////////////////////////////////////////////////////////////////  
-char PcdAnticoll(unsigned char *pSnr)
+int8_t PcdAnticoll(uint8_t *pSnr)
 {
-    char status;
-    unsigned char i,snr_check=0;
-    unsigned int  unLen;
-    unsigned char ucComMF522Buf[MAXRLEN]; 
+    int8_t status;
+    uint8_t i,snr_check=0;
+    uint32_t  unLen;
+    uint8_t ucComMF522Buf[MAXRLEN]; 
     
 
     ClearBitMask(Status2Reg,0x08);
@@ -242,12 +242,12 @@ char PcdAnticoll(unsigned char *pSnr)
 //参数说明: pSnr[IN]:卡片序列号，4字节
 //返    回: 成功返回MI_OK
 /////////////////////////////////////////////////////////////////////
-char PcdSelect(unsigned char *pSnr)
+int8_t PcdSelect(uint8_t *pSnr)
 {
-    char status;
-    unsigned char i;
-    unsigned int  unLen;
-    unsigned char ucComMF522Buf[MAXRLEN]; 
+    int8_t status;
+    uint8_t i;
+    uint32_t  unLen;
+    uint8_t ucComMF522Buf[MAXRLEN]; 
     
     ucComMF522Buf[0] = PICC_ANTICOLL1;
     ucComMF522Buf[1] = 0x70;
@@ -281,11 +281,11 @@ char PcdSelect(unsigned char *pSnr)
 //          pSnr[IN]：卡片序列号，4字节
 //返    回: 成功返回MI_OK
 /////////////////////////////////////////////////////////////////////               
-char PcdAuthState(unsigned char auth_mode,unsigned char addr,unsigned char *pKey,unsigned char *pSnr)
+int8_t PcdAuthState(uint8_t auth_mode,uint8_t addr,uint8_t *pKey,uint8_t *pSnr)
 {
-    char status;
-    unsigned int  unLen;
-    unsigned char i,ucComMF522Buf[MAXRLEN]; 
+    int8_t status;
+    uint32_t  unLen;
+    uint8_t i,ucComMF522Buf[MAXRLEN]; 
 
     ucComMF522Buf[0] = auth_mode;
     ucComMF522Buf[1] = addr;
@@ -309,11 +309,11 @@ char PcdAuthState(unsigned char auth_mode,unsigned char addr,unsigned char *pKey
 //          pData[OUT]：读出的数据，16字节
 //返    回: 成功返回MI_OK
 ///////////////////////////////////////////////////////////////////// 
-char PcdRead(unsigned char addr,unsigned char *pData)
+int8_t PcdRead(uint8_t addr,uint8_t *pData)
 {
-    char status;
-    unsigned int  unLen;
-    unsigned char i,ucComMF522Buf[MAXRLEN]; 
+    int8_t status;
+    uint32_t  unLen;
+    uint8_t i,ucComMF522Buf[MAXRLEN]; 
 
     ucComMF522Buf[0] = PICC_READ;
     ucComMF522Buf[1] = addr;
@@ -338,11 +338,11 @@ char PcdRead(unsigned char addr,unsigned char *pData)
 //          pData[IN]：写入的数据，16字节
 //返    回: 成功返回MI_OK
 /////////////////////////////////////////////////////////////////////                  
-char PcdWrite(unsigned char addr,unsigned char *pData)
+int8_t PcdWrite(uint8_t addr,uint8_t *pData)
 {
-    char status;
-    unsigned int  unLen;
-    unsigned char i,ucComMF522Buf[MAXRLEN]; 
+    int8_t status;
+    uint32_t  unLen;
+    uint8_t i,ucComMF522Buf[MAXRLEN]; 
     
     ucComMF522Buf[0] = PICC_WRITE;
     ucComMF522Buf[1] = addr;
@@ -374,11 +374,11 @@ char PcdWrite(unsigned char addr,unsigned char *pData)
 //功    能：命令卡片进入休眠状态
 //返    回: 成功返回MI_OK
 /////////////////////////////////////////////////////////////////////
-char PcdHalt(void)
+int8_t PcdHalt(void)
 {
-    char status;
-    unsigned int  unLen;
-    unsigned char ucComMF522Buf[MAXRLEN]; 
+    int8_t status;
+    uint32_t  unLen;
+    uint8_t ucComMF522Buf[MAXRLEN]; 
 
     ucComMF522Buf[0] = PICC_HALT;
     ucComMF522Buf[1] = 0;
@@ -392,9 +392,9 @@ char PcdHalt(void)
 /////////////////////////////////////////////////////////////////////
 //用MF522计算CRC16函数
 /////////////////////////////////////////////////////////////////////
-char CalulateCRC(unsigned char *pIndata,unsigned char len,unsigned char *pOutData)
+int8_t CalulateCRC(uint8_t *pIndata,uint8_t len,uint8_t *pOutData)
 {
-    unsigned char i,n;
+    uint8_t i,n;
     ClearBitMask(DivIrqReg,0x04);
     WriteRawRC(CommandReg,PCD_IDLE);
     SetBitMask(FIFOLevelReg,0x80);
@@ -417,7 +417,7 @@ char CalulateCRC(unsigned char *pIndata,unsigned char len,unsigned char *pOutDat
 //功    能：复位RC522
 //返    回: 成功返回MI_OK
 /////////////////////////////////////////////////////////////////////
-char PcdReset(void)
+int8_t PcdReset(void)
 {
 	/*
     MF522_RST=1;
@@ -442,7 +442,7 @@ char PcdReset(void)
 //////////////////////////////////////////////////////////////////////
 //设置RC522的工作方式 
 //////////////////////////////////////////////////////////////////////
-char M500PcdConfigISOType(unsigned char type)
+int8_t M500PcdConfigISOType(uint8_t type)
 {
    if (type == 'A')                     //ISO14443_A
    { 
@@ -475,7 +475,7 @@ Parameter:
 Return:
      None
 **************************************************/
-void Send_data(unsigned char ch)
+void Send_data(uint8_t ch)
 {	
     while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
     USART_SendData(USART1, ch);
@@ -497,10 +497,10 @@ Return:
      STATUS_SUCCESS         get a byte data successfully
      STATUS_IO_TIMEOUT      time out
 **************************************************/
-short Rece_data(unsigned char *ch, unsigned int WaitTime)
+short Rece_data(uint8_t *ch, uint32_t WaitTime)
 {
 	/*
-    unsigned int j;
+    uint32_t j;
     j=0;
   while(!(USART1->SR & USART_FLAG_RXNE))
 	{
@@ -546,9 +546,9 @@ short Rece_data(unsigned char *ch, unsigned int WaitTime)
 //参数说明：Address[IN]:寄存器地址
 //返    回：读出的值
 /////////////////////////////////////////////////////////////////////
-unsigned char ReadRawRC(unsigned char Address)
+uint8_t ReadRawRC(uint8_t Address)
 {
-    unsigned char RegVal;
+    uint8_t RegVal;
     short status;
     Address = (Address & 0x3f) | 0x80;   //code the first byte
     Send_data(Address);
@@ -563,9 +563,9 @@ unsigned char ReadRawRC(unsigned char Address)
 //参数说明：Address[IN]:寄存器地址
 //          value[IN]:写入的值
 /////////////////////////////////////////////////////////////////////
-//short WriteRawRC(unsigned char Address, unsigned char value)
+//short WriteRawRC(uint8_t Address, uint8_t value)
 //{  
-//    unsigned char EchoByte;
+//    uint8_t EchoByte;
 //    short status;
 //    Address &= 0x3f;   //code the first byte
 //    Send_data(Address);
@@ -575,9 +575,9 @@ unsigned char ReadRawRC(unsigned char Address)
 //	return status;
 //}
 
-short WriteRawRC_HDL(unsigned char Address, unsigned char value)
+short WriteRawRC_HDL(uint8_t Address, uint8_t value)
 {  
-    unsigned char EchoByte;
+    uint8_t EchoByte;
     short status;
     Address &= 0x3f;   //code the first byte
     Send_data(Address);
@@ -592,9 +592,9 @@ short WriteRawRC_HDL(unsigned char Address, unsigned char value)
 //参数说明：reg[IN]:寄存器地址
 //          mask[IN]:置位值
 /////////////////////////////////////////////////////////////////////
-char SetBitMask(unsigned char reg,unsigned char mask)  
+int8_t SetBitMask(uint8_t reg,uint8_t mask)  
 {
-    char tmp = 0x0;
+    int8_t tmp = 0x0;
     tmp = ReadRawRC(reg);
     WriteRawRC(reg,tmp | mask);  // set bit mask
 	return MI_OK;
@@ -605,9 +605,9 @@ char SetBitMask(unsigned char reg,unsigned char mask)
 //参数说明：reg[IN]:寄存器地址
 //          mask[IN]:清位值
 /////////////////////////////////////////////////////////////////////
-char ClearBitMask(unsigned char reg,unsigned char mask)  
+int8_t ClearBitMask(uint8_t reg,uint8_t mask)  
 {
-    char tmp = 0x0;
+    int8_t tmp = 0x0;
     tmp = ReadRawRC(reg);
     WriteRawRC(reg, tmp & ~mask);  // clear bit mask
 	return MI_OK;
@@ -621,18 +621,18 @@ char ClearBitMask(unsigned char reg,unsigned char mask)
 //          pOutData[OUT]:接收到的卡片返回数据
 //          *pOutLenBit[OUT]:返回数据的位长度
 /////////////////////////////////////////////////////////////////////
-char PcdComMF522(unsigned char Command, 
-                 unsigned char *pInData, 
-                 unsigned char InLenByte,
-                 unsigned char *pOutData, 
-                 unsigned int  *pOutLenBit)
+int8_t PcdComMF522(uint8_t Command, 
+                 uint8_t *pInData, 
+                 uint8_t InLenByte,
+                 uint8_t *pOutData, 
+                 uint32_t  *pOutLenBit)
 {
-    char status = MI_ERR;
-    unsigned char irqEn   = 0x00;
-    unsigned char waitFor = 0x00;
-    unsigned char lastBits;
-    unsigned char n;
-    unsigned int i;
+    int8_t status = MI_ERR;
+    uint8_t irqEn   = 0x00;
+    uint8_t waitFor = 0x00;
+    uint8_t lastBits;
+    uint8_t n;
+    uint32_t i;
     switch (Command)
     {
        case PCD_AUTHENT:
@@ -711,7 +711,7 @@ char PcdComMF522(unsigned char Command,
 /////////////////////////////////////////////////////////////////////
 void PcdAntennaOn()
 {
-    unsigned char i;
+    uint8_t i;
     i = ReadRawRC(TxControlReg);
     if (!(i & 0x03))
     {
@@ -731,7 +731,7 @@ void PcdAntennaOff()
 //等待卡离开
 void WaitCardOff(void)
 {
-	unsigned char status, TagType[2];
+	uint8_t status, TagType[2];
 
 	while(1)
 	{

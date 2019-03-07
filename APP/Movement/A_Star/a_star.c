@@ -25,7 +25,7 @@ Route_Task_t Route_Task[] = {
 	{.node.x = 5, .node.y = 6, .node.dir = DIR_DOWN, .Task = Start_Task}, // 起始点
 	{.node.x = 5, .node.y = 5, .node.dir = DIR_NOTSET, .Task = TFT_Task},
 	{.node.x = 3, .node.y = 6, .node.dir = DIR_NOTSET, .Task = End_Task},
-	// {.node.x = 5, .node.y = 6, .node.dir = DIR_DOWN, .Task = LED_TimerStop}
+	{.node.x = 5, .node.y = 6, .node.dir = DIR_DOWN, .Task = NULL}
 };
 
 // 任务完成情况

@@ -3,34 +3,34 @@
 /////////////////////////////////////////////////////////////////////
 #include "stm32f4xx.h"
 
-extern char PcdReset(void);
+extern int8_t PcdReset(void);
 extern void PcdAntennaOn(void);
 extern void PcdAntennaOff(void);
-extern char PcdRequest(unsigned char req_code,unsigned char *pTagType);   
-extern char PcdAnticoll(unsigned char *pSnr);
-extern char PcdSelect(unsigned char *pSnr);         
-extern char PcdAuthState(unsigned char auth_mode,unsigned char addr,unsigned char *pKey,unsigned char *pSnr);     
-extern char PcdRead(unsigned char addr,unsigned char *pData);     
-extern char PcdWrite(unsigned char addr,unsigned char *pData);    
-extern char PcdValue(unsigned char dd_mode,unsigned char addr,unsigned char *pValue);   
-extern char PcdBakValue(unsigned char sourceaddr, unsigned char goaladdr);                                 
-extern char PcdHalt(void);
-extern char PcdComMF522(unsigned char Command, 
-                 unsigned char *pInData, 
-                 unsigned char InLenByte,
-                 unsigned char *pOutData, 
-                 unsigned int  *pOutLenBit);
-extern char CalulateCRC(unsigned char *pIndata,unsigned char len,unsigned char *pOutData);
-//extern short WriteRawRC(unsigned char Address,unsigned char value);
-extern short WriteRawRC_HDL(unsigned char Address,unsigned char value);
-extern unsigned char ReadRawRC(unsigned char Address); 
-extern char SetBitMask(unsigned char reg,unsigned char mask); 
-extern char ClearBitMask(unsigned char reg,unsigned char mask); 
-extern char M500PcdConfigISOType(unsigned char type);
+extern int8_t PcdRequest(uint8_t req_code,uint8_t *pTagType);   
+extern int8_t PcdAnticoll(uint8_t *pSnr);
+extern int8_t PcdSelect(uint8_t *pSnr);         
+extern int8_t PcdAuthState(uint8_t auth_mode,uint8_t addr,uint8_t *pKey,uint8_t *pSnr);     
+extern int8_t PcdRead(uint8_t addr,uint8_t *pData);     
+extern int8_t PcdWrite(uint8_t addr,uint8_t *pData);    
+extern int8_t PcdValue(uint8_t dd_mode,uint8_t addr,uint8_t *pValue);   
+extern int8_t PcdBakValue(uint8_t sourceaddr, uint8_t goaladdr);                                 
+extern int8_t PcdHalt(void);
+extern int8_t PcdComMF522(uint8_t Command, 
+                 uint8_t *pInData, 
+                 uint8_t InLenByte,
+                 uint8_t *pOutData, 
+                 uint32_t  *pOutLenBit);
+extern int8_t CalulateCRC(uint8_t *pIndata,uint8_t len,uint8_t *pOutData);
+//extern short WriteRawRC(uint8_t Address,uint8_t value);
+extern short WriteRawRC_HDL(uint8_t Address,uint8_t value);
+extern uint8_t ReadRawRC(uint8_t Address); 
+extern int8_t SetBitMask(uint8_t reg,uint8_t mask); 
+extern int8_t ClearBitMask(uint8_t reg,uint8_t mask); 
+extern int8_t M500PcdConfigISOType(uint8_t type);
 extern void WaitCardOff(void);		
 extern void delay_ns(u32 ns);	
 extern void RC522Port_Init(void);
-extern char InitRc522(void);
+extern int8_t InitRc522(void);
 extern void Reset_RC522(void);
 extern void RC522_Uart_init(uint32_t baudrate);
 extern void Readcard_Device_Init(void);
