@@ -29,6 +29,7 @@
 #include "movement.h"
 #include "protocol.h"
 #include "hardware.h"
+#include "route.h"
 
 extern uint8_t QR_OK;
 extern uint8_t CP_AND_SHAPE;

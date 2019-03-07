@@ -3,11 +3,12 @@
 
 #include "sys.h"
 #include "canp_hostcom.h"
+#include "delay.h"
 
 // 定义连接模式
 #define CONNECTION_MODE CONNECTION_WIFI
 // 使用宏定义的函数（程序可能会增大）
-#define USE_MACRO_FUNCTIONS true
+#define USE_MACRO_FUNCTIONS false
 
 enum
 {
@@ -53,6 +54,7 @@ enum
 #else // USE_MACRO_FUNCTIONS
 
 // void ExcuteNTimes(void(Task *)(void), N, delay);
+
 void Send_ZigBeeData(uint8_t *data, uint8_t ntimes, uint16_t delay);
 void Request_ToHost(uint8_t request);
 
@@ -75,7 +77,7 @@ typedef enum
 
 // 上位机没有进行数据校验，校验和(command[Pack_Sum])无视
 // 包头为 0x55, 0x03 ，包尾为 0xBB 的指令(请求上位机任务), Request_ToHost[Pack_Ending]替换为请求编号
-static uint8_t Request_ToHostArray[] = {0x55, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
+extern uint8_t Request_ToHostArray[];
 static uint8_t Request_QRCode1 = 0x01;           // 二维码1
 static uint8_t Request_QRCode2 = 0x02;           // 二维码2
 static uint8_t Request_StreetLight = 0x31;       // 智能路灯
@@ -94,8 +96,6 @@ static uint8_t Request_RotatingLED = 0x91;       // 旋转LED(立体显示)
 // 包头为 0x55, 0x0D ，包尾为 0xBB 的指令(第二位副指令)(获取信息)
 static uint8_t Request_GarageFloor[2] = {0x02, 0x01}; // 请求车库位于第几层
 static uint8_t Request_Infrared[2] = {0x02, 0x02};    // 请求红外
-
-/***************************************USER************************************************/
 
 // 红外数据
 static uint8_t Infrared_PhotoPrevious[4] = {0x80, 0x7F, 0x05, ~(0x05)};       // 照片上翻
@@ -132,15 +132,12 @@ static uint8_t ZigBee_PlateTFT_test1[8] = {0x55, 0x0b, 0x20, 0x5a, 0x37, 0x37, 0
 static uint8_t ZigBee_PlateTFT_test2[8] = {0x55, 0x0b, 0x21, 0x36, 0x4b, 0x31, 0x00, 0xBB};
 static uint8_t ZigBee_PlateTFT_test3[8] = {0x55, 0x0b, 0x20, 0x46, 0x31, 0x31, 0x00, 0xBB};
 static uint8_t ZigBee_PlateTFT_test4[8] = {0x55, 0x0b, 0x21, 0x39, 0x54, 0x33, 0x00, 0xBB};
-
-/***************************************Zigbee控制命令**************************************************/
-
 // 交通灯
 static uint8_t ZigBee_TrafficLightStartRecognition[8] = {0x55, 0x0E, 0x01, 0x00, 0x00, 0x00, 0x01, 0xBB}; //进入识别模式
 static uint8_t ZigBee_WirelessChargingON[8] = {0x55, 0x0a, 0x01, 0x01, 0x00, 0x00, 0x02, 0xBB};           //开启无线充电站
 // LED显示标志物
-// extern uint8_t ZigBee_LEDDisplayData[8];
-// extern uint8_t ZigBee_LEDDisplayDistance[8];
+extern uint8_t ZigBee_LEDDisplayData[8];
+extern uint8_t ZigBee_LEDDisplayDistance[8];
 static uint8_t ZigBee_LEDDisplayStartTimer[8] = {0x55, 0x04, 0x03, 0x01, 0x00, 0x00, 0x04, 0xBB}; // 数码管开始计时
 static uint8_t ZigBee_LEDDisplayStopTimer[8] = {0x55, 0x04, 0x03, 0x00, 0x00, 0x00, 0x03, 0xBB};  // 数码管关闭计时
 static uint8_t ZigBee_LEDDisplayData[8] = {0x55, 0x04, 0x02, 0xA1, 0xB2, 0xC3, 0x18, 0xBB};       // 数码管显示数据
@@ -153,8 +150,7 @@ static uint8_t ZigBee_VoiceDriveLeft[8] = {0x55, 0x06, 0x10, 0x04, 0x00, 0x00, 0
 static uint8_t ZigBee_VoiceNODriveLeft[8] = {0x55, 0x06, 0x10, 0x05, 0x00, 0x00, 0x15, 0xBB};    // 左行被禁
 static uint8_t ZigBee_VoiceTurnAround[8] = {0x55, 0x06, 0x10, 0x06, 0x00, 0x00, 0x16, 0xBB};     // 原地掉头
 static uint8_t ZigBee_VoiceDriveAssistant[8] = {0x55, 0x06, 0x10, 0x01, 0x00, 0x00, 0x11, 0xBB}; // 驾驶助手
-
-/***************************************从车命令************************************************/
+// 从车指令
 extern uint8_t ZigBee_AGVStart[8];                                                         // 从车启动命令
 static uint8_t ZigBee_AGVOpenMV[8] = {0x55, 0x02, 0x92, 0x01, 0x00, 0x00, 0x00, 0xBB};     // 启动从车二维码识别
 static uint8_t ZigBee_AGVTurnLED[8] = {0x55, 0x02, 0x20, 0x01, 0x01, 0x00, 0x00, 0xBB};    // 从车转向灯

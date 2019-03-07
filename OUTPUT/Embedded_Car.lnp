@@ -1,6 +1,7 @@
 --cpu=Cortex-M4.fp
 "..\output\main.o"
 "..\output\debug.o"
+"..\output\route.o"
 "..\output\protocol.o"
 "..\output\task.o"
 "..\output\movement.o"

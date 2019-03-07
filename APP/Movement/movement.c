@@ -6,7 +6,7 @@
 #include "a_star.h"
 #include "pid.h"
 #include "task.h"
-
+#include "route.h"
 
 // extern const Route_Task_t Route_Task[];
 
@@ -15,7 +15,7 @@ void Auto_Run(void)
 {
 	CurrentStaus = Route_Task[0].node; // 初始化当前位置
 
-	uint8_t count = Route_TaskCount;
+	uint8_t count = ROUTE_TASK_NUMBER;
 	for (size_t i = 0; i < count; i++)
 	{
 		if (RouteTask_Finished[i] == 0)

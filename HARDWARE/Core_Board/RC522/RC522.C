@@ -44,7 +44,7 @@ void Read_Card(void)
 	uint8_t SN[4]; 									//卡号
 	uint8_t KEY[6]={0xff,0xff,0xff,0xff,0xff,0xff}; //密钥
 	uint8_t s = 0x01;       						  	
-	uint8_t RXRFIDH[8];
+	// uint8_t RXRFIDH[8];
 	#define  DATA_LEN    16                     	//定义数据字节长度	
 
 	LED1 = 0;

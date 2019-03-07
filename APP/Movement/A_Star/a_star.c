@@ -13,33 +13,10 @@
 #include "roadway_check.h"
 #include "debug.h"
 #include "task.h"
+#include "route.h"
 
 // 使能路径输出
 #define _A_STAR_ENABLE_OUTPUT_ 1
-
-// 当前位置和状态
-RouteNode CurrentStaus;
-
-// 路径和任务设置
-Route_Task_t Route_Task[] = {
-	{.node.x = 5, .node.y = 6, .node.dir = DIR_DOWN, .Task = Start_Task}, // 起始点
-	{.node.x = 5, .node.y = 5, .node.dir = DIR_NOTSET, .Task = TFT_Task},
-	{.node.x = 3, .node.y = 6, .node.dir = DIR_NOTSET, .Task = End_Task},
-	{.node.x = 5, .node.y = 6, .node.dir = DIR_DOWN, .Task = NULL}
-};
-
-// 任务完成情况
-int8_t RouteTask_Finished[sizeof(Route_Task) / sizeof(Route_Task[0])] = {0};
-
-// 每个任务最多10个点 * 10
-Route_Task_t Final_Route[sizeof(Route_Task) / sizeof(Route_Task[0]) * 10];
-
-// 任务个数（通过此变量传递任务个数因为sizeof(Route_Task)在不完整声明时候不可用
-// 若要完整声明头文件也需要修改，所以使用此办法，暂时有较好的方法）
-const uint8_t Route_TaskCount = sizeof(Route_Task) / sizeof(Route_Task[0]);
-
-// 路径计数
-int16_t Final_StepCount = 0;
 
 #define X_LENTH 7
 #define Y_LENTH 7
@@ -379,7 +356,7 @@ bool A_Star_GetRouteBewteenTasks(RouteNode current, Route_Task_t nextTask)
 // 生成全部路线路线 返回 0 错误 1 成功
 bool A_Star_GetRoute(void)
 {
-	uint16_t tmp = sizeof(Route_Task) / sizeof(Route_Task[0]);
+	uint16_t tmp = ROUTE_TASK_NUMBER;
 
 	CurrentStaus = Route_Task[0].node; // 初始化当前位置
 

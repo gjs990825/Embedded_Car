@@ -1,9 +1,14 @@
 #include "protocol.h"
 #include "uart_a72.h"
 
+// 请求指令使用的buffer
+uint8_t Request_ToHostArray[] = {0x55, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
+uint8_t ZigBee_LEDDisplayData[8];
+uint8_t ZigBee_LEDDisplayDistance[8];
+uint8_t ZigBee_AGVStart[8];
+
 #if 0
-// 函数实现需要固定的函数类型(如无返回值无参的void(Task *)(void))
-// C语言中实现较为复杂，所以使用宏定义
+// C中没有泛型，有些函数不容易实现，所以这里宏定义实现
 void ExcuteNTimes(void(Task *)(void), N, delay)
 {
     for (uint8_t i = 0; i < N; i++)
