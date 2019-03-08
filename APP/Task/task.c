@@ -34,6 +34,11 @@
 extern uint8_t QR_OK;
 extern uint8_t CP_AND_SHAPE;
 
+void Task1(void)
+{
+    
+}
+
 // TFT
 void TFT_Task(void)
 {
@@ -43,14 +48,14 @@ void TFT_Task(void)
 
     TFTPage_Next();
     Request_ToHost(RequestCmd_PlateRecognition);
-    // WaitForFlag(CP_AND_SHAPE, 1);
+    WaitForFlag(CP_AND_SHAPE, 1);
 
     Beep(3);
     delay_ms(500);
 
     TFTPage_Next();
     Request_ToHost(RequestCmd_ShapeRecongnition);
-    // WaitForFlag(CP_AND_SHAPE, 2);
+    WaitForFlag(CP_AND_SHAPE, 2);
 
     Beep(4);
     delay_ms(500);
@@ -60,7 +65,6 @@ void TFT_Task(void)
 
     Send_ZigbeeData_To_Fifo(ZigBee_PlateTFT_1, 8);
 	delay_ms(600);
-    delay_ms(600);
     delay_ms(600);
 	Send_ZigbeeData_To_Fifo(ZigBee_PlateTFT_2, 8);
 	delay_ms(600);

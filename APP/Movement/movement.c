@@ -8,9 +8,8 @@
 #include "task.h"
 #include "route.h"
 
-// extern const Route_Task_t Route_Task[];
 
-// 测试用
+// 测试用全自动
 void Auto_Run(void)
 {
 	CurrentStaus = Route_Task[0].node; // 初始化当前位置
@@ -24,9 +23,8 @@ void Auto_Run(void)
 		}
 	}
 
+	// 此种不允许从路径点外的坐标点出发
 	// A_Star_GetRoute();
-
-	// // 走自动规划的路径
 	// for(uint8_t i = 0; i < Final_StepCount; i++)
 	// {
 	// 	print_info("NOW:(%d,%d)\r\n", Final_Route[i].node.x, Final_Route[i].node.y);
@@ -166,9 +164,6 @@ void Go_ToNextNode(Route_Task_t next)
 	CurrentStaus.y = next.node.y;
 	CurrentStaus.dir = finalDir;
 
-	// CurrentStaus = next.node;
-	// CurrentStaus.dir = finalDir;
-
 	if (next.Task != NULL) // 检查是否有任务
 	{
 		next.Task();
@@ -236,10 +231,11 @@ void Turn_ByEncoder(int16_t digree)
 	if (digree >= 0) 
 	{
 		Control(Turn_Speed, -Turn_Speed);
+		TurnByEncoder_Value = digree * ClockWiseDigreeToEncoder;
 	}
 	else
 	{
 		Control(-Turn_Speed, Turn_Speed);
+		TurnByEncoder_Value = -digree * CountClockWiseDigreeToEncoder;
 	}
-	Set_TunningDigree(digree > 0 ? digree : -digree);
 }

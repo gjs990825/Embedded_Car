@@ -225,7 +225,7 @@ uint16_t Get_Bh_Value(void)
     Multiple_Read_BH1750();       //连续读出数据，存储在BUF中
     dis_data=BUF[0];
     dis_data=(dis_data<<8)+BUF[1];//合成数据，即光照数据
-    temp=(float)dis_data/1.2;
+    temp=(float)dis_data/1.2f;
 	data=(int)temp;
     return data;        
 }

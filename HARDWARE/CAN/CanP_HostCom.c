@@ -314,7 +314,7 @@ void CanP_CanTx_Check(void)
 
 void CanP_CanTx_Check_fIrq(void)
 {
-	static uint8_t m = 0;
+	static int8_t m = 0;
 	static uint8_t tmbox;
 	uint8_t i,f,j;
 	if(CanDrv_TxEmptyCheck())

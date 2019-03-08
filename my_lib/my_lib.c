@@ -147,5 +147,29 @@ int8_t MLib_memcmp(void *b1,void *b2,uint32_t lb)
 	return Rt;
 }
 
-//end file
 
+// edited
+
+int constrain_int(int x, int a, int b)
+{
+    if ((x >= a) && (x <= b))
+    {
+        return x;
+    }
+    else
+    {
+        return (x < a) ? a : b;
+    }
+}
+
+float constrain_float(float x, float a, float b)
+{
+    if ((x >= a) && (x <= b))
+    {
+        return x;
+    }
+    else
+    {
+        return (x < a) ? a : b;
+    }
+}

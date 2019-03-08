@@ -3,20 +3,22 @@
 //#include "stm32f4xx.h"
 #include "sys.h"
 
+// 速度常量↓
+
 // 循迹速度
 #define Track_Speed 55
 // 转弯速度
-#define Turn_Speed 85  
+#define Turn_Speed 85
 
-#define DigreeToEncoder 10
+// 角度转换到码盘常量↓
 
-#define Turn_L45_MPval 375
-#define Turn_R45_MPval 400
-#define Turn_L90_MPval 860
-#define Turn_R90_MPval 880
+// 顺时针转换倍数
+#define ClockWiseDigreeToEncoder 9.73f
+// 逆时针转换倍数
+#define CountClockWiseDigreeToEncoder 9.23f
 
-// 180度转弯码盘值
-#define Turn_MP180 1800
+// 循迹距离常量↓
+
 // X轴中点循迹值
 #define LongTrack_Value 1100
 // Y轴中点循迹值
@@ -24,6 +26,8 @@
 // 到十字路口中心码盘值
 #define ToCrossroadCenter 420 
 
+
+// 循迹模式
 typedef enum
 {
     TrackMode_NONE = 0,
@@ -32,20 +36,14 @@ typedef enum
     TrackMode_BACK
 } TrackMode_t;
 
+// 根据码盘值运动的模式
 typedef enum
 {
     ENCODER_NONE = 0,
     ENCODER_GO,
     ENCODER_BACK,
-    ENCODER_LEFT90,
-    ENCODER_LEFT45,
-    ENCODER_RIGHT90,
-    ENCODER_RIGHT45,
-    ENCODER_RIGHT180,
     ENCODER_TurnByValue
 } Moving_ByEncoder_t;
-
-
 
 // 循迹信息
 extern int8_t Q7[7], H8[8];
@@ -57,8 +55,8 @@ extern int DirectionWights;
 extern uint8_t Track_Mode;
 // 定值前后和转向
 extern Moving_ByEncoder_t Moving_ByEncoder;
-// 定角度值转向储存
-extern uint16_t TurnByEncoder;
+// 定角度转向目标码盘值
+extern uint16_t TurnByEncoder_Value;
 
 extern uint8_t Stop_Flag;
 extern int Car_Speed;

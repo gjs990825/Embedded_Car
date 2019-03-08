@@ -26,17 +26,17 @@ int main(void)
 
 	Send_UpMotor(0, 0);
 
+	
+
 	while (1)
 	{
 		KEY_Check(); //按键检测
-
-		// continue;
 
 		// 现在放在中断中
 		// Can_WifiRx_Check();
 		// Can_ZigBeeRx_Check();
 
-		// if(gt_get_sub(LED_twinkle_times) == 0) 			
+		// if(gt_get_sub(LED_twinkle_times) == 0)
 		// {
 		// 	LED_twinkle_times =  gt_get() + 50;			//LED4状态取反
 		// 	LED4 = !LED4;
@@ -47,7 +47,6 @@ int main(void)
 			Auto_Run();
 			autoRunEnable = 0;
 		}
-		
 
 		if (gt_get_sub(Power_check_times) == 0)
 		{

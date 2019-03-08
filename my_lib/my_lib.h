@@ -1,4 +1,4 @@
-
+#include "sys.h"
 #ifndef __MY_LIB_H__
 #define __MY_LIB_H__
 
@@ -105,5 +105,14 @@ GLOBAL void MLib_memint(void *b,uint8_t d,uint32_t lb);
 GLOBAL int8_t MLib_memcmp(void *b1,void *b2,uint32_t lb);
 
 #undef GLOBAL
+
+
+
+int constrain_int(int x, int a, int b);
+float constrain_float(float x, float a, float b);
+
+
 #endif //__MY_LIB_H__
+
+
 

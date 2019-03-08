@@ -8,6 +8,7 @@
 #include "debug.h"
 #include "hardware.h"
 #include "pid.h"
+#include "my_lib.h"
 
 #define CheckTurnComplete(EncoderValue) \
     if (Mp_Value >= EncoderValue)       \
@@ -29,23 +30,18 @@
 int8_t Q7[7] = {0};
 // 后八个循迹传感器
 int8_t H8[8] = {0};
-
 // 白色数量
 uint8_t NumberOfWhite = 0;
 // 方向权重
 int DirectionWights = 0;
-
 // 运行状态
 uint8_t Stop_Flag = TRACKING;
-
 // 循迹模式
 uint8_t Track_Mode = TrackMode_NONE;
-
 // 定值前后和转向
 Moving_ByEncoder_t Moving_ByEncoder = ENCODER_NONE;
-
-// 定角度值转向储存
-uint16_t TurnByEncoder = 0;
+// 定角度转向目标码盘值
+uint16_t TurnByEncoder_Value = 0;
 
 // 左右速度
 int LSpeed = 0, RSpeed = 0;
@@ -67,7 +63,8 @@ void Roadway_mp_syn(void)
     Roadway_cmp = CanHost_Mp;
 }
 
-uint16_t Roadway_mp_Get(void) //码盘获取
+//码盘获取
+uint16_t Roadway_mp_Get(void)
 {
     uint32_t ct;
     if (CanHost_Mp > Roadway_cmp)
@@ -135,23 +132,8 @@ void Moving_ByEncoderCheck(void)
             Stop_Flag = FORBACKCOMPLETE;
         }
         break;
-    case ENCODER_LEFT90:
-        CheckTurnComplete(Turn_L90_MPval);
-        break;
-    case ENCODER_LEFT45:
-        CheckTurnComplete(Turn_L45_MPval);
-        break;
-    case ENCODER_RIGHT90:
-        CheckTurnComplete(Turn_R90_MPval);
-        break;
-    case ENCODER_RIGHT45:
-        CheckTurnComplete(Turn_R45_MPval);
-        break;
-    case ENCODER_RIGHT180:
-        CheckTurnComplete(Turn_MP180);
-        break;
     case ENCODER_TurnByValue:
-        CheckTurnComplete(TurnByEncoder);
+        CheckTurnComplete(TurnByEncoder_Value);
     default:
         break;
     }
@@ -171,31 +153,9 @@ void Roadway_Check(void)
 // 电机控制（速度区间 -100 ~ 100)
 void Control(int L_Speed, int R_Speed)
 {
-    if (L_Speed >= 0)
-    {
-        if (L_Speed > 100)
-            L_Speed = 100;
-    }
-    else
-    {
-        if (L_Speed < -100)
-            L_Speed = -100;
-    }
-    if (R_Speed >= 0)
-    {
-        if (R_Speed > 100)
-            R_Speed = 100;
-    }
-    else
-    {
-        if (R_Speed < -100)
-            R_Speed = -100;
-    }
-
-    LSpeed = L_Speed;
-    RSpeed = R_Speed;
-
-    Send_UpMotor(L_Speed, R_Speed);
+    LSpeed = constrain_int(L_Speed, -100, 100);
+    RSpeed = constrain_int(R_Speed, -100, 100);
+    Send_UpMotor(LSpeed, RSpeed);
 }
 
 // 获取循迹信息，计算白色的数量
@@ -209,12 +169,11 @@ void Get_Track(void)
     {
         Q7[i] = (tmp >> i) & 0x01;
         NumberOfWhite += Q7[i] ? 1 : 0;
-    }
-    for (uint8_t i = 0; i < 8; i++)
-    {
         H8[i] = (tmp >> (8 + i)) & 0x01;
         NumberOfWhite += H8[i] ? 1 : 0;
     }
+    H8[7] = (tmp >> (15)) & 0x01;
+    NumberOfWhite += H8[7] ? 1 : 0; // edited
 
 #if _TRACK_OUTPUT_
 
@@ -292,13 +251,8 @@ void TRACK_LINE(void)
         LSpeed = Car_Speed + PID_value;
         RSpeed = Car_Speed - PID_value;
         // Control(LSpeed, RSpeed);
-        // 因CAN发送出现过没有送达的现象，速度控制在中断内实现
+        // 因CAN发送出现过没有送达的现象，速度控制在定时器中断内实现
     }
-}
-
-void Set_TunningDigree(uint16_t digree)
-{
-    TurnByEncoder = digree * DigreeToEncoder;
 }
 
 void Roadway_CheckTimInit(uint16_t arr, uint16_t psc)
