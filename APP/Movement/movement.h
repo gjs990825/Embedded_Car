@@ -4,6 +4,12 @@
 #include "sys.h"
 #include "a_star.h"
 
+enum 
+{
+	DIR_CLOCKWISE = 0,
+	DIR_COUNTCLOCKWISE
+};
+
 typedef enum
 {
 	TRACKING = 0x00,		// Ñ­¼£×´Ì¬
@@ -24,7 +30,7 @@ typedef enum
 #define ExcuteAndWait(action, Flag, waitStatus) \
 	do                                          \
 	{                                           \
-		action();                               \
+		action;                               \
 		WaitForFlag(Flag, waitStatus);          \
 		Stop();                                 \
 	} while (0)
@@ -37,11 +43,12 @@ void Start_Tracking(int speed);
 void Stop(void);
 void Go_Ahead(int speed, uint16_t mp);
 void Back_Off(int speed, uint16_t mp);
-void Turn_Left45(void);
-void Turn_Left90(void);
-void Turn_Right45(void);
-void Turn_Right90(void);
-void Turn_Right180(void);
+// void Turn_Left45(void);
+// void Turn_Left90(void);
+// void Turn_Right45(void);
+// void Turn_Right90(void);
+// void Turn_Right180(void);
+void Turn_ByEncoder(int16_t digree);
 
 void Track_ByEncoder(int speed, uint16_t setMP);
 

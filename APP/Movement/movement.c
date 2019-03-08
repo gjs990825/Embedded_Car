@@ -97,16 +97,16 @@ void Go_ToNextNode(Route_Task_t next)
 		switch (CurrentStaus.dir)
 		{
 		case DIR_UP:
-			(finalDir == DIR_RIGHT) ? Turn_Right90() : Turn_Left90();
+			(finalDir == DIR_RIGHT) ? Turn_ByEncoder(90) : Turn_ByEncoder(-90);
 			break;
 		case DIR_DOWN:
-			(finalDir == DIR_RIGHT) ? Turn_Left90() : Turn_Right90();
+			(finalDir == DIR_RIGHT) ? Turn_ByEncoder(-90) : Turn_ByEncoder(90);
 			break;
 		case DIR_LEFT:
-			(finalDir == DIR_RIGHT) ? Turn_Right180() : (void)0;
+			(finalDir == DIR_RIGHT) ? Turn_ByEncoder(180) : (void)0;
 			break;
 		case DIR_RIGHT:
-			(finalDir == DIR_RIGHT) ? (void)0 : Turn_Right180();
+			(finalDir == DIR_RIGHT) ? (void)0 : Turn_ByEncoder(180);
 			break;
 		default:
 			print_info("CurrentDir NOT SET!\r\n");
@@ -118,16 +118,16 @@ void Go_ToNextNode(Route_Task_t next)
 		switch (CurrentStaus.dir)
 		{
 		case DIR_UP:
-			(finalDir == DIR_UP) ? (void)0 : Turn_Right180();
+			(finalDir == DIR_UP) ? (void)0 : Turn_ByEncoder(180);
 			break;
 		case DIR_DOWN:
-			(finalDir == DIR_UP) ? Turn_Right180() : (void)0;
+			(finalDir == DIR_UP) ? Turn_ByEncoder(180) : (void)0;
 			break;
 		case DIR_LEFT:
-			(finalDir == DIR_UP) ? Turn_Right90() : Turn_Left90();
+			(finalDir == DIR_UP) ? Turn_ByEncoder(90) : Turn_ByEncoder(-90);
 			break;
 		case DIR_RIGHT:
-			(finalDir == DIR_UP) ? Turn_Left90() : Turn_Right90();
+			(finalDir == DIR_UP) ? Turn_ByEncoder(-90) : Turn_ByEncoder(90);
 			break;
 		default:
 			print_info("CurrentDir NOT SET!\r\n");
@@ -227,47 +227,19 @@ void Track_ByEncoder(int speed, uint16_t setMP)
 	Car_Speed = speed;
 }
 
-void Turn_Left45(void)
+void Turn_ByEncoder(int16_t digree)
 {
 	Roadway_mp_syn();
 	Stop_Flag = TRACKING;
 	Track_Mode = TrackMode_NONE;
-	Moving_ByEncoder = ENCODER_LEFT45;
-	Control(-Turn_Speed, Turn_Speed);
-}
-
-void Turn_Left90(void)
-{
-	Roadway_mp_syn();
-	Stop_Flag = TRACKING;
-	Track_Mode = TrackMode_NONE;
-	Moving_ByEncoder = ENCODER_LEFT90;
-	Control(-Turn_Speed, Turn_Speed);
-}
-
-void Turn_Right45(void)
-{
-	Roadway_mp_syn();
-	Stop_Flag = TRACKING;
-	Track_Mode = TrackMode_NONE;
-	Moving_ByEncoder = ENCODER_RIGHT45;
-	Control(Turn_Speed, -Turn_Speed);
-}
-
-void Turn_Right90(void)
-{
-	Roadway_mp_syn();
-	Stop_Flag = TRACKING;
-	Track_Mode = TrackMode_NONE;
-	Moving_ByEncoder = ENCODER_RIGHT90;
-	Control(Turn_Speed, -Turn_Speed);
-}
-
-void Turn_Right180(void)
-{
-	Roadway_mp_syn();
-	Stop_Flag = TRACKING;
-	Track_Mode = TrackMode_NONE;
-	Moving_ByEncoder = ENCODER_RIGHT180;
-	Control(Turn_Speed, -Turn_Speed);
+	Moving_ByEncoder = ENCODER_TurnByValue;
+	if (digree >= 0) 
+	{
+		Control(Turn_Speed, -Turn_Speed);
+	}
+	else
+	{
+		Control(-Turn_Speed, Turn_Speed);
+	}
+	Set_TunningDigree(digree > 0 ? digree : -digree);
 }

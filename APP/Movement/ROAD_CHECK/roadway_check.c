@@ -44,6 +44,9 @@ uint8_t Track_Mode = TrackMode_NONE;
 // 定值前后和转向
 Moving_ByEncoder_t Moving_ByEncoder = ENCODER_NONE;
 
+// 定角度值转向储存
+uint16_t TurnByEncoder = 0;
+
 // 左右速度
 int LSpeed = 0, RSpeed = 0;
 // 循迹时车速
@@ -147,7 +150,8 @@ void Moving_ByEncoderCheck(void)
     case ENCODER_RIGHT180:
         CheckTurnComplete(Turn_MP180);
         break;
-
+    case ENCODER_TurnByValue:
+        CheckTurnComplete(TurnByEncoder);
     default:
         break;
     }
@@ -290,6 +294,11 @@ void TRACK_LINE(void)
         // Control(LSpeed, RSpeed);
         // 因CAN发送出现过没有送达的现象，速度控制在中断内实现
     }
+}
+
+void Set_TunningDigree(uint16_t digree)
+{
+    TurnByEncoder = digree * DigreeToEncoder;
 }
 
 void Roadway_CheckTimInit(uint16_t arr, uint16_t psc)

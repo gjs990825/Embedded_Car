@@ -37,39 +37,51 @@ extern uint8_t CP_AND_SHAPE;
 // TFT
 void TFT_Task(void)
 {
-    ExcuteAndWait(Turn_Right90, Stop_Flag, TURNCOMPLETE);
-    ExcuteAndWait(Turn_Right45, Stop_Flag, TURNCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(135), Stop_Flag, TURNCOMPLETE);
 
     Beep(2);
 
     TFTPage_Next();
-    Request_ToHost(Request_PlateRecognition);
+    Request_ToHost(RequestCmd_PlateRecognition);
     // WaitForFlag(CP_AND_SHAPE, 1);
 
     Beep(3);
     delay_ms(500);
 
     TFTPage_Next();
-    Request_ToHost(Request_ShapeRecongnition);
+    Request_ToHost(RequestCmd_ShapeRecongnition);
     // WaitForFlag(CP_AND_SHAPE, 2);
 
     Beep(4);
     delay_ms(500);
 
-    TFTPage_Next();
-    Request_ToHost(Request_TFTShow);
+    TFTPage_Next(); 
+    Request_ToHost(RequestCmd_TFTShow);
+
+    Send_ZigbeeData_To_Fifo(ZigBee_PlateTFT_1, 8);
+	delay_ms(600);
+    delay_ms(600);
+    delay_ms(600);
+	Send_ZigbeeData_To_Fifo(ZigBee_PlateTFT_2, 8);
+	delay_ms(600);
+
+    ExcuteAndWait(Turn_ByEncoder(-90), Stop_Flag, TURNCOMPLETE);
+
+    Send_PlateDataToRotatingLED();
 
     Beep(5);
     delay_ms(500);
 
-    ExcuteAndWait(Turn_Left45, Stop_Flag, TURNCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(45), Stop_Flag, TURNCOMPLETE);
     CurrentStaus.dir = DIR_LEFT;
 }
+
+
 
 // 二维码识别（未完成）
 void QRCode_Task(void)
 {
-    Request_ToHost(Request_QRCode1);
+    Request_ToHost(RequestCmd_QRCode1);
     WaitForFlag(QR_OK, 1);
     ////////
 }

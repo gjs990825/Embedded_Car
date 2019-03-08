@@ -1,5 +1,5 @@
 #include "can_timer.h"
-
+#include "canp_hostcom.h"
 
 // 初始化CAN数据检查(ZigBee和WiFi)定时器(TIM3)
 void CanTimer_Init(uint16_t arr, uint16_t psc)
@@ -32,6 +32,7 @@ void TIM3_IRQHandler(void)
     {
         Can_WifiRx_Check();
 		Can_ZigBeeRx_Check();
+        // CanP_CanTx_Check(); // edited
         TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
     }
 }

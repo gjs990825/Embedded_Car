@@ -4,9 +4,11 @@
 #include "sys.h"
 
 // 循迹速度
-#define Track_Speed 45 // 55 
+#define Track_Speed 55
 // 转弯速度
 #define Turn_Speed 85  
+
+#define DigreeToEncoder 10
 
 #define Turn_L45_MPval 375
 #define Turn_R45_MPval 400
@@ -39,7 +41,8 @@ typedef enum
     ENCODER_LEFT45,
     ENCODER_RIGHT90,
     ENCODER_RIGHT45,
-    ENCODER_RIGHT180
+    ENCODER_RIGHT180,
+    ENCODER_TurnByValue
 } Moving_ByEncoder_t;
 
 
@@ -54,6 +57,8 @@ extern int DirectionWights;
 extern uint8_t Track_Mode;
 // 定值前后和转向
 extern Moving_ByEncoder_t Moving_ByEncoder;
+// 定角度值转向储存
+extern uint16_t TurnByEncoder;
 
 extern uint8_t Stop_Flag;
 extern int Car_Speed;
@@ -73,7 +78,7 @@ void Roadway_CheckTimInit(uint16_t arr, uint16_t psc);
 void Get_Track(void);
 void Get_DirectionWights(void);
 void TRACK_LINE(void);
-
+void Set_TunningDigree(uint16_t digree);
 
 
 

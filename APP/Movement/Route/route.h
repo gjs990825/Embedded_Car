@@ -13,8 +13,8 @@
 static Route_Task_t Route_Task[] = {
     {.node.x = 5, .node.y = 6, .node.dir = DIR_DOWN, .Task = Start_Task}, // ÆðÊ¼µã
     {.node.x = 5, .node.y = 5, .node.dir = DIR_NOTSET, .Task = TFT_Task},
-    {.node.x = 3, .node.y = 6, .node.dir = DIR_NOTSET, .Task = End_Task},
-    {.node.x = 5, .node.y = 6, .node.dir = DIR_DOWN, .Task = NULL}};
+    {.node.x = 3, .node.y = 6, .node.dir = DIR_NOTSET, .Task = End_Task}};
+    // {.node.x = 1, .node.y = 6, .node.dir = DIR_DOWN, .Task = End_Task}};
 
 extern RouteNode CurrentStaus;
 extern int8_t RouteTask_Finished[ROUTE_TASK_NUMBER];
