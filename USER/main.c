@@ -41,7 +41,6 @@ int main(void)
 		// 	LED_twinkle_times =  gt_get() + 50;			//LED4×´Ì¬È¡·´
 		// 	LED4 = !LED4;
 		// }
-		extern uint8_t autoRunEnable;
 		if (autoRunEnable)
 		{
 			Auto_Run();

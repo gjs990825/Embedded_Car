@@ -30,6 +30,7 @@
 #include "debug.h"
 #include "movement.h"
 #include "can_timer.h"
+#include "data_from_host.h"
 
 
 void Hardware_Init(void);

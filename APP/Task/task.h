@@ -34,11 +34,6 @@
 
 // 红外指令
 
-#define Send_PlateDataToRotatingLED()     \
-    Infrared_Send_A(Infrared_PlateData1); \
-    delay_ms(600);                        \
-    Infrared_Send_A(Infrared_PlateData2)
-
 #define Send_PlateToTFT()                       \
     Send_ZigBeeData(ZigBee_PlateTFT_1, 1, 600); \
     Send_ZigBeeData(ZigBee_PlateTFT_2, 1, 600)
@@ -47,5 +42,18 @@ void TFT_Task(void);
 void QRCode_Task(void);
 void Start_Task(void);
 void End_Task(void);
+void TrafficLight_Task(void);
+
+
+
+
+// 任务点
+void Task_5_5(void);
+void Task_1_5(void);
+void Task_3_5(void);
+void Task_1_3(void);
+void Task_5_3(void);
+void Task_5_1(void);
+void Task_3_1(void);
 
 #endif // __TASK_H_

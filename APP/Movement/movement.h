@@ -4,7 +4,7 @@
 #include "sys.h"
 #include "a_star.h"
 
-enum 
+enum
 {
 	DIR_CLOCKWISE = 0,
 	DIR_COUNTCLOCKWISE
@@ -30,7 +30,7 @@ typedef enum
 #define ExcuteAndWait(action, Flag, waitStatus) \
 	do                                          \
 	{                                           \
-		action;                               \
+		action;                                 \
 		WaitForFlag(Flag, waitStatus);          \
 		Stop();                                 \
 	} while (0)

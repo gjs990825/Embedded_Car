@@ -13,12 +13,14 @@
 // 角度转换到码盘常量↓
 
 // 顺时针转换倍数
-#define ClockWiseDigreeToEncoder 9.73f
+#define ClockWiseDigreeToEncoder 9.86f
 // 逆时针转换倍数
-#define CountClockWiseDigreeToEncoder 9.23f
+#define CountClockWiseDigreeToEncoder 9.47f
 
 // 循迹距离常量↓
 
+// 每厘米码盘值
+#define Centimeter_Value 40
 // X轴中点循迹值
 #define LongTrack_Value 1100
 // Y轴中点循迹值

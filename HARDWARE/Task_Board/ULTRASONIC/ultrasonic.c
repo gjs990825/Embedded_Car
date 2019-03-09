@@ -140,5 +140,15 @@ void EXTI4_IRQHandler(void)
 }
 
 
-
+uint16_t Ultrasonic_GetAverage(uint8_t times)
+{
+	uint32_t tmp_dis = 0;
+	for(uint8_t i = 0; i < times; i++)
+	{
+		Ultrasonic_Ranging();
+		tmp_dis += distance;
+		delay_ms(5);
+	}
+	return tmp_dis / times;
+}
 
