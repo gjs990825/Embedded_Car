@@ -17,4 +17,3 @@
 // extern uint8_t RFID_Flag;
 
 typedef unsigned char uint8_t;
-

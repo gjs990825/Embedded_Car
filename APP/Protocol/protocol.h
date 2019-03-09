@@ -183,6 +183,48 @@ static uint8_t ZigBee_GarageLayers2[8] = {0x55, 0x0D, 0x01, 0x02, 0x00, 0x00, 0x
 static uint8_t ZigBee_GarageLayers3[8] = {0x55, 0x0D, 0x01, 0x03, 0x00, 0x00, 0x00, 0xBB}; // 停到3层
 static uint8_t ZigBee_GarageLayers4[8] = {0x55, 0x0D, 0x01, 0x04, 0x00, 0x00, 0x00, 0xBB}; // 停到4层
 
+
+
+typedef enum
+{
+    FromHost_LEDDisplaySecomdRow = 0xc1,        // 数码管第二排显示是数据
+    FromHost_ReceivePresetHeadTowards = 0x71,   // 接收预案车头设置
+    FromHost_Start = 0xA1,                      // 小车启动命令
+    FromHost_TurnningLight = 0xA2,              // 转向灯
+    FromHost_UltrasonicRecognition = 0xA3,      // 超声波识别
+    FromHost_ShapeRecongnition = 0xA4,          // 图像识别
+    FromHost_TrafficLight = 0xA5,               // 交通灯
+    FromHost_StreetLight = 0xA6,                // 路灯
+    FromHost_PlateTFT = 0x88,                   // 车牌显示（TFT）
+    FromHost_PlateRotationLED = 0x99,           // 车牌显示（旋转led）
+    FromHost_AlarmON = 0xA7,                    // 报警器开
+    FromHost_AlarmOFF = 0xA8,                   // 报警器关
+    FromHost_Garage = 0xB1,                     // 立体车库
+    FromHost_Stop = 0x01,                       // 停止
+    FromHost_Go = 0x02,                         // 前进
+    FromHost_Back = 0x03,                       // 后退
+    FromHost_TurnLeft = 0x04,                   // 左转
+    FromHost_TurnRight = 0x05,                  // 右转
+    FromHost_TrackLine = 0x06,                  // 循迹
+    FromHost_EncoderClear = 0x07,               // 码盘清零
+    FromHost_TurnCountClockWiseToDigree = 0x08, // 左转弯--角度
+    FromHost_TurnClockWiseToDigree = 0x09,      // 右转弯--角度
+    FromHost_InfraredFrontData = 0x10,          // 红外前三位数据
+    FromHost_InfraredBackData = 0x11,           // 红外后三位数据
+    FromHost_InfraredSend = 0x12,               // 通知小车单片机发送红外线
+    FromHost_TurnningLightControl = 0x20,       // 转向灯控制
+    FromHost_Beep = 0x30,                       // 蜂鸣器
+    FromHost_NotUsed = 0x40,                    // 暂未使用
+    FromHost_InfraredPhotoPrevious = 0x50,      // 红外发射控制相片上翻
+    FromHost_InfraredPhotoNext = 0x51,          // 红外发射控制相片下翻
+    FromHost_InfraredLightAdd1 = 0x61,          // 红外发射控制光源强度档位加1
+    FromHost_InfraredLightAdd2 = 0x62,          // 红外发射控制光源强度档位加2
+    FromHost_InfraredLightAdd3 = 0x63,          // 红外发射控制光源强度档位加3
+    FromHost_AGVReturn = 0x80                   // 从车返回
+} CommandFromHost_t;
+
+
+
 void Send_DataToUsart(uint8_t *buf, uint32_t length);
 void Check_Sum(uint8_t *cmd);
 

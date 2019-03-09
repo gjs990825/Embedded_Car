@@ -34,9 +34,15 @@
 extern uint8_t QR_OK;
 extern uint8_t CP_AND_SHAPE;
 
-void Task1(void)
+
+
+
+void TrafficLight_Task(void)
 {
-    
+    ExcuteAndWait(Turn_ByEncoder(-20), Stop_Flag, TURNCOMPLETE);
+    Request_ToHost(RequestCmd_TrafficLight);
+
+
 }
 
 // TFT
