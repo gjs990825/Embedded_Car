@@ -12,25 +12,9 @@
 #define LED_TimerStop() Send_ZigBeeData(ZigBee_LEDDisplayStopTimer, 3, 20)   // 停止计时
 #define TFTPage_Next() Send_ZigBeeData(ZigBee_TFTPageNext, 2, 100)           // TFT下一页
 
-// 请求指令
-#define Request_QRCode1() Request_ToHost(RequestCmd_QRCode1)                     // 二维码1
-#define Request_QRCode2() Request_ToHost(RequestCmd_QRCode2)                     // 二维码2
-#define Request_StreetLight() Request_ToHost(RequestCmd_StreetLight)             // 智能路灯
-#define Request_Garage() Request_ToHost(RequestCmd_Garage)                       // 立体车库
-#define Request_TFTShow() Request_ToHost(RequestCmd_TFTShow)                     // TFT显示
-#define Request_BarrierGate() Request_ToHost(RequestCmd_BarrierGate)             // 道闸显示
-#define Request_LEDShow() Request_ToHost(RequestCmd_LEDShow)                     // LED标志物显示
-#define Request_PlateRecognition() Request_ToHost(RequestCmd_PlateRecognition)   // 车牌识别
-#define Request_ShapeRecongnition() Request_ToHost(RequestCmd_ShapeRecongnition) // 图形识别
-#define Request_AGV() Request_ToHost(RequestCmd_AGV)                             // AGV
-#define Request_Ultrasonic() Request_ToHost(RequestCmd_Ultrasonic)               // 超声波
-#define Request_Alarm() Request_ToHost(RequestCmd_Alarm)                         // 报警台
-#define Request_TrafficLight() Request_ToHost(RequestCmd_TrafficLight)           // 交通灯
-#define Request_RotatingLED() Request_ToHost(RequestCmd_RotatingLED)             // 旋转LED(立体显示)
-
-// 请求数据(或行为)
-#define Request_GarageFloor() Request_Data(RequestData_GarageFloor) // 请求车库层数
-#define Request_Infrared() Request_Data(RequestData_Infrared)       // 请求红外数据
+// // 请求数据(或行为)
+// #define Request_GarageFloor() Request_Data(RequestData_GarageFloor) // 请求车库层数
+// #define Request_Infrared() Request_Data(RequestData_Infrared)       // 请求红外数据
 
 // 红外指令
 
@@ -43,9 +27,12 @@ void QRCode_Task(void);
 void Start_Task(void);
 void End_Task(void);
 void TrafficLight_Task(void);
-
-
-
+void TFT_Task(void);
+void RotationLED_Task(void);
+void QRCode_Task(void);
+void LEDDispaly_ShowDistance(uint16_t dis);
+#define Ultrasonic_Task(times) Ultrasonic_GetAverage(times)
+void StreetLight_Task(uint8_t targetLevel);
 
 // 任务点
 void Task_5_5(void);

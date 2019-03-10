@@ -230,3 +230,14 @@ uint16_t Get_Bh_Value(void)
     return data;        
 }
 
+uint16_t BH1750_GetAverage(uint8_t times)
+{
+    uint32_t temp;
+
+    for(uint8_t i = 0; i < times; i++)
+    {
+        temp += Get_Bh_Value();
+        delay_ms(10);
+    }
+    return temp / times;
+}

@@ -11,4 +11,6 @@
 void BH1750_Configure(void);
 uint16_t Get_Bh_Value(void);
 
+uint16_t BH1750_GetAverage(uint8_t times);
+
 #endif

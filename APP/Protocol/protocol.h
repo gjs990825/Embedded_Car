@@ -127,7 +127,7 @@ extern uint8_t Infrared_AlarmData[6];                                       // ±
 extern uint8_t Infrared_PlateData1[6]; // ³µÅÆĞÅÏ¢1
 extern uint8_t Infrared_PlateData2[6]; // ³µÅÆĞÅÏ¢2
 // Ğı×ªLED
-extern uint8_t Infrared_LEDDisplayDistanceData[8];
+extern uint8_t ZigBee_LEDDisplayDistanceData[8];
 
 
 /***************************************ZigBee Êı¾İ ZigBee_XX[8]**************************************************/
@@ -165,7 +165,6 @@ static uint8_t ZigBee_WirelessChargingON[8] = {0x55, 0x0a, 0x01, 0x01, 0x00, 0x0
 
 // LEDÏÔÊ¾±êÖ¾Îï
 extern uint8_t ZigBee_LEDDisplayData[8]; // ÊıÂë¹ÜÏÔÊ¾Êı¾İ
-extern uint8_t ZigBee_LEDDisplayDistance[8];
 static uint8_t ZigBee_LEDDisplayStartTimer[8] = {0x55, 0x04, 0x03, 0x01, 0x00, 0x00, 0x04, 0xBB}; // ÊıÂë¹Ü¿ªÊ¼¼ÆÊ±
 static uint8_t ZigBee_LEDDisplayStopTimer[8] = {0x55, 0x04, 0x03, 0x00, 0x00, 0x00, 0x03, 0xBB};  // ÊıÂë¹Ü¹Ø±Õ¼ÆÊ±
 static uint8_t ZigBee_LEDDisplayDistance[8] = {0x55, 0x04, 0x04, 0x00, 0x02, 0x00, 0x06, 0xBB};   // ÊıÂë¹ÜÏÔÊ¾¾àÀë

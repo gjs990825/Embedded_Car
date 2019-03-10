@@ -118,7 +118,6 @@ void TIM6_DAC_IRQHandler(void)
 	if(TIM_GetITStatus(TIM6,TIM_IT_Update) == SET)
 	{
 		Ultrasonic_Num++;
-		
 	}
 	TIM_ClearITPendingBit(TIM6,TIM_IT_Update);
 }
@@ -147,8 +146,8 @@ uint16_t Ultrasonic_GetAverage(uint8_t times)
 	{
 		Ultrasonic_Ranging();
 		tmp_dis += distance;
-		delay_ms(5);
+		delay_ms(50);
 	}
-	return tmp_dis / times;
+	return (tmp_dis / times) - UltrasonicErrorValue;
 }
 

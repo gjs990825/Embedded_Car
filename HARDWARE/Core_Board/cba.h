@@ -18,11 +18,12 @@
 #include "data_base.h"
 #include "protocol.h"
 #include "roadway_check.h"
+#include "ultrasonic.h"
 
 #define Action_S1() Auto_Run()// Infrared_Send(HW_K, 6) //打开测试红外报警
-#define Action_S2() ExcuteAndWait(Turn_ByEncoder(360), Stop_Flag, TURNCOMPLETE) // ExcuteNTimes(Send_ZigbeeData_To_Fifo(ZigBee_TFTPageNext, 8), 2, 100) //Infrared_Send(H_1, 4)  //调光
-#define Action_S3() ExcuteAndWait(Turn_ByEncoder(-360), Stop_Flag, TURNCOMPLETE) // SYN7318_Test()
-#define Action_S4() Read_Card()
+#define Action_S2() LEDDispaly_ShowDistance(Ultrasonic_Task(10)) //Infrared_Send(H_1, 4)  //调光
+#define Action_S3() LEDDispaly_ShowDistance(233) // SYN7318_Test()
+#define Action_S4() StreetLight_Task(3) //Read_Card()
 
 
 // 按键配置

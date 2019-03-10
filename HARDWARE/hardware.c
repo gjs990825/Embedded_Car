@@ -25,7 +25,7 @@ void Hardware_Init(void)
 
 	
 	// DebugTimer_Init(16799, 1999); // 调试输出
-	CanTimer_Init(16799, 499); // 100ms CAN数据检查
+	CanTimer_Init(16799, 199); // 100ms CAN数据检查
 	
 
 	print_info("\r\nSystem running...\r\n");

@@ -31,6 +31,7 @@
 #include "hardware.h"
 #include "route.h"
 #include "ultrasonic.h"
+#include "my_lib.h"
 
 void TrafficLight_Task(void)
 {
@@ -39,14 +40,12 @@ void TrafficLight_Task(void)
     WaitForFlag(GetCmdFlag(FromHost_TrafficLight), SET); // 等待识别完成
 }
 
-#define Ultrasonic_Task(times) Ultrasonic_GetAverage(times)
-
 // TFT
 void TFT_Task(void)
 {
-    Request_ToHost(RequestCmd_TFTRecognition); // 请求识别TFT内容
+    Request_ToHost(RequestCmd_TFTRecognition);             // 请求识别TFT内容
     WaitForFlag(GetCmdFlag(FromHost_TFTRecognition), SET); // 等待识别完成
-    Request_ToHost(RequestCmd_TFTShow); //请求显示车牌到TFT
+    Request_ToHost(RequestCmd_TFTShow);                    //请求显示车牌到TFT
 }
 
 void RotationLED_Task(void)
@@ -90,31 +89,72 @@ void End_Task(void)
     Set_tba_WheelLED(R_LED, RESET);
 }
 
-uint8_t HEXTOBCD(uint8_t hex_data)
+void LEDDispaly_ShowDistance(uint16_t dis)
 {
-    uint8_t temp;
-    temp = (hex_data / 10 * 16 + hex_data % 10);
-    return temp;
+    ZigBee_LEDDisplayDistanceData[4] = HEX2BCD(dis / 100);
+    ZigBee_LEDDisplayDistanceData[5] = HEX2BCD(dis % 100);
+    Check_Sum(ZigBee_LEDDisplayDistanceData);
+    Send_ZigbeeData_To_Fifo(ZigBee_LEDDisplayDistanceData, 8);
 }
 
-void LEDDispaly_ShowDistance(uint8_t dis)
+void StreetLight_Task(uint8_t targetLevel)
 {
-    Infrared_LEDDisplayDistanceData[4] = HEXTOBCD(dis / 100);
-    Infrared_LEDDisplayDistanceData[5] = HEXTOBCD(dis % 100);
-    Send_ZigbeeData_To_Fifo(Infrared_LEDDisplayDistanceData, 8);
+    uint16_t temp_val[4], CurrentLightValue;
+    int8_t currentLevel, errorValue, i;
+
+    for (i = 0; i < 4; i++)
+    {
+        temp_val[i] = BH1750_GetAverage(5);
+		Beep(2);
+        Infrared_Send_A(Infrared_LightAdd1);
+        delay_ms(700);
+		delay_ms(700);
+    }
+
+    CurrentLightValue = temp_val[0];
+
+    bubble_sort(temp_val, 4);
+
+    for (i = 0; i < 4; i++)
+    {
+        if (CurrentLightValue == temp_val[i])
+        {
+            currentLevel = i + 1;
+            break;
+        }
+    }
+    errorValue = targetLevel - currentLevel;
+    if (errorValue >= 0)
+    {
+        for(i = 0; i < errorValue; i++)
+        {
+            Infrared_Send_A(Infrared_LightAdd1);
+            delay_ms(700);
+			delay_ms(700);
+        }
+    }
+    else
+    {
+        for(i = 0; i < 4 + errorValue; i++)
+        {
+            Infrared_Send_A(Infrared_LightAdd1);
+            delay_ms(700);
+			delay_ms(700);
+        }
+    }
 }
 
 void Task_5_5(void)
 {
     ExcuteAndWait(Turn_ByEncoder(135), Stop_Flag, TURNCOMPLETE);
-    ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 13), Stop_Flag, FORBACKCOMPLETE);
+    ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 8), Stop_Flag, FORBACKCOMPLETE);
     Beep(2);
-    delay_ms(600);
-    delay_ms(600); // 等待摄像头反应
+    delay_ms(700);
+    delay_ms(700); // 等待摄像头反应
 
     TFT_Task();
 
-    ExcuteAndWait(Back_Off(30, Centimeter_Value * 13), Stop_Flag, FORBACKCOMPLETE);
+    ExcuteAndWait(Back_Off(30, Centimeter_Value * 8), Stop_Flag, FORBACKCOMPLETE);
     ExcuteAndWait(Turn_ByEncoder(-90), Stop_Flag, TURNCOMPLETE);
     Beep(5);
     delay_ms(500);
@@ -128,6 +168,7 @@ void Task_5_5(void)
 void Task_3_5(void)
 {
     ExcuteAndWait(Turn_ByEncoder(20), Stop_Flag, TURNCOMPLETE);
+    delay_ms(700);
 
     TrafficLight_Task();
 
@@ -136,18 +177,28 @@ void Task_3_5(void)
 
 void Task_1_5(void)
 {
+    delay_ms(700);
     QRCode_Task();
 
-    ExcuteAndWait(Back_Off(30, Centimeter_Value * 14), Stop_Flag, FORBACKCOMPLETE);
+    ExcuteAndWait(Back_Off(30, Centimeter_Value * 12), Stop_Flag, FORBACKCOMPLETE);
 
-    LEDDispaly_ShowDistance(Ultrasonic_Task(10));
+    LEDDispaly_ShowDistance(Ultrasonic_GetAverage(10));
 
-    ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 14), Stop_Flag, FORBACKCOMPLETE);
+    ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 12), Stop_Flag, FORBACKCOMPLETE);
 }
 
 void Task_1_3(void)
 {
-    // 路灯
+    // 路灯// Request_ToHost(RequestCmd_StreetLight);
+    ExcuteAndWait(Turn_ByEncoder(90), Stop_Flag, TURNCOMPLETE);
+    ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 5), Stop_Flag, FORBACKCOMPLETE);
+
+    StreetLight_Task(3);
+
+    ExcuteAndWait(Back_Off(30, Centimeter_Value * 5), Stop_Flag, FORBACKCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(-90), Stop_Flag, TURNCOMPLETE);
+
+    End_Task();
 }
 
 void Task_5_3(void)
@@ -163,4 +214,5 @@ void Task_5_1(void)
 void Task_3_1(void)
 {
     // 入库
+    End_Task();
 }

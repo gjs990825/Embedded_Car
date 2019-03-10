@@ -6,27 +6,27 @@
 // 速度常量↓
 
 // 循迹速度
-#define Track_Speed 55
+#define Track_Speed 50 // 55
 // 转弯速度
-#define Turn_Speed 85
+#define Turn_Speed 70 // 85
 
 // 角度转换到码盘常量↓
 
 // 顺时针转换倍数
-#define ClockWiseDigreeToEncoder 9.86f
+#define ClockWiseDigreeToEncoder 10.1f
 // 逆时针转换倍数
 #define CountClockWiseDigreeToEncoder 9.47f
 
 // 循迹距离常量↓
 
 // 每厘米码盘值
-#define Centimeter_Value 40
+#define Centimeter_Value 30
 // X轴中点循迹值
-#define LongTrack_Value 1100
+#define LongTrack_Value 1125 // 1100 (37.5 * 30)
 // Y轴中点循迹值
-#define ShortTrack_Value 950 
+#define ShortTrack_Value 900 // 950 (30 * 30)
 // 到十字路口中心码盘值
-#define ToCrossroadCenter 420 
+#define ToCrossroadCenter 390 // 420 
 
 
 // 循迹模式

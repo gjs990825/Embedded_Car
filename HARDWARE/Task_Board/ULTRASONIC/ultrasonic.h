@@ -7,6 +7,9 @@
 // ³¬Éù²¨Òı½Å¶¨Òå
 #define INC PAout(15)
 
+// ³¬Éù²¨Îó²î
+#define UltrasonicErrorValue (0)
+
 void Ultrasonic_Init(void);
 void Ultrasonic_Ranging(void);
 uint16_t Ultrasonic_GetAverage(uint8_t times);
