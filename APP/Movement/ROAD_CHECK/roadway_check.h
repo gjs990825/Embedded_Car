@@ -15,7 +15,7 @@
 // 顺时针转换倍数
 #define ClockWiseDigreeToEncoder 10.1f
 // 逆时针转换倍数
-#define CountClockWiseDigreeToEncoder 9.47f
+#define CountClockWiseDigreeToEncoder 9.83f
 
 // 循迹距离常量↓
 

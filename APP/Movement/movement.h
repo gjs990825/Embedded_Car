@@ -4,12 +4,7 @@
 #include "sys.h"
 #include "a_star.h"
 
-enum
-{
-	DIR_CLOCKWISE = 0,
-	DIR_COUNTCLOCKWISE
-};
-
+// Stop_Flag的枚举
 typedef enum
 {
 	TRACKING = 0x00,		// 循迹状态
@@ -19,6 +14,7 @@ typedef enum
 	OUTTRACK = 0x04			// 出线
 } StopFlag_t;
 
+// 等待某个标志位。注意：此指令没有等待超时处理机制
 #define WaitForFlag(flag, status) \
 	do                            \
 	{                             \
@@ -27,6 +23,7 @@ typedef enum
 		};                        \
 	} while (0)
 
+// 等待执行完成。一般用于转向循迹等不会超时的任务
 #define ExcuteAndWait(action, Flag, waitStatus) \
 	do                                          \
 	{                                           \

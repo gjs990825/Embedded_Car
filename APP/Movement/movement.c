@@ -82,7 +82,7 @@ void Go_ToNextNode(Route_Task_t next)
 	}
 	else
 	{
-		print_info("Same coordinate\r\n");
+		print_info("Same\r\n"); // 同一点
 		if (next.Task != NULL) // 检查是否有任务
 		{
 			next.Task();
@@ -133,33 +133,27 @@ void Go_ToNextNode(Route_Task_t next)
 		}
 	}
 
-	if (Moving_ByEncoder != ENCODER_NONE) // 有转向任务，等待
+	if (Moving_ByEncoder != ENCODER_NONE) // 有转向任务，等待完成
 	{
 		WaitForFlag(Stop_Flag, TURNCOMPLETE);
 	}
 
 	if (next.node.x % 2 == 0) // X轴为偶数的坐标
 	{
-		// Track_ByEncoder(Track_Speed, LongTrack_Value);
-		// WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
-		ExcuteAndWait(Track_ByEncoder(Track_Speed, LongTrack_Value), Stop_Flag, FORBACKCOMPLETE);	
+		ExcuteAndWait(Track_ByEncoder(Track_Speed, LongTrack_Value), Stop_Flag, FORBACKCOMPLETE);
 	}
 	else if (next.node.y % 2 == 0) // Y轴为偶数的坐标
 	{
-		Track_ByEncoder(Track_Speed, ShortTrack_Value);
-		WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
-		Stop();
+		ExcuteAndWait(Track_ByEncoder(Track_Speed, ShortTrack_Value), Stop_Flag, FORBACKCOMPLETE);
 	}
 	else // 前方十字路口
 	{
 		Start_Tracking(Track_Speed); // 循迹到十字路口
 		WaitForFlag(Stop_Flag, CROSSROAD);
-		Go_Ahead(Track_Speed, ToCrossroadCenter); // 前进到十字路口中心
-		WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
-		Stop();
+		ExcuteAndWait(Go_Ahead(Track_Speed, ToCrossroadCenter), Stop_Flag, FORBACKCOMPLETE); // 前进到十字路口中心
 	}
 
-	// 更新当前位置信息和状态
+	// 更新当前位置信息和方向
 	CurrentStaus.x = next.node.x;
 	CurrentStaus.y = next.node.y;
 	CurrentStaus.dir = finalDir;
