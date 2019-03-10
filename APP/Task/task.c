@@ -33,6 +33,7 @@
 #include "ultrasonic.h"
 #include "my_lib.h"
 
+// 交通灯识别任务
 void TrafficLight_Task(void)
 {
     Send_ZigBeeData(ZigBee_TrafficLightStartRecognition, 2, 200); // 开始识别交通灯
@@ -40,7 +41,7 @@ void TrafficLight_Task(void)
     WaitForFlag(GetCmdFlag(FromHost_TrafficLight), SET); // 等待识别完成
 }
 
-// TFT
+// TFT图像识别任务
 void TFT_Task(void)
 {
     Request_ToHost(RequestCmd_TFTRecognition);             // 请求识别TFT内容
@@ -48,6 +49,7 @@ void TFT_Task(void)
     Request_ToHost(RequestCmd_TFTShow);                    //请求显示车牌到TFT
 }
 
+// 旋转led发送数据
 void RotationLED_Task(void)
 {
     Infrared_Send_A(Infrared_PlateData1);
@@ -89,6 +91,7 @@ void End_Task(void)
     Set_tba_WheelLED(R_LED, RESET);
 }
 
+// led显示距离（输入距离）
 void LEDDispaly_ShowDistance(uint16_t dis)
 {
     ZigBee_LEDDisplayDistanceData[4] = HEX2BCD(dis / 100);
@@ -97,6 +100,7 @@ void LEDDispaly_ShowDistance(uint16_t dis)
     Send_ZigbeeData_To_Fifo(ZigBee_LEDDisplayDistanceData, 8);
 }
 
+// 路灯档位调节，输入目标档位自动调整
 void StreetLight_Task(uint8_t targetLevel)
 {
     uint16_t temp_val[4], CurrentLightValue;
@@ -129,8 +133,8 @@ void StreetLight_Task(uint8_t targetLevel)
         for(i = 0; i < errorValue; i++)
         {
             Infrared_Send_A(Infrared_LightAdd1);
-            delay_ms(700);
-			delay_ms(700);
+            delay_ms(750);
+			delay_ms(750);
         }
     }
     else
@@ -138,11 +142,14 @@ void StreetLight_Task(uint8_t targetLevel)
         for(i = 0; i < 4 + errorValue; i++)
         {
             Infrared_Send_A(Infrared_LightAdd1);
-            delay_ms(700);
-			delay_ms(700);
+            delay_ms(750);
+			delay_ms(750);
         }
     }
 }
+
+// 下面是坐标点对应的任务集合，独立任务进入前需要保证位置距离朝向等准确无误
+// 任务结束和开始车身方向不一样的需要手动设置 CurrentStaus.dir = DIR_XX;
 
 void Task_5_5(void)
 {
@@ -162,7 +169,7 @@ void Task_5_5(void)
     RotationLED_Task();
 
     ExcuteAndWait(Turn_ByEncoder(45), Stop_Flag, TURNCOMPLETE);
-    CurrentStaus.dir = DIR_LEFT; // 与任务开始时候方向不一致
+    CurrentStaus.dir = DIR_LEFT; // 与任务开始时方向不一致
 }
 
 void Task_3_5(void)
@@ -197,13 +204,12 @@ void Task_1_3(void)
 
     ExcuteAndWait(Back_Off(30, Centimeter_Value * 5), Stop_Flag, FORBACKCOMPLETE);
     ExcuteAndWait(Turn_ByEncoder(-90), Stop_Flag, TURNCOMPLETE);
-
-    End_Task();
 }
 
 void Task_5_3(void)
 {
     // （语音）
+    End_Task();
 }
 
 void Task_5_1(void)

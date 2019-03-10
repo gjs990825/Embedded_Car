@@ -82,12 +82,12 @@ void Process_DataFromHost(uint8_t mainCmd)
 
     case FromHost_TurnCountClockWiseToDigree:
         Turn_ByEncoder(-(int16_t)GetEncoderSetting());
-        Control(SetSpeed, SetSpeed);
+        Control(-SetSpeed, SetSpeed);
         break; // 左转弯--角度
 
     case FromHost_TurnClockWiseToDigree:
         Turn_ByEncoder((int16_t)GetEncoderSetting());
-        Control(SetSpeed, SetSpeed);
+        Control(SetSpeed, -SetSpeed);
         break; // 右转弯--角度
 
     case FromHost_InfraredFrontData:

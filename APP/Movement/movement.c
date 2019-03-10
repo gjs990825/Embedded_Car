@@ -140,9 +140,9 @@ void Go_ToNextNode(Route_Task_t next)
 
 	if (next.node.x % 2 == 0) // X轴为偶数的坐标
 	{
-		Track_ByEncoder(Track_Speed, LongTrack_Value);
-		WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
-		Stop();
+		// Track_ByEncoder(Track_Speed, LongTrack_Value);
+		// WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
+		ExcuteAndWait(Track_ByEncoder(Track_Speed, LongTrack_Value), Stop_Flag, FORBACKCOMPLETE);	
 	}
 	else if (next.node.y % 2 == 0) // Y轴为偶数的坐标
 	{

@@ -16,7 +16,7 @@ static Route_Task_t Route_Task[] = {
     {.node.x = 3, .node.y = 5, .node.dir = DIR_NOTSET, .Task = NULL}, // Task_3_5
     {.node.x = 1, .node.y = 5, .node.dir = DIR_DOWN, .Task = NULL}, // Task_1_5
     {.node.x = 1, .node.y = 3, .node.dir = DIR_DOWN, .Task = Task_1_3}, // Task_1_3
-    // {.node.x = 5, .node.y = 3, .node.dir = DIR_DOWN, .Task = Task_5_3},
+    {.node.x = 5, .node.y = 3, .node.dir = DIR_DOWN, .Task = Task_5_3},
     // {.node.x = 5, .node.y = 1, .node.dir = DIR_DOWN, .Task = Task_5_1},
     // {.node.x = 3, .node.y = 1, .node.dir = DIR_DOWN, .Task = Task_3_1}
 };

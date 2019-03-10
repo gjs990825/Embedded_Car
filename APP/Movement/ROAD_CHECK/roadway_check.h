@@ -8,7 +8,7 @@
 // 循迹速度
 #define Track_Speed 50 // 55
 // 转弯速度
-#define Turn_Speed 70 // 85
+#define Turn_Speed 75 // 85
 
 // 角度转换到码盘常量↓
 
@@ -19,15 +19,14 @@
 
 // 循迹距离常量↓
 
-// 每厘米码盘值
-#define Centimeter_Value 30
+// 每厘米的码盘值
+#define Centimeter_Value 28.94f
 // X轴中点循迹值
-#define LongTrack_Value 1125 // 1100 (37.5 * 30)
+static const int LongTrack_Value = (37.5f * Centimeter_Value);
 // Y轴中点循迹值
-#define ShortTrack_Value 900 // 950 (30 * 30)
+static const int ShortTrack_Value = (30.0f * Centimeter_Value);
 // 到十字路口中心码盘值
-#define ToCrossroadCenter 390 // 420 
-
+static const int ToCrossroadCenter = (15.2f * Centimeter_Value);
 
 // 循迹模式
 typedef enum

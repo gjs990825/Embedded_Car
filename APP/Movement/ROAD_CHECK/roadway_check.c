@@ -243,7 +243,8 @@ void TRACK_LINE(void)
     }
     else if ((NumberOfWhite <= ALL_BLACK) && (Track_Mode == TrackMode_NORMAL)) // È«ºÚ
     {
-        // Stop();
+        Roadway_Flag_clean();
+	    Control(0, 0);
         Stop_Flag = CROSSROAD;
     }
     else
