@@ -26,8 +26,6 @@ int main(void)
 
 	Send_UpMotor(0, 0);
 
-	
-
 	while (1)
 	{
 		KEY_Check(); //°´¼ü¼ì²â

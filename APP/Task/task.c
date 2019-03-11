@@ -153,45 +153,47 @@ void StreetLight_Task(uint8_t targetLevel)
 
 void Task_5_5(void)
 {
-    ExcuteAndWait(Turn_ByEncoder(135), Stop_Flag, TURNCOMPLETE);
-    ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 8), Stop_Flag, FORBACKCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(90), Stop_Flag, TURNCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(50), Stop_Flag, TURNCOMPLETE);
+    ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 10), Stop_Flag, FORBACKCOMPLETE);
     Beep(2);
     delay_ms(700);
     delay_ms(700); // 等待摄像头反应
 
     TFT_Task();
 
-    ExcuteAndWait(Back_Off(30, Centimeter_Value * 8), Stop_Flag, FORBACKCOMPLETE);
-    ExcuteAndWait(Turn_ByEncoder(-90), Stop_Flag, TURNCOMPLETE);
+    ExcuteAndWait(Back_Off(30, Centimeter_Value * 10), Stop_Flag, FORBACKCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(-50), Stop_Flag, TURNCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(-35), Stop_Flag, TURNCOMPLETE);
     Beep(5);
     delay_ms(500);
 
     RotationLED_Task();
 
-    ExcuteAndWait(Turn_ByEncoder(45), Stop_Flag, TURNCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(35), Stop_Flag, TURNCOMPLETE);
     CurrentStaus.dir = DIR_LEFT; // 与任务开始时方向不一致
 }
 
 void Task_3_5(void)
 {
-    ExcuteAndWait(Turn_ByEncoder(20), Stop_Flag, TURNCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(22), Stop_Flag, TURNCOMPLETE);
     delay_ms(700);
 
     TrafficLight_Task();
 
-    ExcuteAndWait(Turn_ByEncoder(-20), Stop_Flag, TURNCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(-22), Stop_Flag, TURNCOMPLETE);
 }
 
 void Task_1_5(void)
 {
     delay_ms(700);
+
+    ExcuteAndWait(Back_Off(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
+
     QRCode_Task();
+    LEDDispaly_ShowDistance(Ultrasonic_GetAverage(20));
 
-    ExcuteAndWait(Back_Off(30, Centimeter_Value * 12), Stop_Flag, FORBACKCOMPLETE);
-
-    LEDDispaly_ShowDistance(Ultrasonic_GetAverage(10));
-
-    ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 12), Stop_Flag, FORBACKCOMPLETE);
+    ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
 }
 
 void Task_1_3(void)
@@ -209,6 +211,7 @@ void Task_1_3(void)
 void Task_5_3(void)
 {
     // （语音）
+    SYN7318_Test();
     End_Task();
 }
 

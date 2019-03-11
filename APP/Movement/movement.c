@@ -216,6 +216,7 @@ void Track_ByEncoder(int speed, uint16_t setMP)
 	Car_Speed = speed;
 }
 
+// 根据码盘值转任意角度
 void Turn_ByEncoder(int16_t digree)
 {
 	Roadway_mp_syn();

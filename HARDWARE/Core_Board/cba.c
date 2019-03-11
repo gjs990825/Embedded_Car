@@ -52,7 +52,7 @@ void KEY_Check(void)
 		delay_ms(10);
 		if (S1 == 0)
 		{
-			LED1 = !LED1;
+			// LED1 = !LED1;
 			while (!S1)
 				;
 			Action_S1();
@@ -63,7 +63,7 @@ void KEY_Check(void)
 		delay_ms(10);
 		if (S2 == 0)
 		{
-			LED2 = !LED2;
+			// LED2 = !LED2;
 			while (!S2)
 				;
 			Action_S2();
@@ -74,7 +74,7 @@ void KEY_Check(void)
 		delay_ms(10);
 		if (S3 == 0)
 		{
-			LED3 = !LED3;
+			// LED3 = !LED3;
 			while (!S3)
 				;
 			Action_S3();

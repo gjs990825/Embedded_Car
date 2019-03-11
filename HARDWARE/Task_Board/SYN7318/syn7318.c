@@ -281,7 +281,8 @@ void SYN7318_Test(void) // 开启语音测试
     Ysn7813_flag = 1;
     // SYN7318_Init();
 
-    SYN_TTS("语音识别测试,请发语音唤醒词，语音驾驶");
+    //		 SYN_TTS("语音识别测试,请发语音唤醒词，驾驶助手");
+    SYN_TTS("请发唤醒词");
     LED1 = 1;
     Status_Query();   //查询模块当前的工作状态
     if (S[3] == 0x4F) //模块空闲即开启唤醒
@@ -293,6 +294,8 @@ void SYN7318_Test(void) // 开启语音测试
         SYN7318_Get_String(Back, 4);    //接收反馈信息
         if (Back[3] == 0x41)            //接收成功
         {
+            Send_ZigbeeData_To_Fifo(ZigBee_VoiceDriveAssistant, 8);
+            //					Send_ZigbeeData_To_Fifo(TDYY5,8);
             LED3 = 1;
             SYN7318_Get_String(Back, 3); //接收前三位回传数据
             if (Back[0] == 0xfc)         //帧头判断
@@ -315,11 +318,12 @@ void SYN7318_Test(void) // 开启语音测试
                     //开始语音识别
                     while (Ysn7813_flag)
                     {
-
                         SYN7318_Put_String(Start_ASR_Buf, 5); //发语音识别命令
                         SYN7318_Get_String(Back, 4);          //接收反馈信息
                         if (Back[3] == 0x41)                  //接收成功
                         {
+                            Send_ZigbeeData_To_Fifo(ZigBee_VoiceRandom, 8);
+
                             LED1 = ~LED1;                //LED1反转
                             SYN7318_Get_String(Back, 3); //语音识别命令回传结果
                             if (Back[0] == 0xfc)         //帧头判断
@@ -327,6 +331,7 @@ void SYN7318_Test(void) // 开启语音测试
                                 LED2 = ~LED2;
                                 SYN7318_Get_String(ASR, Back[2]); //接收回传数据
                                 Yu_Yin_Asr();
+                                Ysn7813_flag = 0; // edited 
                             }
                         }
                     }
@@ -339,6 +344,66 @@ void SYN7318_Test(void) // 开启语音测试
         }
     }
 }
+// {
+//     Ysn7813_flag = 1;
+//     // SYN7318_Init();
+
+//     SYN_TTS("语音识别测试,请发语音唤醒词，语音驾驶");
+//     LED1 = 1;
+//     Status_Query();   //查询模块当前的工作状态
+//     if (S[3] == 0x4F) //模块空闲即开启唤醒
+//     {
+//         LED2 = 1;
+//         delay_ms(1);
+
+//         SYN7318_Put_String(Wake_Up, 5); //发送唤醒指令
+//         SYN7318_Get_String(Back, 4);    //接收反馈信息
+//         if (Back[3] == 0x41)            //接收成功
+//         {
+//             LED3 = 1;
+//             SYN7318_Get_String(Back, 3); //接收前三位回传数据
+//             if (Back[0] == 0xfc)         //帧头判断
+//             {
+//                 LED4 = 1;
+//                 SYN7318_Get_String(ASR, Back[2]); //接收回传数据
+//                 if (ASR[0] == 0x21)               //唤醒成功
+//                 {
+//                     SYN7318_Put_String(Play_MP3, 33); //播放“我在这”
+
+//                     SYN7318_Get_String(Back, 4);
+//                     SYN7318_Get_String(Back, 4);
+//                     while (!(Back[3] == 0x4f)) //等待空闲
+//                     {
+//                         LED2 = ~LED2;
+//                         delay_ms(500);
+//                     }
+//                     // Ysn7813_flag = 1;
+//                     // 开始语音识别
+//                     while (Ysn7813_flag)
+//                     {
+//                         SYN7318_Put_String(Start_ASR_Buf, 5); //发语音识别命令
+//                         SYN7318_Get_String(Back, 4);          //接收反馈信息
+//                         if (Back[3] == 0x41)                  //接收成功
+//                         {
+//                             LED1 = ~LED1;                //LED1反转
+//                             SYN7318_Get_String(Back, 3); //语音识别命令回传结果
+//                             if (Back[0] == 0xfc)         //帧头判断
+//                             {
+//                                 LED2 = ~LED2;
+//                                 SYN7318_Get_String(ASR, Back[2]); //接收回传数据
+//                                 Yu_Yin_Asr();
+//                             }
+//                         }
+//                     }
+//                     SYN7318_Put_String(Stop_Wake_Up, 4); //发送停止唤醒指令
+//                 }
+//                 else //唤醒内部错误
+//                 {
+//                 }
+//             }
+//         }
+//     }
+// }
 
 void Yu_Yin_Asr(void) // 语音识别处理函数
 {
@@ -700,7 +765,7 @@ void Yu_Yin_Asr(void) // 语音识别处理函数
     }
 }
 
-unsigned char Start_ASR_One_Buf[] = {0xFD, 0x00, 0x02, 0x10, 0x04};     //  单次测试 使用用户词典2
+unsigned char Start_ASR_One_Buf[] = {0xFD, 0x00, 0x02, 0x10, 0x04}; //  单次测试 使用用户词典2
 // static u8 YY_HXC[8] = {0x55, 0x06, 0x10, 0x01, 0x00, 0x00, 0x11, 0xbb}; // 唤醒词 // edited
 static u8 YY_ZZW[8] = {0x55, 0x06, 0x10, 0x04, 0x00, 0x00, 0x14, 0xbb}; // 左转弯
 static u8 YY_SJ[8] = {0x55, 0x06, 0x20, 0x01, 0x00, 0x00, 0x21, 0xbb};  // 左转弯

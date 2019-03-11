@@ -32,18 +32,17 @@ typedef enum
 		Stop();                                 \
 	} while (0)
 
+// 自动执行
 void Auto_Run(void);
-
+void Auto_RouteTask(RouteNode current, uint8_t taskN);
 void Go_ToNextNode(Route_Task_t next);
-void Start_Tracking(int speed);
 
+// 基本运动控制
 void Stop(void);
 void Go_Ahead(int speed, uint16_t mp);
 void Back_Off(int speed, uint16_t mp);
 void Turn_ByEncoder(int16_t digree);
-
 void Track_ByEncoder(int speed, uint16_t setMP);
-
-void Auto_RouteTask(RouteNode current, uint8_t taskN);
+void Start_Tracking(int speed);
 
 #endif // _MOVEMENT_H_
