@@ -13,6 +13,7 @@ uint8_t Back[4] = {0}; //接收命令回传的数组
 uint8_t ASR[6] = {0};  //接收识别结果回传的数组
 uint8_t S[4] = {0};    //接收模块当前工作状态回传的数组
 
+// 使能唤醒
 unsigned char Wake_Up[] = {0xfd, 0x00, 0x02, 0x51, 0x1F};
 unsigned char Stop_Wake_Up[] = {0xFD, 0x00, 0x01, 0x52};
 
@@ -294,6 +295,7 @@ void SYN7318_Test(void) // 开启语音测试
         SYN7318_Get_String(Back, 4);    //接收反馈信息
         if (Back[3] == 0x41)            //接收成功
         {
+            delay_ms(700); // 等待模块响应
             Send_ZigbeeData_To_Fifo(ZigBee_VoiceDriveAssistant, 8);
             //					Send_ZigbeeData_To_Fifo(TDYY5,8);
             LED3 = 1;
@@ -331,7 +333,7 @@ void SYN7318_Test(void) // 开启语音测试
                                 LED2 = ~LED2;
                                 SYN7318_Get_String(ASR, Back[2]); //接收回传数据
                                 Yu_Yin_Asr();
-                                Ysn7813_flag = 0; // edited 
+                                Ysn7813_flag = 0; // edited
                             }
                         }
                     }
@@ -711,7 +713,9 @@ void Yu_Yin_Asr(void) // 语音识别处理函数
         {
 
             SYN_TTS("对不起，我没听清");
+            
             SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
+            Send_ZigbeeData_To_Fifo(ZigBee_VoiceRandom, 8); // edited
             break;
         }
         }
@@ -722,6 +726,7 @@ void Yu_Yin_Asr(void) // 语音识别处理函数
     {
         SYN_TTS("对不起，我没听清");
         SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
+        Send_ZigbeeData_To_Fifo(ZigBee_VoiceRandom, 8); // edited 
         break;
     }
     case 0x03: //用户静音超时
@@ -736,30 +741,35 @@ void Yu_Yin_Asr(void) // 语音识别处理函数
     {
         SYN_TTS("请安静，麻烦您再说一遍");
         SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
+        Send_ZigbeeData_To_Fifo(ZigBee_VoiceRandom, 8); // edited 
         break;
     }
     case 0x05:
     {
         SYN_TTS("对不起，请再说一遍");
         SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
+        Send_ZigbeeData_To_Fifo(ZigBee_VoiceRandom, 8); // edited 
         break;
     }
     case 0x06:
     {
         SYN_TTS("识别内部错误");
         SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
+        Send_ZigbeeData_To_Fifo(ZigBee_VoiceRandom, 8); // edited 
         break;
     }
     case 0x07:
     {
         SYN_TTS("对不起，请再说一遍");
         SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
+        Send_ZigbeeData_To_Fifo(ZigBee_VoiceRandom, 8); // edited 
         break;
     }
     default:
     {
         SYN_TTS("错误");
         SYN7318_Put_String(Stop_ASR_Buf, 4); //停止语音识别
+        Send_ZigbeeData_To_Fifo(ZigBee_VoiceRandom, 8); // edited 
         break;
     }
     }
