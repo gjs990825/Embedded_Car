@@ -8,7 +8,6 @@
 #include "task.h"
 #include "route.h"
 
-
 // 测试用全自动
 void Auto_Run(void)
 {
@@ -34,7 +33,6 @@ void Auto_Run(void)
 
 void SecondCar_AutoRun(void)
 {
-	
 }
 
 void Auto_RouteTask(RouteNode current, uint8_t taskN)
@@ -88,7 +86,7 @@ void Go_ToNextNode(Route_Task_t next)
 	else
 	{
 		print_info("Same\r\n"); // 同一点
-		if (next.Task != NULL) // 检查是否有任务
+		if (next.Task != NULL)  // 检查是否有任务
 		{
 			next.Task();
 		}
@@ -100,10 +98,10 @@ void Go_ToNextNode(Route_Task_t next)
 		switch (CurrentStaus.dir)
 		{
 		case DIR_UP:
-			(finalDir == DIR_RIGHT) ? Turn_ByEncoder(90) : Turn_ByEncoder(-90);
+			Turn_ByEncoder((finalDir == DIR_RIGHT) ? (90) : (-90));
 			break;
 		case DIR_DOWN:
-			(finalDir == DIR_RIGHT) ? Turn_ByEncoder(-90) : Turn_ByEncoder(90);
+			Turn_ByEncoder((finalDir == DIR_RIGHT) ? (-90) : (90));
 			break;
 		case DIR_LEFT:
 			(finalDir == DIR_RIGHT) ? Turn_ByEncoder(180) : (void)0;
@@ -127,10 +125,10 @@ void Go_ToNextNode(Route_Task_t next)
 			(finalDir == DIR_UP) ? Turn_ByEncoder(180) : (void)0;
 			break;
 		case DIR_LEFT:
-			(finalDir == DIR_UP) ? Turn_ByEncoder(90) : Turn_ByEncoder(-90);
+			Turn_ByEncoder((finalDir == DIR_UP) ? (90) : (-90));
 			break;
 		case DIR_RIGHT:
-			(finalDir == DIR_UP) ? Turn_ByEncoder(-90) : Turn_ByEncoder(90);
+			Turn_ByEncoder((finalDir == DIR_UP) ? (-90) : (90));
 			break;
 		default:
 			print_info("CurrentDir NOT SET!\r\n");
@@ -228,7 +226,7 @@ void Turn_ByEncoder(int16_t digree)
 	Stop_Flag = TRACKING;
 	Track_Mode = TrackMode_NONE;
 	Moving_ByEncoder = ENCODER_TurnByValue;
-	if (digree >= 0) 
+	if (digree >= 0)
 	{
 		Control(Turn_Speed, -Turn_Speed);
 		TurnByEncoder_Value = digree * ClockWiseDigreeToEncoder;
