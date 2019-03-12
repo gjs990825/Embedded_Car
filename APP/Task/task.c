@@ -109,10 +109,10 @@ void StreetLight_Task(uint8_t targetLevel)
     for (i = 0; i < 4; i++)
     {
         temp_val[i] = BH1750_GetAverage(5);
-		Beep(2);
+        Beep(2);
         Infrared_Send_A(Infrared_LightAdd1);
         delay_ms(700);
-		delay_ms(700);
+        delay_ms(700);
     }
 
     CurrentLightValue = temp_val[0];
@@ -130,20 +130,20 @@ void StreetLight_Task(uint8_t targetLevel)
     errorValue = targetLevel - currentLevel;
     if (errorValue >= 0)
     {
-        for(i = 0; i < errorValue; i++)
+        for (i = 0; i < errorValue; i++)
         {
             Infrared_Send_A(Infrared_LightAdd1);
             delay_ms(750);
-			delay_ms(750);
+            delay_ms(750);
         }
     }
     else
     {
-        for(i = 0; i < 4 + errorValue; i++)
+        for (i = 0; i < 4 + errorValue; i++)
         {
             Infrared_Send_A(Infrared_LightAdd1);
             delay_ms(750);
-			delay_ms(750);
+            delay_ms(750);
         }
     }
 }
@@ -153,8 +153,7 @@ void StreetLight_Task(uint8_t targetLevel)
 
 void Task_5_5(void)
 {
-    ExcuteAndWait(Turn_ByEncoder(90), Stop_Flag, TURNCOMPLETE);
-    ExcuteAndWait(Turn_ByEncoder(50), Stop_Flag, TURNCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(90 + 50), Stop_Flag, TURNCOMPLETE);
     ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 10), Stop_Flag, FORBACKCOMPLETE);
     Beep(2);
     delay_ms(700);
@@ -163,8 +162,7 @@ void Task_5_5(void)
     TFT_Task();
 
     ExcuteAndWait(Back_Off(30, Centimeter_Value * 10), Stop_Flag, FORBACKCOMPLETE);
-    ExcuteAndWait(Turn_ByEncoder(-50), Stop_Flag, TURNCOMPLETE);
-    ExcuteAndWait(Turn_ByEncoder(-35), Stop_Flag, TURNCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(-50 - 35), Stop_Flag, TURNCOMPLETE);
     Beep(5);
     delay_ms(500);
 
@@ -210,8 +208,19 @@ void Task_1_3(void)
 
 void Task_5_3(void)
 {
-    // £¨ÓïÒô£©
-    SYN7318_Test();
+    // ÓïÒôÔÝ»º
+    // SYN7318_Test();
+    Beep(4);
+}
+
+void Task_5_2(void)
+{
+    ExcuteAndWait(Turn_ByEncoder(90), Stop_Flag, TURNCOMPLETE);
+
+    Infrared_Send_A(Infrared_AlarmON);
+
+    ExcuteAndWait(Turn_ByEncoder(-90), Stop_Flag, TURNCOMPLETE);
+
     End_Task();
 }
 

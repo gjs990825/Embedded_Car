@@ -40,6 +40,7 @@ void Task_1_5(void);
 void Task_3_5(void);
 void Task_1_3(void);
 void Task_5_3(void);
+void Task_5_2(void);
 void Task_5_1(void);
 void Task_3_1(void);
 

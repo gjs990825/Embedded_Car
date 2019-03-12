@@ -32,6 +32,11 @@ void Auto_Run(void)
 	// }
 }
 
+void SecondCar_AutoRun(void)
+{
+	
+}
+
 void Auto_RouteTask(RouteNode current, uint8_t taskN)
 {
 	print_info("Route %s\r\n", (A_Star_GetRouteBewteenTasks(current, Route_Task[taskN]) == true) ? "OK" : "ERROR OR SAME");
