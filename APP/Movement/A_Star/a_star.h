@@ -3,6 +3,7 @@
 
 #include "sys.h"
 
+
 typedef struct RouteNode
 {
 	int8_t x;
@@ -38,11 +39,7 @@ typedef struct AStarNode
 } AStarNode, *pAStarNode;
 
 
-
-
 bool A_Star_GetRouteBewteenTasks(RouteNode current, Route_Task_t nextTask);
-
-
 bool A_Star_GetRoute(void);
 
 

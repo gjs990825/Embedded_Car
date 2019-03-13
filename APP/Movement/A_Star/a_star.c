@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "delay.h"
-// #include "route.h"
+#include "route.h"
 #include "debug.h"
 
 // 使能路径输出
@@ -11,6 +11,17 @@
 
 #define X_LENTH 7
 #define Y_LENTH 7
+
+
+// public :
+
+// 每个任务最多10个点 * 10
+Route_Task_t Final_Route[ROUTE_TASK_NUMBER * 10];
+// 路径计数
+int16_t Final_StepCount = 0;
+
+
+// prvate :
 
 // 生成路径
 int8_t path_array[X_LENTH * Y_LENTH][2];
