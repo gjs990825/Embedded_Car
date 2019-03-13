@@ -97,12 +97,14 @@ void AGV_SendInfraredData(uint8_t irData[6])
     DataToAGV[Pack_SubCmd2] = irData[1];
     DataToAGV[Pack_SubCmd3] = irData[2];
     SendAGVCmd();
+    delay_ms(50);
     ClearAGVCmd();
     DataToAGV[Pack_MainCmd] = FromHost_InfraredBackData;
     DataToAGV[Pack_SubCmd1] = irData[3];
     DataToAGV[Pack_SubCmd2] = irData[4];
     DataToAGV[Pack_SubCmd3] = irData[5];
     SendAGVCmd();
+    delay_ms(50);
     ClearAGVCmd();
     DataToAGV[Pack_MainCmd] = FromHost_InfraredSend;
     SendAGVCmd();

@@ -244,6 +244,7 @@ void Task_5_2(void)
     Infrared_Send_A(Infrared_AlarmON);
 
     ExcuteAndWait(Turn_ByEncoder(-90), Stop_Flag, TURNCOMPLETE);
+    Send_ZigbeeData_To_Fifo(ZigBee_AGVStart, 8);
 }
 
 void Task_5_1(void)
