@@ -19,10 +19,11 @@
 #include "protocol.h"
 #include "roadway_check.h"
 #include "ultrasonic.h"
+#include "agv.h"
 
 #define Action_S1() ExcuteAndWait(Start_Tracking(Track_Speed), Stop_Flag, CROSSROAD) // Auto_Run()// Infrared_Send(HW_K, 6) //打开测试红外报警
 #define Action_S2() ExcuteAndWait(Go_Ahead(Track_Speed, ToCrossroadCenter), Stop_Flag, FORBACKCOMPLETE) // LEDDispaly_ShowDistance(Ultrasonic_Task(10)) //Infrared_Send(H_1, 4)  //调光
-#define Action_S3() SYN7318_Test() // LEDDispaly_ShowDistance(233) // SYN7318_Test()
+#define Action_S3() AGV_TrackLine(50) //SYN7318_Test() // LEDDispaly_ShowDistance(233) // SYN7318_Test()
 #define Action_S4() Auto_Run() //Turn_ByEncoder(-360) // StreetLight_Task(3) //Read_Card()
 
 

@@ -21,8 +21,7 @@
 
 ////////////¡Ÿ ±
 
-uint8_t QR_OK = 0;
-uint8_t CP_AND_SHAPE = 0;
+uint8_t ETC_Flag = 0;
 // uint8_t autoRunEnable = 0;
 
 ////////////
@@ -266,6 +265,7 @@ void Can_ZigBeeRx_Check(void)
                     if (Zigb_Rx_Buf[3] == 0x01)
                     {
                         Stop_Flag = Zigb_Rx_Buf[4];
+                        ETC_Flag = 1;
                     }
                 }
             }

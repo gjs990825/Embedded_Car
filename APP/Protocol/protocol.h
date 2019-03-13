@@ -211,7 +211,8 @@ typedef enum
     FromHost_InfraredLightAdd1 = 0x61,          // 红外发射控制光源强度档位加1
     FromHost_InfraredLightAdd2 = 0x62,          // 红外发射控制光源强度档位加2
     FromHost_InfraredLightAdd3 = 0x63,          // 红外发射控制光源强度档位加3
-    FromHost_AGVReturn = 0x80,                  // 从车返回
+    FromHost_AGVReturn = 0x80,                  // 从车返回数据
+    FromHost_VoiceRecognition = 0x90,           // 语音识别
     FromHost_LEDDisplaySecomdRow = 0xc1,        // 数码管第二排显示是数据
     FromHost_ReceivePresetHeadTowards = 0x71,   // 接收预案车头设置
     FromHost_Start = 0xA1,                      // 小车启动命令

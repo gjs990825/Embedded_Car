@@ -172,6 +172,30 @@ void Task_5_5(void)
     CurrentStaus.dir = DIR_LEFT; // 与任务开始时方向不一致
 }
 
+extern uint8_t ETC_Flag;
+
+void ETC_Task(void)
+{
+    u8 count = 0;
+    ExcuteAndWait(Turn_ByEncoder(90), Stop_Flag, TURNCOMPLETE);
+    while (!ETC_Flag)
+    {
+        ExcuteAndWait(Back_Off(30, Centimeter_Value * 8), Stop_Flag, FORBACKCOMPLETE);
+        ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 8), Stop_Flag, FORBACKCOMPLETE);
+        count++;
+        if (count > 6)
+        {
+            delay_ms(500);
+            ETC_Flag = 1;
+            Stop_Flag = Zigb_Rx_Buf[4];
+        }
+    }
+    delay_ms(500);
+    delay_ms(500);
+    Stop_Flag = Zigb_Rx_Buf[4];
+    CurrentStaus.dir = DIR_LEFT;
+}
+
 void Task_3_5(void)
 {
     ExcuteAndWait(Turn_ByEncoder(22), Stop_Flag, TURNCOMPLETE);
@@ -220,17 +244,18 @@ void Task_5_2(void)
     Infrared_Send_A(Infrared_AlarmON);
 
     ExcuteAndWait(Turn_ByEncoder(-90), Stop_Flag, TURNCOMPLETE);
-
-    End_Task();
 }
 
 void Task_5_1(void)
 {
     // ETC
+    ETC_Task();
 }
 
 void Task_3_1(void)
 {
     // 入库
+    Send_ZigbeeData_To_Fifo(ZigBee_WirelessChargingON, 8);
+    delay_ms(700);
     End_Task();
 }

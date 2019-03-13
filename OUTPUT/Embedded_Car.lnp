@@ -10,6 +10,7 @@
 "..\output\pid.o"
 "..\output\roadway_check.o"
 "..\output\data_from_host.o"
+"..\output\agv.o"
 "..\output\hardware.o"
 "..\output\tba.o"
 "..\output\cba.o"
