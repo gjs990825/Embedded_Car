@@ -2,18 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "cba.h"
-#include "infrared.h"
-#include "data_base.h"
-#include "syn7318.h"
-#include "Rc522.h"
-#include "canp_hostcom.h"
-#include "movement.h"
 #include "delay.h"
-#include "roadway_check.h"
+// #include "route.h"
 #include "debug.h"
-#include "task.h"
-#include "route.h"
 
 // 使能路径输出
 #define _A_STAR_ENABLE_OUTPUT_ 1
@@ -289,7 +280,7 @@ void A_Star_PrintRoute(void)
 
 	if (step_count == -1)
 	{
-		print_info("error ! no route or didn't caculate\r\n");
+		print_info("NO route or didn't caculate\r\n");
 		return;
 	}
 

@@ -165,3 +165,6 @@ void AGV_VoiceRecognition(bool sta)
     SendAGVCmd();
 }
 
+
+
+
