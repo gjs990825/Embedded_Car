@@ -19,7 +19,7 @@ enum
 };
 
 // 上传数据包的结构
-typedef enum
+enum
 {
     Pack_Header1 = 0,
     Pack_Header2,
@@ -29,7 +29,61 @@ typedef enum
     Pack_SubCmd3,
     Pack_CheckSum,
     Pack_Ending
-} DataPackUpLoad_t;
+};
+
+// 上位机发送的数据标识
+enum
+{
+    FromHost_Stop = 0x01,                       // 停止
+    FromHost_Go = 0x02,                         // 前进
+    FromHost_Back = 0x03,                       // 后退
+    FromHost_TurnLeft = 0x04,                   // 左转
+    FromHost_TurnRight = 0x05,                  // 右转
+    FromHost_TrackLine = 0x06,                  // 循迹
+    FromHost_EncoderClear = 0x07,               // 码盘清零
+    FromHost_TurnCountClockWiseToDigree = 0x08, // 左转弯--角度
+    FromHost_TurnClockWiseToDigree = 0x09,      // 右转弯--角度
+    FromHost_InfraredFrontData = 0x10,          // 红外前三位数据
+    FromHost_InfraredBackData = 0x11,           // 红外后三位数据
+    FromHost_InfraredSend = 0x12,               // 通知小车单片机发送红外线
+    FromHost_TurnningLightControl = 0x20,       // 转向灯控制
+    FromHost_Beep = 0x30,                       // 蜂鸣器
+    FromHost_NotUsed = 0x40,                    // 暂未使用
+    FromHost_InfraredPhotoPrevious = 0x50,      // 红外发射控制相片上翻
+    FromHost_InfraredPhotoNext = 0x51,          // 红外发射控制相片下翻
+    FromHost_InfraredLightAdd1 = 0x61,          // 红外发射控制光源强度档位加1
+    FromHost_InfraredLightAdd2 = 0x62,          // 红外发射控制光源强度档位加2
+    FromHost_InfraredLightAdd3 = 0x63,          // 红外发射控制光源强度档位加3
+    FromHost_AGVReturn = 0x80,                  // 从车返回数据
+    FromHost_VoiceRecognition = 0x90,           // 语音识别
+    FromHost_LEDDisplaySecomdRow = 0xc1,        // 数码管第二排显示是数据
+    FromHost_ReceivePresetHeadTowards = 0x71,   // 接收预案车头设置
+    FromHost_Start = 0xA1,                      // 小车启动命令
+    FromHost_QRCodeRecognition = 0xA2,          // 二维码识别
+    FromHost_PlateRecognition = 0xA3,           // 车牌识别
+    FromHost_ShapeRecongnition = 0xA4,          // 图像识别
+    FromHost_TrafficLight = 0xA5,               // 交通灯
+    FromHost_StreetLight = 0xA6,                // 路灯
+    FromHost_PlateData1 = 0x88,                 // 车牌信息1
+    FromHost_PlateData2 = 0x99,                 // 车牌信息2
+    FromHost_AlarmON = 0xA7,                    // 报警器开
+    FromHost_AlarmOFF = 0xA8,                   // 报警器关
+    FromHost_Garage = 0xB1,                     // 立体车库
+    FromHost_TFTRecognition = 0xAC,             // TFT识别
+};
+
+enum
+{
+    Return_BarrierGate = 0x03, // 道闸的返回数据
+    Return_ETC = 0x0C          // ETC的返回数据
+};
+
+// ZigBee回传的数据状态和时间戳
+typedef struct ZigBee_DataStatus_Sturuct
+{
+    uint8_t isSet;
+    uint32_t timeStamp;
+} ZigBee_DataStatus_t;
 
 // 自适应选择发送函数
 #if CONNECTION_MODE
@@ -129,7 +183,6 @@ extern uint8_t Infrared_PlateData2[6]; // 车牌信息2
 // 旋转LED
 extern uint8_t ZigBee_LEDDisplayDistanceData[8];
 
-
 /***************************************ZigBee 数据 ZigBee_XX[8]**************************************************/
 static uint8_t ZigBee_BarrierGateOPEN[8] = {0x55, 0x03, 0x01, 0x01, 0x00, 0x00, 0x02, 0xBB};  // 道闸开启
 static uint8_t ZigBee_BarrierGateCLOSE[8] = {0x55, 0x03, 0x01, 0x02, 0x00, 0x00, 0x03, 0xBB}; // 道闸关闭
@@ -164,7 +217,7 @@ static uint8_t ZigBee_TrafficLightStartRecognition[8] = {0x55, 0x0E, 0x01, 0x00,
 static uint8_t ZigBee_WirelessChargingON[8] = {0x55, 0x0a, 0x01, 0x01, 0x00, 0x00, 0x02, 0xBB}; //开启无线充电站
 
 // LED显示标志物
-extern uint8_t ZigBee_LEDDisplayData[8]; // 数码管显示数据
+extern uint8_t ZigBee_LEDDisplayData[8];                                                          // 数码管显示数据
 static uint8_t ZigBee_LEDDisplayStartTimer[8] = {0x55, 0x04, 0x03, 0x01, 0x00, 0x00, 0x04, 0xBB}; // 数码管开始计时
 static uint8_t ZigBee_LEDDisplayStopTimer[8] = {0x55, 0x04, 0x03, 0x00, 0x00, 0x00, 0x03, 0xBB};  // 数码管关闭计时
 static uint8_t ZigBee_LEDDisplayDistance[8] = {0x55, 0x04, 0x04, 0x00, 0x02, 0x00, 0x06, 0xBB};   // 数码管显示距离
@@ -187,47 +240,6 @@ static uint8_t ZigBee_GarageLayers1[8] = {0x55, 0x0D, 0x01, 0x01, 0x00, 0x00, 0x
 static uint8_t ZigBee_GarageLayers2[8] = {0x55, 0x0D, 0x01, 0x02, 0x00, 0x00, 0x00, 0xBB}; // 停到2层
 static uint8_t ZigBee_GarageLayers3[8] = {0x55, 0x0D, 0x01, 0x03, 0x00, 0x00, 0x00, 0xBB}; // 停到3层
 static uint8_t ZigBee_GarageLayers4[8] = {0x55, 0x0D, 0x01, 0x04, 0x00, 0x00, 0x00, 0xBB}; // 停到4层
-
-// 上位机发送的数据标识
-typedef enum
-{
-    FromHost_Stop = 0x01,                       // 停止
-    FromHost_Go = 0x02,                         // 前进
-    FromHost_Back = 0x03,                       // 后退
-    FromHost_TurnLeft = 0x04,                   // 左转
-    FromHost_TurnRight = 0x05,                  // 右转
-    FromHost_TrackLine = 0x06,                  // 循迹
-    FromHost_EncoderClear = 0x07,               // 码盘清零
-    FromHost_TurnCountClockWiseToDigree = 0x08, // 左转弯--角度
-    FromHost_TurnClockWiseToDigree = 0x09,      // 右转弯--角度
-    FromHost_InfraredFrontData = 0x10,          // 红外前三位数据
-    FromHost_InfraredBackData = 0x11,           // 红外后三位数据
-    FromHost_InfraredSend = 0x12,               // 通知小车单片机发送红外线
-    FromHost_TurnningLightControl = 0x20,       // 转向灯控制
-    FromHost_Beep = 0x30,                       // 蜂鸣器
-    FromHost_NotUsed = 0x40,                    // 暂未使用
-    FromHost_InfraredPhotoPrevious = 0x50,      // 红外发射控制相片上翻
-    FromHost_InfraredPhotoNext = 0x51,          // 红外发射控制相片下翻
-    FromHost_InfraredLightAdd1 = 0x61,          // 红外发射控制光源强度档位加1
-    FromHost_InfraredLightAdd2 = 0x62,          // 红外发射控制光源强度档位加2
-    FromHost_InfraredLightAdd3 = 0x63,          // 红外发射控制光源强度档位加3
-    FromHost_AGVReturn = 0x80,                  // 从车返回数据
-    FromHost_VoiceRecognition = 0x90,           // 语音识别
-    FromHost_LEDDisplaySecomdRow = 0xc1,        // 数码管第二排显示是数据
-    FromHost_ReceivePresetHeadTowards = 0x71,   // 接收预案车头设置
-    FromHost_Start = 0xA1,                      // 小车启动命令
-    FromHost_QRCodeRecognition = 0xA2,          // 二维码识别
-    FromHost_PlateRecognition = 0xA3,           // 车牌识别
-    FromHost_ShapeRecongnition = 0xA4,          // 图像识别
-    FromHost_TrafficLight = 0xA5,               // 交通灯
-    FromHost_StreetLight = 0xA6,                // 路灯
-    FromHost_PlateData1 = 0x88,                 // 车牌信息1
-    FromHost_PlateData2 = 0x99,                 // 车牌信息2
-    FromHost_AlarmON = 0xA7,                    // 报警器开
-    FromHost_AlarmOFF = 0xA8,                   // 报警器关
-    FromHost_Garage = 0xB1,                     // 立体车库
-    FromHost_TFTRecognition = 0xAC,             // TFT识别
-} CommandFromHost_t;
 
 // 当前指令状态和数据内容存放
 extern uint8_t CommandFlagStatus[0xFF];

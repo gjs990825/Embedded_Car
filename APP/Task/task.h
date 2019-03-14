@@ -3,6 +3,7 @@
 
 #include "sys.h"
 #include "protocol.h"
+#include "Timer.h"
 
 // 自动判断数据长度 _A(Auto)
 #define Infrared_Send_A(infraredData) Infrared_Send(infraredData, sizeof(infraredData))
@@ -40,7 +41,6 @@ void Task_1_5(void);
 void Task_3_5(void);
 void Task_1_3(void);
 void Task_5_3(void);
-void Task_5_2(void);
 void Task_5_1(void);
 void Task_3_1(void);
 

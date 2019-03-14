@@ -1,5 +1,6 @@
 #include "stm32f4xx.h"
 #include "Timer.h"
+#include "stdbool.h"
 
 volatile uint32_t global_times = 0;
 volatile uint32_t delay_ms_const = 0;

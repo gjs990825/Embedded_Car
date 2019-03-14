@@ -204,3 +204,23 @@ void Process_DataFromHost(uint8_t mainCmd)
     }
     SetCmdFlag(mainCmd);
 }
+
+ZigBee_DataStatus_t ETC_Status = {0, 0};
+ZigBee_DataStatus_t BarrierGate_Status = {0, 0};
+
+// ZigBee÷∏¡Ó¥¶¿Ì
+void ZigBee_CmdHandler(uint8_t cmd)
+{
+    switch (cmd)
+    {
+        case Return_ETC:
+            ETC_Status.isSet = SET;
+            ETC_Status.timeStamp = Get_GlobalTimeStamp();
+            break;
+            case Return_BarrierGate:
+            BarrierGate_Status.isSet = SET;
+            BarrierGate_Status.timeStamp = Get_GlobalTimeStamp();
+        default:
+            break;
+    }
+}

@@ -33,7 +33,7 @@
 #include "ultrasonic.h"
 #include "my_lib.h"
 
-// 交通灯识别任务
+// 交通灯识别
 void TrafficLight_Task(void)
 {
     Send_ZigBeeData(ZigBee_TrafficLightStartRecognition, 2, 200); // 开始识别交通灯
@@ -41,7 +41,7 @@ void TrafficLight_Task(void)
     WaitForFlag(GetCmdFlag(FromHost_TrafficLight), SET); // 等待识别完成
 }
 
-// TFT图像识别任务
+// TFT图形图像识别
 void TFT_Task(void)
 {
     Request_ToHost(RequestCmd_TFTRecognition);             // 请求识别TFT内容
@@ -49,7 +49,7 @@ void TFT_Task(void)
     Request_ToHost(RequestCmd_TFTShow);                    //请求显示车牌到TFT
 }
 
-// 旋转led发送数据
+// 旋转led发送车牌
 void RotationLED_Task(void)
 {
     Infrared_Send_A(Infrared_PlateData1);
@@ -104,7 +104,7 @@ void LEDDispaly_ShowDistance(uint16_t dis)
 void StreetLight_Task(uint8_t targetLevel)
 {
     uint16_t temp_val[4], CurrentLightValue;
-    int8_t currentLevel, errorValue, i;
+    int8_t errorValue, i;
 
     for (i = 0; i < 4; i++)
     {
@@ -114,21 +114,19 @@ void StreetLight_Task(uint8_t targetLevel)
         delay_ms(790);
         delay_ms(790);
     }
-
     CurrentLightValue = temp_val[0];
 
-    bubble_sort(temp_val, 4);
-
+    bubble_sort(temp_val, 4); // 对获得数据排序算出初始档位
     for (i = 0; i < 4; i++)
     {
         if (CurrentLightValue == temp_val[i])
         {
-            currentLevel = i + 1;
+            errorValue = (int8_t)targetLevel - (i + 1);
             break;
         }
     }
-    errorValue = targetLevel - currentLevel;
-    if (errorValue >= 0)
+
+    if (errorValue >= 0) // 调整到目标档位
     {
         for (i = 0; i < errorValue; i++)
         {
@@ -139,12 +137,24 @@ void StreetLight_Task(uint8_t targetLevel)
     }
     else
     {
-        for (i = 0; i < 4 + errorValue; i++)
+        for (i = 0; i > errorValue; i--)
         {
-            Infrared_Send_A(Infrared_LightAdd1);
+            Infrared_Send_A(Infrared_LightAdd3);
             delay_ms(790);
             delay_ms(790);
         }
+    }
+}
+
+// ETC任务
+void ETC_Task(void)
+{
+    for (uint8_t i = 0; i < 10; i++) // 摇摆10次，不开直接走
+    {
+        if ((ETC_Status.isSet == SET) && Check_IsTimeOut(ETC_Status.timeStamp, 6 * 1000)) // 六秒前的数据作废
+            break;
+        ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 8), Stop_Flag, FORBACKCOMPLETE); // 跟着节拍
+        ExcuteAndWait(Back_Off(30, Centimeter_Value * 8), Stop_Flag, FORBACKCOMPLETE); // 一起摇摆
     }
 }
 
@@ -170,30 +180,6 @@ void Task_5_5(void)
 
     ExcuteAndWait(Turn_ByEncoder(35), Stop_Flag, TURNCOMPLETE);
     CurrentStaus.dir = DIR_LEFT; // 与任务开始时方向不一致
-}
-
-extern uint8_t ETC_Flag;
-
-void ETC_Task(void)
-{
-    u8 count = 0;
-    ExcuteAndWait(Turn_ByEncoder(90), Stop_Flag, TURNCOMPLETE);
-    while (!ETC_Flag)
-    {
-        ExcuteAndWait(Back_Off(30, Centimeter_Value * 8), Stop_Flag, FORBACKCOMPLETE);
-        ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 8), Stop_Flag, FORBACKCOMPLETE);
-        count++;
-        if (count > 6)
-        {
-            delay_ms(500);
-            ETC_Flag = 1;
-            Stop_Flag = Zigb_Rx_Buf[4];
-        }
-    }
-    delay_ms(500);
-    delay_ms(500);
-    Stop_Flag = Zigb_Rx_Buf[4];
-    CurrentStaus.dir = DIR_LEFT;
 }
 
 void Task_3_5(void)
@@ -234,28 +220,30 @@ void Task_5_3(void)
 {
     // 语音暂缓
     // SYN7318_Test();
-    Beep(4);
-}
-
-void Task_5_2(void)
-{
-    ExcuteAndWait(Turn_ByEncoder(90), Stop_Flag, TURNCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(90 + 45), Stop_Flag, TURNCOMPLETE);
 
     Infrared_Send_A(Infrared_AlarmON);
 
-    ExcuteAndWait(Turn_ByEncoder(-90), Stop_Flag, TURNCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(-45), Stop_Flag, TURNCOMPLETE);
+
     Send_ZigbeeData_To_Fifo(ZigBee_AGVStart, 8);
+
+    CurrentStaus.dir = DIR_DOWN;
 }
 
 void Task_5_1(void)
 {
-    // ETC
+    ExcuteAndWait(Turn_ByEncoder(90), Stop_Flag, TURNCOMPLETE);
+
     ETC_Task();
+
+    CurrentStaus.dir = DIR_LEFT;
 }
 
 void Task_3_1(void)
 {
     // 入库
+    delay_ms(500);
     Send_ZigbeeData_To_Fifo(ZigBee_WirelessChargingON, 8);
     delay_ms(700);
     End_Task();

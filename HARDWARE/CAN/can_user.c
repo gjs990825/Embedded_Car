@@ -21,9 +21,6 @@
 
 ////////////临时
 
-uint8_t ETC_Flag = 0;
-// uint8_t autoRunEnable = 0;
-
 ////////////
 
 uint8_t Wifi_Rx_Buf[WIFI_MAX_NUM];
@@ -137,69 +134,6 @@ void Can_WifiRx_Check(void)
         if (Wifi_Rx_Buf[1] == 0xAA)
         {
             Process_DataFromHost(Wifi_Rx_Buf[2]); // 判断指令，执行、置位
-            // switch (Wifi_Rx_Buf[2])
-            // {
-            // case 0x01: //停止
-            //     Send_UpMotor(0, 0);
-            //     Roadway_Flag_clean(); //清除标志位状态
-            //     break;
-
-            // case 0xA1:
-            //     autoRunEnable = 1;
-            //     break;
-            // case 0xA2:
-            //     QR_OK = 1;
-            //     break;
-            // case 0xA3:
-            //     CP_AND_SHAPE = 1;
-            //     break;
-            // case 0xA4:
-            //     CP_AND_SHAPE = 2;
-            //     break;
-
-            // case 0x10: //红外前三位数据
-            //     Infrared_Tab[0] = Wifi_Rx_Buf[3];
-            //     Infrared_Tab[1] = Wifi_Rx_Buf[4];
-            //     Infrared_Tab[2] = Wifi_Rx_Buf[5];
-            //     break;
-            // case 0x11:                            //红外后三位数据
-            //     Infrared_Tab[3] = Wifi_Rx_Buf[3]; //数据第四位
-            //     Infrared_Tab[4] = Wifi_Rx_Buf[4]; //低位校验码
-            //     Infrared_Tab[5] = Wifi_Rx_Buf[5]; //高位校验码
-            //     break;
-            // case 0x12: //通知小车单片机发送红外线
-            //     Infrared_Send(Infrared_Tab, 6);
-            //     break;
-            // case 0x20: //转向灯控制
-            //     Set_tba_WheelLED(L_LED, Wifi_Rx_Buf[3]);
-            //     Set_tba_WheelLED(R_LED, Wifi_Rx_Buf[4]);
-            //     break;
-            // case 0x30:
-            //     Set_tba_Beep(Wifi_Rx_Buf[3]); //蜂鸣器
-            //     break;
-            // case 0x40: //暂未使用
-            //     break;
-            // case 0x50: //红外发射控制相片上翻
-            //     Infrared_Send(Infrared_PhotoPrevious, 4);
-            //     break;
-            // case 0x51: //红外发射控制相片下翻
-            //     Infrared_Send(Infrared_PhotoNext, 4);
-            //     break;
-            // case 0x61: //红外发射控制光源强度档位加1
-            //     Infrared_Send(Infrared_LightAdd1, 4);
-            //     break;
-            // case 0x62: //红外发射控制光源强度档位加2
-            //     Infrared_Send(Infrared_LightAdd2, 4);
-            //     break;
-            // case 0x63: //红外发射控制光源强度档位加3
-            //     Infrared_Send(Infrared_LightAdd3, 4);
-            //     break;
-            // case 0x80:                                 //运动标志物数据返回允许位
-            //     Host_AGV_Return_Flag = Wifi_Rx_Buf[3]; //SET 允许 / RESET 禁止
-            //     break;
-            // default:
-            //     break;
-            // }
         }
         else
         {
@@ -251,6 +185,9 @@ void Can_ZigBeeRx_Check(void)
     {
         if (gt_get_sub(canu_zibe_rxtime) == 0)
         {
+            ZigBee_CmdHandler(Zigb_Rx_Buf[1]); // 对收到的ZigBee指令或数据进行处理 // edited
+
+
             if (Zigb_Rx_Buf[1] == 0x03) // 道闸
             {
                 if (Zigb_Rx_Buf[2] == 0x01)
@@ -265,7 +202,6 @@ void Can_ZigBeeRx_Check(void)
                     if (Zigb_Rx_Buf[3] == 0x01)
                     {
                         Stop_Flag = Zigb_Rx_Buf[4];
-                        ETC_Flag = 1;
                     }
                 }
             }
