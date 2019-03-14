@@ -108,11 +108,11 @@ void StreetLight_Task(uint8_t targetLevel)
 
     for (i = 0; i < 4; i++)
     {
-        temp_val[i] = BH1750_GetAverage(5);
+        temp_val[i] = BH1750_GetAverage(10);
         Beep(2);
         Infrared_Send_A(Infrared_LightAdd1);
-        delay_ms(700);
-        delay_ms(700);
+        delay_ms(790);
+        delay_ms(790);
     }
 
     CurrentLightValue = temp_val[0];
@@ -133,8 +133,8 @@ void StreetLight_Task(uint8_t targetLevel)
         for (i = 0; i < errorValue; i++)
         {
             Infrared_Send_A(Infrared_LightAdd1);
-            delay_ms(750);
-            delay_ms(750);
+            delay_ms(790);
+            delay_ms(790);
         }
     }
     else
@@ -142,8 +142,8 @@ void StreetLight_Task(uint8_t targetLevel)
         for (i = 0; i < 4 + errorValue; i++)
         {
             Infrared_Send_A(Infrared_LightAdd1);
-            delay_ms(750);
-            delay_ms(750);
+            delay_ms(790);
+            delay_ms(790);
         }
     }
 }

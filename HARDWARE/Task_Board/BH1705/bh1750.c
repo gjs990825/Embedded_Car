@@ -232,7 +232,11 @@ uint16_t Get_Bh_Value(void)
 
 uint16_t BH1750_GetAverage(uint8_t times)
 {
-    uint32_t temp;
+    uint32_t temp = 0;
+	// 有坑，初始化后需要延时，官方代码注释掉了延时
+	Single_Write_BH1750(0x01);   // power on
+    Single_Write_BH1750(0x10);   // H- resolution mode
+    delay_ms(200);
 
     for(uint8_t i = 0; i < times; i++)
     {
