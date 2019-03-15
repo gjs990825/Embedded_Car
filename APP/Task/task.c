@@ -36,26 +36,38 @@
 uint8_t FOUND_RFID_CARD = false;
 uint8_t RFID_RoadSection = false;
 
-struct StatusBeforeFoundRFID_Struct StatusBeforeFoundRFID;
+struct StatusBeforeFoundRFID_Struct
+{
+    uint8_t stopFlag;
+    uint16_t setEncoder;
+    uint16_t currentEncoder;
+    uint8_t trackMode;
+    uint8_t currentSpeed;
+    Moving_ByEncoder_t movingByencoder;
+} StatusBeforeFoundRFID;
 
+extern uint16_t Mp_Value;
 // 保存遇到白卡时候的状态
 void Save_StatusBeforeFoundRFID(void)
 {
     StatusBeforeFoundRFID.movingByencoder = Moving_ByEncoder;
-    StatusBeforeFoundRFID.setEncoder = temp_MP;
+    StatusBeforeFoundRFID.currentEncoder = Mp_Value;
     StatusBeforeFoundRFID.stopFlag = Stop_Flag;
     StatusBeforeFoundRFID.trackMode = Track_Mode;
+    StatusBeforeFoundRFID.setEncoder = temp_MP;
+    StatusBeforeFoundRFID.currentSpeed = Car_Speed;
 }
 
 // 恢复状态 encoderChangeValue: 前后设定码盘差值
 void Resume_StatusBeforeFoundRFID(uint16_t encoderChangeValue)
 {
+    Roadway_mp_syn(); // 同步码盘
     Moving_ByEncoder = StatusBeforeFoundRFID.movingByencoder;
-    temp_MP = StatusBeforeFoundRFID.setEncoder - encoderChangeValue;
     Stop_Flag = StatusBeforeFoundRFID.stopFlag;
     Track_Mode = StatusBeforeFoundRFID.trackMode;
-    RFID_RoadSection = false; // 清空标志位
-    FOUND_RFID_CARD = false;
+    // 循迹信息已清空，需要重新计算并减去执行中的行进值
+    temp_MP = StatusBeforeFoundRFID.setEncoder - StatusBeforeFoundRFID.currentEncoder - encoderChangeValue;
+    Car_Speed = StatusBeforeFoundRFID.currentSpeed;
 }
 
 // 交通灯识别
@@ -185,19 +197,23 @@ void ETC_Task(void)
     }
 }
 
+// RFID读卡，检测到执行读卡
 void RFID_Task(void)
-{ // 11.5-16.5 为可读范围，重复读取
+{
     print_info("FOUND_RFID\r\n");
     ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 12), Stop_Flag, FORBACKCOMPLETE);
-    for (uint8_t i = 0; i < 5; i++)
+    for (uint8_t i = 0; i < 5; i++) // 读卡范围约 11.5-16.5，间隔读取
     {
         Read_Card();
         ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 1), Stop_Flag, FORBACKCOMPLETE);
         delay_ms(500);
     }
-    ExcuteAndWait(Back_Off(30, Centimeter_Value * ((12 + (1 * 5)) - 9)), Stop_Flag, FORBACKCOMPLETE);
-
-    FOUND_RFID_CARD = 0;
+    RFID_RoadSection = false; // 结束寻卡
+    FOUND_RFID_CARD = false;  // 清空标志位
+    TIM_Cmd(TIM5, DISABLE);   // 停止定时器
+    ExcuteAndWait(Back_Off(30, Centimeter_Value * (12 + (1 * 5))), Stop_Flag, FORBACKCOMPLETE);
+    Control(Car_Speed, Car_Speed); 
+    // 返回读卡前位置
 }
 
 // 下面是坐标点对应的任务集合，独立任务进入前需要保证位置距离朝向等准确无误
@@ -206,18 +222,16 @@ void RFID_Task(void)
 void Task_5_5(void)
 {
     ExcuteAndWait(Turn_ByEncoder(90 + 50), Stop_Flag, TURNCOMPLETE);
-    ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 10), Stop_Flag, FORBACKCOMPLETE);
+    ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 17), Stop_Flag, FORBACKCOMPLETE);
     Beep(2);
 
     delay_ms(700);
     delay_ms(700); // 等待摄像头反应
     TFT_Task();
 
-    ExcuteAndWait(Back_Off(30, Centimeter_Value * 10), Stop_Flag, FORBACKCOMPLETE);
+    ExcuteAndWait(Back_Off(30, Centimeter_Value * 17), Stop_Flag, FORBACKCOMPLETE);
     ExcuteAndWait(Turn_ByEncoder(-50 - 35), Stop_Flag, TURNCOMPLETE);
-    Beep(5);
 
-    delay_ms(500);
     RotationLED_Task();
 
     ExcuteAndWait(Turn_ByEncoder(35), Stop_Flag, TURNCOMPLETE);
@@ -234,17 +248,19 @@ void Task_3_5(void)
     ExcuteAndWait(Turn_ByEncoder(-22), Stop_Flag, TURNCOMPLETE);
 
     RFID_RoadSection = true; // 白卡路段开始
-    TIM_Cmd(TIM5, ENABLE);
 }
 
 void Task_1_5(void)
 {
-    delay_ms(700);
-
     ExcuteAndWait(Back_Off(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
 
+    delay_ms(700);
     QRCode_Task();
-    LEDDispaly_ShowDistance(Ultrasonic_GetAverage(20));
+
+    uint16_t distanceMeasured = Ultrasonic_GetAverage(20);
+	LEDDispaly_ShowDistance(distanceMeasured); // 发两次防止丢包
+    delay_ms(700);
+    LEDDispaly_ShowDistance(distanceMeasured);
 
     ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
 }
@@ -252,7 +268,6 @@ void Task_1_5(void)
 void Task_1_3(void)
 {
     RFID_RoadSection = false; // 白卡路段结束
-    TIM_Cmd(TIM5, DISABLE);
 
     // 路灯
     ExcuteAndWait(Turn_ByEncoder(90), Stop_Flag, TURNCOMPLETE);

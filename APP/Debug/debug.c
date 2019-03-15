@@ -73,7 +73,7 @@ void TIM5_IRQHandler(void)
         {
             TIM_Cmd(TIM5, DISABLE);
             RFID_Task();
-            Resume_StatusBeforeFoundRFID(Centimeter_Value * 10);
+            Resume_StatusBeforeFoundRFID(0); // 前后距离差值更正，恢复运动状态
         }
         TIM_ClearITPendingBit(TIM5, TIM_IT_Update);
     }

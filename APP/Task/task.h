@@ -9,15 +9,6 @@
 extern uint8_t FOUND_RFID_CARD;
 extern uint8_t RFID_RoadSection;
 
-struct StatusBeforeFoundRFID_Struct
-{
-    uint8_t stopFlag;
-    uint16_t setEncoder;
-    uint8_t trackMode;
-    Moving_ByEncoder_t movingByencoder;
-
-};
-
 // 自动判断数据长度 _A(Auto)
 #define Infrared_Send_A(infraredData) Infrared_Send(infraredData, sizeof(infraredData))
 

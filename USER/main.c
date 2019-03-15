@@ -7,9 +7,9 @@ static uint32_t RFID_Init_Check_times;
 
 int main(void)
 {
-	uint16_t Light_Value = 0;	 //光强度值
-	uint16_t CodedDisk_Value = 0; //码盘
-	uint16_t Nav_Value = 0;		  //角度
+	// uint16_t Light_Value = 0;	 //光强度值
+	// uint16_t CodedDisk_Value = 0; //码盘
+	// uint16_t Nav_Value = 0;		  //角度
 
 	Hardware_Init(); //硬件初始化
 

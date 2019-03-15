@@ -206,7 +206,6 @@ void Start_Tracking(int speed)
 	Track_Mode = TrackMode_NORMAL;
 	Moving_ByEncoder = ENCODER_NONE;
 	Car_Speed = speed;
-	Control(Car_Speed, Car_Speed);
 }
 
 // 根据码盘设定值循迹

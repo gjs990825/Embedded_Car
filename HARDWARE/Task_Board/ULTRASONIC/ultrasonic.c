@@ -3,55 +3,51 @@
 #include "delay.h"
 #include "cba.h"
 
-float Ultrasonic_Value = 0;
-uint32_t Ultrasonic_Num=0;						// 计数值
+uint32_t Ultrasonic_Num = 0; // 计数值
 uint16_t distance = 0;
 
 void Ultrasonic_Port(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA|RCC_AHB1Periph_GPIOB,ENABLE);
-	
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB, ENABLE);
 
 	//GPIO_PinAFConfig(GPIOB,GPIO_PinSource4,GPIO_AF_SWJ);
 	//GPIO_PinAFConfig(GPIOB,GPIO_PinSource3,GPIO_AF_SWJ);
 	//GPIO_PinAFConfig(GPIOA,GPIO_PinSource15,GPIO_AF_SWJ);
-	GPIO_PinAFConfig(GPIOA,GPIO_PinSource14,GPIO_AF_SWJ);
-	GPIO_PinAFConfig(GPIOA,GPIO_PinSource13,GPIO_AF_SWJ);
-	
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource14, GPIO_AF_SWJ);
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource13, GPIO_AF_SWJ);
+
 	//GPIOA15---INC--RX
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;  //通用输出
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; //推挽输出 
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; //推挽输出
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;   //上拉
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz; 
-	GPIO_Init(GPIOA,&GPIO_InitStructure);
-	
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
 	//GPIOB4---INT0--TX
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;   //浮空 
-	GPIO_Init(GPIOB,&GPIO_InitStructure);
-	
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP; //浮空
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
 }
 
-
-void Ultrasonic_TIM(uint16_t arr,uint16_t psc)
+void Ultrasonic_TIM(uint16_t arr, uint16_t psc)
 {
 	//GPIO_InitTypeDef GPIO_InitStructure;
 	TIM_TimeBaseInitTypeDef TIM_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
-	
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6,ENABLE);
-	
+
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);
+
 	TIM_InitStructure.TIM_Period = arr;
 	TIM_InitStructure.TIM_Prescaler = psc;
 	TIM_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-//此参数对基本定时器无效
-//	TIM_InitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-//	TIM_InitStructure.TIM_RepetitionCounter = 0;
-	TIM_TimeBaseInit(TIM6,&TIM_InitStructure);
+	//此参数对基本定时器无效
+	//	TIM_InitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+	//	TIM_InitStructure.TIM_RepetitionCounter = 0;
+	TIM_TimeBaseInit(TIM6, &TIM_InitStructure);
 
 	NVIC_InitStructure.NVIC_IRQChannel = TIM6_DAC_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
@@ -59,7 +55,7 @@ void Ultrasonic_TIM(uint16_t arr,uint16_t psc)
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 
-	TIM_ITConfig(TIM6,TIM_IT_Update,ENABLE);
+	TIM_ITConfig(TIM6, TIM_IT_Update, ENABLE);
 	TIM_Cmd(TIM6, DISABLE);
 }
 
@@ -67,19 +63,19 @@ void Ultrasonic_EXTI(void)
 {
 	EXTI_InitTypeDef EXTI_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
-	
+
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
-	
+
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
-	
-	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB,EXTI_PinSource4);
-	
+
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource4);
+
 	EXTI_InitStructure.EXTI_Line = EXTI_Line4;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
 	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
 	EXTI_Init(&EXTI_InitStructure);
-	
+
 	NVIC_InitStructure.NVIC_IRQChannel = EXTI4_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 6;
@@ -90,64 +86,61 @@ void Ultrasonic_EXTI(void)
 void Ultrasonic_Init(void)
 {
 	Ultrasonic_Port();
-	Ultrasonic_TIM(9,83);
+	Ultrasonic_TIM(9, 83);
 	Ultrasonic_EXTI();
 }
-
 
 //超声波测距
 void Ultrasonic_Ranging(void)
 {
-    INC = 1;            
+	INC = 1;
 	delay_us(3);
-    INC = 0;
+	INC = 0;
 
-	TIM_Cmd(TIM6,ENABLE);
-	//EXTI_ClearITPendingBit(EXTI_Line4);	
-	TIM_ClearITPendingBit(TIM6,TIM_IT_Update);
-	
-    Ultrasonic_Num  = 0;			 // 定时器清零
+	TIM_Cmd(TIM6, ENABLE);
+	//EXTI_ClearITPendingBit(EXTI_Line4);
+	TIM_ClearITPendingBit(TIM6, TIM_IT_Update);
 
-	delay_ms(30);			 //等待一段时间，等待发送超声波控制信号
+	Ultrasonic_Num = 0; // 定时器清零
+
+	delay_ms(30); //等待一段时间，等待发送超声波控制信号
 	INC = 1;
 	delay_ms(5);
 }
 
 void TIM6_DAC_IRQHandler(void)
 {
-	if(TIM_GetITStatus(TIM6,TIM_IT_Update) == SET)
+	if (TIM_GetITStatus(TIM6, TIM_IT_Update) == SET)
 	{
 		Ultrasonic_Num++;
 	}
-	TIM_ClearITPendingBit(TIM6,TIM_IT_Update);
+	TIM_ClearITPendingBit(TIM6, TIM_IT_Update);
 }
-
 
 void EXTI4_IRQHandler(void)
 {
-	if(EXTI_GetITStatus(EXTI_Line4) == SET)
+	if (EXTI_GetITStatus(EXTI_Line4) == SET)
 	{
-		if(GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_4) == RESET)
-		{	
-			TIM_Cmd(TIM6,DISABLE);
-			Ultrasonic_Value = Ultrasonic_Num;
-			Ultrasonic_Value =(float)Ultrasonic_Value*1.72f-20.0f;       // 计算距离定时10us，S=Vt/2（减2是误差补尝）// edited
-			distance = (uint16_t) Ultrasonic_Value;
+		if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_4) == RESET)
+		{
+			TIM_Cmd(TIM6, DISABLE);
+			distance = (uint16_t)((float)Ultrasonic_Num * 1.72f); // 计算距离定时10us，S=Vt/2 // edited
 		}
 		EXTI_ClearITPendingBit(EXTI_Line4);
 	}
 }
 
-
+// 获得测距平均值
 uint16_t Ultrasonic_GetAverage(uint8_t times)
 {
 	uint32_t tmp_dis = 0;
-	for(uint8_t i = 0; i < times; i++)
+	Ultrasonic_Ranging(); //丢弃第一次数据
+	delay_ms(50);
+	for (uint8_t i = 0; i < times; i++)
 	{
 		Ultrasonic_Ranging();
-		tmp_dis += distance;
 		delay_ms(50);
+		tmp_dis += distance;
 	}
 	return (tmp_dis / times) - UltrasonicErrorValue;
 }
-

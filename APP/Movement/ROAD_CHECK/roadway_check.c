@@ -31,7 +31,7 @@ int8_t Q7[7] = {0};
 int8_t H8[8] = {0};
 // 白色数量
 uint8_t NumberOfWhite = 0;
-// 方向权重
+// 方向权重(PID适应线性值，这里已更改为偏移值)
 int DirectionWights = 0;
 // 运行状态
 uint8_t Stop_Flag = TRACKING;
@@ -47,13 +47,14 @@ int LSpeed = 0, RSpeed = 0;
 // 循迹时车速
 int Car_Speed = 0;
 
-// 设定码盘值
+// 目标码盘值
 uint16_t temp_MP = 0;
-// 获取的码盘值
+// 当前的码盘值
 uint16_t Mp_Value = 0;
 
-// 码盘中间变量
+// 之前获取的码盘值
 int16_t Roadway_cmp;
+// 从CAN获取的实时码盘值
 extern int16_t CanHost_Mp;
 
 // 码盘同步
@@ -62,7 +63,7 @@ void Roadway_mp_syn(void)
     Roadway_cmp = CanHost_Mp;
 }
 
-//码盘获取
+// 码盘获取
 uint16_t Roadway_mp_Get(void)
 {
     uint32_t ct;
@@ -241,11 +242,10 @@ void TRACK_LINE(void)
         {
             if (RFID_RoadSection) // 白卡路段
             {
-                FOUND_RFID_CARD = true;
-                Save_StatusBeforeFoundRFID();
-                // PidData_Clear();
-                // Control(0, 0); // 遇到白卡，停下
-                Stop();
+                FOUND_RFID_CARD = true;       // 找到白卡
+                Save_StatusBeforeFoundRFID(); // 保存当前状态
+                Stop();                       // 暂停运行
+                TIM_Cmd(TIM5, ENABLE);        // 使能RFID处理定时器
             }
             else
             {

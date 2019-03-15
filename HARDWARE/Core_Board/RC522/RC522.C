@@ -5,6 +5,7 @@
 #include "cba.h"
 #include "Timer.h"
 #include "canp_hostcom.h"
+#include "debug.h"
 
 #define MAXRLEN 18
 
@@ -92,9 +93,8 @@ void Read_Card(void)
                         MP_SPK = 0;
 
                         memcpy(RFID_Data, RXRFID, 16);
-                        Send_DataToUsart(RFID_Data, 16);
-                        Send_InfoData_To_Fifo(RFID_Data, 16);
-                        Send_InfoData_To_Fifo("\n", 2);
+                        Send_DataToUsart(RFID_Data, 16); // ·¢ËÍµ½´®¿Ú
+                        print_info("%s\r\n", RFID_Data);
                         LED1 = 0;
                         LED2 = 0;
                         LED3 = 0;
