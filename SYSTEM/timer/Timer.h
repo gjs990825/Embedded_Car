@@ -3,6 +3,7 @@
 
 // 返回是否超过设定时间（单位ms）
 #define Check_IsTimeOut(setTimeStamp, timeOutLimit) (global_times < (setTimeStamp + timeOutLimit))
+// 获取当前时间戳
 #define Get_GlobalTimeStamp() (global_times)
 
 extern volatile uint32_t global_times;

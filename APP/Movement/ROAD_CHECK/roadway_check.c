@@ -17,7 +17,6 @@
         Stop_Flag = TURNCOMPLETE;       \
     }
 
-
 // 使能循迹输出
 #define _TRACK_OUTPUT_ 0
 
@@ -236,15 +235,29 @@ void TRACK_LINE(void)
     Get_Track();
     Get_DirectionWights();
 
-    if ((NumberOfWhite >= ALL_WHITE) && (Track_Mode == TrackMode_NORMAL)) // 全白
+    if (NumberOfWhite >= ALL_WHITE) // 全白
     {
-        // Stop();
-        Stop_Flag = OUTTRACK;
+        if ((Track_Mode == TrackMode_NORMAL) || (Track_Mode == TrackMode_ENCODER)) // 循迹状态
+        {
+            if (RFID_RoadSection) // 白卡路段
+            {
+                FOUND_RFID_CARD = true;
+                Save_StatusBeforeFoundRFID(0);
+                // PidData_Clear();
+                // Control(0, 0); // 遇到白卡，停下
+                Stop();
+            }
+            else
+            {
+                // Stop();
+                Stop_Flag = OUTTRACK; // 出线
+            }
+        }
     }
     else if ((NumberOfWhite <= ALL_BLACK) && (Track_Mode == TrackMode_NORMAL)) // 全黑
     {
         Roadway_Flag_clean();
-	    Control(0, 0);
+        Control(0, 0);
         Stop_Flag = CROSSROAD;
     }
     else

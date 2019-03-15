@@ -21,10 +21,10 @@
 #include "ultrasonic.h"
 #include "agv.h"
 
-#define Action_S1() ExcuteAndWait(Start_Tracking(Track_Speed), Stop_Flag, CROSSROAD) // Auto_Run()// Infrared_Send(HW_K, 6) //打开测试红外报警
+#define Action_S1() Auto_Run()// Infrared_Send(HW_K, 6) //打开测试红外报警
 #define Action_S2() StreetLight_Task(3) // LEDDispaly_ShowDistance(Ultrasonic_Task(10)) //Infrared_Send(H_1, 4)  //调光
 #define Action_S3() LEDDispaly_ShowDistance(233) //SYN7318_Test() // SYN7318_Test()
-#define Action_S4() AGV_SendInfraredData(Infrared_AlarmON) //Auto_Run() //Turn_ByEncoder(-360) // StreetLight_Task(3) //Read_Card()
+#define Action_S4() Read_Card() // AGV_SendInfraredData(Infrared_AlarmON) //Auto_Run() //Turn_ByEncoder(-360)
 
 
 // 按键配置

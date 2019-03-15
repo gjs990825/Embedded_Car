@@ -24,7 +24,7 @@ void Hardware_Init(void)
 
 
 	
-	// DebugTimer_Init(16799, 1999); // 调试输出
+	DebugTimer_Init(16799, 1999); // 调试(白卡检测)
 	CanTimer_Init(16799, 199); // 20ms CAN数据检查
 	
 

@@ -29,6 +29,10 @@ void delay_ns(u32 ns)
     }
 }
 
+
+//// edited
+uint8_t RFID_Data[16];
+////
 uint8_t TXRFID[16] = {0x41, 0x31, 0x42, 0x32, 0x43, 0x33, 0x44, 0x34, 0x46, 0x31, 0x42, 0x32, 0x43, 0x33, 0x44, 0x34};
 uint8_t RXRFID[16];
 /*
@@ -87,7 +91,8 @@ void Read_Card(void)
                         LED4 = 1; //读卡成功
                         MP_SPK = 0;
 
-                        Send_InfoData_To_Fifo(RXRFID, 16);
+                        memcpy(RFID_Data, RXRFID, 16);
+                        Send_InfoData_To_Fifo(RFID_Data, 16);
                         Send_InfoData_To_Fifo("\n", 2);
                         LED1 = 0;
                         LED2 = 0;
@@ -695,10 +700,10 @@ int8_t ClearBitMask(uint8_t reg, uint8_t mask)
 //          *pOutLenBit[OUT]:返回数据的位长度
 /////////////////////////////////////////////////////////////////////
 int8_t PcdComMF522(uint8_t Command,
-                 uint8_t *pInData,
-                 uint8_t InLenByte,
-                 uint8_t *pOutData,
-                 unsigned int *pOutLenBit)
+                   uint8_t *pInData,
+                   uint8_t InLenByte,
+                   uint8_t *pOutData,
+                   unsigned int *pOutLenBit)
 {
     int8_t status = MI_ERR;
     uint8_t irqEn = 0x00;

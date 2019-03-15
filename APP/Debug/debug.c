@@ -49,7 +49,7 @@ void DebugTimer_Init(uint16_t arr, uint16_t psc)
     NVIC_Init(&NVIC_InitStructure);
 
     TIM_ITConfig(TIM5, TIM_IT_Update, ENABLE);
-    TIM_Cmd(TIM5, ENABLE);
+    TIM_Cmd(TIM5, DISABLE);
 }
 
 // void Debug_CheckVar(void)
@@ -63,14 +63,16 @@ void DebugTimer_Init(uint16_t arr, uint16_t psc)
 //         }
 //     }
 // }
+extern uint8_t FOUND_RFID_CARD;
 
 void TIM5_IRQHandler(void)
 {
     if (TIM_GetITStatus(TIM5, TIM_IT_Update) == SET)
     {
-        if (Track_Mode == TrackMode_NORMAL)
+        if (FOUND_RFID_CARD)
         {
-            print_info("W:%d\r\n", DirectionWights);
+            TIM_Cmd(TIM5, DISABLE);
+            RFID_Task();
         }
         TIM_ClearITPendingBit(TIM5, TIM_IT_Update);
     }

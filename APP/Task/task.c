@@ -33,6 +33,21 @@
 #include "ultrasonic.h"
 #include "my_lib.h"
 
+uint8_t FOUND_RFID_CARD = false;
+uint8_t RFID_RoadSection = false;
+
+struct StatusBeforeFoundRFID_Struct StatusBeforeFoundRFID;
+
+// 保存遇到白卡时候的状态 encoderChangeValue: 执行后的设定码盘差值
+void Save_StatusBeforeFoundRFID(uint16_t encoderChangeValue)
+{
+    StatusBeforeFoundRFID.movingByencoder = Moving_ByEncoder;
+    StatusBeforeFoundRFID.setEncoder = temp_MP - encoderChangeValue;
+    StatusBeforeFoundRFID.stopFlag = Stop_Flag;
+    StatusBeforeFoundRFID.trackMode = Track_Mode;
+}
+
+
 // 交通灯识别
 void TrafficLight_Task(void)
 {
@@ -153,9 +168,18 @@ void ETC_Task(void)
     {
         if ((ETC_Status.isSet == SET) && Check_IsTimeOut(ETC_Status.timeStamp, 6 * 1000)) // 六秒前的数据作废
             break;
-        ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 8), Stop_Flag, FORBACKCOMPLETE); // 跟着节拍
-        ExcuteAndWait(Back_Off(30, Centimeter_Value * 8), Stop_Flag, FORBACKCOMPLETE); // 一起摇摆
+        ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 7), Stop_Flag, FORBACKCOMPLETE); // 跟着节拍
+        ExcuteAndWait(Back_Off(30, Centimeter_Value * 7), Stop_Flag, FORBACKCOMPLETE); // 一起摇摆
     }
+}
+
+
+void RFID_Task(void)
+{
+    ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 10), Stop_Flag, FORBACKCOMPLETE);
+    Read_Card();
+    ExcuteAndWait(Back_Off(30, Centimeter_Value * 5), Stop_Flag, FORBACKCOMPLETE);
+    FOUND_RFID_CARD = 0;
 }
 
 // 下面是坐标点对应的任务集合，独立任务进入前需要保证位置距离朝向等准确无误
@@ -169,7 +193,7 @@ void Task_5_5(void)
     delay_ms(700);
     delay_ms(700); // 等待摄像头反应
 
-    TFT_Task();
+    // TFT_Task();
 
     ExcuteAndWait(Back_Off(30, Centimeter_Value * 10), Stop_Flag, FORBACKCOMPLETE);
     ExcuteAndWait(Turn_ByEncoder(-50 - 35), Stop_Flag, TURNCOMPLETE);
@@ -180,6 +204,9 @@ void Task_5_5(void)
 
     ExcuteAndWait(Turn_ByEncoder(35), Stop_Flag, TURNCOMPLETE);
     CurrentStaus.dir = DIR_LEFT; // 与任务开始时方向不一致
+    
+    RFID_RoadSection = true; // 白卡路段开始
+    TIM_Cmd(TIM5, ENABLE);
 }
 
 void Task_3_5(void)
@@ -187,9 +214,12 @@ void Task_3_5(void)
     ExcuteAndWait(Turn_ByEncoder(22), Stop_Flag, TURNCOMPLETE);
     delay_ms(700);
 
-    TrafficLight_Task();
+    // TrafficLight_Task();
 
     ExcuteAndWait(Turn_ByEncoder(-22), Stop_Flag, TURNCOMPLETE);
+
+    RFID_RoadSection = false; // 白卡路段结束
+    TIM_Cmd(TIM5, DISABLE);
 }
 
 void Task_1_5(void)
@@ -198,7 +228,7 @@ void Task_1_5(void)
 
     ExcuteAndWait(Back_Off(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
 
-    QRCode_Task();
+    // QRCode_Task();
     LEDDispaly_ShowDistance(Ultrasonic_GetAverage(20));
 
     ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
@@ -206,7 +236,7 @@ void Task_1_5(void)
 
 void Task_1_3(void)
 {
-    // 路灯// Request_ToHost(RequestCmd_StreetLight);
+    // 路灯
     ExcuteAndWait(Turn_ByEncoder(90), Stop_Flag, TURNCOMPLETE);
     ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 5), Stop_Flag, FORBACKCOMPLETE);
 
