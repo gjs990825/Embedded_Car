@@ -36,8 +36,7 @@ struct StatusBeforeFoundRFID_Struct
     Send_ZigBeeData(ZigBee_PlateTFT_1, 1, 600); \
     Send_ZigBeeData(ZigBee_PlateTFT_2, 1, 600)
 
-void Save_StatusBeforeFoundRFID(void);
-void Resume_StatusBeforeFoundRFID(uint16_t encoderChangeValue);
+void Save_StatusBeforeFoundRFID(uint16_t encoderChangeValue);
 
 void TFT_Task(void);
 void QRCode_Task(void);

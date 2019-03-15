@@ -26,8 +26,6 @@ int main(void)
 
 	Send_UpMotor(0, 0);
 
-	Send_DataToUsart("USART TEST\r\n", 13);
-
 	while (1)
 	{
 		KEY_Check(); //按键检测
@@ -71,43 +69,43 @@ int main(void)
 
 		if (gt_get_sub(WIFI_Upload_data_times) == 0)
 		{
-			// WIFI_Upload_data_times = gt_get() + 200;
+			WIFI_Upload_data_times = gt_get() + 200;
 
-			// if (Host_AGV_Return_Flag == RESET)
-			// {
-			// 	Principal_Tab[2] = Stop_Flag;			  //运行状态
-			// 	Principal_Tab[3] = Get_tba_phsis_value(); //光敏状态值返回
+			if (Host_AGV_Return_Flag == RESET)
+			{
+				Principal_Tab[2] = Stop_Flag;			  //运行状态
+				Principal_Tab[3] = Get_tba_phsis_value(); //光敏状态值返回
 
-			// 	Ultrasonic_Ranging(); //超声波数据
-			// 	Principal_Tab[4] = distance % 256;
-			// 	Principal_Tab[5] = distance / 256;
+				Ultrasonic_Ranging(); //超声波数据
+				Principal_Tab[4] = distance % 256;
+				Principal_Tab[5] = distance / 256;
 
-			// 	Light_Value = Get_Bh_Value();		  //光强度传感器
-			// 	Principal_Tab[6] = Light_Value % 256; //光照数据
-			// 	Principal_Tab[7] = Light_Value / 256;
+				Light_Value = Get_Bh_Value();		  //光强度传感器
+				Principal_Tab[6] = Light_Value % 256; //光照数据
+				Principal_Tab[7] = Light_Value / 256;
 
-			// 	CodedDisk_Value = CanHost_Mp; //码盘
-			// 	Principal_Tab[8] = CodedDisk_Value % 256;
-			// 	Principal_Tab[9] = CodedDisk_Value / 256;
+				CodedDisk_Value = CanHost_Mp; //码盘
+				Principal_Tab[8] = CodedDisk_Value % 256;
+				Principal_Tab[9] = CodedDisk_Value / 256;
 
-			// 	Nav_Value = CanHost_Navig; //角度
-			// 	Principal_Tab[10] = Nav_Value % 256;
-			// 	Principal_Tab[11] = Nav_Value / 256;
+				Nav_Value = CanHost_Navig; //角度
+				Principal_Tab[10] = Nav_Value % 256;
+				Principal_Tab[11] = Nav_Value / 256;
 
-			// 	Send_WifiData_To_Fifo(Principal_Tab, 12);
-			// 	UartA72_TxClear();
-			// 	UartA72_TxAddStr(Principal_Tab, 12);
-			// 	UartA72_TxStart();
-			// }
-			// else if ((Host_AGV_Return_Flag == SET) && (AGV_data_Falg == SET))
-			// {
+				Send_WifiData_To_Fifo(Principal_Tab, 12);
+				UartA72_TxClear();
+				UartA72_TxAddStr(Principal_Tab, 12);
+				UartA72_TxStart();
+			}
+			else if ((Host_AGV_Return_Flag == SET) && (AGV_data_Falg == SET))
+			{
 
-			// 	UartA72_TxClear();
-			// 	UartA72_TxAddStr(Follower_Tab, 50);
-			// 	UartA72_TxStart();
-			// 	Send_WifiData_To_Fifo(Follower_Tab, 50);
-			// 	AGV_data_Falg = 0;
-			// }
+				UartA72_TxClear();
+				UartA72_TxAddStr(Follower_Tab, 50);
+				UartA72_TxStart();
+				Send_WifiData_To_Fifo(Follower_Tab, 50);
+				AGV_data_Falg = 0;
+			}
 		}
 	}
 }

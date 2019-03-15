@@ -3,7 +3,7 @@
 // 初始化硬件
 void Hardware_Init(void)
 {
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1); //中断分组
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0); //中断分组
 	delay_init(168);
 
 	Tba_Init();						 // 任务板初始化
