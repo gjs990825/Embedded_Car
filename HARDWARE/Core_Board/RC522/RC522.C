@@ -92,6 +92,7 @@ void Read_Card(void)
                         MP_SPK = 0;
 
                         memcpy(RFID_Data, RXRFID, 16);
+                        Send_DataToUsart(RFID_Data, 16);
                         Send_InfoData_To_Fifo(RFID_Data, 16);
                         Send_InfoData_To_Fifo("\n", 2);
                         LED1 = 0;
