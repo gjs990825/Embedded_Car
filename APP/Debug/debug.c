@@ -43,8 +43,8 @@ void DebugTimer_Init(uint16_t arr, uint16_t psc)
     TIM_TimeBaseInit(TIM5, &TIM_InitStructure);
 
     NVIC_InitStructure.NVIC_IRQChannel = TIM5_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 6;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
 
@@ -73,6 +73,7 @@ void TIM5_IRQHandler(void)
         {
             TIM_Cmd(TIM5, DISABLE);
             RFID_Task();
+            Resume_StatusBeforeFoundRFID(Centimeter_Value * 10);
         }
         TIM_ClearITPendingBit(TIM5, TIM_IT_Update);
     }

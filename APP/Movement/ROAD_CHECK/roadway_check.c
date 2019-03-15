@@ -242,7 +242,7 @@ void TRACK_LINE(void)
             if (RFID_RoadSection) // °×¿¨Â·¶Î
             {
                 FOUND_RFID_CARD = true;
-                Save_StatusBeforeFoundRFID(0);
+                Save_StatusBeforeFoundRFID();
                 // PidData_Clear();
                 // Control(0, 0); // Óöµ½°×¿¨£¬Í£ÏÂ
                 Stop();
