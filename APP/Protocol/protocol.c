@@ -43,7 +43,15 @@ void ExcuteNTimes(void(Task *)(void), N, delay)
 
 #if !USE_MACRO_FUNCTIONS
 
-void Send_ZigBeeData(uint8_t *data, uint8_t ntimes, uint16_t delay)
+// 单次发送，带校验
+void Send_ZigBeeData(uint8_t *data)
+{
+    Check_Sum(data);
+    Send_ZigbeeData_To_Fifo(data, 8);
+}
+
+// 多次发送，带校验
+void Send_ZigBeeDataNTimes(uint8_t *data, uint8_t ntimes, uint16_t delay)
 {
     Check_Sum(data);
     ExcuteNTimes(Send_ZigbeeData_To_Fifo(data, 8), ntimes, delay);

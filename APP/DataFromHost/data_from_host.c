@@ -11,6 +11,7 @@
 #include "syn7318.h"
 #include <string.h>
 #include "Timer.h"
+#include "agv.h"
 
 #define SetCmdFlag(flag) CommandFlagStatus[flag] = SET
 #define SetSpeed Wifi_Rx_Buf[Pack_SubCmd1]
@@ -134,7 +135,7 @@ void Process_DataFromHost(uint8_t mainCmd)
         Infrared_Send_A(Infrared_LightAdd3);
         break; // 红外发射控制光源强度档位加3
 
-    case FromHost_AGVReturn:
+    case FromHost_AGVReturnData:
         Host_AGV_Return_Flag = Wifi_Rx_Buf[Pack_SubCmd1];
         break; // 从车返回
 
@@ -199,6 +200,10 @@ void Process_DataFromHost(uint8_t mainCmd)
 
     case FromHost_TFTRecognition:
         break; // TFT识别
+
+    case FromHost_AGVStart:
+        AGV_Start();
+        break; // AGV启动
     default:
         break;
     }
@@ -208,19 +213,21 @@ void Process_DataFromHost(uint8_t mainCmd)
 ZigBee_DataStatus_t ETC_Status = {0, 0};
 ZigBee_DataStatus_t BarrierGate_Status = {0, 0};
 
+#define SetAndAddStamp(X) \
+    X.isSet = SET;        \
+    X.timeStamp = Get_GlobalTimeStamp()
+
 // ZigBee指令处理
 void ZigBee_CmdHandler(uint8_t cmd)
 {
     switch (cmd)
     {
-        case Return_ETC:
-            ETC_Status.isSet = SET;
-            ETC_Status.timeStamp = Get_GlobalTimeStamp();
-            break;
-            case Return_BarrierGate:
-            BarrierGate_Status.isSet = SET;
-            BarrierGate_Status.timeStamp = Get_GlobalTimeStamp();
-        default:
-            break;
+    case Return_ETC:
+        SetAndAddStamp(ETC_Status);
+        break;
+    case Return_BarrierGate:
+        SetAndAddStamp(BarrierGate_Status);
+    default:
+        break;
     }
 }

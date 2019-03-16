@@ -1,6 +1,7 @@
 #include "task.h"
 #include "sys.h"
 #include <stdio.h>
+#include <string.h>
 #include "stm32f4xx.h"
 #include "delay.h"
 #include "infrared.h"
@@ -73,7 +74,7 @@ void Resume_StatusBeforeFoundRFID(uint16_t encoderChangeValue)
 // 交通灯识别
 void TrafficLight_Task(void)
 {
-    Send_ZigBeeData(ZigBee_TrafficLightStartRecognition, 2, 200); // 开始识别交通灯
+    Send_ZigBeeDataNTimes(ZigBee_TrafficLightStartRecognition, 2, 200); // 开始识别交通灯
     Request_ToHost(RequestCmd_TrafficLight);
     WaitForFlag(GetCmdFlag(FromHost_TrafficLight), SET); // 等待识别完成
 }
@@ -135,8 +136,7 @@ void LEDDispaly_ShowDistance(uint16_t dis)
 {
     ZigBee_LEDDisplayDistanceData[4] = HEX2BCD(dis / 100);
     ZigBee_LEDDisplayDistanceData[5] = HEX2BCD(dis % 100);
-    Check_Sum(ZigBee_LEDDisplayDistanceData);
-    Send_ZigbeeData_To_Fifo(ZigBee_LEDDisplayDistanceData, 8);
+    Send_ZigBeeData(ZigBee_LEDDisplayDistanceData);
 }
 
 // 路灯档位调节，输入目标档位自动调整
@@ -216,6 +216,24 @@ void RFID_Task(void)
     // 返回读卡前位置
 }
 
+// 道闸任务
+void BarrierGate_Task(void) // uint8_t plate[6]
+{
+    // memcpy(&ZigBee_PlateBarrierGate_1[3], plate, 3);
+    // memcpy(&ZigBee_PlateBarrierGate_2[3], plate[3], 3);
+    Send_ZigBeeData(ZigBee_PlateBarrierGate_1);
+    delay_ms(790);
+    Send_ZigBeeData(ZigBee_PlateBarrierGate_2);
+    delay_ms(790);
+    Send_ZigbeeData_To_Fifo(ZigBee_BarrierGateOPEN, 8);
+    
+}
+
+// void AGV_Task(void)
+// {
+//     AGV_Stop();
+// }
+
 // 下面是坐标点对应的任务集合，独立任务进入前需要保证位置距离朝向等准确无误
 // 任务结束和开始车身方向不一样的需要手动设置 CurrentStaus.dir = DIR_XX;
 
@@ -289,7 +307,7 @@ void Task_5_3(void)
 
     ExcuteAndWait(Turn_ByEncoder(-45), Stop_Flag, TURNCOMPLETE);
 
-    Send_ZigbeeData_To_Fifo(ZigBee_AGVStart, 8);
+    Send_ZigBeeData(ZigBee_AGVStart);
 
     CurrentStaus.dir = DIR_DOWN;
 }
@@ -307,7 +325,7 @@ void Task_3_1(void)
 {
     // 入库
     delay_ms(500);
-    Send_ZigbeeData_To_Fifo(ZigBee_WirelessChargingON, 8);
+    Send_ZigBeeData(ZigBee_WirelessChargingON);
     delay_ms(700);
     End_Task();
 }

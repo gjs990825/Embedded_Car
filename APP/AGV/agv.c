@@ -153,7 +153,7 @@ void AGV_LightAdd(uint8_t level)
 void AGV_UploadData(bool sta)
 {
     ClearAGVCmd();
-    DataToAGV[Pack_MainCmd] = FromHost_AGVReturn;
+    DataToAGV[Pack_MainCmd] = FromHost_AGVReturnData;
     DataToAGV[Pack_SubCmd1] = sta;
     SendAGVCmd();
 }
@@ -167,6 +167,11 @@ void AGV_VoiceRecognition(bool sta)
     SendAGVCmd();
 }
 
-
-
+// AGVÆô¶¯
+void AGV_Start(void)
+{
+    ClearAGVCmd();
+    DataToAGV[Pack_MainCmd] = FromHost_AGVStart;
+    SendAGVCmd();
+}
 

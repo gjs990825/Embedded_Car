@@ -1,4 +1,3 @@
-#include "stm32f4xx.h"
 #include "sys.h"
 
 #ifndef __ULTRASONIC_H
@@ -17,7 +16,4 @@ uint16_t Ultrasonic_GetAverage(uint8_t times);
 extern uint16_t distance;
 
 #endif
-
-
-
 

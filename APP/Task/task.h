@@ -13,9 +13,9 @@ extern uint8_t RFID_RoadSection;
 #define Infrared_Send_A(infraredData) Infrared_Send(infraredData, sizeof(infraredData))
 
 // 快速发送单个指令(次数和延时在宏传递的参数中定义)
-#define LED_TimerStart() Send_ZigBeeData(ZigBee_LEDDisplayStartTimer, 3, 20) // 开始计时
-#define LED_TimerStop() Send_ZigBeeData(ZigBee_LEDDisplayStopTimer, 3, 20)   // 停止计时
-#define TFTPage_Next() Send_ZigBeeData(ZigBee_TFTPageNext, 2, 100)           // TFT下一页
+#define LED_TimerStart() Send_ZigBeeDataNTimes(ZigBee_LEDDisplayStartTimer, 3, 20) // 开始计时
+#define LED_TimerStop() Send_ZigBeeDataNTimes(ZigBee_LEDDisplayStopTimer, 3, 20)   // 停止计时
+#define TFTPage_Next() Send_ZigBeeDataNTimes(ZigBee_TFTPageNext, 2, 100)           // TFT下一页
 
 // // 请求数据(或行为)
 // #define Request_GarageFloor() Request_Data(RequestData_GarageFloor) // 请求车库层数
@@ -24,8 +24,8 @@ extern uint8_t RFID_RoadSection;
 // 红外指令
 
 #define Send_PlateToTFT()                       \
-    Send_ZigBeeData(ZigBee_PlateTFT_1, 1, 600); \
-    Send_ZigBeeData(ZigBee_PlateTFT_2, 1, 600)
+    Send_ZigBeeDataNTimes(ZigBee_PlateTFT_1, 1, 600); \
+    Send_ZigBeeDataNTimes(ZigBee_PlateTFT_2, 1, 600)
 
 void Save_StatusBeforeFoundRFID(void);
 void Resume_StatusBeforeFoundRFID(uint16_t encoderChangeValue);
@@ -42,6 +42,7 @@ void LEDDispaly_ShowDistance(uint16_t dis);
 #define Ultrasonic_Task(times) Ultrasonic_GetAverage(times)
 void StreetLight_Task(uint8_t targetLevel);
 void RFID_Task(void);
+void BarrierGate_Task(void); // uint8_t plate[6]
 
 // 任务点
 void Task_5_5(void);

@@ -18,6 +18,7 @@ void AGV_PhotoChange(bool dir);
 void AGV_LightAdd(uint8_t level);
 void AGV_UploadData(bool sta);
 void AGV_VoiceRecognition(bool sta);
+void AGV_Start(void);
 
 
 #endif // _AGV_H_
