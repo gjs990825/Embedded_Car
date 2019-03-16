@@ -42,7 +42,7 @@ void LEDDispaly_ShowDistance(uint16_t dis);
 #define Ultrasonic_Task(times) Ultrasonic_GetAverage(times)
 void StreetLight_Task(uint8_t targetLevel);
 void RFID_Task(void);
-void BarrierGate_Task(void); // uint8_t plate[6]
+void BarrierGate_Task(uint8_t plate[6]);
 
 // ÈÎÎñµã
 void Task_5_5(void);

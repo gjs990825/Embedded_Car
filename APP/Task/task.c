@@ -75,6 +75,7 @@ void Resume_StatusBeforeFoundRFID(uint16_t encoderChangeValue)
 void TrafficLight_Task(void)
 {
     Send_ZigBeeDataNTimes(ZigBee_TrafficLightStartRecognition, 2, 200); // 开始识别交通灯
+    delay_ms(700);
     Request_ToHost(RequestCmd_TrafficLight);
     WaitForFlag(GetCmdFlag(FromHost_TrafficLight), SET); // 等待识别完成
 }
@@ -216,11 +217,11 @@ void RFID_Task(void)
     // 返回读卡前位置
 }
 
-// 道闸任务
-void BarrierGate_Task(void) // uint8_t plate[6]
+// 道闸任务(输入车牌的字符串)
+void BarrierGate_Task(uint8_t plate[6])
 {
-    // memcpy(&ZigBee_PlateBarrierGate_1[3], plate, 3);
-    // memcpy(&ZigBee_PlateBarrierGate_2[3], plate[3], 3);
+    memcpy(&ZigBee_PlateBarrierGate_1[3], plate, 3);
+    memcpy(&ZigBee_PlateBarrierGate_2[3], &plate[3], 3);
     Send_ZigBeeData(ZigBee_PlateBarrierGate_1);
     delay_ms(790);
     Send_ZigBeeData(ZigBee_PlateBarrierGate_2);
@@ -259,7 +260,6 @@ void Task_5_5(void)
 void Task_3_5(void)
 {
     ExcuteAndWait(Turn_ByEncoder(22), Stop_Flag, TURNCOMPLETE);
-    delay_ms(700);
 
     TrafficLight_Task();
 
@@ -309,7 +309,7 @@ void Task_5_3(void)
 
     AGV_SetTowards(DIR_DOWN);
     delay_ms(700);
-    BarrierGate_Task();
+    BarrierGate_Task("A12B34");
     Send_ZigBeeData(ZigBee_AGVStart);
 
     CurrentStaus.dir = DIR_DOWN;
