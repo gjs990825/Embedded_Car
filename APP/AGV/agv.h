@@ -19,6 +19,6 @@ void AGV_LightAdd(uint8_t level);
 void AGV_UploadData(bool sta);
 void AGV_VoiceRecognition(bool sta);
 void AGV_Start(void);
-
+void AGV_SetTowards(uint8_t towards);
 
 #endif // _AGV_H_

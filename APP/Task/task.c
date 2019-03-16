@@ -226,7 +226,7 @@ void BarrierGate_Task(void) // uint8_t plate[6]
     Send_ZigBeeData(ZigBee_PlateBarrierGate_2);
     delay_ms(790);
     Send_ZigbeeData_To_Fifo(ZigBee_BarrierGateOPEN, 8);
-    
+    delay_ms(790);
 }
 
 // void AGV_Task(void)
@@ -307,6 +307,9 @@ void Task_5_3(void)
 
     ExcuteAndWait(Turn_ByEncoder(-45), Stop_Flag, TURNCOMPLETE);
 
+    AGV_SetTowards(DIR_DOWN);
+    delay_ms(700);
+    BarrierGate_Task();
     Send_ZigBeeData(ZigBee_AGVStart);
 
     CurrentStaus.dir = DIR_DOWN;

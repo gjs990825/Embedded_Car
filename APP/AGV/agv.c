@@ -16,13 +16,7 @@ uint8_t DataToAGV[] = {0x55, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
 //         DataToAGV[Pack_SubCmd3] = 0; \
 //     } while (0)
 
-#define SendAGVCmd() AGV_SendCmd(DataToAGV)
-
-void AGV_SendCmd(uint8_t *cmd)
-{
-    Check_Sum(cmd);
-    Send_ZigbeeData_To_Fifo(cmd, 8);
-}
+#define SendAGVCmd() Send_ZigBeeData(DataToAGV)
 
 // // 基本运动控制
 // void Stop(void);
@@ -175,3 +169,10 @@ void AGV_Start(void)
     SendAGVCmd();
 }
 
+void AGV_SetTowards(uint8_t towards)
+{
+    ClearAGVCmd();
+    DataToAGV[Pack_MainCmd] = FromHost_ReceivePresetHeadTowards;
+    DataToAGV[Pack_SubCmd1] = towards;
+    SendAGVCmd();
+}
