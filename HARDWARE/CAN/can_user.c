@@ -11,7 +11,7 @@
 #include "data_base.h"
 #include "cba.h"
 #include "infrared.h"
-#include "syn7318.h"
+// #include "syn7318.h"
 #include <string.h>
 #include "Timer.h"
 

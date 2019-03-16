@@ -28,6 +28,26 @@ int main(void)
 
 	Send_DataToUsart("USART TEST\r\n", 13);
 
+	uint8_t ask[] = {0xFD, 0x00, 0x01, 0x21};
+
+	while (1)
+	{
+		for(uint8_t i = 0; i < 4; i++)
+		{
+			USART6_SendChar(ask[i]);
+		}
+		delay_ms(500);
+//		if (USART6_RxFlag)
+//		{
+//			print_info("OK\r\n");
+//		}
+//		else
+//		{
+//			print_info("NOT OK\r\n");
+//		}
+//		USART6_RX_STA = 0;
+	}
+
 	while (1)
 	{
 		KEY_Check(); //°´¼ü¼ì²â

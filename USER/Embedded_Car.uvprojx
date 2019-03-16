@@ -503,14 +503,14 @@
               <FilePath>..\HARDWARE\Task_Board\INFARED\infrared.c</FilePath>
             </File>
             <File>
-              <FileName>syn7318.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\Task_Board\SYN7318\syn7318.c</FilePath>
-            </File>
-            <File>
               <FileName>ultrasonic.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\Task_Board\ULTRASONIC\ultrasonic.c</FilePath>
+            </File>
+            <File>
+              <FileName>voice.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\Task_Board\SYN7318\voice.c</FilePath>
             </File>
           </Files>
         </Group>

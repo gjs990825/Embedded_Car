@@ -8,7 +8,7 @@
 
 #include "infrared.h"
 #include "data_base.h"
-#include "syn7318.h"
+// #include "syn7318.h"
 #include "Rc522.h"
 #include "a_star.h"
 #include "movement.h"

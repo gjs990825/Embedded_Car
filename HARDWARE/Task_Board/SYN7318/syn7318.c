@@ -4,7 +4,7 @@
 #include "cba.h"
 #include "infrared.h"
 #include "data_base.h"
-#include "syn7318.h"
+// #include "syn7318.h"
 
 //190226 added
 #include "canp_hostcom.h"

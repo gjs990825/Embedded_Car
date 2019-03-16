@@ -10,7 +10,7 @@
 #include "canp_hostcom.h"
 #include "hard_can.h"
 #include "bh1750.h"
-#include "syn7318.h"
+// #include "syn7318.h"
 #include "power_check.h"
 #include "can_user.h"
 #include "data_base.h"
