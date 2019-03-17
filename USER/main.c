@@ -28,15 +28,6 @@ int main(void)
 
 	Send_DataToUsart("USART TEST\r\n", 13);
 	
-	// print_info("result : %d\r\n", SYN7318_Rst());
-	// while (1)
-	// {
-	// 	SYN_TTS("一二三四五六七八九十");
-	// 	// USART6_SendString(test, 13);
-	// 	// delay_ms(700);
-	// 	// delay_ms(700);
-	// }
-
 	while (1)
 	{
 		KEY_Check(); //按键检测

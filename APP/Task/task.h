@@ -43,6 +43,7 @@ void LEDDispaly_ShowDistance(uint16_t dis);
 void StreetLight_Task(uint8_t targetLevel);
 void RFID_Task(void);
 void BarrierGate_Task(uint8_t plate[6]);
+void Voice_Task(void);
 
 // ÈÎÎñµã
 void Task_5_5(void);

@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include "debug.h"
 
+#define _ENABLE_USART6_OUTPUT_ 1
+
 #define SYN7318_RST_H GPIO_SetBits(GPIOB, GPIO_Pin_9)
 #define SYN7318_RST_L GPIO_ResetBits(GPIOB, GPIO_Pin_9)
 
@@ -19,7 +21,7 @@ uint16_t USART6_RX_STA = 0;
 unsigned char Wake_Up[] = {0xfd, 0x00, 0x02, 0x51, 0x1F};
 unsigned char Stop_Wake_Up[] = {0xFD, 0x00, 0x01, 0x52};
 // 自动语音识别
-unsigned char Start_ASR[] = {0xFD, 0x00, 0x02, 0x10, 0x03};
+unsigned char Start_ASR[] = {0xFD, 0x00, 0x02, 0x10, 0x05}; // 0x03
 unsigned char Stop_ASR[] = {0xFD, 0x00, 0x01, 0x11};
 
 // unsigned char Play_MP3[] = {0xFD, 0x00, 0x1E, 0x01, 0x01, 0xC6, 0xF4, 0xB6, 0xAF, 0xD3, 0xEF, 0xD2, 0xF4,
@@ -111,7 +113,11 @@ bool USART6_GetCmd(uint8_t *buf)
         USART6_RX_STA = 0;
         return true;
     }
-    return false;
+    else
+    {
+        buf[0] = 0;
+        return false;
+    }
 }
 
 void USART6_print(char *str, ...)
@@ -153,20 +159,26 @@ void USART6_IRQHandler(void)
             cmdLenth |= ch;
             USART6_RX_STA = 0xE000;
         }
-        else if (USART6_RX_STA == 0xE000)
+        else if ((USART6_RX_STA & 0xF000) == 0xE000)
         {
             if (USART6_RxLenth < cmdLenth) // 小于指令长度
             {
-                USART6_RX_BUF[USART6_RX_STA & 0x0FFF] = ch;
+                USART6_RX_BUF[USART6_RxLenth] = ch;
                 USART6_RX_STA++;
                 if (USART6_RxLenth >= cmdLenth)
                 {
                     USART6_RX_STA |= 0xF000;
+
+#if _ENABLE_USART6_OUTPUT_
+
+                    print_info("SYN: ");
                     for (uint8_t i = 0; i < cmdLenth; i++)
                     {
-                        print_info("%X", USART6_RX_BUF[i]);
+                        print_info("%02X ", USART6_RX_BUF[i]);
                     }
                     print_info("\r\n");
+
+#endif // _ENABLE_USART6_OUTPUT_
                 }
             }
         }
@@ -255,18 +267,20 @@ void SYN7318_Test(void)
         if (buf[0] == 0x41) // 唤醒开启成功
         {
             LED3 = 1;
-            delay_ms(700);                  // 等待模块响应
+            delay_ms(200);                  // 等待模块响应
             for (uint8_t i = 0; i < 4; i++) // 三次语音指令唤醒失败就放弃任务
             {
-                Send_ZigbeeData_To_Fifo(ZigBee_VoiceDriveAssistant, 8); // 语音合成驾驶助手
+                Send_ZigBeeData(ZigBee_VoiceDriveAssistant); // 语音合成驾驶助手
                 WaitForFlagInMs(USART6_GetCmd(buf), true, 3000);
                 if (buf[0] == 0x21) // 唤醒成功
                 {
                     LED4 = 1;
                     // USART6_SendString(Play_MP3, 33); //播放“我在这”
                     SYN_TTS("唤醒成功");
-
                     delay_ms(100);
+
+                    Start_VoiceCommandRecognition(3);
+
                     break;
                 }
             }
@@ -278,4 +292,101 @@ void SYN7318_Test(void)
     LED2 = 0;
     LED3 = 0;
     LED4 = 0;
+}
+
+// 开始识别语音指令并判断
+bool Start_VoiceCommandRecognition(uint8_t retryTimes)
+{
+    uint8_t buf[8] = {0};
+
+    for (uint8_t i = 0; i < retryTimes; i++) // 三次识别失败退出
+    {
+        USART6_SendString(Start_ASR, 5);                 // 开始识别
+        WaitForFlagInMs(USART6_GetCmd(buf), true, 500);  // 等待接收成功
+        Send_ZigBeeData(ZigBee_VoiceRandom);             // 获取随机语音指令
+        WaitForFlagInMs(USART6_GetCmd(buf), true, 4000); // 等待语音模块返回识别信息
+        if ((buf[0] <= 0x06) && (buf[0] != 0x00))        // 返回了正确的命令字
+        {
+            if (VoiceComand_Process(buf) == false)
+            {
+                return true;
+            }
+        }
+        USART6_SendString(Stop_ASR, 4);                 // 停止识别
+        WaitForFlagInMs(USART6_GetCmd(buf), true, 500); // 等待接收成功
+        delay_ms(100);
+    }
+    return false;
+}
+
+// 语音指令处理 返回是否需要再次识别
+bool VoiceComand_Process(uint8_t *cmd)
+{
+    switch (cmd[0])
+    {
+    case 0x01: // 识别成功（带命令ID号）
+    {
+        switch (cmd[5])
+        {
+        case VoiceCmd_TurnRignt:
+            SYN_TTS("向右转弯");
+            break;
+        case VoiceCmd_NOTurnRight:
+            SYN_TTS("禁止右转");
+            break;
+
+        case VoiceCmd_DrvingToLeft:
+            SYN_TTS("左侧行驶");
+            break;
+
+        case VoiceCmd_NODrivingToLeft:
+            SYN_TTS("左行被禁");
+            break;
+
+        case VoiceCmd_TurnAround:
+            SYN_TTS("原地掉头");
+            break;
+        default:
+            break;
+        }
+        return false; // 识别完成，不需要再次识别
+    }
+	
+    case 0x02: //识别成功（无命令ID号）
+    {
+        SYN_TTS("没有相应的ID");
+        break;
+    }
+    case 0x03: //用户静音超时
+    {
+        SYN_TTS("静音超时，已进入休眠状态");
+        break;
+    }
+    case 0x04: // 用户语音超时
+    {
+        SYN_TTS("语音超时");
+        break;
+    }
+    case 0x05: // 识别据识
+    {
+        SYN_TTS("识别据识");
+        break;
+    }
+    case 0x06: // 识别内部错误
+    {
+        SYN_TTS("识别内部错误");
+        break;
+    }
+    case 0x07: // 识别拒识
+    {
+        SYN_TTS("识别拒识");
+        break;
+    }
+    default:
+    {
+        SYN_TTS("错误");
+        break;
+    }
+    }
+    return true; // 识别未完成，需要再次识别
 }

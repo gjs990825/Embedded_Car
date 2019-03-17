@@ -4,9 +4,7 @@
 #include "cba.h"
 #include "infrared.h"
 #include "data_base.h"
-// #include "syn7318.h"
 
-//190226 added
 #include "canp_hostcom.h"
 
 uint8_t Back[4] = {0}; //接收命令回传的数组

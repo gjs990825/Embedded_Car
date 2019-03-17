@@ -10,7 +10,7 @@
 #include "canp_hostcom.h"
 #include "hard_can.h"
 #include "bh1750.h"
-// #include "syn7318.h"
+#include "voice.h"
 #include "power_check.h"
 #include "can_user.h"
 #include "data_base.h"
@@ -230,10 +230,10 @@ void BarrierGate_Task(uint8_t plate[6])
     delay_ms(790);
 }
 
-// void AGV_Task(void)
-// {
-//     AGV_Stop();
-// }
+void Voice_Task(void)
+{
+    Start_VoiceCommandRecognition(3);
+}
 
 // 下面是坐标点对应的任务集合，独立任务进入前需要保证位置距离朝向等准确无误
 // 任务结束和开始车身方向不一样的需要手动设置 CurrentStaus.dir = DIR_XX;
@@ -299,8 +299,8 @@ void Task_1_3(void)
 
 void Task_5_3(void)
 {
-    // 语音暂缓
-    // SYN7318_Test();
+    Voice_Task();
+    
     ExcuteAndWait(Turn_ByEncoder(90 + 45), Stop_Flag, TURNCOMPLETE);
 
     Infrared_Send_A(Infrared_AlarmON);
