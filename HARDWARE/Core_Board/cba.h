@@ -20,9 +20,10 @@
 #include "roadway_check.h"
 #include "ultrasonic.h"
 #include "agv.h"
+#include "voice.h"
 
 #define Action_S1() Auto_Run()// Infrared_Send(HW_K, 6) //打开测试红外报警
-#define Action_S2() LEDDispaly_ShowDistance(Ultrasonic_GetAverage(20)) // LEDDispaly_ShowDistance(Ultrasonic_Task(10)) //Infrared_Send(H_1, 4)  //调光
+#define Action_S2() SYN7318_Test() //LEDDispaly_ShowDistance(Ultrasonic_GetAverage(20)) // LEDDispaly_ShowDistance(Ultrasonic_Task(10)) //Infrared_Send(H_1, 4)  //调光
 #define Action_S3() Task_5_3() //SYN7318_Test() // SYN7318_Test()
 #define Action_S4() Send_ZigbeeData_To_Fifo(ZigBee_TFTPageNext, 8) // AGV_SendInfraredData(Infrared_AlarmON) //Auto_Run() //Turn_ByEncoder(-360)
 

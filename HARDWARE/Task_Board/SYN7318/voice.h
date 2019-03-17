@@ -21,8 +21,13 @@ extern uint16_t USART6_RX_STA;
 #define USART6_RxLenth (USART6_RX_STA & 0x0FFF)
 
 void USART6_Init(uint32_t baudrate);
+void SYN7318_Init(void);
 void USART6_SendChar(uint8_t ch);
+void USART6_SendString(uint8_t *str, uint16_t len);
+bool USART6_GetCmd(uint8_t *buf);
 void USART6_print(char *str, ...);
-
+bool SYN7318_Rst(void);
+void SYN_TTS(uint8_t *str);
+void SYN7318_Test(void);
 	
 #endif

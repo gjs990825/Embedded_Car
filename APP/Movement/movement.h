@@ -3,6 +3,7 @@
 
 #include "sys.h"
 #include "a_star.h"
+#include "Timer.h"
 
 // Stop_Flag的枚举
 typedef enum
@@ -22,6 +23,27 @@ typedef enum
 		{                         \
 		};                        \
 	} while (0)
+
+// 等待某个标志位，可设定超时时间
+#define WaitForFlagInMs(flag, status, timeout)                                       \
+	do                                                                               \
+	{                                                                                \
+		uint32_t startStamp = Get_GlobalTimeStamp();                                  \
+		while ((Get_GlobalTimeStamp() < (startStamp + timeout)) && (flag != status)) \
+		{                                                                            \
+		};                                                                           \
+	} while (0)
+
+// void WaitForFlagInMs(uint8_t flag, uint8_t status, uint16_t timeout)
+// {
+// 	do
+// 	{
+// 		uint8_t startStamp = Get_GlobalTimeStamp();
+// 		while ((Get_GlobalTimeStamp() < (startStamp + timeout)) && (flag != status))
+// 		{
+// 		};
+// 	} while (0);
+// }
 
 // 等待执行完成。一般用于转向循迹等不会超时的任务
 #define ExcuteAndWait(action, Flag, waitStatus) \

@@ -8,18 +8,19 @@
 #include <stdio.h>
 #include "debug.h"
 
-// #define SYN7318_RST_H GPIO_SetBits(GPIOB, GPIO_PinSource9)
-// #define SYN7318_RST_L GPIO_ResetBits(GPIOB, GPIO_PinSource9)
+#define SYN7318_RST_H GPIO_SetBits(GPIOB, GPIO_Pin_9)
+#define SYN7318_RST_L GPIO_ResetBits(GPIOB, GPIO_Pin_9)
 
 uint8_t USART6_RX_BUF[USART6_RX_LEN] = {0};
 uint8_t USART6_TX_BUF[USART6_TX_LEN] = {0};
 uint16_t USART6_RX_STA = 0;
 
-// unsigned char Wake_Up[] = {0xfd, 0x00, 0x02, 0x51, 0x1F};
-// unsigned char Stop_Wake_Up[] = {0xFD, 0x00, 0x01, 0x52};
-
-// unsigned char Start_ASR_Buf[] = {0xFD, 0x00, 0x02, 0x10, 0x03};
-// unsigned char Stop_ASR_Buf[] = {0xFD, 0x00, 0x01, 0x11};
+// 唤醒
+unsigned char Wake_Up[] = {0xfd, 0x00, 0x02, 0x51, 0x1F};
+unsigned char Stop_Wake_Up[] = {0xFD, 0x00, 0x01, 0x52};
+// 自动语音识别
+unsigned char Start_ASR[] = {0xFD, 0x00, 0x02, 0x10, 0x03};
+unsigned char Stop_ASR[] = {0xFD, 0x00, 0x01, 0x11};
 
 // unsigned char Play_MP3[] = {0xFD, 0x00, 0x1E, 0x01, 0x01, 0xC6, 0xF4, 0xB6, 0xAF, 0xD3, 0xEF, 0xD2, 0xF4,
 //                             0xBF, 0xD8, 0xD6, 0xC6, 0xBC, 0xDD, 0xCA, 0xBB, 0xA3, 0xAC, 0xC7, 0xEB,
@@ -66,6 +67,24 @@ void USART6_Init(uint32_t baudrate)
     USART_ClearFlag(USART6, USART_FLAG_RXNE); //清除接收完成标志位
 }
 
+void SYN7318_Init(void)
+{
+    USART6_Init(115200);
+
+    GPIO_InitTypeDef GPIO_TypeDefStructure;
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
+
+    //PB9 -- SYN7318_RESET
+    GPIO_TypeDefStructure.GPIO_Pin = GPIO_Pin_9;
+    GPIO_TypeDefStructure.GPIO_Mode = GPIO_Mode_OUT;  //复用功能
+    GPIO_TypeDefStructure.GPIO_OType = GPIO_OType_PP; //推挽输出
+    GPIO_TypeDefStructure.GPIO_PuPd = GPIO_PuPd_UP;   //上拉
+    GPIO_TypeDefStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    GPIO_Init(GPIOB, &GPIO_TypeDefStructure);
+
+    GPIO_SetBits(GPIOB, GPIO_Pin_9); //默认为高电平
+}
+
 void USART6_SendChar(uint8_t ch)
 {
     while (USART_GetFlagStatus(USART6, USART_FLAG_TC) == RESET)
@@ -73,6 +92,26 @@ void USART6_SendChar(uint8_t ch)
     USART_SendData(USART6, ch);
     while (USART_GetFlagStatus(USART6, USART_FLAG_TC) == RESET)
         ;
+}
+
+void USART6_SendString(uint8_t *str, uint16_t len)
+{
+    for (uint16_t i = 0; i < len; i++)
+    {
+        USART6_SendChar(str[i]);
+    }
+}
+
+// 获取指令
+bool USART6_GetCmd(uint8_t *buf)
+{
+    if (USART6_RxFlag)
+    {
+        memcpy(buf, USART6_RX_BUF, USART6_RxLenth);
+        USART6_RX_STA = 0;
+        return true;
+    }
+    return false;
 }
 
 void USART6_print(char *str, ...)
@@ -90,8 +129,7 @@ void USART6_print(char *str, ...)
     }
 }
 
-
-// uint16_t USART6_RX_STA = 0; 0000 0000 0000 0000
+// uint16_t USART6_RX_STA = 0; XXXX 0000 0000 0000
 void USART6_IRQHandler(void)
 {
     static uint16_t cmdLenth = 0;
@@ -102,9 +140,9 @@ void USART6_IRQHandler(void)
         if (ch == 0xFC) // 遇到FC重新接收
         {
             USART6_RX_STA = 0x8000;
-			cmdLenth = 0;
+            cmdLenth = 0;
         }
-		else if (USART6_RX_STA == 0x8000) // 第一位长度
+        else if (USART6_RX_STA == 0x8000) // 第一位长度
         {
             cmdLenth = ch;
             USART6_RX_STA = 0xC000;
@@ -117,22 +155,127 @@ void USART6_IRQHandler(void)
         }
         else if (USART6_RX_STA == 0xE000)
         {
-            if ((USART6_RX_STA & 0x0FFF) < cmdLenth) // 小于指令长度
+            if (USART6_RxLenth < cmdLenth) // 小于指令长度
             {
                 USART6_RX_BUF[USART6_RX_STA & 0x0FFF] = ch;
-				USART6_RX_STA++;
-                if (USART6_RX_STA >= cmdLenth)
+                USART6_RX_STA++;
+                if (USART6_RxLenth >= cmdLenth)
                 {
                     USART6_RX_STA |= 0xF000;
-                    for(uint8_t i = 0; i < cmdLenth; i++)
+                    for (uint8_t i = 0; i < cmdLenth; i++)
                     {
                         print_info("%X", USART6_RX_BUF[i]);
                     }
                     print_info("\r\n");
-					USART6_RX_STA = 0;
                 }
             }
         }
     }
     USART_ClearITPendingBit(USART6, USART_IT_RXNE);
+}
+
+//语音模块复位
+bool SYN7318_Rst(void)
+{
+    uint8_t buf[4];
+    SYN7318_RST_H;
+    delay_ms(10);
+    SYN7318_RST_L;
+    delay_ms(100);
+    SYN7318_RST_H;
+
+    WaitForFlagInMs(USART6_GetCmd(buf), true, 4000);
+
+    return (buf[0] == 0x4A) ? true : false;
+}
+
+void SYN_TTS(uint8_t *str)
+{
+    uint8_t Length;
+    uint8_t Frame[5]; //保存发送命令的数组
+    uint8_t buf[4] = {0};
+
+    Length = strlen((char *)str); // GAO edited 2019年3月7日
+    Frame[0] = 0xFD;              //帧头
+    Frame[1] = 0x00;
+    Frame[2] = Length + 2;
+    Frame[3] = 0x01; //语音合成播放命令
+    Frame[4] = 0x00; //播放编码格式为“GB2312”
+
+    USART6_SendString(Frame, 5);
+    USART6_SendString(str, Length);
+
+    WaitForFlagInMs(USART6_GetCmd(buf), true, 500);
+    if (buf[0] != 0x41)
+        return;
+
+    WaitForFlagInMs(USART6_GetCmd(buf), true, Length * 350); //每个汉字为300ms 左右
+    if (buf[0] != 0x4F)
+        return;
+}
+
+// 查询状态
+bool Status_Query(void)
+{
+    uint8_t Frame[4]; //保存发送命令的数组
+    uint8_t buf[4] = {0};
+    Frame[0] = 0xFD; //帧头
+    Frame[1] = 0x00;
+    Frame[2] = 0x01;
+    Frame[3] = 0x21; //状态查询命令
+
+    USART6_SendString(Frame, 4);
+    WaitForFlagInMs(USART6_GetCmd(buf), true, 500);
+    if (buf[0] != 0x41)
+        return false;
+    WaitForFlagInMs(USART6_GetCmd(buf), true, 500);
+    return (buf[0] == 0x4F) ? true : false;
+}
+
+// 开启语音测试
+void SYN7318_Test(void)
+{
+    uint8_t buf[6] = {0};
+
+    LED1 = 0;
+    LED2 = 0;
+    LED3 = 0;
+    LED4 = 0;
+
+    SYN_TTS("请发唤醒词");
+    LED1 = 1;
+    delay_ms(300);
+    if (Status_Query()) //模块空闲即开启唤醒
+    {
+        LED2 = 1;
+        delay_ms(1);
+
+        USART6_SendString(Wake_Up, 5); //发送唤醒指令
+        WaitForFlagInMs(USART6_GetCmd(buf), true, 500);
+        if (buf[0] == 0x41) // 唤醒开启成功
+        {
+            LED3 = 1;
+            delay_ms(700);                  // 等待模块响应
+            for (uint8_t i = 0; i < 4; i++) // 三次语音指令唤醒失败就放弃任务
+            {
+                Send_ZigbeeData_To_Fifo(ZigBee_VoiceDriveAssistant, 8); // 语音合成驾驶助手
+                WaitForFlagInMs(USART6_GetCmd(buf), true, 3000);
+                if (buf[0] == 0x21) // 唤醒成功
+                {
+                    LED4 = 1;
+                    // USART6_SendString(Play_MP3, 33); //播放“我在这”
+                    SYN_TTS("唤醒成功");
+
+                    delay_ms(100);
+                    break;
+                }
+            }
+        }
+        USART6_SendString(Stop_Wake_Up, 4); // 停止唤醒
+        WaitForFlagInMs(USART6_GetCmd(buf), true, 5000);
+    }
+    LED1 = 0;
+    LED2 = 0;
+    LED3 = 0;
+    LED4 = 0;
 }

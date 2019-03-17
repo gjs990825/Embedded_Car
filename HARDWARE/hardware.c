@@ -13,7 +13,7 @@ void Hardware_Init(void)
 	Ultrasonic_Init();				 // 超声波初始化
 	Hard_Can_Init();				 // CAN总线初始化
 	BH1750_Configure();				 // BH1750初始化配置
-//	SYN7318_Init();					 // 语音识别初始化
+	SYN7318_Init();					 // 语音识别初始化
 	Electricity_Init();				 // 电量检测初始化
 	UartA72_Init();					 // 至A72开发板的串口
 	Can_check_Init(83, 999);		 // CAN总线定时器初始化 (83, 7)??????
@@ -23,7 +23,7 @@ void Hardware_Init(void)
 
 	my_mem_init(SRAMIN);		// 初始化内部内存池
 	
-	USART6_Init(115200);
+	// USART6_Init(115200);
 
 
 	
