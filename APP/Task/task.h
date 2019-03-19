@@ -31,13 +31,13 @@ void Save_StatusBeforeFoundRFID(void);
 void Resume_StatusBeforeFoundRFID(uint16_t encoderChangeValue);
 
 void TFT_Task(void);
-void QRCode_Task(void);
+//void QRCode_Task(void);
 void Start_Task(void);
 void End_Task(void);
 void TrafficLight_Task(void);
 void TFT_Task(void);
 void RotationLED_Task(void);
-void QRCode_Task(void);
+void QRCode_Task(uint8_t QRrequest);
 void LEDDispaly_ShowDistance(uint16_t dis);
 #define Ultrasonic_Task(times) Ultrasonic_GetAverage(times)
 void StreetLight_Task(uint8_t targetLevel);
@@ -45,15 +45,28 @@ void RFID_Task(void);
 void BarrierGate_Task(uint8_t plate[6]);
 void Voice_Task(void);
 
+
+
+
 void Read_Card_Test(void);
 
-// 任务点
-void Task_5_5(void);
-void Task_1_5(void);
-void Task_3_5(void);
-void Task_1_3(void);
-void Task_5_3(void);
 void Task_5_1(void);
 void Task_3_1(void);
+void Task_1_3(void);
+void Task_1_5(void);
+void Task_3_5(void);
+void Task_5_5(void);
+void Task_3_1_2(void);
+void Task_5_1_2(void);
+
+
+// // 任务点
+// void Task_5_5(void);
+// void Task_1_5(void);
+// void Task_3_5(void);
+// void Task_1_3(void);
+// void Task_5_3(void);
+// void Task_5_1(void);
+// void Task_3_1(void);
 
 #endif // __TASK_H_

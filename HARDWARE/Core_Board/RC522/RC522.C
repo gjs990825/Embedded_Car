@@ -38,7 +38,7 @@ uint8_t RFID_Data[16];
 uint8_t TXRFID[16] = {0x41, 0x31, 0x42, 0x32, 0x43, 0x33, 0x44, 0x34, 0x46, 0x31, 0x42, 0x32, 0x43, 0x33, 0x44, 0x34};
 uint8_t RXRFID[16];
 
-// 读数据块
+// 读数据块 数据块ID key 接收buffer（目前使用AKEY）
 int8_t RFID_ReadBlock(uint8_t block, uint8_t key[6], uint8_t *buf)
 {
     int8_t status = MI_ERR;

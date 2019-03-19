@@ -22,8 +22,8 @@
 #include "voice.h"
 
 #define Action_S1() Auto_Run()
-#define Action_S2() Start_VoiceCommandRecognition(3) // LEDDispaly_ShowDistance(Ultrasonic_Task(10))
-#define Action_S3() Read_Card_Test() //SYN7318_Test()
+#define Action_S2() LEDDispaly_ShowDistance(Ultrasonic_Task(20)) // LEDDispaly_ShowDistance(Ultrasonic_Task(10))
+#define Action_S3() StreetLight_Task(2) //SYN7318_Test()
 #define Action_S4() Read_Card() // AGV_SendInfraredData(Infrared_AlarmON)
 
 

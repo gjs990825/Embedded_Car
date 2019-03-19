@@ -211,6 +211,7 @@ void Process_DataFromHost(uint8_t mainCmd)
 
 ZigBee_DataStatus_t ETC_Status = {0, 0};
 ZigBee_DataStatus_t BarrierGate_Status = {0, 0};
+ZigBee_DataStatus_t AGVComplete_Status = {0, 0};
 
 #define SetAndAddStamp(X) \
     X.isSet = SET;        \
@@ -226,6 +227,8 @@ void ZigBee_CmdHandler(uint8_t cmd)
         break;
     case Return_BarrierGate:
         SetAndAddStamp(BarrierGate_Status);
+    case 0x66:
+        SetAndAddStamp(AGVComplete_Status);
     default:
         break;
     }

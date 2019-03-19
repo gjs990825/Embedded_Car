@@ -31,7 +31,6 @@ enum
     Pack_Ending
 };
 
-
 // 上位机发送的数据标识
 enum
 {
@@ -170,6 +169,45 @@ static uint8_t RequestCmd_TFTRecognition = 0x66;    // TFT识别
 // 包头为 0x55, 0x0D ，包尾为 0xBB 的指令(获取信息) 获取的信息在Can_WifiRx_Check中根据返回编号进行储存
 static uint8_t RequestData_GarageFloor[2] = {0x02, 0x01}; // 请求车库位于第几层
 static uint8_t RequestData_Infrared[2] = {0x02, 0x02};    // 请求红外
+
+// 数据请求和返回
+enum
+{
+    DataRequest_PlateNumber = 0x01,
+    DataRequest_QRCode,
+    DataRequest_TrafficLight,
+    DataRequest_ShapeNumber,
+    DataRequest_ColorNumber,
+    DataRequest_ShapeColorNumber,
+    DataRequest_RFID,
+    DataRequest_Preset1,
+    DataRequest_Preset2,
+    DataRequest_Preset3,
+};
+
+// 形状定义
+enum
+{
+    Shape_Triangle = 0x00,
+    Shape_Circle,
+    Shape_Rectangle,
+    Shape_Diamond,
+    Shape_Pentagram,
+
+};
+
+// 颜色定义
+enum
+{
+    Color_Red = 0,
+    Color_Green,
+    Color_Blue,
+    Color_Yellow,
+    Color_Purple,
+    Color_Cyan,
+    Color_Black,
+    Color_White,
+};
 
 /***************************************红外指令 Infrared_XX[X]**************************************************/
 // 上位机无法直接发送

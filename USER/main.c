@@ -27,6 +27,10 @@ int main(void)
 	Send_UpMotor(0, 0);
 
 	Send_DataToUsart("USART TEST\r\n", 13);
+
+	// AGV_Start();
+
+    // WaitForFlagInMs(AGVComplete_Status.isSet, SET, 15 * 1000);
 	
 	while (1)
 	{

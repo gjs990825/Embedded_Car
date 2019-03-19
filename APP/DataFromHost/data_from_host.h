@@ -9,6 +9,6 @@
 void Process_DataFromHost(uint8_t mainCmd);
 void ZigBee_CmdHandler(uint8_t cmd);
 
-extern ZigBee_DataStatus_t ETC_Status, BarrierGate_Status;
+extern ZigBee_DataStatus_t ETC_Status, BarrierGate_Status, AGVComplete_Status;
 
 #endif // _DATA_FROM_HOST_H_
