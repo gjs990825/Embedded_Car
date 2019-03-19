@@ -76,10 +76,12 @@ enum
     FromHost_TFTRecognition = 0xAC,           // TFT识别
 };
 
+// ZigBee 返回数据头
 enum
 {
     Return_BarrierGate = 0x03, // 道闸的返回数据
-    Return_ETC = 0x0C          // ETC的返回数据
+    Return_ETC = 0x0C,         // ETC的返回数据
+    Return_AGVComplete = 0x66, // 从车入库完成
 };
 
 // ZigBee回传的数据状态和时间戳
@@ -109,33 +111,6 @@ typedef struct ZigBee_DataStatus_Sturuct
         }                               \
     } while (0)
 
-#if USE_MACRO_FUNCTIONS
-
-// 发送N次ZigBee数据（默认八位数据）
-#define Send_ZigBeeData(data, ntimes, delay)                           \
-    do                                                                 \
-    {                                                                  \
-        ExcuteNTimes(Send_ZigbeeData_To_Fifo(data, 8), ntimes, delay); \
-    } while (0)
-
-// 填充请求并发送
-#define Request_ToHost(request)                      \
-    do                                               \
-    {                                                \
-        Request_ToHostArray[Pack_MainCmd] = request; \
-        Send_ToHost(Request_ToHostArray, 8);         \
-    } while (0)
-
-#define Request_Data(dataRequest)                           \
-    do                                                      \
-    {                                                       \
-        Request_ToHostArray[Pack_MainCmd] = dataRequest[0]; \
-        Request_ToHostArray[Pack_SubCmd1] = dataRequest[1]; \
-        Send_ToHost(Request_ToHostArray, 8);                \
-    } while (0);
-
-#else // USE_MACRO_FUNCTIONS
-
 // void ExcuteNTimes(void(Task *)(void), N, delay);
 
 void Send_ZigBeeData(uint8_t *data);
@@ -143,70 +118,114 @@ void Send_ZigBeeDataNTimes(uint8_t *data, uint8_t ntimes, uint16_t delay);
 void Request_ToHost(uint8_t request);
 void Request_Data(uint8_t dataRequest[2]);
 
-#endif // USE_MACRO_FUNCTIONS
-
 /***************************************请求命令 Request_XX**************************************************/
 // 上位机没有进行数据校验，校验和(Request_ToHostArray[Pack_CheckSum])无视
 
 // 包头为 0x55, 0x03 ，包尾为 0xBB 的指令(请求上位机任务), Request_ToHostArray[Pack_MainCmd]替换为请求编号
+enum
+{
+    RequestCmd_QRCode1 = 0x01,           // 二维码1
+    RequestCmd_QRCode2 = 0x02,           // 二维码2
+    RequestCmd_StreetLight = 0x31,       // 智能路灯
+    RequestCmd_Garage = 0x05,            // 立体车库
+    RequestCmd_TFTShow = 0x06,           // TFT显示
+    RequestCmd_BarrierGate = 0x03,       // 道闸显示
+    RequestCmd_LEDShow = 0x08,           // LED标志物显示
+    RequestCmd_PlateRecognition = 0x11,  // 车牌识别
+    RequestCmd_ShapeRecongnition = 0x21, // 图形识别
+    RequestCmd_AGV = 0x07,               // AGV
+    RequestCmd_Ultrasonic = 0x41,        // 超声波
+    RequestCmd_Alarm = 0x51,             // 报警台
+    RequestCmd_TrafficLight = 0x81,      // 交通灯
+    RequestCmd_RotatingLED = 0x91,       // 旋转LED(立体显示)
+    RequestCmd_TFTRecognition = 0x66,    // TFT识别
+};
+
 extern uint8_t RequestCmd_ToHostArray[];
-static uint8_t RequestCmd_QRCode1 = 0x01;           // 二维码1
-static uint8_t RequestCmd_QRCode2 = 0x02;           // 二维码2
-static uint8_t RequestCmd_StreetLight = 0x31;       // 智能路灯
-static uint8_t RequestCmd_Garage = 0x05;            // 立体车库
-static uint8_t RequestCmd_TFTShow = 0x06;           // TFT显示
-static uint8_t RequestCmd_BarrierGate = 0x03;       // 道闸显示
-static uint8_t RequestCmd_LEDShow = 0x08;           // LED标志物显示
-static uint8_t RequestCmd_PlateRecognition = 0x11;  // 车牌识别
-static uint8_t RequestCmd_ShapeRecongnition = 0x21; // 图形识别
-static uint8_t RequestCmd_AGV = 0x07;               // AGV
-static uint8_t RequestCmd_Ultrasonic = 0x41;        // 超声波
-static uint8_t RequestCmd_Alarm = 0x51;             // 报警台
-static uint8_t RequestCmd_TrafficLight = 0x81;      // 交通灯
-static uint8_t RequestCmd_RotatingLED = 0x91;       // 旋转LED(立体显示)
-static uint8_t RequestCmd_TFTRecognition = 0x66;    // TFT识别
 
 // 包头为 0x55, 0x0D ，包尾为 0xBB 的指令(获取信息) 获取的信息在Can_WifiRx_Check中根据返回编号进行储存
 static uint8_t RequestData_GarageFloor[2] = {0x02, 0x01}; // 请求车库位于第几层
 static uint8_t RequestData_Infrared[2] = {0x02, 0x02};    // 请求红外
 
+// 加一因为 0x00 未使用
+#define DATA_REQUEST_NUMBER (12 + 1)
+
+// 数据请求的包结构
+enum
+{
+    Data_Header1 = 0, // 0x56
+    Data_Header2,     // 0x66
+    Data_RequestID,   // 请求ID
+};
+
 // 数据请求和返回
 enum
 {
-    DataRequest_PlateNumber = 0x01,
-    DataRequest_QRCode,
-    DataRequest_TrafficLight,
-    DataRequest_ShapeNumber,
-    DataRequest_ColorNumber,
-    DataRequest_ShapeColorNumber,
-    DataRequest_RFID,
-    DataRequest_Preset1,
-    DataRequest_Preset2,
-    DataRequest_Preset3,
+    DataRequest_PlateNumber = 0x01, // 车牌号
+    DataRequest_QRCode1,            // 二维码1
+    DataRequest_QRCode2,            // 二维码2
+    DataRequest_QRCodeSecondCar,    // 二维码3
+    DataRequest_TrafficLight,       // 交通灯
+    DataRequest_ShapeNumber,        // 形状数量
+    DataRequest_ColorNumber,        // 颜色数量
+    DataRequest_ShapeColorNumber,   // 形状颜色数量
+    DataRequest_RFID,               // RFID数据
+    DataRequest_Preset1,            // 预设1
+    DataRequest_Preset2,            // 预设2
+    DataRequest_Preset3,            // 预设3
+};
+
+// 定义每种数据的长度
+enum
+{
+    DataLength_PlateNumber = 6,      // 车牌号
+    DataLength_QRCode1 = 8,          // 二维码1
+    DataLength_QRCode2 = 8,          // 二维码2
+    DataLength_QRCodeSecondCar = 8,  // 二维码3
+    DataLength_TrafficLight = 1,     // 交通灯
+    DataLength_ShapeNumber = 1,      // 形状数量
+    DataLength_ColorNumber = 1,      // 颜色数量
+    DataLength_ShapeColorNumber = 1, // 形状颜色数量
+    DataLength_RFID = 16,            // RFID数据
+    DataLength_Preset1 = 16,         // 预设1
+    DataLength_Preset2 = 16,         // 预设2
+    DataLength_Preset3 = 16,         // 预设3
+};
+
+// 数据指针的数组 通过 Data_Buffer[DataRequest_XX] 访问数据
+extern uint8_t *Data_Buffer[DATA_REQUEST_NUMBER];
+// buffer 大小 自行协商
+extern uint8_t Data_Length[DATA_REQUEST_NUMBER];
+
+// 二维码定义
+enum
+{
+    QRCode_1 = 0x00,  // 二维码1
+    QRCode_2,         // 二维码2
+    QRCode_SecondCar, // 二维码3
 };
 
 // 形状定义
 enum
 {
-    Shape_Triangle = 0x00,
-    Shape_Circle,
-    Shape_Rectangle,
-    Shape_Diamond,
-    Shape_Pentagram,
-
+    Shape_Triangle = 0x00, // 三角形
+    Shape_Circle,          // 圆形
+    Shape_Rectangle,       // 矩形
+    Shape_Diamond,         // 菱形
+    Shape_Pentagram,       // 五角星
 };
 
 // 颜色定义
 enum
 {
-    Color_Red = 0,
-    Color_Green,
-    Color_Blue,
-    Color_Yellow,
-    Color_Purple,
-    Color_Cyan,
-    Color_Black,
-    Color_White,
+    Color_Red = 0, // 红
+    Color_Green,   // 绿
+    Color_Blue,    // 蓝
+    Color_Yellow,  // 黄
+    Color_Purple,  // 紫
+    Color_Cyan,    // 青
+    Color_Black,   // 黑
+    Color_White,   // 白
 };
 
 /***************************************红外指令 Infrared_XX[X]**************************************************/

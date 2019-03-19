@@ -47,6 +47,7 @@ void SaveToZigBee(uint8_t buf[8])
     buf[5] = Wifi_Rx_Buf[5];
 }
 
+// 处理上位机发送的数据
 void Process_DataFromHost(uint8_t mainCmd)
 {
     switch (mainCmd)
@@ -227,9 +228,21 @@ void ZigBee_CmdHandler(uint8_t cmd)
         break;
     case Return_BarrierGate:
         SetAndAddStamp(BarrierGate_Status);
-    case 0x66:
+    case Return_AGVComplete:
         SetAndAddStamp(AGVComplete_Status);
     default:
         break;
+    }
+}
+
+#define CopyDataToBuffer(source, length, bufferID) memcpy(Data_Buffer[bufferID], &source[Data_PackLenth + 1], source[Data_PackLenth])
+
+// 处理上位机返回的数据
+void HostData_Handler(uint8_t *buf)
+{
+    if (buf[0] > 0 && buf[0] <= DATA_REQUEST_NUMBER) // 确认命令是否在设定范围
+    {
+        // 指针数组 Data_Buffer 中取出ID对应的指针，从ID号之后开始，拷贝相应的ID字节数
+        memcpy(Data_Buffer[buf[0]], &buf[Data_RequestID + 1], Data_Length[buf[0]]);
     }
 }

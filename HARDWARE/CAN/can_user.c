@@ -117,9 +117,14 @@ void Can_WifiRx_Check(void)
             {
                 Send_ZigbeeData_To_Fifo(Wifi_Rx_Buf, (Wifi_Rx_num + 1));
             }
-            else if (Wifi_Rx_Buf[0] == 0x55)
+            else if (Wifi_Rx_Buf[0] == 0x55) // 普通WIFI指令
             {
                 Normal_data();
+            }
+            else if (Wifi_Rx_Buf[0] == 0x56) // 自定义数据处理
+            {
+                HostData_Handler(Wifi_Rx_Buf);
+                Rx_Flag = 0; // 跳过后续的数据处理
             }
             else
             {

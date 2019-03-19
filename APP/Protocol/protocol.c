@@ -1,4 +1,51 @@
 #include "protocol.h"
+#include "stddef.h"
+
+// 请求数据的buffer
+uint8_t Data_PlateNumber[DataLength_PlateNumber];
+uint8_t Data_QRCode1[DataLength_QRCode1];
+uint8_t Data_QRCode2[DataLength_QRCode2];
+uint8_t Data_QRCodeSecondCar[DataLength_QRCodeSecondCar];
+uint8_t Data_TrafficLight[DataLength_TrafficLight];
+uint8_t Data_ShapeNumber[DataLength_ShapeNumber];
+uint8_t Data_ColorNumber[DataLength_ColorNumber];
+uint8_t Data_ShapeColorNumber[DataLength_ShapeColorNumber];
+uint8_t Data_RFID[DataLength_RFID];
+uint8_t Data_Preset1[DataLength_Preset1];
+uint8_t Data_Preset2[DataLength_Preset2];
+uint8_t Data_Preset3[DataLength_Preset3];
+
+uint8_t *Data_Buffer[] = {
+    (uint8_t *)NULL,
+    Data_PlateNumber,
+    Data_QRCode1,
+    Data_QRCode2,
+    Data_QRCodeSecondCar,
+    Data_TrafficLight,
+    Data_ShapeNumber,
+    Data_ColorNumber,
+    Data_ShapeColorNumber,
+    Data_RFID,
+    Data_Preset1,
+    Data_Preset2,
+    Data_Preset3,
+};
+
+uint8_t Data_Length[] = {
+    NULL,
+    DataLength_PlateNumber,
+    DataLength_QRCode1,
+    DataLength_QRCode2,
+    DataLength_QRCodeSecondCar,
+    DataLength_TrafficLight,
+    DataLength_ShapeNumber,
+    DataLength_ColorNumber,
+    DataLength_ShapeColorNumber,
+    DataLength_RFID,
+    DataLength_Preset1,
+    DataLength_Preset2,
+    DataLength_Preset3,
+};
 
 // 请求指令使用的buffer
 uint8_t Request_ToHostArray[] = {0x55, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
@@ -20,6 +67,7 @@ uint8_t Infrared_Data[6];
 // 旋转led
 uint8_t ZigBee_LEDDisplayDistanceData[8] = {0x55, 0x04, 0x04, 0x00, 0x02, 0x00, 0x06, 0xBB};
 
+// 未处理/未使用/未知 的 指令/数据
 // u8 BJM1[8] = {0x55, 0x02, 0xd1, 0x00, 0x00, 0x00, 0x00, 0xbb}; //发送给从车的报警码
 // u8 BJM2[8] = {0x55, 0x02, 0xd2, 0x00, 0x00, 0x00, 0x00, 0xbb};
 // u8 HW_BJ[6] = {0x03, 0x05, 0x14, 0x45, 0xDE, 0x92};
