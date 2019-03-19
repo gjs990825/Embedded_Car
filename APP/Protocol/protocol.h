@@ -192,18 +192,14 @@ enum
     DataLength_Preset3 = 16,         // 预设3
 };
 
-// 数据指针的数组 通过 Data_Buffer[DataRequest_XX] 访问数据
-extern uint8_t *Data_Buffer[DATA_REQUEST_NUMBER];
-// buffer 大小 自行协商
-extern uint8_t Data_Length[DATA_REQUEST_NUMBER];
-
-// 二维码定义
-enum
+typedef struct DataSetting_Struct
 {
-    QRCode_1 = 0x00,  // 二维码1
-    QRCode_2,         // 二维码2
-    QRCode_SecondCar, // 二维码3
-};
+    uint8_t *buffer;
+    uint8_t Data_Length;
+    uint8_t isSet;
+} DataSetting_t;
+
+extern DataSetting_t DataBuffer[DATA_REQUEST_NUMBER];
 
 // 形状定义
 enum

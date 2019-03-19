@@ -235,14 +235,39 @@ void ZigBee_CmdHandler(uint8_t cmd)
     }
 }
 
-#define CopyDataToBuffer(source, length, bufferID) memcpy(Data_Buffer[bufferID], &source[Data_PackLenth + 1], source[Data_PackLenth])
-
 // 处理上位机返回的数据
 void HostData_Handler(uint8_t *buf)
 {
     if (buf[0] > 0 && buf[0] <= DATA_REQUEST_NUMBER) // 确认命令是否在设定范围
     {
-        // 指针数组 Data_Buffer 中取出ID对应的指针，从ID号之后开始，拷贝相应的ID字节数
-        memcpy(Data_Buffer[buf[0]], &buf[Data_RequestID + 1], Data_Length[buf[0]]);
+        // 结构体数组 DataBuffer 中取出ID对应的指针，从ID号之后开始，拷贝相应的ID字节数
+        memcpy(DataBuffer[buf[0]].buffer, &buf[Data_RequestID + 1], DataBuffer[buf[0]].Data_Length);
+        DataBuffer[buf[0]].isSet = SET;
     }
 }
+
+uint8_t HostDataRequestHeader[3] = {0x56, 0x66, 0x00};
+
+void HostData_RequestSingle(uint8_t requestID)
+{
+    HostDataRequestHeader[Data_RequestID] = requestID;
+    Send_ToHost(HostDataRequestHeader, 3);
+}
+
+void HostData_RequestMulti(uint8_t requestID, uint8_t *param, uint8_t paramLen)
+{
+    HostDataRequestHeader[Data_RequestID] = requestID;
+    Send_ToHost(HostDataRequestHeader, 3);
+    Send_ToHost(param, paramLen);
+}
+
+uint8_t *Get_PlateNumber(void)
+{
+    DataBuffer[DataRequest_PlateNumber].isSet = RESET;
+    HostData_RequestSingle(DataRequest_PlateNumber);
+    WaitForFlagInMs(DataBuffer[DataRequest_PlateNumber].isSet, SET, 1000);
+
+    return DataBuffer[DataRequest_PlateNumber].buffer;
+}
+
+

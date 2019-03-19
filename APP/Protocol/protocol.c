@@ -15,36 +15,21 @@ uint8_t Data_Preset1[DataLength_Preset1];
 uint8_t Data_Preset2[DataLength_Preset2];
 uint8_t Data_Preset3[DataLength_Preset3];
 
-uint8_t *Data_Buffer[] = {
-    (uint8_t *)NULL,
-    Data_PlateNumber,
-    Data_QRCode1,
-    Data_QRCode2,
-    Data_QRCodeSecondCar,
-    Data_TrafficLight,
-    Data_ShapeNumber,
-    Data_ColorNumber,
-    Data_ShapeColorNumber,
-    Data_RFID,
-    Data_Preset1,
-    Data_Preset2,
-    Data_Preset3,
-};
-
-uint8_t Data_Length[] = {
-    NULL,
-    DataLength_PlateNumber,
-    DataLength_QRCode1,
-    DataLength_QRCode2,
-    DataLength_QRCodeSecondCar,
-    DataLength_TrafficLight,
-    DataLength_ShapeNumber,
-    DataLength_ColorNumber,
-    DataLength_ShapeColorNumber,
-    DataLength_RFID,
-    DataLength_Preset1,
-    DataLength_Preset2,
-    DataLength_Preset3,
+// 储存buffer指针/长度/状态的结构体数组
+DataSetting_t DataBuffer[] = {
+    {(uint8_t *)NULL, 0, 0},
+    {Data_PlateNumber, DataLength_PlateNumber, RESET},
+    {Data_QRCode1, DataLength_QRCode1, RESET},
+    {Data_QRCode2, DataLength_QRCode2, RESET},
+    {Data_QRCodeSecondCar, DataLength_QRCodeSecondCar, RESET},
+    {Data_TrafficLight, DataLength_TrafficLight, RESET},
+    {Data_ShapeNumber, DataLength_ShapeNumber, RESET},
+    {Data_ColorNumber, DataLength_ColorNumber, RESET},
+    {Data_ShapeColorNumber, DataLength_ShapeColorNumber, RESET},
+    {Data_RFID, DataLength_RFID, RESET},
+    {Data_Preset1, DataLength_Preset1, RESET},
+    {Data_Preset2, DataLength_Preset2, RESET},
+    {Data_Preset3, DataLength_Preset3, RESET},
 };
 
 // 请求指令使用的buffer
