@@ -45,6 +45,8 @@ void RFID_Task(void);
 void BarrierGate_Task(uint8_t plate[6]);
 void Voice_Task(void);
 
+void Read_Card_Test(void);
+
 // ÈÎÎñµã
 void Task_5_5(void);
 void Task_1_5(void);

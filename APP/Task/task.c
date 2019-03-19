@@ -213,7 +213,7 @@ void RFID_Task(void)
     FOUND_RFID_CARD = false;  // 清空标志位
     TIM_Cmd(TIM5, DISABLE);   // 停止定时器
     ExcuteAndWait(Back_Off(30, Centimeter_Value * (12 + (1 * 5))), Stop_Flag, FORBACKCOMPLETE);
-    Control(Car_Speed, Car_Speed); 
+    Control(Car_Speed, Car_Speed);
     // 返回读卡前位置
 }
 
@@ -233,6 +233,28 @@ void BarrierGate_Task(uint8_t plate[6])
 void Voice_Task(void)
 {
     Start_VoiceCommandRecognition(3);
+}
+
+void Read_Card_Test(void)
+{
+    uint8_t key[8], buf[16];
+
+    for (uint8_t i = 0; i < 8; i++)
+    {
+        key[i] = 0xFF;
+    }
+    if (RFID_ReadBlock(5, key, buf) == MI_OK)
+    {
+        for (uint8_t i = 0; i < 16; i++)
+        {
+            print_info("%X ", buf[i]);
+        }
+        print_info("\r\n");
+    }
+    else
+    {
+        print_info("ERROR\r\n");
+    }
 }
 
 // 下面是坐标点对应的任务集合，独立任务进入前需要保证位置距离朝向等准确无误
@@ -276,7 +298,7 @@ void Task_1_5(void)
     QRCode_Task();
 
     uint16_t distanceMeasured = Ultrasonic_GetAverage(20);
-	LEDDispaly_ShowDistance(distanceMeasured); // 发两次防止丢包
+    LEDDispaly_ShowDistance(distanceMeasured); // 发两次防止丢包
     delay_ms(700);
     LEDDispaly_ShowDistance(distanceMeasured);
 
@@ -300,7 +322,7 @@ void Task_1_3(void)
 void Task_5_3(void)
 {
     Voice_Task();
-    
+
     ExcuteAndWait(Turn_ByEncoder(90 + 45), Stop_Flag, TURNCOMPLETE);
 
     Infrared_Send_A(Infrared_AlarmON);

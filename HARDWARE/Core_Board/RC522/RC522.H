@@ -43,9 +43,12 @@ extern void Send_data(uint8_t ch);
 extern int8_t Rc522_ToSRst(void);
 extern int8_t Rc522_OutSRst(void);
 extern void Read_Card(void);
-extern void Read_Card1(void);
-extern void Xie_Read_Card1(void);
-extern void Xie_Read_Card2(void);
+
+
+int8_t RFID_ReadBlock(uint8_t block, uint8_t key[6], uint8_t *buf);
+
+
+
 /////////////////////////////////////////////////////////////////////
 //MF522ÃüÁî×Ö
 /////////////////////////////////////////////////////////////////////

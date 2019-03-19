@@ -31,11 +31,63 @@ void delay_ns(u32 ns)
 }
 
 
+
 //// edited
 uint8_t RFID_Data[16];
 ////
 uint8_t TXRFID[16] = {0x41, 0x31, 0x42, 0x32, 0x43, 0x33, 0x44, 0x34, 0x46, 0x31, 0x42, 0x32, 0x43, 0x33, 0x44, 0x34};
 uint8_t RXRFID[16];
+
+// 读数据块
+int8_t RFID_ReadBlock(uint8_t block, uint8_t key[6], uint8_t *buf)
+{
+    int8_t status = MI_ERR;
+    uint8_t CT[2];                                         //卡类型
+    uint8_t SN[4];                                         //卡号
+
+    LED1 = 0;
+    LED2 = 0;
+    LED3 = 0;
+    LED4 = 0;
+
+    status = PcdRequest(PICC_REQALL, CT); //寻卡
+    if (status == MI_OK)                  //寻卡成功
+    {
+        status = MI_ERR;
+        LED1 = 1;
+        status = PcdAnticoll(SN); //防冲撞
+        if (status == MI_OK)
+        {
+            status = MI_ERR;
+            LED2 = 1;
+            status = PcdSelect(SN); //选定此卡
+            if (status == MI_OK)    //选定成功
+            {
+                status = MI_ERR;
+                LED3 = 1;
+                MP_SPK = 1;
+                status = PcdAuthState(0x60, (block / 4) * 4 + 3, key, SN); //验证KEY_A
+
+                if (status == MI_OK)
+                {
+                    status = MI_ERR;
+                    status = PcdRead(block, buf); //读卡
+                    if (status == MI_OK)
+                    {
+                        // status = MI_ERR;
+                        LED4 = 1;
+                        MP_SPK = 0;
+                        LED1 = 0;
+                        LED2 = 0;
+                        LED3 = 0;
+                    }
+                }
+            }
+        }
+    }
+    return status;
+}
+
 /*
 函数功能：全自动读卡函数
 参    数：无

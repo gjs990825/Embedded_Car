@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include "debug.h"
 
-#define _ENABLE_USART6_OUTPUT_ 1
+#define _ENABLE_USART6_INFO_OUTPUT_ 1
 
 #define SYN7318_RST_H GPIO_SetBits(GPIOB, GPIO_Pin_9)
 #define SYN7318_RST_L GPIO_ResetBits(GPIOB, GPIO_Pin_9)
@@ -169,7 +169,7 @@ void USART6_IRQHandler(void)
                 {
                     USART6_RX_STA |= 0xF000;
 
-#if _ENABLE_USART6_OUTPUT_
+#if _ENABLE_USART6_INFO_OUTPUT_
 
                     print_info("SYN: ");
                     for (uint8_t i = 0; i < cmdLenth; i++)
@@ -178,7 +178,7 @@ void USART6_IRQHandler(void)
                     }
                     print_info("\r\n");
 
-#endif // _ENABLE_USART6_OUTPUT_
+#endif // _ENABLE_USART6_INFO_OUTPUT_
                 }
             }
         }
