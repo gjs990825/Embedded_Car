@@ -195,7 +195,7 @@ void Get_Track(void)
 // 计算方向权重
 void Get_DirectionWights(void)
 {
-    static int PreviousWights = 0;
+//    static int PreviousWights = 0;
 
     DirectionWights = 0;
 
@@ -208,9 +208,6 @@ void Get_DirectionWights(void)
         DirectionWights += (Q7[2 + i] - Q7[4 - i]);
     }
 
-    DirectionWights = (DirectionWights + PreviousWights) >> 1; // 简单滤波
-    PreviousWights = DirectionWights;
-
     Calculate_pid(DirectionWights);
 
 #if _TRACK_OUTPUT_
@@ -220,9 +217,13 @@ void Get_DirectionWights(void)
 #endif // _TRACK_OUTPUT_
 }
 
+uint8_t TrackStatus = 0;
+uint32_t outtrackStamp;
+
 // 循迹
 void TRACK_LINE(void)
 {
+
     if (Track_Mode == TrackMode_ENCODER)
     {
         if (temp_MP < Mp_Value)
@@ -235,6 +236,37 @@ void TRACK_LINE(void)
 
     Get_Track();
     Get_DirectionWights();
+
+    if (Track_Mode == TrackMode_Turn)
+    {
+        if (TrackStatus == 0)
+        {
+            if (NumberOfWhite >= ALL_WHITE)
+            {
+                TrackStatus = 1;
+                outtrackStamp = Get_GlobalTimeStamp();
+            }
+        }
+        else if (TrackStatus == 1)
+        {
+            if (NumberOfWhite < ALL_WHITE && ((outtrackStamp + 200) < Get_GlobalTimeStamp()))
+            {
+                TrackStatus = 2;
+                PidData_Clear();
+            }
+        }
+        else if (TrackStatus == 2)
+        {
+            if (PID_value < 20 && PID_value > -20)
+            {
+                TrackStatus = 0;
+                Stop();
+                Stop_Flag = TURNCOMPLETE;
+				return;
+            }
+        }
+		return;
+    }
 
     if (NumberOfWhite >= ALL_WHITE) // 全白
     {

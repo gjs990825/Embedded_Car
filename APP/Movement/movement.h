@@ -56,4 +56,6 @@ void Turn_ByEncoder(int16_t digree);
 void Track_ByEncoder(int speed, uint16_t setMP);
 void Start_Tracking(int speed);
 
+void Turn_ByTrack(Driection_t dir);
+
 #endif // _MOVEMENT_H_

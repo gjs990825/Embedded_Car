@@ -31,10 +31,6 @@ void Auto_Run(void)
 	// }
 }
 
-void SecondCar_AutoRun(void)
-{
-}
-
 void Auto_RouteTask(RouteNode current, uint8_t taskN)
 {
 	print_info("Route %s\r\n", (A_Star_GetRouteBewteenTasks(current, Route_Task[taskN]) == true) ? "OK" : "ERROR OR SAME");
@@ -60,6 +56,8 @@ void Go_ToNextNode(Route_Task_t next)
 	int8_t finalDir = 0;
 	int8_t x = next.node.x - CurrentStaus.x;
 	int8_t y = next.node.y - CurrentStaus.y;
+
+	NextStatus = next.node; // 下一个坐标信息更新
 
 	if ((x > 1 || y > 1) || (x != 0 && y != 0))
 	{
@@ -92,6 +90,49 @@ void Go_ToNextNode(Route_Task_t next)
 		}
 		return;
 	}
+
+	// if ((finalDir == DIR_RIGHT || finalDir == DIR_LEFT))
+	// {
+	// 	switch (CurrentStaus.dir)
+	// 	{
+	// 	case DIR_UP:
+	// 		Turn_ByTrack((finalDir == DIR_RIGHT) ? (DIR_RIGHT) : (DIR_LEFT));
+	// 		break;
+	// 	case DIR_DOWN:
+	// 		Turn_ByTrack((finalDir == DIR_RIGHT) ? (DIR_LEFT) : (DIR_RIGHT));
+	// 		break;
+	// 	case DIR_LEFT:
+	// 		(finalDir == DIR_RIGHT) ? Turn_ByEncoder(180) : (void)0;
+	// 		break;
+	// 	case DIR_RIGHT:
+	// 		(finalDir == DIR_RIGHT) ? (void)0 : Turn_ByEncoder(180);
+	// 		break;
+	// 	default:
+	// 		print_info("CurrentDir NOT SET!\r\n");
+	// 		break;
+	// 	}
+	// }
+	// else
+	// {
+	// 	switch (CurrentStaus.dir)
+	// 	{
+	// 	case DIR_UP:
+	// 		(finalDir == DIR_UP) ? (void)0 : Turn_ByEncoder(180);
+	// 		break;
+	// 	case DIR_DOWN:
+	// 		(finalDir == DIR_UP) ? Turn_ByEncoder(180) : (void)0;
+	// 		break;
+	// 	case DIR_LEFT:
+	// 		Turn_ByTrack((finalDir == DIR_UP) ? (DIR_RIGHT) : (DIR_LEFT));
+	// 		break;
+	// 	case DIR_RIGHT:
+	// 		Turn_ByTrack((finalDir == DIR_UP) ? (DIR_LEFT) : (DIR_RIGHT));
+	// 		break;
+	// 	default:
+	// 		print_info("CurrentDir NOT SET!\r\n");
+	// 		break;
+	// 	}
+	// }
 
 	if ((finalDir == DIR_RIGHT || finalDir == DIR_LEFT))
 	{
@@ -136,7 +177,7 @@ void Go_ToNextNode(Route_Task_t next)
 		}
 	}
 
-	if (Moving_ByEncoder != ENCODER_NONE) // 有转向任务，等待完成
+	if ((Moving_ByEncoder != ENCODER_NONE) || (Track_Mode == TrackMode_Turn)) // 有转向任务，等待完成
 	{
 		WaitForFlag(Stop_Flag, TURNCOMPLETE);
 	}
@@ -234,5 +275,29 @@ void Turn_ByEncoder(int16_t digree)
 	{
 		Control(-Turn_Speed, Turn_Speed);
 		TurnByEncoder_Value = -digree * CountClockWiseDigreeToEncoder;
+	}
+}
+
+extern uint8_t TrackStatus;
+
+void Turn_ByTrack(Driection_t dir)
+{
+	if ((dir != DIR_RIGHT) && (dir != DIR_LEFT))
+	{
+		return;
+	}
+
+	Stop_Flag = TRACKING;
+	Track_Mode = TrackMode_Turn;
+	Moving_ByEncoder = ENCODER_NONE;
+
+	TrackStatus = 0; // 清空标志位
+	if (dir == DIR_RIGHT)
+	{
+		Control(Turn_Speed, -Turn_Speed);
+	}
+	else if (dir == DIR_LEFT)
+	{
+		Control(-Turn_Speed, Turn_Speed);
 	}
 }

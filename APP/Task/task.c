@@ -83,19 +83,55 @@ void TrafficLight_Task(void)
 // TFT图形图像识别
 void TFT_Task(void)
 {
-    Request_ToHost(RequestCmd_TFTRecognition);             // 请求识别TFT内容
+    Request_ToHost(RequestCmd_TFTRecognition);                            // 请求识别TFT内容
     WaitForFlagInMs(GetCmdFlag(FromHost_TFTRecognition), SET, 20 * 1000); // 等待识别完成
-    Request_ToHost(RequestCmd_TFTShow);                    //请求显示车牌到TFT
 }
 
-// 旋转led发送车牌
-void RotationLED_Task(void)
+// // 旋转led发送车牌
+// void RotationLED_Task(void)
+// {
+//     Request_ToHost(RequestCmd_RotatingLED);
+//     delay_ms(790);
+//     Infrared_Send_A(Infrared_PlateData1);
+//     delay_ms(600);
+//     Infrared_Send_A(Infrared_PlateData2);
+// }
+
+// TFT显示部分
+// TFT显示HEX
+void TFT_Hex(uint8_t dat[3])
 {
-    Request_ToHost(RequestCmd_RotatingLED);
-    delay_ms(790);
+    uint8_t buf[8] = {0x55, 0x0b, 0x10, 0x02, 0x00, 0x00, 0x12, 0xbb};
+    buf[2] = 0x40;
+    memcpy(&buf[3], dat, 3);
+    Send_ZigBeeData(buf);
+}
+
+// 立体显示部分
+
+// 立体显示 显示车牌
+void RotationLED_Plate(uint8_t plate[6], uint8_t x, uint8_t y)
+{
+    // Infrared_PlateData1[]
+    memcpy(&Infrared_PlateData1[2], plate, 4);
+    memcpy(&Infrared_PlateData2[2], &plate[4], 2);
+    Infrared_PlateData2[4] = x;
+    Infrared_PlateData2[5] = y;
     Infrared_Send_A(Infrared_PlateData1);
     delay_ms(600);
     Infrared_Send_A(Infrared_PlateData2);
+}
+
+// 立体显示 显示距离
+void RotationLED_Distance(uint8_t dis)
+{
+    uint8_t buf[6] = {0x00};
+
+    buf[0] = 0xFF;
+    buf[1] = 0x11;
+    buf[2] = HEX2BCD((dis % 100) / 10);
+    buf[2] = HEX2BCD(dis % 10);
+    Infrared_Send_A(buf);
 }
 
 // 二维码识别
@@ -200,40 +236,50 @@ void ETC_Task(void)
 }
 
 uint8_t RFID_x = 0, RFID_y = 0;
+uint8_t RFID_DataBlockLoation = 1;
+uint8_t RFID_DataBuffer[16] = {0};
 
 // RFID读卡，检测到执行读卡
 void RFID_Task(void)
 {
-    RFID_x = CurrentStaus.x;
-    RFID_y = CurrentStaus.y;
+    uint8_t i;
+    RFID_x = NextStatus.x; // 获取RFID位置
+    RFID_y = NextStatus.y;
 
     print_info("FOUND_RFID\r\n");
     ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 12), Stop_Flag, FORBACKCOMPLETE);
-    for (uint8_t i = 0; i < 5; i++) // 读卡范围约 11.5-16.5，间隔读取
+    for (i = 0; i < 5; i++) // 读卡范围约 11.5-16.5，间隔读取
     {
-        Read_Card_Test(); //
+        if (Read_RFID_Block(RFID_DataBlockLoation, RFID_DataBuffer) == true)
+            break; // 读取成功，跳出
         ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 1), Stop_Flag, FORBACKCOMPLETE);
         delay_ms(500);
     }
     RFID_RoadSection = false; // 结束寻卡
     FOUND_RFID_CARD = false;  // 清空标志位
     TIM_Cmd(TIM5, DISABLE);   // 停止定时器
-    ExcuteAndWait(Back_Off(30, Centimeter_Value * (12 + (1 * 5))), Stop_Flag, FORBACKCOMPLETE);
+    ExcuteAndWait(Back_Off(30, Centimeter_Value * (12 + (i * 5))), Stop_Flag, FORBACKCOMPLETE);
     Control(Car_Speed, Car_Speed);
     // 返回读卡前位置
 }
 
-// 道闸任务(输入车牌的字符串)
+// 道闸显示车牌
+void BarrierGate_Plate(uint8_t plate[6])
+{
+    memcpy(&ZigBee_PlateBarrierGate_1[3], plate, 3);
+    memcpy(&ZigBee_PlateBarrierGate_2[3], &plate[3], 3);
+    Send_ZigBeeData(ZigBee_PlateBarrierGate_1);
+    delay_ms(790);
+    Send_ZigBeeData(ZigBee_PlateBarrierGate_2);
+    delay_ms(790);
+}
+
+// 道闸任务
 void BarrierGate_Task(uint8_t plate[6])
 {
     if (plate != NULL)
     {
-        memcpy(&ZigBee_PlateBarrierGate_1[3], plate, 3);
-        memcpy(&ZigBee_PlateBarrierGate_2[3], &plate[3], 3);
-        Send_ZigBeeData(ZigBee_PlateBarrierGate_1);
-        delay_ms(790);
-        Send_ZigBeeData(ZigBee_PlateBarrierGate_2);
-        delay_ms(790);
+        BarrierGate_Plate(plate);
     }
     Send_ZigbeeData_To_Fifo(ZigBee_BarrierGateOPEN, 8);
     delay_ms(790);
@@ -244,25 +290,28 @@ void Voice_Task(void)
     Start_VoiceCommandRecognition(3);
 }
 
-void Read_Card_Test(void)
+// 读扇区 使用KEYA，存在buf里
+bool Read_RFID_Block(uint8_t block, uint8_t *buf)
 {
-    uint8_t key[8], buf[16];
+    uint8_t key[8]; // 使用默认key
 
     for (uint8_t i = 0; i < 8; i++)
     {
         key[i] = 0xFF;
     }
-    if (RFID_ReadBlock(5, key, buf) == MI_OK)
+    if (RFID_ReadBlock(block, key, buf) == MI_OK)
     {
         for (uint8_t i = 0; i < 16; i++)
         {
             print_info("%X ", buf[i]);
         }
         print_info("\r\n");
+        return true;
     }
     else
     {
         print_info("ERROR\r\n");
+        return false;
     }
 }
 
@@ -283,6 +332,9 @@ void Task_5_1(void)
 
     ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
     ExcuteAndWait(Turn_ByEncoder(-40), Stop_Flag, TURNCOMPLETE);
+
+    RFID_DataBlockLoation = Get_QRCode(DataRequest_QRCode1, 0x02)[0]; // 获取二维码信息中的RFID数据块信息
+    print_info("RFID_Block:%d\r\n", RFID_DataBlockLoation);
 
     CurrentStaus.dir = DIR_LEFT;
 }
@@ -325,32 +377,32 @@ void Task_1_5(void)
     ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
 
     TFT_Task();
-    delay_ms(700);
-    AGV_Start();
-    delay_ms(700);
-    AGV_Start();
-
-    WaitForFlagInMs(AGVComplete_Status.isSet, SET, 15 * 1000);
+    TFT_Hex(Get_ShapeInfo());
 
     ExcuteAndWait(Back_Off(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
-    ExcuteAndWait(Turn_ByEncoder(120 + 40), Stop_Flag, TURNCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(30), Stop_Flag, TURNCOMPLETE);
 
-    Infrared_PlateData2[4] = RFID_x + 0x30;
-    Infrared_PlateData2[5] = RFID_y + 0x30;
-    Infrared_Send_A(Infrared_PlateData1);
-    delay_ms(600);
-    Infrared_Send_A(Infrared_PlateData2);
+    ExcuteAndWait(Go_Ahead(30, ShortTrack_Value), Stop_Flag, FORBACKCOMPLETE);
+
+    delay_ms(700);
+    AGV_Start();
+    delay_ms(700);
+    AGV_Start();
+    WaitForFlagInMs(AGVComplete_Status.isSet, SET, 15 * 1000);
+
+    ExcuteAndWait(Back_Off(30, ShortTrack_Value), Stop_Flag, FORBACKCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(90 + 40), Stop_Flag, TURNCOMPLETE);
+
+    RotationLED_Plate(Get_PlateNumber(), RFID_x, RFID_y);
 
     ExcuteAndWait(Turn_ByEncoder(-40), Stop_Flag, TURNCOMPLETE);
 
     CurrentStaus.dir = DIR_RIGHT;
 }
 
-// extern uint8_t colorCount;
-uint8_t colorCount = 1;
 void Task_3_5(void)
 {
-    uint8_t level = (colorCount * (distanceMeasured / 100)) % 4 + 1;
+    uint8_t level = (Get_AllColorCount() * (distanceMeasured / 100)) % 4 + 1;
 
     ExcuteAndWait(Turn_ByEncoder(-90), Stop_Flag, TURNCOMPLETE);
     ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 5), Stop_Flag, FORBACKCOMPLETE);

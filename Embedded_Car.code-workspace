@@ -6,7 +6,8 @@
 	],
 	"settings": {
 		"files.associations": {
-			"stddef.h": "c"
+			"stddef.h": "c",
+			"roadway_check.h": "c"
 		}
 	}
 }

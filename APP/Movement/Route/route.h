@@ -40,6 +40,8 @@ static Route_Task_t Route_Task[] = {
 
 // 当前位置状态
 extern RouteNode CurrentStaus;
+// 下一个位置状态
+extern RouteNode NextStatus;
 // 任务完成情况
 extern int8_t RouteTask_Finished[ROUTE_TASK_NUMBER];
 

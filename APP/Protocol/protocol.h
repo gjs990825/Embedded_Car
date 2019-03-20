@@ -201,6 +201,14 @@ typedef struct DataSetting_Struct
 
 extern DataSetting_t DataBuffer[DATA_REQUEST_NUMBER];
 
+// 交通灯定义
+enum
+{
+    TrafficLight_Red = 0x00,
+    TrafficLight_Yellow,
+    TrafficLight_Green,
+};
+
 // 形状定义
 enum
 {

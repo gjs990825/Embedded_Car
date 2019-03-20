@@ -238,11 +238,11 @@ void ZigBee_CmdHandler(uint8_t cmd)
 // 处理上位机返回的数据
 void HostData_Handler(uint8_t *buf)
 {
-    if (buf[0] > 0 && buf[0] <= DATA_REQUEST_NUMBER) // 确认命令是否在设定范围
+    if (buf[Data_RequestID] > 0 && buf[Data_RequestID] <= DATA_REQUEST_NUMBER) // 确认命令是否在设定范围
     {
         // 结构体数组 DataBuffer 中取出ID对应的指针，从ID号之后开始，拷贝相应的ID字节数
-        memcpy(DataBuffer[buf[0]].buffer, &buf[Data_RequestID + 1], DataBuffer[buf[0]].Data_Length);
-        DataBuffer[buf[0]].isSet = SET;
+        memcpy(DataBuffer[buf[Data_RequestID]].buffer, &buf[Data_RequestID + 1], DataBuffer[buf[Data_RequestID]].Data_Length);
+        DataBuffer[buf[Data_RequestID]].isSet = SET;
     }
 }
 
@@ -261,13 +261,95 @@ void HostData_RequestMulti(uint8_t requestID, uint8_t *param, uint8_t paramLen)
     Send_ToHost(param, paramLen);
 }
 
+#define ResetDataIsSet(requestID) DataBuffer[requestID].isSet = RESET
+
+#define ResetAndRquest(requestID, timeout, retry)                       \
+    do                                                                  \
+    {                                                                   \
+        ResetDataIsSet(requestID);                                      \
+        for (uint8_t i = 0; i < retry; i++)                             \
+        {                                                               \
+            HostData_RequestSingle(requestID);                          \
+            WaitForFlagInMs(DataBuffer[requestID].isSet, SET, timeout); \
+            if (DataBuffer[requestID].isSet == SET)                     \
+            {                                                           \
+                break;                                                  \
+            }                                                           \
+        }                                                               \
+    } while (0)
+
+#define ResetAndRquestMulti(requestID, buf, buflen, timeout, retry)     \
+    do                                                                  \
+    {                                                                   \
+        ResetDataIsSet(requestID);                                      \
+        for (uint8_t i = 0; i < retry; i++)                             \
+        {                                                               \
+            HostData_RequestMulti(requestID, buf, buflen);              \
+            WaitForFlagInMs(DataBuffer[requestID].isSet, SET, timeout); \
+            if (DataBuffer[requestID].isSet == SET)                     \
+            {                                                           \
+                break;                                                  \
+            }                                                           \
+        }                                                               \
+    } while (0)
+
+#define ReturnBuffer(requestID) return DataBuffer[requestID].buffer
+
 uint8_t *Get_PlateNumber(void)
 {
-    DataBuffer[DataRequest_PlateNumber].isSet = RESET;
-    HostData_RequestSingle(DataRequest_PlateNumber);
-    WaitForFlagInMs(DataBuffer[DataRequest_PlateNumber].isSet, SET, 1000);
-
-    return DataBuffer[DataRequest_PlateNumber].buffer;
+    ResetAndRquest(DataRequest_PlateNumber, 300, 3);
+    ReturnBuffer(DataRequest_PlateNumber);
 }
 
+uint8_t *Get_QRCode(uint8_t QRID, uint8_t use)
+{
+    uint8_t buf[2] = {QRID, use};
+    ResetAndRquestMulti(DataRequest_ShapeNumber, buf, 2, 300, 3);
+    ReturnBuffer(QRID);
+}
+
+uint8_t Get_TrafficLight(void)
+{
+    ResetAndRquest(DataRequest_TrafficLight, 300, 3);
+    ReturnBuffer(DataRequest_TrafficLight)[0];
+}
+
+uint8_t Get_ShapeNumber(uint8_t Shape)
+{
+    uint8_t buf[1] = {Shape};
+    ResetAndRquestMulti(DataRequest_ShapeNumber, buf, 1, 300, 3);
+    ReturnBuffer(DataRequest_ShapeNumber)[0];
+}
+
+uint8_t Get_ColorNumber(uint8_t Color)
+{
+    uint8_t buf[1] = {Color};
+    ResetAndRquestMulti(DataRequest_ColorNumber, buf, 1, 300, 3);
+    ReturnBuffer(DataRequest_ColorNumber)[0];
+}
+
+uint8_t Get_ShapeColorNumber(uint8_t Shape, uint8_t Color)
+{
+    uint8_t buf[2] = {Shape, Color};
+    ResetAndRquestMulti(DataRequest_ShapeColorNumber, buf, 2, 300, 3);
+    ReturnBuffer(DataRequest_ShapeColorNumber)[0];
+}
+
+uint8_t *Get_RFIDInfo(uint8_t *data)
+{
+    ResetAndRquestMulti(DataRequest_RFID, data, 16, 300, 3);
+    ReturnBuffer(DataRequest_RFID);
+}
+
+uint8_t *Get_ShapeInfo(void)
+{
+    ResetAndRquest(DataRequest_Preset1, 300, 3);
+    ReturnBuffer(DataRequest_Preset1);
+}
+
+uint8_t Get_AllColorCount(void)
+{
+    ResetAndRquest(DataRequest_Preset2, 300, 3);
+    ReturnBuffer(DataRequest_Preset2)[0];
+}
 

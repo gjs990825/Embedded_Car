@@ -20,11 +20,13 @@
 #include "ultrasonic.h"
 #include "agv.h"
 #include "voice.h"
+#include "data_from_host.h"
+#include "debug.h"
 
-#define Action_S1() Auto_Run()
+#define Action_S1() ExcuteAndWait(Turn_ByEncoder(90), Stop_Flag, TURNCOMPLETE);//Auto_Run()
 #define Action_S2() LEDDispaly_ShowDistance(Ultrasonic_Task(20)) // LEDDispaly_ShowDistance(Ultrasonic_Task(10))
-#define Action_S3() StreetLight_Task(2) //SYN7318_Test()
-#define Action_S4() Read_Card() // AGV_SendInfraredData(Infrared_AlarmON)
+#define Action_S3() Voice_Task() //SYN7318_Test()
+#define Action_S4() print_info("Traffic:%d", Get_TrafficLight()) // AGV_SendInfraredData(Infrared_AlarmON)
 
 
 // ∞¥º¸≈‰÷√

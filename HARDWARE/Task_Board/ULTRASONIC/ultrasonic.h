@@ -7,7 +7,7 @@
 #define INC PAout(15)
 
 // ³¬Éù²¨Îó²î
-static const float UltrasonicErrorValue = 0.0;
+static const float UltrasonicErrorValue = 4.0;
 
 void Ultrasonic_Init(void);
 void Ultrasonic_Ranging(void);
