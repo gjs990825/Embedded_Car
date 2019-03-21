@@ -246,21 +246,28 @@ void RFID_Task(void)
     RFID_x = NextStatus.x; // 获取RFID位置
     RFID_y = NextStatus.y;
 
-    print_info("FOUND_RFID\r\n");
-    ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 12), Stop_Flag, FORBACKCOMPLETE);
-    for (i = 0; i < 5; i++) // 读卡范围约 11.5-16.5，间隔读取
+    print_info("FOUND_RFID:%d,%d\r\n", RFID_x, RFID_y);
+    ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 10), Stop_Flag, FORBACKCOMPLETE);
+    for (i = 0; i < 7; i++) // 读卡范围约 11.5-16.5，间隔读取()
     {
         if (Read_RFID_Block(RFID_DataBlockLoation, RFID_DataBuffer) == true)
             break; // 读取成功，跳出
         ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 1), Stop_Flag, FORBACKCOMPLETE);
         delay_ms(500);
     }
+
     RFID_RoadSection = false; // 结束寻卡
     FOUND_RFID_CARD = false;  // 清空标志位
     TIM_Cmd(TIM5, DISABLE);   // 停止定时器
-    ExcuteAndWait(Back_Off(30, Centimeter_Value * (12 + (i * 5))), Stop_Flag, FORBACKCOMPLETE);
+
+    ExcuteAndWait(Back_Off(30, Centimeter_Value * (10 + i)), Stop_Flag, FORBACKCOMPLETE); // 返回读卡前位置
+    // 十字路口需要多退后一点，因为响应时间变长会多走一点
+    if (StatusBeforeFoundRFID.stopFlag == CROSSROAD)
+    {
+        ExcuteAndWait(Back_Off(30, Centimeter_Value * 2), Stop_Flag, FORBACKCOMPLETE);
+    }
+
     Control(Car_Speed, Car_Speed);
-    // 返回读卡前位置
 }
 
 // 道闸显示车牌
@@ -432,6 +439,16 @@ void Task_5_1_2(void)
     Send_ZigBeeData(ZigBee_WirelessChargingON);
     Send_ZigBeeDataNTimes(ZigBee_WirelessChargingON, 2, 700);
     End_Task();
+}
+
+void Task_5_1_Test(void)
+{
+    RFID_RoadSection = true;
+}
+
+void Task_3_3_Test(void)
+{
+    RFID_RoadSection = false;
 }
 
 // void Task_5_5(void)
