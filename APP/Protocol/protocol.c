@@ -117,5 +117,5 @@ void Send_DataToUsart(uint8_t *buf, uint32_t length)
 void Check_Sum(uint8_t *cmd)
 {
     uint16_t temp = cmd[2] + cmd[3] + cmd[4] + cmd[5];
-    cmd[Pack_CheckSum] = (uint8_t)(temp % 0xFF);
+    cmd[Pack_CheckSum] = (uint8_t)(temp % 256);
 }

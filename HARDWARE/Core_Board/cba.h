@@ -22,12 +22,12 @@
 #include "voice.h"
 #include "data_from_host.h"
 #include "debug.h"
+#include "bh1750.h"
 
-#define Action_S1() Auto_Run() //print_info("Plate:%s\r\n", Get_PlateNumber())
-#define Action_S2() LEDDispaly_ShowDistance(Ultrasonic_Task(20)) // LEDDispaly_ShowDistance(Ultrasonic_Task(10))
-#define Action_S3() print_info("ShapeINFO:%s\r\n", Get_ShapeInfo()) //Voice_Task() //SYN7318_Test()
-#define Action_S4() print_info("AllColor:%d\r\n", Get_AllColorCount()) // AGV_SendInfraredData(Infrared_AlarmON)
-
+#define Action_S1() Auto_Run()                                        //print_info("Plate:%s\r\n", Get_PlateNumber())
+#define Action_S2() LEDDispaly_ShowDistance(Ultrasonic_Task(20))      // LEDDispaly_ShowDistance(Ultrasonic_Task(10))
+#define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10)) //AGV_SetRoute("G4F4F6D6D4D2F2G2") //Voice_Task() //SYN7318_Test()
+#define Action_S4() AGV_Start()                                       // AGV_SendInfraredData(Infrared_AlarmON)
 
 // ∞¥º¸≈‰÷√
 

@@ -23,6 +23,7 @@
 "..\output\infrared.o"
 "..\output\ultrasonic.o"
 "..\output\voice.o"
+"..\output\seven_seg.o"
 "..\output\sys.o"
 "..\output\delay.o"
 "..\output\timer.o"

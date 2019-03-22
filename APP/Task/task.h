@@ -43,6 +43,8 @@ void BarrierGate_Task(uint8_t plate[6]);
 void Voice_Task(void);
 void RFID_Task(void);
 
+void TFT_Hex(uint8_t dat[3]);
+
 bool Read_RFID_Block(uint8_t block, uint8_t *buf);
 
 void Task_5_1(void);

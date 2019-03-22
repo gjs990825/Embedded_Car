@@ -2,6 +2,7 @@
 #define _AGV_H_
 
 #include "sys.h"
+#include "route.h"
 
 void Send_AGVCmd(uint8_t *cmd);
 
@@ -20,5 +21,12 @@ void AGV_UploadData(bool sta);
 void AGV_VoiceRecognition(bool sta);
 void AGV_Start(void);
 void AGV_SetTowards(uint8_t towards);
+
+void AGV_SetRouteFromTask(RouteNode task[], uint8_t length);
+
+uint8_t *ReCoordinate_Covent(uint8_t x, uint8_t y);
+
+void AGV_SetRoute(uint8_t *str);
+
 
 #endif // _AGV_H_

@@ -303,8 +303,22 @@ uint8_t *Get_PlateNumber(void)
 
 uint8_t *Get_QRCode(uint8_t QRID, uint8_t use)
 {
-    uint8_t buf[2] = {QRID, use};
-    ResetAndRquestMulti(DataRequest_ShapeNumber, buf, 2, 300, 3);
+    uint8_t buf[1] = {QRID};
+
+    do
+    {
+        ResetDataIsSet(QRID);
+        for (uint8_t i = 0; i < 3; i++)
+        {
+            HostData_RequestMulti(QRID, buf, 1);
+            WaitForFlagInMs(DataBuffer[QRID].isSet, SET, 300);
+            if (DataBuffer[QRID].isSet == SET)
+            {
+                break;
+            }
+        }
+    } while (0);
+
     ReturnBuffer(QRID);
 }
 
@@ -352,4 +366,3 @@ uint8_t Get_AllColorCount(void)
     ResetAndRquest(DataRequest_Preset2, 300, 3);
     ReturnBuffer(DataRequest_Preset2)[0];
 }
-

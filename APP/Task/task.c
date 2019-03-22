@@ -33,6 +33,7 @@
 #include "route.h"
 #include "ultrasonic.h"
 #include "my_lib.h"
+#include "seven_seg.h"
 
 uint8_t FOUND_RFID_CARD = false;
 uint8_t RFID_RoadSection = false;
@@ -84,7 +85,7 @@ void TrafficLight_Task(void)
 void TFT_Task(void)
 {
     Request_ToHost(RequestCmd_TFTRecognition);                            // 请求识别TFT内容
-    WaitForFlagInMs(GetCmdFlag(FromHost_TFTRecognition), SET, 20 * 1000); // 等待识别完成
+    WaitForFlagInMs(GetCmdFlag(FromHost_TFTRecognition), SET, 37 * 1000); // 等待识别完成
 }
 
 // // 旋转led发送车牌
@@ -110,13 +111,12 @@ void TFT_Hex(uint8_t dat[3])
 // 立体显示部分
 
 // 立体显示 显示车牌
-void RotationLED_Plate(uint8_t plate[6], uint8_t x, uint8_t y)
+void RotationLED_Plate(uint8_t plate[6], uint8_t coord[2])
 {
     // Infrared_PlateData1[]
     memcpy(&Infrared_PlateData1[2], plate, 4);
     memcpy(&Infrared_PlateData2[2], &plate[4], 2);
-    Infrared_PlateData2[4] = x;
-    Infrared_PlateData2[5] = y;
+    memcpy(&Infrared_PlateData2[4], coord, 2);
     Infrared_Send_A(Infrared_PlateData1);
     delay_ms(600);
     Infrared_Send_A(Infrared_PlateData2);
@@ -167,6 +167,7 @@ void End_Task(void)
     delay_ms(500);
     Set_tba_WheelLED(L_LED, RESET);
     Set_tba_WheelLED(R_LED, RESET);
+    display(1, 2);
 }
 
 // led显示距离（输入距离）
@@ -236,8 +237,8 @@ void ETC_Task(void)
 }
 
 uint8_t RFID_x = 0, RFID_y = 0;
-uint8_t RFID_DataBlockLoation = 1;
-uint8_t RFID_DataBuffer[16] = {0};
+uint8_t RFID_DataBlockLoation = 5;
+uint8_t RFID_DataBuffer[17] = {0};
 
 // RFID读卡，检测到执行读卡
 void RFID_Task(void)
@@ -288,6 +289,8 @@ void BarrierGate_Task(uint8_t plate[6])
     {
         BarrierGate_Plate(plate);
     }
+    Send_ZigbeeData_To_Fifo(ZigBee_BarrierGateOPEN, 8);
+    delay_ms(790);
     Send_ZigbeeData_To_Fifo(ZigBee_BarrierGateOPEN, 8);
     delay_ms(790);
 }
@@ -348,11 +351,11 @@ void Task_5_1(void)
 
 void Task_3_1(void)
 {
-    ExcuteAndWait(Turn_ByEncoder(22), Stop_Flag, TURNCOMPLETE);
+    // ExcuteAndWait(Turn_ByEncoder(22), Stop_Flag, TURNCOMPLETE);
 
     TrafficLight_Task();
 
-    ExcuteAndWait(Turn_ByEncoder(-22), Stop_Flag, TURNCOMPLETE);
+    // ExcuteAndWait(Turn_ByEncoder(-22), Stop_Flag, TURNCOMPLETE);
 
     RFID_RoadSection = true;
 }
@@ -361,8 +364,8 @@ uint16_t distanceMeasured = 0;
 
 void Task_1_3(void)
 {
-    ExcuteAndWait(Turn_ByEncoder(-93), Stop_Flag, TURNCOMPLETE); // 修正值
-    ExcuteAndWait(Back_Off(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(-90), Stop_Flag, TURNCOMPLETE); // 修正值
+    ExcuteAndWait(Back_Off(30, Centimeter_Value * 13), Stop_Flag, FORBACKCOMPLETE);
 
     delay_ms(700);
     QRCode_Task(RequestCmd_QRCode2);
@@ -372,35 +375,47 @@ void Task_1_3(void)
     delay_ms(700);
     LEDDispaly_ShowDistance(distanceMeasured);
 
-    ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
-    ExcuteAndWait(Turn_ByEncoder(103), Stop_Flag, TURNCOMPLETE); // 修正值
+    ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 13), Stop_Flag, FORBACKCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(90), Stop_Flag, TURNCOMPLETE); // 修正值
 }
 
 void Task_1_5(void)
 {
     RFID_RoadSection = false;
 
-    ExcuteAndWait(Turn_ByEncoder(-30), Stop_Flag, TURNCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(-40), Stop_Flag, TURNCOMPLETE);
     ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
 
     TFT_Task();
-    TFT_Hex(Get_ShapeInfo());
 
     ExcuteAndWait(Back_Off(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
-    ExcuteAndWait(Turn_ByEncoder(30), Stop_Flag, TURNCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(40), Stop_Flag, TURNCOMPLETE);
 
-    ExcuteAndWait(Go_Ahead(30, ShortTrack_Value), Stop_Flag, FORBACKCOMPLETE);
+    // ExcuteAndWait(Go_Ahead(30, ShortTrack_Value), Stop_Flag, FORBACKCOMPLETE);
+    TFT_Hex(Get_ShapeInfo());
+    delay_ms(790);
+    TFT_Hex(Get_ShapeInfo());
+    delay_ms(790);
+    TFT_Hex(Get_ShapeInfo());
+    delay_ms(790);
 
+    AGV_SetRoute(RFID_DataBuffer);
+    delay_ms(700);
+    AGV_SetTowards(DIR_LEFT);
+    delay_ms(700);
+    AGV_SetTowards(DIR_LEFT);
     delay_ms(700);
     AGV_Start();
+    BarrierGate_Task(NULL); // 为从车开启道闸
     delay_ms(700);
     AGV_Start();
-    WaitForFlagInMs(AGVComplete_Status.isSet, SET, 15 * 1000);
+    WaitForFlagInMs(AGVComplete_Status.isSet, SET, 25 * 1000);
 
-    ExcuteAndWait(Back_Off(30, ShortTrack_Value), Stop_Flag, FORBACKCOMPLETE);
+    // ExcuteAndWait(Back_Off(30, ShortTrack_Value), Stop_Flag, FORBACKCOMPLETE);
+
     ExcuteAndWait(Turn_ByEncoder(90 + 40), Stop_Flag, TURNCOMPLETE);
 
-    RotationLED_Plate(Get_PlateNumber(), RFID_x, RFID_y);
+    RotationLED_Plate(Get_PlateNumber(), ReCoordinate_Covent(RFID_x, RFID_y));
 
     ExcuteAndWait(Turn_ByEncoder(-40), Stop_Flag, TURNCOMPLETE);
 

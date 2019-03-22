@@ -1,5 +1,6 @@
 #include "seven_seg.h"
-
+#include "hardware.h"
+#include "delay.h"
 #define DSP_SET GPIO_SetBits(GPIOB, GPIO_Pin_15)
 #define DSP_RESET GPIO_ResetBits(GPIOB, GPIO_Pin_15)
 #define SCK_SET GPIO_SetBits(GPIOH, GPIO_Pin_11)
@@ -39,10 +40,10 @@ void display(uint8_t a, uint8_t b)
 {
     while (1)
     {
-        GPIO_ResetBits(GPIOC, GPIO_Pin_13); //¡Á¨®¡À?????????
+        GPIO_ResetBits(GPIOC, GPIO_Pin_13);
         HC595_Write_Data(SMG[a]);
         delay_ms(5);
-        GPIO_SetBits(GPIOC, GPIO_Pin_13); //??¡À?????????
+        GPIO_SetBits(GPIOC, GPIO_Pin_13);
         HC595_Write_Data(SMG[b]);
         delay_ms(5);
     }

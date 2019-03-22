@@ -6,17 +6,17 @@
 #include "uart_a72.h"
 #include "delay.h"
 
-// 定义连接模式
-#define CONNECTION_MODE CONNECTION_WIFI
-// 使用宏定义的函数（程序可能会增大）
-#define USE_MACRO_FUNCTIONS false
+// // 定义连接模式
+// #define CONNECTION_MODE CONNECTION_WIFI
+// // 使用宏定义的函数（程序可能会增大）
+// #define USE_MACRO_FUNCTIONS false
 
-// 连接方式
-enum
-{
-    CONNECTION_SERIAL = 0,
-    CONNECTION_WIFI
-};
+// // 连接方式
+// enum
+// {
+//     CONNECTION_SERIAL = 0,
+//     CONNECTION_WIFI
+// };
 
 // 上传数据包的结构
 enum
@@ -74,6 +74,9 @@ enum
     FromHost_PlateData2 = 0x99,               // 车牌信息2
     FromHost_Garage = 0xB1,                   // 立体车库
     FromHost_TFTRecognition = 0xAC,           // TFT识别
+
+    // 从车专有的指令
+    FromHost_AGVRouting = 0xA9, // AGV 接收路径设置
 };
 
 // ZigBee 返回数据头
@@ -91,12 +94,14 @@ typedef struct ZigBee_DataStatus_Sturuct
     uint32_t timeStamp;
 } ZigBee_DataStatus_t;
 
-// 自适应选择发送函数
-#if CONNECTION_MODE
-#define Send_ToHost Send_DataToUsart // 函数声明在下面
-#else
 #define Send_ToHost Send_WifiData_To_Fifo
-#endif // CONNECTION_MODE
+
+// // 自适应选择发送函数
+// #if CONNECTION_MODE == CONNECTION_SERIAL
+// #define Send_ToHost Send_DataToUsart // 函数声明在下面
+// #else
+// #define Send_ToHost Send_WifiData_To_Fifo
+// #endif // CONNECTION_MODE
 
 #define GetCmdFlag(id) CommandFlagStatus[id]
 
