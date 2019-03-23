@@ -10,6 +10,7 @@
 #include "pid.h"
 #include "my_lib.h"
 
+// 转向是否完成
 #define CheckTurnComplete(EncoderValue) \
     if (Mp_Value >= EncoderValue)       \
     {                                   \
@@ -17,10 +18,10 @@
         Stop_Flag = TURNCOMPLETE;       \
     }
 
-// 使能循迹输出
+// 使能循迹信息输出
 #define _TRACK_OUTPUT_ 0
 
-// 超过此数判定出线
+// 超过此数判定出线/遇到白卡
 #define ALL_WHITE 15
 // 低于此数判定撞线
 #define ALL_BLACK 7
@@ -29,7 +30,7 @@
 int8_t Q7[7] = {0};
 // 后八个循迹传感器
 int8_t H8[8] = {0};
-// 白色数量
+// 当前白色数量
 uint8_t NumberOfWhite = 0;
 // 方向权重(PID适应线性值，这里已更改为偏移值)
 int DirectionWights = 0;
@@ -218,7 +219,8 @@ void Get_DirectionWights(void)
 }
 
 uint8_t TrackStatus = 0;
-uint32_t outtrackStamp;
+uint8_t isOutTrack = false;
+uint32_t outTrackStamp;
 
 // 循迹
 void TRACK_LINE(void)
@@ -237,19 +239,19 @@ void TRACK_LINE(void)
     Get_Track();
     Get_DirectionWights();
 
-    if (Track_Mode == TrackMode_Turn)
+    if (Track_Mode == TrackMode_Turn) // 通过循迹线转向（效果不是很好，基本不用）
     {
         if (TrackStatus == 0)
         {
             if (NumberOfWhite >= ALL_WHITE)
             {
                 TrackStatus = 1;
-                outtrackStamp = Get_GlobalTimeStamp();
+                outTrackStamp = Get_GlobalTimeStamp();
             }
         }
         else if (TrackStatus == 1)
         {
-            if (NumberOfWhite < ALL_WHITE && ((outtrackStamp + 200) < Get_GlobalTimeStamp()))
+            if (NumberOfWhite < ALL_WHITE && ((outTrackStamp + 200) < Get_GlobalTimeStamp()))
             {
                 TrackStatus = 2;
                 PidData_Clear();
@@ -272,17 +274,28 @@ void TRACK_LINE(void)
     {
         if ((Track_Mode == TrackMode_NORMAL) || (Track_Mode == TrackMode_ENCODER)) // 循迹状态
         {
-            if (RFID_RoadSection) // 白卡路段
+            if (isOutTrack == false)
             {
-                FOUND_RFID_CARD = true;       // 找到白卡
-                Save_StatusBeforeFoundRFID(); // 保存当前状态
-                Stop();                       // 暂停运行
-                TIM_Cmd(TIM5, ENABLE);        // 使能RFID处理定时器
+                isOutTrack = true;
+                outTrackStamp = Get_GlobalTimeStamp();
             }
             else
             {
-                // Stop();
-                Stop_Flag = OUTTRACK; // 出线
+                if (Get_GlobalTimeStamp() > (outTrackStamp + 60)) // 遇全白超过60ms
+                {
+                    if (RFID_RoadSection) // 白卡路段
+                    {
+                        FOUND_RFID_CARD = true;       // 找到白卡
+                        Save_StatusBeforeFoundRFID(); // 保存当前状态
+                        Stop();                       // 暂停运行
+                        TIM_Cmd(TIM5, ENABLE);        // 使能RFID处理定时器
+                    }
+                    else
+                    {
+                        // Stop();
+                        Stop_Flag = OUTTRACK; // 出线
+                    }
+                }
             }
         }
     }
@@ -291,36 +304,34 @@ void TRACK_LINE(void)
         Roadway_Flag_clean();
         Control(0, 0);
         Stop_Flag = CROSSROAD;
+        isOutTrack = false;
     }
     else
     {
-        if (RFID_RoadSection) // 白卡路段
+        if (RFID_RoadSection && (FOUND_RFID_CARD == false)) // 白卡路段，第一次遇到卡
         {
-            if (FOUND_RFID_CARD == false)
+            // 判定循迹灯是否有反白的情况 // 最中间三位必须为白色，最两边至少有一个黑色，并且下一坐标为路口
+            if (((H8[0] + Q7[0] + H8[7] + Q7[6]) <= 3) && (H8[3] & H8[4] & Q7[3]) && (((NextStatus.x % 2) && (NextStatus.y % 2)) != 0))
             {
-                // 判定循迹灯是否有反白的情况， 这里暂不考虑极端情况
-                if (((H8[0] + Q7[0]) == 0) && ((H8[7] + Q7[6]) == 0) && ((H8[4] + H8[5] + Q7[3]) == 3))
-                {
-                    Roadway_Flag_clean(); // 处理遇到十字线的情况
-                    Control(0, 0);
-                    Stop_Flag = CROSSROAD;
-
-                    FOUND_RFID_CARD = true;       // 找到白卡
-                    Save_StatusBeforeFoundRFID(); // 保存当前状态
-                    Stop();                       // 暂停运行
-                    TIM_Cmd(TIM5, ENABLE);        // 使能RFID处理定时器
-                }
-                else
-                {
-                    LSpeed = Car_Speed + PID_value;
-                    RSpeed = Car_Speed - PID_value;
-                }
+                Roadway_Flag_clean(); // 处理遇到十字线的情况
+                Control(0, 0);
+                Stop_Flag = CROSSROAD;
+                FOUND_RFID_CARD = true;       // 找到白卡
+                Save_StatusBeforeFoundRFID(); // 保存当前状态
+                Stop();                       // 暂停运行
+                TIM_Cmd(TIM5, ENABLE);        // 使能RFID处理定时器
+            }
+            else
+            {
+                LSpeed = Car_Speed + PID_value;
+                RSpeed = Car_Speed - PID_value;
             }
         }
         else
         {
             LSpeed = Car_Speed + PID_value;
             RSpeed = Car_Speed - PID_value;
+            isOutTrack = false;
             // Control(LSpeed, RSpeed);
             // 因CAN发送出现过没有送达的现象，速度控制在定时器中断内实现
         }

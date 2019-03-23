@@ -27,7 +27,14 @@
 #define Action_S1() Auto_Run()                                        //print_info("Plate:%s\r\n", Get_PlateNumber())
 #define Action_S2() LEDDispaly_ShowDistance(Ultrasonic_Task(20))      // LEDDispaly_ShowDistance(Ultrasonic_Task(10))
 #define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10)) //AGV_SetRoute("G4F4F6D6D4D2F2G2") //Voice_Task() //SYN7318_Test()
-#define Action_S4() AGV_Start()                                       // AGV_SendInfraredData(Infrared_AlarmON)
+#define Action_S4() Go_Ahead(Track_Speed, LongTrack_Value)                                      // AGV_SendInfraredData(Infrared_AlarmON)
+
+// µ˜ ‘≈‰÷√
+// #define Action_S1() Auto_Run()                                        //print_info("Plate:%s\r\n", Get_PlateNumber())
+// #define Action_S2() LEDDispaly_ShowDistance(Ultrasonic_Task(20))      // LEDDispaly_ShowDistance(Ultrasonic_Task(10))
+// #define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10)) //AGV_SetRoute("G4F4F6D6D4D2F2G2") //Voice_Task() //SYN7318_Test()
+// #define Action_S4() AGV_Start()                                       // AGV_SendInfraredData(Infrared_AlarmON)
+
 
 // ∞¥º¸≈‰÷√
 

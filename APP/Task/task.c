@@ -248,8 +248,8 @@ void RFID_Task(void)
     RFID_y = NextStatus.y;
 
     print_info("FOUND_RFID:%d,%d\r\n", RFID_x, RFID_y);
-    ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 10), Stop_Flag, FORBACKCOMPLETE);
-    for (i = 0; i < 7; i++) // 读卡范围约 11.5-16.5，间隔读取()
+    ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 8), Stop_Flag, FORBACKCOMPLETE);
+    for (i = 0; i < 9; i++) // 读卡范围约 11.5-16.5，间隔读取()
     {
         if (Read_RFID_Block(RFID_DataBlockLoation, RFID_DataBuffer) == true)
             break; // 读取成功，跳出
@@ -261,7 +261,7 @@ void RFID_Task(void)
     FOUND_RFID_CARD = false;  // 清空标志位
     TIM_Cmd(TIM5, DISABLE);   // 停止定时器
 
-    ExcuteAndWait(Back_Off(30, Centimeter_Value * (10 + i)), Stop_Flag, FORBACKCOMPLETE); // 返回读卡前位置
+    ExcuteAndWait(Back_Off(30, Centimeter_Value * (8 + i)), Stop_Flag, FORBACKCOMPLETE); // 返回读卡前位置
     // 十字路口需要多退后一点，因为响应时间变长会多走一点
     if (StatusBeforeFoundRFID.stopFlag == CROSSROAD)
     {
@@ -338,6 +338,7 @@ void Task_5_1(void)
     ExcuteAndWait(Turn_ByEncoder(-50), Stop_Flag, TURNCOMPLETE);
     ExcuteAndWait(Back_Off(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
 
+    delay_ms(700);
     QRCode_Task(RequestCmd_QRCode1);
 
     ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
@@ -351,6 +352,7 @@ void Task_5_1(void)
 
 void Task_3_1(void)
 {
+    // 改用预设位，主车不用调整位置
     // ExcuteAndWait(Turn_ByEncoder(22), Stop_Flag, TURNCOMPLETE);
 
     TrafficLight_Task();
@@ -369,6 +371,7 @@ void Task_1_3(void)
 
     delay_ms(700);
     QRCode_Task(RequestCmd_QRCode2);
+    AGV_SendInfraredData(Get_QRCode(DataRequest_QRCode2, 0x00)); // 发送红外数据到从车
 
     distanceMeasured = Ultrasonic_GetAverage(20);
     LEDDispaly_ShowDistance(distanceMeasured); // 发两次防止丢包
@@ -399,9 +402,9 @@ void Task_1_5(void)
     TFT_Hex(Get_ShapeInfo());
     delay_ms(790);
 
-    AGV_SetRoute(RFID_DataBuffer);
+    AGV_SetRoute(RFID_DataBuffer); // 发送从车路径信息
     delay_ms(700);
-    AGV_SetTowards(DIR_LEFT);
+    AGV_SetTowards(DIR_LEFT); // 设定车头朝向
     delay_ms(700);
     AGV_SetTowards(DIR_LEFT);
     delay_ms(700);
@@ -409,6 +412,7 @@ void Task_1_5(void)
     BarrierGate_Task(NULL); // 为从车开启道闸
     delay_ms(700);
     AGV_Start();
+    AGVComplete_Status.isSet = RESET;
     WaitForFlagInMs(AGVComplete_Status.isSet, SET, 25 * 1000);
 
     // ExcuteAndWait(Back_Off(30, ShortTrack_Value), Stop_Flag, FORBACKCOMPLETE);

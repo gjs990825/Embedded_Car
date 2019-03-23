@@ -84,26 +84,22 @@ void AGV_ClearEncoder(void)
     SendAGVCmd();
 }
 
-// 发送红外数据
+// 发送红外数据(此处已移除立即发送的功能，从车自行发送)
 void AGV_SendInfraredData(uint8_t irData[6])
 {
     ClearAGVCmd();
     DataToAGV[Pack_MainCmd] = FromHost_InfraredFrontData;
-    DataToAGV[Pack_SubCmd1] = irData[0];
-    DataToAGV[Pack_SubCmd2] = irData[1];
-    DataToAGV[Pack_SubCmd3] = irData[2];
+    memcpy(&DataToAGV[Pack_SubCmd1], &irData[0], 3);
     SendAGVCmd();
-    delay_ms(50);
+    delay_ms(500);
     ClearAGVCmd();
     DataToAGV[Pack_MainCmd] = FromHost_InfraredBackData;
-    DataToAGV[Pack_SubCmd1] = irData[3];
-    DataToAGV[Pack_SubCmd2] = irData[4];
-    DataToAGV[Pack_SubCmd3] = irData[5];
+    memcpy(&DataToAGV[Pack_SubCmd1], &irData[3], 3);
     SendAGVCmd();
-    delay_ms(50);
-    ClearAGVCmd();
-    DataToAGV[Pack_MainCmd] = FromHost_InfraredSend;
-    SendAGVCmd();
+    // delay_ms(50);
+    // ClearAGVCmd();
+    // DataToAGV[Pack_MainCmd] = FromHost_InfraredSend;
+    // SendAGVCmd();
 }
 
 // 转向灯
