@@ -24,31 +24,31 @@
 #include "debug.h"
 #include "bh1750.h"
 
-#define Action_S1() Auto_Run()                                        //print_info("Plate:%s\r\n", Get_PlateNumber())
-#define Action_S2() LEDDispaly_ShowDistance(Ultrasonic_Task(20))      // LEDDispaly_ShowDistance(Ultrasonic_Task(10))
-#define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10)) //AGV_SetRoute("G4F4F6D6D4D2F2G2") //Voice_Task() //SYN7318_Test()
-#define Action_S4() Go_Ahead(Track_Speed, LongTrack_Value)                                      // AGV_SendInfraredData(Infrared_AlarmON)
+#define Action_S1() AGV_SetTaskID(1, 0)      // print_info("Plate:%s\r\n", Get_PlateNumber())
+#define Action_S2() Test_1(7)   // LEDDispaly_ShowDistance(Ultrasonic_Task(10))
+#define Action_S3() Test_1(5)              // AGV_SetRoute("G4F4F6D6D4D2F2G2")
+#define Action_S4() Test_1(4) // AGV_SendInfraredData(Infrared_AlarmON)
 
 // µ˜ ‘≈‰÷√
-// #define Action_S1() Auto_Run()                                        //print_info("Plate:%s\r\n", Get_PlateNumber())
-// #define Action_S2() LEDDispaly_ShowDistance(Ultrasonic_Task(20))      // LEDDispaly_ShowDistance(Ultrasonic_Task(10))
-// #define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10)) //AGV_SetRoute("G4F4F6D6D4D2F2G2") //Voice_Task() //SYN7318_Test()
-// #define Action_S4() AGV_Start()                                       // AGV_SendInfraredData(Infrared_AlarmON)
-
+// #define Action_S1() print_info("Plate:%s\r\n", Get_PlateNumber())
+// #define Action_S2() LEDDispaly_ShowDistance(Ultrasonic_Task(20))
+// #define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10))
+// #define Action_S4() AGV_SendInfraredData(Infrared_AlarmON)
 
 // ∞¥º¸≈‰÷√
-
 #define S1 PIin(4)
 #define S2 PIin(5)
 #define S3 PIin(6)
 #define S4 PIin(7)
 
+// LED≈‰÷√
 #define LED1 PHout(12)
 #define LED2 PHout(13)
 #define LED3 PHout(14)
 #define LED4 PHout(15)
 
-#define MP_SPK PHout(5) //∑‰√˘∆˜
+//∑‰√˘∆˜
+#define MP_SPK PHout(5) 
 
 void Cba_Init(void);
 void Beep(uint8_t times);

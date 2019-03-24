@@ -28,7 +28,7 @@ typedef enum
 #define WaitForFlagInMs(flag, status, timeout)                                       \
 	do                                                                               \
 	{                                                                                \
-		uint32_t startStamp = Get_GlobalTimeStamp();                                  \
+		uint32_t startStamp = Get_GlobalTimeStamp();                                 \
 		while ((Get_GlobalTimeStamp() < (startStamp + timeout)) && (flag != status)) \
 		{                                                                            \
 		};                                                                           \

@@ -300,6 +300,12 @@ void Voice_Task(void)
     Start_VoiceCommandRecognition(3);
 }
 
+void Test_1(uint8_t block)
+{
+    uint8_t buf[17];
+    Read_RFID_Block(block, buf);
+}
+
 // 读扇区 使用KEYA，存在buf里
 bool Read_RFID_Block(uint8_t block, uint8_t *buf)
 {
@@ -333,6 +339,8 @@ void Task_5_0(void)
     Start_Task();
 }
 
+
+uint8_t *RFID_Key = NULL;
 void Task_5_1(void)
 {
     ExcuteAndWait(Turn_ByEncoder(-50), Stop_Flag, TURNCOMPLETE);
@@ -340,6 +348,7 @@ void Task_5_1(void)
 
     delay_ms(700);
     QRCode_Task(RequestCmd_QRCode1);
+    RFID_Key = Get_QRCode(DataRequest_QRCode1, 0x01); // 获取密钥
 
     ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
     ExcuteAndWait(Turn_ByEncoder(-40), Stop_Flag, TURNCOMPLETE);
@@ -402,18 +411,34 @@ void Task_1_5(void)
     TFT_Hex(Get_ShapeInfo());
     delay_ms(790);
 
-    AGV_SetRoute(RFID_DataBuffer); // 发送从车路径信息
+    AGV_SendInfraredData(Infrared_AlarmON); // 发送红外信息 // 需要注掉！！！
     delay_ms(700);
-    AGV_SetTowards(DIR_LEFT); // 设定车头朝向
-    delay_ms(700);
-    AGV_SetTowards(DIR_LEFT);
-    delay_ms(700);
+    AGV_SetTaskID(Get_TaskNumber("D4", RFID_DataBuffer), 0); // 设定任务点
+    AGV_SetRoute(RFID_DataBuffer);                           // 发送从车路径信息
+    delay_ms(700);   
+    AGV_SetTowards(DIR_LEFT);                                // 设定车头朝向
+    delay_ms(700);                                           // 等待
+    AGV_Start();                                             // 从车启动
+    delay_ms(700);                                           // 等待
     AGV_Start();
-    BarrierGate_Task(NULL); // 为从车开启道闸
-    delay_ms(700);
-    AGV_Start();
+
+    // 计算到达道闸的时间
+    int8_t taskNumber1 = Get_TaskNumber("F4", RFID_DataBuffer);
+    int8_t taskNumber2 = Get_TaskNumber("F2", RFID_DataBuffer);
+    int8_t taskNumber = (taskNumber1 < taskNumber2) ? taskNumber1 : taskNumber2;
+
+    if (taskNumber != -1) // 一个节点等待一秒
+    {
+        for (int8_t i = 0; i < taskNumber; i++)
+        {
+            delay_ms(500);
+            delay_ms(500);
+        }
+        BarrierGate_Task(NULL); // 为从车开启道闸
+    }
+
     AGVComplete_Status.isSet = RESET;
-    WaitForFlagInMs(AGVComplete_Status.isSet, SET, 25 * 1000);
+    WaitForFlagInMs(AGVComplete_Status.isSet, SET, 25 * 1000); // 等待从车执行入库完成
 
     // ExcuteAndWait(Back_Off(30, ShortTrack_Value), Stop_Flag, FORBACKCOMPLETE);
 

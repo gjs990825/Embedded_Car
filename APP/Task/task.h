@@ -61,6 +61,7 @@ void Task_5_1_Test(void);
 void Task_3_3_Test(void);
 
 
+void Test_1(uint8_t block);
 
 // // ÈÎÎñµã
 // void Task_5_5(void);

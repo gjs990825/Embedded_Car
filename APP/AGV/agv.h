@@ -19,14 +19,11 @@ void AGV_PhotoChange(bool dir);
 void AGV_LightAdd(uint8_t level);
 void AGV_UploadData(bool sta);
 void AGV_VoiceRecognition(bool sta);
+
 void AGV_Start(void);
 void AGV_SetTowards(uint8_t towards);
-
 void AGV_SetRouteFromTask(RouteNode task[], uint8_t length);
-
-uint8_t *ReCoordinate_Covent(uint8_t x, uint8_t y);
-
 void AGV_SetRoute(uint8_t *str);
-
+void AGV_SetTaskID(uint8_t routeNumber, uint8_t taskNumber);
 
 #endif // _AGV_H_

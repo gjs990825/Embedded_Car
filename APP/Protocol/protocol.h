@@ -77,6 +77,7 @@ enum
 
     // 从车专有的指令
     FromHost_AGVRouting = 0xA9, // AGV 接收路径设置
+    FromHost_AGVSetTask = 0xAA, // AGV 接收任务设置
 };
 
 // ZigBee 返回数据头
