@@ -30,14 +30,10 @@ void delay_ns(u32 ns)
     }
 }
 
+// uint8_t TXRFID[16] = {0x41, 0x31, 0x42, 0x32, 0x43, 0x33, 0x44, 0x34, 0x46, 0x31, 0x42, 0x32, 0x43, 0x33, 0x44, 0x34};
+// uint8_t RXRFID[16];
 
-
-//// edited
 uint8_t RFID_Data[16];
-////
-uint8_t TXRFID[16] = {0x41, 0x31, 0x42, 0x32, 0x43, 0x33, 0x44, 0x34, 0x46, 0x31, 0x42, 0x32, 0x43, 0x33, 0x44, 0x34};
-uint8_t RXRFID[16];
-
 // 读数据块 数据块ID key 接收buffer（目前使用AKEY）
 int8_t RFID_ReadBlock(uint8_t block, uint8_t key[6], uint8_t *buf)
 {
@@ -66,7 +62,7 @@ int8_t RFID_ReadBlock(uint8_t block, uint8_t key[6], uint8_t *buf)
                 status = MI_ERR;
                 LED3 = 1;
                 MP_SPK = 1;
-                status = PcdAuthState(0x60, (block / 4) * 4 + 3, key, SN); //验证KEY_A
+                status = PcdAuthState(0x60, block, key, SN); // 验证KEY_A（0x60）
 
                 if (status == MI_OK)
                 {
@@ -88,74 +84,74 @@ int8_t RFID_ReadBlock(uint8_t block, uint8_t key[6], uint8_t *buf)
     return status;
 }
 
-/*
-函数功能：全自动读卡函数
-参    数：无
-返 回 值：无
-**/
-void Read_Card(void)
-{
-    int8_t status = MI_ERR;
-    uint8_t CT[2];                                         //卡类型
-    uint8_t SN[4];                                         //卡号
-    uint8_t KEY[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff}; //密钥
-    uint8_t s = 0x01;
-    // uint8_t RXRFIDH[8]; // edited
-#define DATA_LEN 16 //定义数据字节长度
+// /*
+// 函数功能：全自动读卡函数
+// 参    数：无
+// 返 回 值：无
+// **/
+// void Read_Card(void)
+// {
+//     int8_t status = MI_ERR;
+//     uint8_t CT[2];                                         //卡类型
+//     uint8_t SN[4];                                         //卡号
+//     uint8_t KEY[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff}; //密钥
+//     uint8_t s = 0x01;
+//     // uint8_t RXRFIDH[8]; // edited
+// #define DATA_LEN 16 //定义数据字节长度
 
-    LED1 = 0;
-    LED2 = 0;
-    LED3 = 0;
-    LED4 = 0;
+//     LED1 = 0;
+//     LED2 = 0;
+//     LED3 = 0;
+//     LED4 = 0;
 
-    status = PcdRequest(PICC_REQALL, CT); //寻卡
-    if (status == MI_OK)                  //寻卡成功
-    {
-        status = MI_ERR;
-        LED1 = 1;
-        status = PcdAnticoll(SN); //防冲撞
-        if (status == MI_OK)
-        {
-            status = MI_ERR;
-            LED2 = 1;
-            status = PcdSelect(SN); //选定此卡
-            if (status == MI_OK)    //选定成功
-            {
-                status = MI_ERR;
-                LED3 = 1;
-                MP_SPK = 1;
-                status = PcdAuthState(0x60, 0x03, KEY, SN); //验证密钥
+//     status = PcdRequest(PICC_REQALL, CT); //寻卡
+//     if (status == MI_OK)                  //寻卡成功
+//     {
+//         status = MI_ERR;
+//         LED1 = 1;
+//         status = PcdAnticoll(SN); //防冲撞
+//         if (status == MI_OK)
+//         {
+//             status = MI_ERR;
+//             LED2 = 1;
+//             status = PcdSelect(SN); //选定此卡
+//             if (status == MI_OK)    //选定成功
+//             {
+//                 status = MI_ERR;
+//                 LED3 = 1;
+//                 MP_SPK = 1;
+//                 status = PcdAuthState(0x60, 0x03, KEY, SN); //验证密钥
 
-                if (status == MI_OK)
-                {
+//                 if (status == MI_OK)
+//                 {
 
-                    status = MI_ERR;
+//                     status = MI_ERR;
 
-                    status = PcdWrite(s, TXRFID); //写卡
-                    if (status == MI_OK)
-                    {
-                        status = MI_ERR;
-                    }
+//                     status = PcdWrite(s, TXRFID); //写卡
+//                     if (status == MI_OK)
+//                     {
+//                         status = MI_ERR;
+//                     }
 
-                    status = PcdRead(s, RXRFID); //读卡
-                    if (status == MI_OK)
-                    {
-                        status = MI_ERR;
-                        LED4 = 1; //读卡成功
-                        MP_SPK = 0;
+//                     status = PcdRead(s, RXRFID); //读卡
+//                     if (status == MI_OK)
+//                     {
+//                         status = MI_ERR;
+//                         LED4 = 1; //读卡成功
+//                         MP_SPK = 0;
 
-                        memcpy(RFID_Data, RXRFID, 16);
-                        Send_DataToUsart(RFID_Data, 16); // 发送到串口
-                        print_info("%s\r\n", RFID_Data);
-                        LED1 = 0;
-                        LED2 = 0;
-                        LED3 = 0;
-                    }
-                }
-            }
-        }
-    }
-}
+//                         memcpy(RFID_Data, RXRFID, 16);
+//                         Send_DataToUsart(RFID_Data, 16); // 发送到串口
+//                         print_info("%s\r\n", RFID_Data);
+//                         LED1 = 0;
+//                         LED2 = 0;
+//                         LED3 = 0;
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
 
 //初始化IO 串口1
 //bound:波特率

@@ -300,7 +300,7 @@ void Voice_Task(void)
     Start_VoiceCommandRecognition(3);
 }
 
-void Test_1(uint8_t block)
+void Test_RFID(uint8_t block)
 {
     uint8_t buf[17];
     Read_RFID_Block(block, buf);
@@ -339,7 +339,6 @@ void Task_5_0(void)
     Start_Task();
 }
 
-
 uint8_t *RFID_Key = NULL;
 void Task_5_1(void)
 {
@@ -375,7 +374,7 @@ uint16_t distanceMeasured = 0;
 
 void Task_1_3(void)
 {
-    ExcuteAndWait(Turn_ByEncoder(-90), Stop_Flag, TURNCOMPLETE); // 修正值
+    ExcuteAndWait(Turn_ByEncoder(-93), Stop_Flag, TURNCOMPLETE); // 修正值
     ExcuteAndWait(Back_Off(30, Centimeter_Value * 13), Stop_Flag, FORBACKCOMPLETE);
 
     delay_ms(700);
@@ -388,7 +387,7 @@ void Task_1_3(void)
     LEDDispaly_ShowDistance(distanceMeasured);
 
     ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 13), Stop_Flag, FORBACKCOMPLETE);
-    ExcuteAndWait(Turn_ByEncoder(90), Stop_Flag, TURNCOMPLETE); // 修正值
+    ExcuteAndWait(Turn_ByEncoder(93), Stop_Flag, TURNCOMPLETE); // 修正值
 }
 
 void Task_1_5(void)
@@ -403,9 +402,6 @@ void Task_1_5(void)
     ExcuteAndWait(Back_Off(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
     ExcuteAndWait(Turn_ByEncoder(40), Stop_Flag, TURNCOMPLETE);
 
-    // ExcuteAndWait(Go_Ahead(30, ShortTrack_Value), Stop_Flag, FORBACKCOMPLETE);
-    TFT_Hex(Get_ShapeInfo());
-    delay_ms(790);
     TFT_Hex(Get_ShapeInfo());
     delay_ms(790);
     TFT_Hex(Get_ShapeInfo());
@@ -415,38 +411,55 @@ void Task_1_5(void)
     delay_ms(700);
     AGV_SetTaskID(Get_TaskNumber("D4", RFID_DataBuffer), 0); // 设定任务点
     AGV_SetRoute(RFID_DataBuffer);                           // 发送从车路径信息
-    delay_ms(700);   
-    AGV_SetTowards(DIR_LEFT);                                // 设定车头朝向
-    delay_ms(700);                                           // 等待
-    AGV_Start();                                             // 从车启动
-    delay_ms(700);                                           // 等待
+    delay_ms(700);
+    AGV_SetTowards(DIR_LEFT); // 设定车头朝向
+    delay_ms(700);            // 等待
+    AGV_Start();              // 从车启动
+    delay_ms(700);            // 等待
     AGV_Start();
 
-    // 计算到达道闸的时间
-    int8_t taskNumber1 = Get_TaskNumber("F4", RFID_DataBuffer);
-    int8_t taskNumber2 = Get_TaskNumber("F2", RFID_DataBuffer);
-    int8_t taskNumber = (taskNumber1 < taskNumber2) ? taskNumber1 : taskNumber2;
-
-    if (taskNumber != -1) // 一个节点等待一秒
+    if (Get_TaskNumber("B1", RFID_DataBuffer) != -1) // 从车入库任务设定
     {
-        for (int8_t i = 0; i < taskNumber; i++)
-        {
-            delay_ms(500);
-            delay_ms(500);
-        }
-        BarrierGate_Task(NULL); // 为从车开启道闸
+        AGV_SetTaskID(Get_TaskNumber("B1", RFID_DataBuffer), 1);
+    }
+    else if (Get_TaskNumber("B7", RFID_DataBuffer) != -1)
+    {
+        AGV_SetTaskID(Get_TaskNumber("B7", RFID_DataBuffer), 1);
+    }
+
+    if (Get_TaskNumber("B2", RFID_DataBuffer) != -1) // 经过主车的路径
+    {
+        ExcuteAndWait(Back_Off(30, Centimeter_Value * 35), Stop_Flag, FORBACKCOMPLETE);
     }
 
     AGVComplete_Status.isSet = RESET;
     WaitForFlagInMs(AGVComplete_Status.isSet, SET, 25 * 1000); // 等待从车执行入库完成
 
-    // ExcuteAndWait(Back_Off(30, ShortTrack_Value), Stop_Flag, FORBACKCOMPLETE);
+    if (Get_TaskNumber("B2", RFID_DataBuffer) != -1) // 经过主车的路径
+    {
+        ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 35), Stop_Flag, FORBACKCOMPLETE);
+    }
 
-    ExcuteAndWait(Turn_ByEncoder(90 + 40), Stop_Flag, TURNCOMPLETE);
+    // 计算到达道闸的时间(不过道闸)
+    // int8_t taskNumber1 = Get_TaskNumber("F4", RFID_DataBuffer);
+    // int8_t taskNumber2 = Get_TaskNumber("F2", RFID_DataBuffer);
+    // int8_t taskNumber = (taskNumber1 < taskNumber2) ? taskNumber1 : taskNumber2;
+
+    // if (taskNumber != -1) // 一个节点等待一秒
+    // {
+    //     for (int8_t i = 0; i < taskNumber; i++)
+    //     {
+    //         delay_ms(500);
+    //         delay_ms(500);
+    //     }
+    //     BarrierGate_Task(NULL); // 为从车开启道闸
+    // }
+
+    ExcuteAndWait(Turn_ByEncoder(90 + 35), Stop_Flag, TURNCOMPLETE);
 
     RotationLED_Plate(Get_PlateNumber(), ReCoordinate_Covent(RFID_x, RFID_y));
 
-    ExcuteAndWait(Turn_ByEncoder(-40), Stop_Flag, TURNCOMPLETE);
+    ExcuteAndWait(Turn_ByEncoder(-35), Stop_Flag, TURNCOMPLETE);
 
     CurrentStaus.dir = DIR_RIGHT;
 }
