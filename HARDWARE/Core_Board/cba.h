@@ -49,7 +49,7 @@
 // #define Action_S4() Test_RFID(4)
 
 // // »ŒŒÒ∞Âµ˜ ‘≈‰÷√
-#define Action_S1() Start_VoiceCommandRecognition(3)
+#define Action_S1() Infrared_Send_A(Infrared_AlarmON)
 #define Action_S2() print_info("Diatance:%d\r\n", Ultrasonic_Task(20))
 #define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10))
 #define Action_S4() Auto_Run()

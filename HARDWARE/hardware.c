@@ -1,6 +1,5 @@
 #include "hardware.h"
 
-
 // 初始化硬件
 void Hardware_Init(void)
 {
@@ -21,15 +20,13 @@ void Hardware_Init(void)
 	Timer_Init(167, 999);			 // 串行数据通讯时间帧
 	Readcard_Device_Init();			 // RFID初始化
 
-	my_mem_init(SRAMIN);		// 初始化内部内存池
-	
+	my_mem_init(SRAMIN); // 初始化内部内存池
+	// my_mem_init(SRAMEX); // 初始化外部内存池
+
 	// USART6_Init(115200);
 
-
-	
 	DebugTimer_Init(16799, 1999); // 调试(白卡检测)
-	CanTimer_Init(16799, 199); // 20ms CAN数据检查
-	
+	CanTimer_Init(16799, 199);	// 20ms CAN数据检查
 
 	print_info("\r\nSystem running...\r\n");
 }

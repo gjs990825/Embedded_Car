@@ -6,13 +6,6 @@ static uint32_t WIFI_Upload_data_times; //通过Wifi上传数据周期
 static uint32_t RFID_Init_Check_times;
 
 
-// RouteNode task[3] = 
-// {
-// 	{.x = 5, .y = 0},
-// 	{.x = 3, .y = 3},
-// 	{.x = 5, .y = 0},
-// };
-
 int main(void)
 {
 	// uint16_t Light_Value = 0;	 //光强度值
@@ -36,10 +29,8 @@ int main(void)
 
 	Send_DataToUsart("USART TEST\r\n", 13);
 
-	// AGV_SetRoute(task, 3);
-	// AGV_Start();
-	// AGV_SetRoute("F7F6E6D6");
-	// AGV_Start();
+	// Route_Task_t *routeTask = NULL;
+	// print_info("%s\r\n", Generate_Routetask(RouteTask, AUTO_ROUTE_TASK_NUMBER, routeTask) ? "OK" : "FAIL");
 	
 	while (1)
 	{
