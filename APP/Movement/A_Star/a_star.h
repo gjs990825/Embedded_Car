@@ -3,12 +3,19 @@
 
 #include "sys.h"
 
+// 填入路径自动计算坐标（未完成）
+typedef struct RouteSetting_Struct
+{
+	uint8_t coordinate[2];
+	void (*Task)(void);
+} RouteSetting_t;
+
 
 typedef struct RouteNode
 {
 	int8_t x;
 	int8_t y;
-	int8_t dir;
+	int8_t dir; // 基本上没用到
 } RouteNode;
 
 typedef struct Route_Task_Struct

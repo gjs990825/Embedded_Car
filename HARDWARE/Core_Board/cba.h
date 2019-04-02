@@ -26,8 +26,8 @@
 
 // // 默认配置
 // #define Action_S1() Auto_Run()
-// #define Action_S2() print_info("Plate:%s\r\n", Get_PlateNumber())
-// #define Action_S3() print_info("Diatance:%d\r\n", Ultrasonic_Task(20))
+// #define Action_S2() Start_VoiceCommandRecognition(3)
+// #define Action_S3() Test_RFID(5)
 // #define Action_S4() print_info("light:%d\r\n", BH1750_GetAverage(10))
 
 // // 数据交互配置
@@ -48,11 +48,11 @@
 // #define Action_S3() Test_RFID(5)
 // #define Action_S4() Test_RFID(4)
 
-// 任务板调试配置
-#define Action_S1() print_info("Plate:%s\r\n", Get_PlateNumber())
+// // 任务板调试配置
+#define Action_S1() Start_VoiceCommandRecognition(3)
 #define Action_S2() print_info("Diatance:%d\r\n", Ultrasonic_Task(20))
 #define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10))
-#define Action_S4() Infrared_Send_A(Infrared_LightAdd1);
+#define Action_S4() Auto_Run()
 
 // 按键配置
 #define S1 PIin(4)

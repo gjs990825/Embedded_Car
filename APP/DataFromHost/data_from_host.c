@@ -104,8 +104,8 @@ void Process_DataFromHost(uint8_t mainCmd)
         break; // 通知小车单片机发送红外线
 
     case FromHost_TurnningLightControl:
-        Set_tba_WheelLED(L_LED, Wifi_Rx_Buf[Pack_SubCmd1]);
-        Set_tba_WheelLED(R_LED, Wifi_Rx_Buf[Pack_SubCmd2]);
+        // Set_tba_WheelLED(L_LED, Wifi_Rx_Buf[Pack_SubCmd1]);
+        // Set_tba_WheelLED(R_LED, Wifi_Rx_Buf[Pack_SubCmd2]);
         break; // 转向灯控制
 
     case FromHost_Beep:
