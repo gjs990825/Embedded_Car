@@ -43,10 +43,6 @@ typedef enum
 		Stop();                                 \
 	} while (0)
 
-// 自动执行
-void Auto_Run(void);
-void Auto_RouteTask(RouteNode current, uint8_t taskN);
-void Go_ToNextNode(Route_Task_t next);
 
 // 基本运动控制
 void Stop(void);
@@ -56,6 +52,13 @@ void Turn_ByEncoder(int16_t digree);
 void Track_ByEncoder(int speed, uint16_t setMP);
 void Start_Tracking(int speed);
 
+// 循迹线转弯（未做优化，不稳定）
 void Turn_ByTrack(Driection_t dir);
+
+
+// 自动执行
+void Go_ToNextNode(RouteNode_t *current, RouteNode_t next);
+void Auto_RouteTask(RouteNode_t *current, RouteNode_t next);
+void Auto_Run(void);
 
 #endif // _MOVEMENT_H_

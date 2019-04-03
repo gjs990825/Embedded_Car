@@ -196,7 +196,6 @@ void Get_Track(void)
 // 计算方向权重
 void Get_DirectionWights(void)
 {
-    //    static int PreviousWights = 0;
 
     DirectionWights = 0;
 

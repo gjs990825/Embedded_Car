@@ -10,7 +10,8 @@
 			"roadway_check.h": "c",
 			"hardware.h": "c",
 			"seven_seg.h": "c",
-			"malloc.h": "c"
+			"malloc.h": "c",
+			"route.h": "c"
 		}
 	}
 }

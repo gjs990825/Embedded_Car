@@ -340,7 +340,7 @@ void Task_5_0(void)
 }
 
 uint8_t *RFID_Key = NULL;
-void Task_5_1(void)
+void Task_F6(void)
 {
     ExcuteAndWait(Turn_ByEncoder(-50), Stop_Flag, TURNCOMPLETE);
     ExcuteAndWait(Back_Off(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
@@ -487,7 +487,7 @@ void Task_3_1_2(void)
     Voice_Task();
 }
 
-void Task_5_1_2(void)
+void Task_F6_2(void)
 {
     ExcuteAndWait(Turn_ByEncoder(-90), Stop_Flag, TURNCOMPLETE);
 
@@ -498,7 +498,7 @@ void Task_5_1_2(void)
     End_Task();
 }
 
-void Task_5_1_Test(void)
+void Task_F6_Test(void)
 {
     RFID_RoadSection = true;
 }
@@ -585,7 +585,7 @@ void Task_3_3_Test(void)
 //     CurrentStaus.dir = DIR_DOWN;
 // }
 
-// void Task_5_1(void)
+// void Task_F6(void)
 // {
 //     ExcuteAndWait(Turn_ByEncoder(90), Stop_Flag, TURNCOMPLETE);
 

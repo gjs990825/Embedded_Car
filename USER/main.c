@@ -30,7 +30,17 @@ int main(void)
 	Send_DataToUsart("USART TEST\r\n", 13);
 
 	// Route_Task_t *routeTask = NULL;
-	// print_info("%s\r\n", Generate_Routetask(RouteTask, AUTO_ROUTE_TASK_NUMBER, routeTask) ? "OK" : "FAIL");
+	// print_info("%s\r\n", Generate_Routetask(RouteTask, AUTO_ROUTE_TASK_NUMBER) ? "OK" : "FAIL");
+	// RouteNode_t cur = {.x = 1, .y = 0, .dir = DIR_UP};
+	// RouteNode_t next = {.x = 5, .y = 0, .dir = DIR_NOTSET};
+	// Route_Task_t next = {.node.x = 5, .node.y = 0, .node.dir = DIR_UP, .Task = NULL};
+	// RouteNode_t final[13];
+	// uint8_t count = 0;
+	// A_Star_GetTestRoute(cur, next, final, &count);
+
+	// print_info("count:%d\r\n", count);
+	// Go_ToNextNode(&cur, next);
+	// Auto_RouteTask(&cur, next);
 	
 	while (1)
 	{

@@ -22,7 +22,7 @@ void AGV_VoiceRecognition(bool sta);
 
 void AGV_Start(void);
 void AGV_SetTowards(uint8_t towards);
-void AGV_SetRouteFromTask(RouteNode task[], uint8_t length);
+void AGV_SetRouteFromTask(RouteNode_t task[], uint8_t length);
 void AGV_SetRoute(uint8_t *str);
 void AGV_SetTaskID(uint8_t routeNumber, uint8_t taskNumber);
 

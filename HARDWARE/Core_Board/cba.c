@@ -3,6 +3,35 @@
 #include "delay.h"
 #include "cba.h"
 
+// // 默认配置
+// #define Action_S1() Auto_Run()
+// #define Action_S2() Start_VoiceCommandRecognition(3)
+// #define Action_S3() Test_RFID(5)
+// #define Action_S4() print_info("light:%d\r\n", BH1750_GetAverage(10))
+
+// // 数据交互配置
+// #define Action_S1() print_info("Plate:%s\r\n", Get_PlateNumber())
+// #define Action_S2() print_info("QRCOde:%s\r\n", Get_QRCode(DataRequest_QRCode1, 0))
+// #define Action_S3() print_info("Shape:%d\r\n", Get_ShapeNumber(Shape_Triangle))
+// #define Action_S4() print_info("AllColor:%d\r\n", Get_AllColorCount())
+
+// // 从车测试配置
+// #define Action_S1() AGV_SetTowards(DIR_UP)
+// #define Action_S2() AGV_SetTaskID(1, 0)
+// #define Action_S3() AGV_SetRoute("G4F4F6D6D4D2F2G2")
+// #define Action_S4() AGV_SendInfraredData(Infrared_AlarmON)
+
+// // 白卡调试配置
+// #define Action_S1() Test_RFID(7)
+// #define Action_S2() Test_RFID(6)
+// #define Action_S3() Test_RFID(5)
+// #define Action_S4() Test_RFID(4)
+
+// // 任务板调试配置
+#define Action_S1() Infrared_Send_A(Infrared_AlarmON)
+#define Action_S2() print_info("Diatance:%d\r\n", Ultrasonic_Task(20))
+#define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10))
+#define Action_S4() Auto_Run()
 
 // 核心板初始化（KEY/LED/BEEP）
 void Cba_Init(void)

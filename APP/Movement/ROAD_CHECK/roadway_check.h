@@ -1,9 +1,9 @@
 #ifndef __ROADWAY_H
 #define __ROADWAY_H
-//#include "stm32f4xx.h"
+
 #include "sys.h"
 
-// 速度常量↓
+// 速度设定常量↓
 
 // 循迹速度
 #define Track_Speed 50 // 55
@@ -47,9 +47,9 @@ typedef enum
     ENCODER_TurnByValue
 } Moving_ByEncoder_t;
 
-// 循迹信息
+// 循迹灯信息
 extern int8_t Q7[7], H8[8];
-// 白色个数
+// 循迹灯亮起的个数
 extern uint8_t NumberOfWhite;
 // 方向权重
 extern int DirectionWights;
@@ -64,7 +64,6 @@ extern uint8_t Stop_Flag;
 extern int Car_Speed;
 extern uint16_t temp_MP;
 
-
 void Roadway_Check(void);
 void Roadway_Flag_clean(void);
 void Roadway_mp_syn(void);
@@ -73,13 +72,9 @@ uint16_t Roadway_mp_Get(void);
 void Control(int LSpeed, int RSpeed);
 void Roadway_CheckTimInit(uint16_t arr, uint16_t psc);
 
-
-
 void Get_Track(void);
 void Get_DirectionWights(void);
 void TRACK_LINE(void);
 void Set_TunningDigree(uint16_t digree);
-
-
 
 #endif

@@ -47,17 +47,17 @@ void TFT_Hex(uint8_t dat[3]);
 
 bool Read_RFID_Block(uint8_t block, uint8_t *buf);
 
-void Task_5_1(void);
+void Task_F6(void);
 void Task_3_1(void);
 void Task_1_3(void);
 void Task_1_5(void);
 void Task_3_5(void);
 void Task_5_5(void);
 void Task_3_1_2(void);
-void Task_5_1_2(void);
+void Task_F6_2(void);
 
 // ≤‚ ‘
-void Task_5_1_Test(void);
+void Task_F6_Test(void);
 void Task_3_3_Test(void);
 
 
@@ -69,7 +69,7 @@ void Test_RFID(uint8_t block);
 // void Task_3_5(void);
 // void Task_1_3(void);
 // void Task_5_3(void);
-// void Task_5_1(void);
+// void Task_F6(void);
 // void Task_3_1(void);
 
 #endif // __TASK_H_

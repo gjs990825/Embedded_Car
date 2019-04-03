@@ -8,60 +8,49 @@
 #include "task.h"
 #include "route.h"
 
-// 测试用全自动
 void Auto_Run(void)
 {
-	CurrentStaus = Route_Task[0].node; // 初始化当前位置
+	Generate_Routetask(RouteTask, AUTO_ROUTE_TASK_NUMBER); // 初始化坐标信息
+	CurrentStaus = RouteTask[0].node;					   // 设定起始方向和坐标
 
-	uint8_t count = ROUTE_TASK_NUMBER;
-	for (size_t i = 0; i < count; i++)
+	for (uint8_t i = 0; i < AUTO_ROUTE_TASK_NUMBER; i++)
 	{
-		if (RouteTask_Finished[i] == 0)
+		Auto_RouteTask(&CurrentStaus, RouteTask[i].node);
+		if (RouteTask[i].Task != NULL)
 		{
-			Auto_RouteTask(CurrentStaus, i);
+			RouteTask[i].Task();
 		}
 	}
-
-	// 此种不允许从路径点外的坐标点出发
-	// A_Star_GetRoute();
-	// for(uint8_t i = 0; i < Final_StepCount; i++)
-	// {
-	// 	print_info("NOW:(%d,%d)\r\n", Final_Route[i].node.x, Final_Route[i].node.y);
-	// 	Go_ToNextNode(Final_Route[i]);
-	// }
 }
 
-void Auto_RouteTask(RouteNode current, uint8_t taskN)
+void Auto_RouteTask(RouteNode_t *current, RouteNode_t next)
 {
-	print_info("Route %s\r\n", (A_Star_GetRouteBewteenTasks(current, Route_Task[taskN]) == true) ? "OK" : "ERROR OR SAME");
-	if (Final_StepCount != 0)
-	{
-		for (uint8_t i = 0; i < Final_StepCount; i++)
-		{
-			print_info("NOW:(%d,%d)\r\n", Final_Route[i].node.x, Final_Route[i].node.y);
-			Go_ToNextNode(Final_Route[i]);
-		}
-	}
-	else if (taskN == 0) // 步数为零，执行初始任务
-	{
-		Go_ToNextNode(Route_Task[taskN]);
-	}
+	RouteNode_t *route = mymalloc(SRAMIN, sizeof(RouteNode_t) * 12); // 两点间最多12途径点
+	uint8_t routeCount = 0;
 
-	RouteTask_Finished[taskN] = 1;
+	A_Star_GetTestRoute(*current, next, route, &routeCount);
+	print_info("routeCount = %d\r\n", routeCount);
+
+	for (uint8_t i = 0; i < routeCount; i++)
+	{
+		NextStatus = route[i];
+		Go_ToNextNode(current, route[i]);
+	}
+	myfree(SRAMIN, route);
 }
 
 // 行驶到下一个节点
-void Go_ToNextNode(Route_Task_t next)
+void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 {
 	int8_t finalDir = 0;
-	int8_t x = next.node.x - CurrentStaus.x;
-	int8_t y = next.node.y - CurrentStaus.y;
+	int8_t x = next.x - current->x;
+	int8_t y = next.y - current->y;
 
-	NextStatus = next.node; // 下一个坐标信息更新
+	NextStatus = next; // 下一个坐标信息更新
 
-	if ((x > 1 || y > 1) || (x != 0 && y != 0))
+	if ((x > 1 || y > 1 || x < -1 || y < -1) || (x != 0 && y != 0))
 	{
-		print_info("NODE ERROR!!\r\n");
+		print_info("Node Skipped!!\r\n");
 		return;
 	}
 
@@ -83,60 +72,13 @@ void Go_ToNextNode(Route_Task_t next)
 	}
 	else
 	{
-		print_info("Same\r\n"); // 同一点
-		if (next.Task != NULL)  // 检查是否有任务
-		{
-			next.Task();
-		}
+		print_info("Same Node\r\n"); // 同一点
 		return;
 	}
 
-	// if ((finalDir == DIR_RIGHT || finalDir == DIR_LEFT))
-	// {
-	// 	switch (CurrentStaus.dir)
-	// 	{
-	// 	case DIR_UP:
-	// 		Turn_ByTrack((finalDir == DIR_RIGHT) ? (DIR_RIGHT) : (DIR_LEFT));
-	// 		break;
-	// 	case DIR_DOWN:
-	// 		Turn_ByTrack((finalDir == DIR_RIGHT) ? (DIR_LEFT) : (DIR_RIGHT));
-	// 		break;
-	// 	case DIR_LEFT:
-	// 		(finalDir == DIR_RIGHT) ? Turn_ByEncoder(180) : (void)0;
-	// 		break;
-	// 	case DIR_RIGHT:
-	// 		(finalDir == DIR_RIGHT) ? (void)0 : Turn_ByEncoder(180);
-	// 		break;
-	// 	default:
-	// 		print_info("CurrentDir NOT SET!\r\n");
-	// 		break;
-	// 	}
-	// }
-	// else
-	// {
-	// 	switch (CurrentStaus.dir)
-	// 	{
-	// 	case DIR_UP:
-	// 		(finalDir == DIR_UP) ? (void)0 : Turn_ByEncoder(180);
-	// 		break;
-	// 	case DIR_DOWN:
-	// 		(finalDir == DIR_UP) ? Turn_ByEncoder(180) : (void)0;
-	// 		break;
-	// 	case DIR_LEFT:
-	// 		Turn_ByTrack((finalDir == DIR_UP) ? (DIR_RIGHT) : (DIR_LEFT));
-	// 		break;
-	// 	case DIR_RIGHT:
-	// 		Turn_ByTrack((finalDir == DIR_UP) ? (DIR_LEFT) : (DIR_RIGHT));
-	// 		break;
-	// 	default:
-	// 		print_info("CurrentDir NOT SET!\r\n");
-	// 		break;
-	// 	}
-	// }
-
 	if ((finalDir == DIR_RIGHT || finalDir == DIR_LEFT))
 	{
-		switch (CurrentStaus.dir)
+		switch (current->dir)
 		{
 		case DIR_UP:
 			Turn_ByEncoder((finalDir == DIR_RIGHT) ? (90) : (-90));
@@ -157,7 +99,7 @@ void Go_ToNextNode(Route_Task_t next)
 	}
 	else
 	{
-		switch (CurrentStaus.dir)
+		switch (current->dir)
 		{
 		case DIR_UP:
 			(finalDir == DIR_UP) ? (void)0 : Turn_ByEncoder(180);
@@ -182,11 +124,11 @@ void Go_ToNextNode(Route_Task_t next)
 		WaitForFlag(Stop_Flag, TURNCOMPLETE);
 	}
 
-	if (next.node.x % 2 == 0) // X轴为偶数的坐标
+	if (next.x % 2 == 0) // X轴为偶数的坐标
 	{
 		ExcuteAndWait(Track_ByEncoder(Track_Speed, LongTrack_Value), Stop_Flag, FORBACKCOMPLETE);
 	}
-	else if (next.node.y % 2 == 0) // Y轴为偶数的坐标
+	else if (next.y % 2 == 0) // Y轴为偶数的坐标
 	{
 		ExcuteAndWait(Track_ByEncoder(Track_Speed, ShortTrack_Value), Stop_Flag, FORBACKCOMPLETE);
 	}
@@ -198,15 +140,12 @@ void Go_ToNextNode(Route_Task_t next)
 	}
 
 	// 更新当前位置信息和方向
-	CurrentStaus.x = next.node.x;
-	CurrentStaus.y = next.node.y;
-	CurrentStaus.dir = finalDir;
-
-	if (next.Task != NULL) // 检查是否有任务
-	{
-		next.Task();
-	}
+	current->x = next.x;
+	current->y = next.y;
+	current->dir = finalDir;
 }
+
+// 基本运动控制函数
 
 // 停止运行，清空标志位，清空PID数据
 void Stop(void)

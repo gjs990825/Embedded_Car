@@ -5,6 +5,7 @@
 #include "delay.h"
 #include "route.h"
 #include "debug.h"
+#include "malloc.h"
 
 // 使能路径输出
 #define _A_STAR_ENABLE_OUTPUT_ 1
@@ -13,9 +14,22 @@
 #define Y_LENTH 7
 
 
+typedef struct AStarNode
+{
+	int s_x;                    // x坐标(最终输出路径需要)
+	int s_y;                    // y坐标
+	int s_g;                    // 起点到此点的距离( 由g和h可以得到f，此处f省略，f=g+h )
+	int s_h;                    // 启发函数预测的此点到终点的距离
+	int s_style;                // 结点类型：起始点，终点，障碍物
+	struct AStarNode *s_parent; // 父节点
+	int s_is_in_closetable;     // 是否在close表中
+	int s_is_in_opentable;      // 是否在open表中
+} AStarNode, *pAStarNode;
+
+
 // public :
 
-// 每个任务最多10个点 * 10
+// // 每个任务最多10个点 * 10
 Route_Task_t Final_Route[ROUTE_TASK_NUMBER * 10];
 // 路径计数
 int16_t Final_StepCount = 0;
@@ -327,75 +341,75 @@ void Pop_Array(void)
 	}
 }
 
-// 生成两个任务间的路线 返回 0 错误 1 成功
-bool A_Star_GetRouteBewteenTasks(RouteNode current, Route_Task_t nextTask)
-{
-	Final_StepCount = 0; // 清空上一次路径计算数据
-	step_count = 0;
+// // 生成两个任务间的路线 返回 0 错误 1 成功
+// bool A_Star_GetRouteBewteenTasks(RouteNode_t current, Route_Task_t nextTask)
+// {
+// 	Final_StepCount = 0; // 清空上一次路径计算数据
+// 	step_count = 0;
 
-	A_Star_SetStartEnd(current.x, current.y, nextTask.node.x, nextTask.node.y);
-	if (A_Star_CalaculateRoute() == false)
-	{
-		return false;
-	}
-	A_Star_GetStepCount();
-	A_Star_PrintRoute();
+// 	A_Star_SetStartEnd(current.x, current.y, nextTask.node.x, nextTask.node.y);
+// 	if (A_Star_CalaculateRoute() == false)
+// 	{
+// 		return false;
+// 	}
+// 	A_Star_GetStepCount();
+// 	A_Star_PrintRoute();
 
-	int count = step_count;
-	while (count >= 0)
-	{
-		Final_Route[Final_StepCount].Task = NULL;
-		Final_Route[Final_StepCount].node.x = path_array[count][0]; // 添加点
-		Final_Route[Final_StepCount].node.y = path_array[count][1];
-		count--;
-		Final_StepCount++;
-	}
-	Final_Route[step_count].Task = nextTask.Task; // 添加任务
+// 	int count = step_count;
+// 	while (count >= 0)
+// 	{
+// 		Final_Route[Final_StepCount].Task = NULL;
+// 		Final_Route[Final_StepCount].node.x = path_array[count][0]; // 添加点
+// 		Final_Route[Final_StepCount].node.y = path_array[count][1];
+// 		count--;
+// 		Final_StepCount++;
+// 	}
+// 	Final_Route[step_count].Task = nextTask.Task; // 添加任务
 
-	return true;
-}
+// 	return true;
+// }
 
-// 生成全部路线路线 返回 0 错误 1 成功
-bool A_Star_GetRoute(void)
-{
-	uint16_t tmp = ROUTE_TASK_NUMBER;
+// // 生成全部路线路线 返回 0 错误 1 成功
+// bool A_Star_GetRoute(void)
+// {
+// 	uint16_t tmp = ROUTE_TASK_NUMBER;
 
-	CurrentStaus = Route_Task[0].node; // 初始化当前位置
+// 	CurrentStaus = Route_Task[0].node; // 初始化当前位置
 
-	for (uint16_t i = 0; i < tmp - 1; i++)
-	{
-		A_Star_SetStartEnd(Route_Task[i].node.x, Route_Task[i].node.y, Route_Task[i + 1].node.x, Route_Task[i + 1].node.y);
-		if (A_Star_CalaculateRoute() == false)
-		{
-			return false;
-		}
-		A_Star_GetStepCount();
-		A_Star_PrintRoute();
+// 	for (uint16_t i = 0; i < tmp - 1; i++)
+// 	{
+// 		A_Star_SetStartEnd(Route_Task[i].node.x, Route_Task[i].node.y, Route_Task[i + 1].node.x, Route_Task[i + 1].node.y);
+// 		if (A_Star_CalaculateRoute() == false)
+// 		{
+// 			return false;
+// 		}
+// 		A_Star_GetStepCount();
+// 		A_Star_PrintRoute();
 
-		int count = step_count;
-		while (count > 0)
-		{
-			if (count == step_count) // 节点开始，有任务
-			{
-				Final_Route[Final_StepCount].Task = Route_Task[i].Task; // 添加任务
-			}
-			else
-			{
-				Final_Route[Final_StepCount].Task = NULL;
-			}
-			Final_Route[Final_StepCount].node.x = path_array[count][0]; // 添加点
-			Final_Route[Final_StepCount].node.y = path_array[count][1];
-			count--;
-			Final_StepCount++;
-		}
-	}
+// 		int count = step_count;
+// 		while (count > 0)
+// 		{
+// 			if (count == step_count) // 节点开始，有任务
+// 			{
+// 				Final_Route[Final_StepCount].Task = Route_Task[i].Task; // 添加任务
+// 			}
+// 			else
+// 			{
+// 				Final_Route[Final_StepCount].Task = NULL;
+// 			}
+// 			Final_Route[Final_StepCount].node.x = path_array[count][0]; // 添加点
+// 			Final_Route[Final_StepCount].node.y = path_array[count][1];
+// 			count--;
+// 			Final_StepCount++;
+// 		}
+// 	}
 
-	// 添加终点
-	Final_Route[Final_StepCount] = Route_Task[tmp - 1]; // 添加终点
-	Final_StepCount++;
+// 	// 添加终点
+// 	Final_Route[Final_StepCount] = Route_Task[tmp - 1]; // 添加终点
+// 	Final_StepCount++;
 
-	return true;
-}
+// 	return true;
+// }
 
 // int main()
 // {
@@ -410,3 +424,32 @@ bool A_Star_GetRoute(void)
 
 // 	return 0;
 // }
+
+
+// 生成两个任务间的路线 返回 0 错误 1 成功
+bool A_Star_GetTestRoute(RouteNode_t current, RouteNode_t next, RouteNode_t *finalRoute, uint8_t *routeCount)
+{
+	Final_StepCount = 0; // 清空上一次路径计算数据
+	step_count = 0;
+
+	A_Star_SetStartEnd(current.x, current.y, next.x, next.y);
+	if (A_Star_CalaculateRoute() == false)
+	{
+		return false;
+	}
+	A_Star_GetStepCount();
+	A_Star_PrintRoute();
+
+	int count = step_count;
+	while (count >= 0)
+	{
+		finalRoute[Final_StepCount].x = path_array[count][0]; // 添加点
+		finalRoute[Final_StepCount].y = path_array[count][1];
+		count--;
+		Final_StepCount++;
+	}
+
+	*routeCount = Final_StepCount;
+
+	return true;
+}
