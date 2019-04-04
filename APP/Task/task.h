@@ -17,9 +17,6 @@ extern uint8_t RFID_RoadSection;
 #define LED_TimerStop() Send_ZigBeeDataNTimes(ZigBee_LEDDisplayStopTimer, 3, 20)   // 停止计时
 #define TFTPage_Next() Send_ZigBeeDataNTimes(ZigBee_TFTPageNext, 2, 100)           // TFT下一页
 
-// // 请求数据(或行为)
-// #define Request_GarageFloor() Request_Data(RequestData_GarageFloor) // 请求车库层数
-// #define Request_Infrared() Request_Data(RequestData_Infrared)       // 请求红外数据
 
 // 红外指令
 
@@ -30,6 +27,9 @@ extern uint8_t RFID_RoadSection;
 void Save_StatusBeforeFoundRFID(void);
 void Resume_StatusBeforeFoundRFID(uint16_t encoderChangeValue);
 
+void Task_RFID_RoadSectionTrue(void);
+void Task_RFID_RoadSectionFalse(void);
+
 void TFT_Task(void);
 void Start_Task(void);
 void End_Task(void);
@@ -38,7 +38,7 @@ void TFT_Task(void);
 void QRCode_Task(uint8_t QRrequest);
 void LEDDispaly_ShowDistance(uint16_t dis);
 #define Ultrasonic_Task(times) Ultrasonic_GetAverage(times)
-void StreetLight_Task(uint8_t targetLevel);
+void StreetLight_AdjustTo(uint8_t targetLevel);
 void BarrierGate_Task(uint8_t plate[6]);
 void Voice_Task(void);
 void RFID_Task(void);
@@ -57,19 +57,11 @@ void Task_3_1_2(void);
 void Task_F6_2(void);
 
 // 测试
-void Task_F6_Test(void);
-void Task_3_3_Test(void);
+// void Task_F6_Test(void);
+// void Task_3_3_Test(void);
 
 
 void Test_RFID(uint8_t block);
 
-// // 任务点
-// void Task_5_5(void);
-// void Task_1_5(void);
-// void Task_3_5(void);
-// void Task_1_3(void);
-// void Task_5_3(void);
-// void Task_F6(void);
-// void Task_3_1(void);
 
 #endif // __TASK_H_

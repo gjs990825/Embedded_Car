@@ -2,6 +2,7 @@
 #include "string.h"
 #include "malloc.h"
 #include "debug.h"
+#include "my_lib.h"
 
 // 主车当前位置状态
 RouteNode_t CurrentStaus;
@@ -10,24 +11,8 @@ RouteNode_t NextStatus;
 // // 主车任务完成情况
 // int8_t RouteTask_Finished[ROUTE_TASK_NUMBER] = {0};
 
-// // 路径和任务设置(19省赛)
-// static Route_Task_t Route_Task[] = {
-//     {.node.x = 5, .node.y = 0, .node.dir = DIR_UP, .Task = Start_Task}, // F7起始点
-//     {.node.x = 5, .node.y = 1, .node.dir = DIR_NOTSET, .Task = Task_F6}, // F6
-//     {.node.x = 3, .node.y = 1, .node.dir = DIR_NOTSET, .Task = Task_3_1}, // D6
-//     {.node.x = 1, .node.y = 1, .node.dir = DIR_NOTSET, .Task = NULL}, // B6
-//     {.node.x = 1, .node.y = 3, .node.dir = DIR_NOTSET, .Task = Task_1_3}, // B4
-//     {.node.x = 1, .node.y = 5, .node.dir = DIR_NOTSET, .Task = Task_1_5}, // B2
-//     {.node.x = 3, .node.y = 5, .node.dir = DIR_NOTSET, .Task = Task_3_5}, // D2
-//     {.node.x = 5, .node.y = 5, .node.dir = DIR_NOTSET, .Task = Task_5_5}, // F2
-//     {.node.x = 5, .node.y = 3, .node.dir = DIR_NOTSET, .Task = NULL}, // F4
-//     {.node.x = 3, .node.y = 3, .node.dir = DIR_NOTSET, .Task = NULL}, // D4
-//     {.node.x = 3, .node.y = 1, .node.dir = DIR_NOTSET, .Task = Task_3_1_2}, // D6
-//     {.node.x = 5, .node.y = 1, .node.dir = DIR_NOTSET, .Task = Task_F6_2}, // F6
-//     // {.node.x = 5, .node.y = 0, .node.dir = DIR_NOTSET, .Task = NULL}, // F7
-// };
-
-RouteSetting_t RouteTask[] = {
+// 任务点设定
+RouteSetting_t Route_Task[] = {
     {.coordinate = "F7", .Task = Start_Task, .node.dir = DIR_UP},
     {.coordinate = "F6", .Task = Task_F6},
     {.coordinate = "D6", .Task = Task_3_1},
@@ -42,9 +27,11 @@ RouteSetting_t RouteTask[] = {
     {.coordinate = "F6", .Task = Task_F6_2},
     // {.coordinate = "F7", .Task = NULL},
 };
+// 任务点个数
+uint8_t ROUTE_TASK_NUMBER = GET_ARRAY_LENGEH(Route_Task);
 
-// // 坐标模板
-// static RouteSetting_t RouteTask[] = {
+// // 坐标模板，初始坐标如果这里不设定需要在自动运行前初始化
+// RouteSetting_t Route_Task[] = {
 //     {.coordinate = "F7", .Task = NULL, .node.dir = DIR_UP},
 //     {.coordinate = "F6", .Task = NULL},
 //     {.coordinate = "D6", .Task = NULL},
@@ -59,6 +46,17 @@ RouteSetting_t RouteTask[] = {
 //     {.coordinate = "F6", .Task = NULL},
 //     {.coordinate = "F7", .Task = NULL},
 // };
+
+// RFID 寻卡测试用路径
+RouteSetting_t RFID_TestRoute[] = {
+    {.coordinate = "B7", .Task = NULL, .node.dir = DIR_UP},
+    {.coordinate = "B6", .Task = Task_RFID_RoadSectionTrue},
+    {.coordinate = "B5", .Task = NULL},
+    {.coordinate = "B4", .Task = NULL},
+    {.coordinate = "C4", .Task = Task_RFID_RoadSectionFalse},
+    {.coordinate = "D4", .Task = NULL},
+};
+uint8_t RFID_TESTROUTE_NUMBER = GET_ARRAY_LENGEH(RFID_TestRoute);
 
 // 转换字符串到坐标点 (需要优化)
 RouteNode_t Coordinate_Covent(uint8_t str[2])
@@ -206,28 +204,39 @@ int8_t Get_TaskNumber(uint8_t coordinate[2], uint8_t *route)
     return (strstr((char *)route, (char *)str1) - (char *)route) / 2;
 }
 
-// // 从设定路径中的字符串生成坐标路径
-// bool Generate_Routetask(RouteSetting_t routeSetting[], uint8_t count, Route_Task_t *routeTask)
+// int8_t Get_TaskNumber(uint8_t coordinate[2], uint8_t *route, uint8_t nTimes)
 // {
-//     routeTask = mymalloc(SRAMIN, sizeof(Route_Task_t) * count);
+// 	char str1[3];
+// 	uint8_t count = 0;
+// 	memcpy(str1, coordinate, 2);
+// 	str1[2] = '\0';
 
-//     if (routeTask == NULL)
-//         return false;
+	
+// 	char *location = NULL;
+// 	char *str = (char *)route;
 
-//     memset(routeTask, 0, sizeof(Route_Task_t) * count);
+// 	for (;;)
+// 	{
+// 		location = strstr(str, str1);
+// 		if (location == NULL)
+// 			break;
+// 		else
+// 		{
+// 			str = location + 2; // 指向下一个坐标点的字符
+// 			if (++count >= nTimes)
+// 				break;
+// 		}
+// 	}
 
-//     for (uint8_t i = 0; i < count; i++)
-//     {
-//         routeTask[i].node = Coordinate_Covent(routeSetting[i].coordinate);
-
-//         if (routeTask[i].node.x == -1 || routeTask[i].node.y == -1)
-//             return false;
-
-//         print_info("NO%d:x=%d,y=%d\r\n", i, routeTask[i].node.x, routeTask[i].node.y);
-//         delay_ms(100);
-//     }
-//     return true;
+// 	if (count >= nTimes)
+// 	{
+// 		// 返回坐标指针与路径起始点的差值 / 2
+// 		return (location - (char *)route) / 2;
+// 	}
+// 	else
+// 		return -1;
 // }
+
 
 // 从设定路径中的字符串生成坐标路径
 bool Generate_Routetask(RouteSetting_t routeSetting[], uint8_t count)
@@ -241,10 +250,13 @@ bool Generate_Routetask(RouteSetting_t routeSetting[], uint8_t count)
         routeSetting[i].node.y = tempNode.y;
 
         if (routeSetting[i].node.x == -1 || routeSetting[i].node.y == -1)
-            return false;
+            return false; // 无效节点，退出
 
-        print_info("NO%d:x=%d,y=%d\r\n", i, routeSetting[i].node.x, routeSetting[i].node.y);
+        print_info("(%d, %d)->", i, routeSetting[i].node.x, routeSetting[i].node.y);
         delay_ms(50);
     }
+
+    print_info("\r\n");
+
     return true;
 }

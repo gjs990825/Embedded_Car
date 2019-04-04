@@ -9,6 +9,8 @@
 #define Track_Speed 50 // 55
 // 转弯速度
 #define Turn_Speed 85 // 85
+// 任务执行中调整速度
+#define Mission_Speed 30 // 慢速防止打滑
 
 // 角度转换到码盘常量↓
 

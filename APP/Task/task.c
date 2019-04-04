@@ -35,7 +35,9 @@
 #include "my_lib.h"
 #include "seven_seg.h"
 
+// 寻到白卡
 uint8_t FOUND_RFID_CARD = false;
+// 白卡路段
 uint8_t RFID_RoadSection = false;
 
 struct StatusBeforeFoundRFID_Struct
@@ -70,6 +72,18 @@ void Resume_StatusBeforeFoundRFID(uint16_t encoderChangeValue)
     // 循迹信息已清空，需要重新计算并减去执行中的行进值
     temp_MP = StatusBeforeFoundRFID.setEncoder - StatusBeforeFoundRFID.currentEncoder - encoderChangeValue;
     Car_Speed = StatusBeforeFoundRFID.currentSpeed;
+}
+
+// 设定为白卡路段
+void Task_RFID_RoadSectionTrue(void)
+{
+    RFID_RoadSection = true;
+}
+
+// 设定为非白卡路段
+void Task_RFID_RoadSectionFalse(void)
+{
+    RFID_RoadSection = false;
 }
 
 // 交通灯识别
@@ -167,7 +181,6 @@ void End_Task(void)
     delay_ms(500);
     Set_tba_WheelLED(L_LED, RESET);
     Set_tba_WheelLED(R_LED, RESET);
-    display(1, 2);
 }
 
 // led显示距离（输入距离）
@@ -179,7 +192,7 @@ void LEDDispaly_ShowDistance(uint16_t dis)
 }
 
 // 路灯档位调节，输入目标档位自动调整
-void StreetLight_Task(uint8_t targetLevel)
+void StreetLight_AdjustTo(uint8_t targetLevel)
 {
     uint16_t temp_val[4], CurrentLightValue;
     int8_t errorValue, i;
@@ -342,15 +355,15 @@ void Task_5_0(void)
 uint8_t *RFID_Key = NULL;
 void Task_F6(void)
 {
-    ExcuteAndWait(Turn_ByEncoder(-50), Stop_Flag, TURNCOMPLETE);
-    ExcuteAndWait(Back_Off(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
+    TURN(-50);
+    MOVE(15);
 
     delay_ms(700);
     QRCode_Task(RequestCmd_QRCode1);
     RFID_Key = Get_QRCode(DataRequest_QRCode1, 0x01); // 获取密钥
 
-    ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
-    ExcuteAndWait(Turn_ByEncoder(-40), Stop_Flag, TURNCOMPLETE);
+    MOVE(-15);
+    TURN(-40);
 
     RFID_DataBlockLoation = Get_QRCode(DataRequest_QRCode1, 0x02)[0]; // 获取二维码信息中的RFID数据块信息
     print_info("RFID_Block:%d\r\n", RFID_DataBlockLoation);
@@ -360,14 +373,8 @@ void Task_F6(void)
 
 void Task_3_1(void)
 {
-    // 改用预设位，主车不用调整位置
-    // ExcuteAndWait(Turn_ByEncoder(22), Stop_Flag, TURNCOMPLETE);
-
     TrafficLight_Task();
-
-    // ExcuteAndWait(Turn_ByEncoder(-22), Stop_Flag, TURNCOMPLETE);
-
-    RFID_RoadSection = true;
+    RFID_RoadSection = true; // 白卡路段开始
 }
 
 uint16_t distanceMeasured = 0;
@@ -471,7 +478,7 @@ void Task_3_5(void)
     ExcuteAndWait(Turn_ByEncoder(-90), Stop_Flag, TURNCOMPLETE);
     ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 5), Stop_Flag, FORBACKCOMPLETE);
 
-    StreetLight_Task(level);
+    StreetLight_AdjustTo(level);
 
     ExcuteAndWait(Back_Off(30, Centimeter_Value * 5), Stop_Flag, FORBACKCOMPLETE);
     ExcuteAndWait(Turn_ByEncoder(90), Stop_Flag, TURNCOMPLETE);
@@ -498,15 +505,6 @@ void Task_F6_2(void)
     End_Task();
 }
 
-void Task_F6_Test(void)
-{
-    RFID_RoadSection = true;
-}
-
-void Task_3_3_Test(void)
-{
-    RFID_RoadSection = false;
-}
 
 // void Task_5_5(void)
 // {
@@ -561,7 +559,7 @@ void Task_3_3_Test(void)
 //     ExcuteAndWait(Turn_ByEncoder(90), Stop_Flag, TURNCOMPLETE);
 //     ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 5), Stop_Flag, FORBACKCOMPLETE);
 
-//     StreetLight_Task(3);
+//     StreetLight_AdjustTo(3);
 
 //     ExcuteAndWait(Back_Off(30, Centimeter_Value * 5), Stop_Flag, FORBACKCOMPLETE);
 //     ExcuteAndWait(Turn_ByEncoder(-90), Stop_Flag, TURNCOMPLETE);

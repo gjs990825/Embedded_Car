@@ -35,9 +35,9 @@ uint8_t NumberOfWhite = 0;
 // 方向权重(PID适应线性值，这里已更改为偏移值)
 int DirectionWights = 0;
 // 运行状态
-uint8_t Stop_Flag = TRACKING;
+StopFlag_t Stop_Flag = TRACKING;
 // 循迹模式
-uint8_t Track_Mode = TrackMode_NONE;
+TrackMode_t Track_Mode = TrackMode_NONE;
 // 定值前后和转向
 Moving_ByEncoder_t Moving_ByEncoder = ENCODER_NONE;
 // 定角度转向目标码盘值

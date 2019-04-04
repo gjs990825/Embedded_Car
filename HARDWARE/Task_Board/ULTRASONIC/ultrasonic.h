@@ -13,7 +13,7 @@ void Ultrasonic_Init(void);
 void Ultrasonic_Ranging(void);
 uint16_t Ultrasonic_GetAverage(uint8_t times);
 
-extern uint16_t distance;
+// extern uint16_t distance;
 
 #endif
 

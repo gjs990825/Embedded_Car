@@ -7,22 +7,25 @@
 #include "pid.h"
 #include "task.h"
 #include "route.h"
+#include "stdlib.h"
 
+// 全自动
 void Auto_Run(void)
 {
-	Generate_Routetask(RouteTask, AUTO_ROUTE_TASK_NUMBER); // 初始化坐标信息
-	CurrentStaus = RouteTask[0].node;					   // 设定起始方向和坐标
+	Generate_Routetask(Route_Task, ROUTE_TASK_NUMBER); // 初始化坐标信息
+	CurrentStaus = Route_Task[0].node;					   // 设定起始方向和坐标
 
-	for (uint8_t i = 0; i < AUTO_ROUTE_TASK_NUMBER; i++)
+	for (uint8_t i = 0; i < ROUTE_TASK_NUMBER; i++)
 	{
-		Auto_RouteTask(&CurrentStaus, RouteTask[i].node);
-		if (RouteTask[i].Task != NULL)
+		Auto_RouteTask(&CurrentStaus, Route_Task[i].node);
+		if (Route_Task[i].Task != NULL)
 		{
-			RouteTask[i].Task();
+			Route_Task[i].Task(); // 任务非空时执行任务
 		}
 	}
 }
 
+// 从当前任务点行驶到下一个任务点
 void Auto_RouteTask(RouteNode_t *current, RouteNode_t next)
 {
 	RouteNode_t *route = mymalloc(SRAMIN, sizeof(RouteNode_t) * 12); // 两点间最多12途径点
@@ -31,7 +34,8 @@ void Auto_RouteTask(RouteNode_t *current, RouteNode_t next)
 	A_Star_GetTestRoute(*current, next, route, &routeCount);
 	print_info("routeCount = %d\r\n", routeCount);
 
-	for (uint8_t i = 0; i < routeCount; i++)
+	// 跳过第一个点，因为当前就在第一个点。
+	for (uint8_t i = 1; i < routeCount; i++)
 	{
 		NextStatus = route[i];
 		Go_ToNextNode(current, route[i]);
@@ -145,7 +149,7 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 	current->dir = finalDir;
 }
 
-// 基本运动控制函数
+// 基本运动控制函数↓↓
 
 // 停止运行，清空标志位，清空PID数据
 void Stop(void)
@@ -157,24 +161,44 @@ void Stop(void)
 	Beep(1);
 }
 
+// 前后移动 单位厘米 正负方向
+void Move_ByEncoder(int speed, int16_t distance)
+{
+	Roadway_mp_syn();
+	Stop_Flag = TRACKING;
+	temp_MP = abs(distance * Centimeter_Value);
+	Track_Mode = TrackMode_NONE;
+
+	if (distance > 0)
+	{
+		Control(speed, speed);
+		Moving_ByEncoder = ENCODER_GO;
+	}
+	else
+	{
+		Control(-speed, -speed);
+		Moving_ByEncoder = ENCODER_BACK;
+	}
+}
+
 // 前进
-void Go_Ahead(int speed, uint16_t mp)
+void Go_Ahead(int speed, uint16_t encoderValue)
 {
 	Roadway_mp_syn();
 	Stop_Flag = TRACKING;
 	Moving_ByEncoder = ENCODER_GO;
-	temp_MP = mp;
+	temp_MP = encoderValue;
 	Track_Mode = TrackMode_NONE;
 	Control(speed, speed);
 }
 
 // 后退
-void Back_Off(int speed, uint16_t mp)
+void Back_Off(int speed, uint16_t encoderValue)
 {
 	Roadway_mp_syn();
 	Stop_Flag = TRACKING;
 	Moving_ByEncoder = ENCODER_BACK;
-	temp_MP = mp;
+	temp_MP = encoderValue;
 	Track_Mode = TrackMode_NONE;
 	Control(-speed, -speed);
 }
@@ -218,7 +242,7 @@ void Turn_ByEncoder(int16_t digree)
 }
 
 extern uint8_t TrackStatus;
-
+// 转到下一个循迹线（需要优化）
 void Turn_ByTrack(Driection_t dir)
 {
 	if ((dir != DIR_RIGHT) && (dir != DIR_LEFT))

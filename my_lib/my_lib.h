@@ -107,6 +107,9 @@ GLOBAL int8_t MLib_memcmp(void *b1,void *b2,uint32_t lb);
 #undef GLOBAL
 
 
+// Gao added
+
+#define GET_ARRAY_LENGEH(array) (sizeof(array) / sizeof(array[0]))
 
 int constrain_int(int x, int a, int b);
 float constrain_float(float x, float a, float b);

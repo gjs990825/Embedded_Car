@@ -13,35 +13,22 @@
 #define X_LENTH 7
 #define Y_LENTH 7
 
-
 typedef struct AStarNode
 {
-	int s_x;                    // x坐标(最终输出路径需要)
-	int s_y;                    // y坐标
-	int s_g;                    // 起点到此点的距离( 由g和h可以得到f，此处f省略，f=g+h )
-	int s_h;                    // 启发函数预测的此点到终点的距离
-	int s_style;                // 结点类型：起始点，终点，障碍物
+	int s_x;					// x坐标(最终输出路径需要)
+	int s_y;					// y坐标
+	int s_g;					// 起点到此点的距离( 由g和h可以得到f，此处f省略，f=g+h )
+	int s_h;					// 启发函数预测的此点到终点的距离
+	int s_style;				// 结点类型：起始点，终点，障碍物
 	struct AStarNode *s_parent; // 父节点
-	int s_is_in_closetable;     // 是否在close表中
-	int s_is_in_opentable;      // 是否在open表中
+	int s_is_in_closetable;		// 是否在close表中
+	int s_is_in_opentable;		// 是否在open表中
 } AStarNode, *pAStarNode;
-
-
-// public :
-
-// // 每个任务最多10个点 * 10
-Route_Task_t Final_Route[ROUTE_TASK_NUMBER * 10];
-// 路径计数
-int16_t Final_StepCount = 0;
-
-
-// prvate :
 
 // 生成路径
 int8_t path_array[X_LENTH * Y_LENTH][2];
-// 步数
-int8_t step_count = -1;
-
+// // 步数
+// int8_t step_count = -1;
 
 // 定义点类型
 #define STARTNODE 1 // 起点
@@ -58,7 +45,7 @@ const int8_t maze[X_LENTH][Y_LENTH] = {
 	{0, 0, 0, 0, 0, 0, 0},
 	{3, 0, 3, 0, 3, 0, 3}};
 
-AStarNode map_maze[X_LENTH][Y_LENTH];	   // 结点数组
+AStarNode map_maze[X_LENTH][Y_LENTH];	  // 结点数组
 pAStarNode open_table[X_LENTH * Y_LENTH];  // open表
 pAStarNode close_table[X_LENTH * Y_LENTH]; // close表
 int8_t open_node_count;					   // open表中节点数量
@@ -279,7 +266,7 @@ bool A_Star_CalaculateRoute(void)
 	return is_found;
 }
 
-void A_Star_GetStepCount(void)
+int A_Star_GetStepCount(void)
 {
 	AStarNode *curr_node; // 当前点
 	int top = -1;		  // 栈顶
@@ -294,162 +281,45 @@ void A_Star_GetStepCount(void)
 		curr_node = curr_node->s_parent;
 	}
 
-	step_count = top;
+	return top;
 }
 
-#if _A_STAR_ENABLE_OUTPUT_
-
-void A_Star_PrintRoute(void)
-{
-	int top = step_count;
-
-	if (step_count == -1)
-	{
-		print_info("NO route or didn't caculate\r\n");
-		return;
-	}
-
-	while (top >= 0) // 输出路径
-	{
-		if (top > 0)
-		{
-			print_info("(%d,%d)->", path_array[top][0], path_array[top][1]);
-		}
-		else
-		{
-			print_info("(%d,%d)", path_array[top][0], path_array[top][1]);
-		}
-		top--;
-		delay_ms(50); // CAN总线响应时间
-	}
-	print_info("\r\n");
-}
-
-#endif // _A_STAR_ENABLE_OUTPUT_
-
-void Pop_Array(void)
-{
-	int i = step_count;
-
-	while (i > 0)
-	{
-		Final_Route[Final_StepCount].node.x = path_array[i][0];
-		Final_Route[Final_StepCount].node.y = path_array[i][1];
-
-		i--;
-		Final_StepCount++;
-	}
-}
-
-// // 生成两个任务间的路线 返回 0 错误 1 成功
-// bool A_Star_GetRouteBewteenTasks(RouteNode_t current, Route_Task_t nextTask)
-// {
-// 	Final_StepCount = 0; // 清空上一次路径计算数据
-// 	step_count = 0;
-
-// 	A_Star_SetStartEnd(current.x, current.y, nextTask.node.x, nextTask.node.y);
-// 	if (A_Star_CalaculateRoute() == false)
-// 	{
-// 		return false;
-// 	}
-// 	A_Star_GetStepCount();
-// 	A_Star_PrintRoute();
-
-// 	int count = step_count;
-// 	while (count >= 0)
-// 	{
-// 		Final_Route[Final_StepCount].Task = NULL;
-// 		Final_Route[Final_StepCount].node.x = path_array[count][0]; // 添加点
-// 		Final_Route[Final_StepCount].node.y = path_array[count][1];
-// 		count--;
-// 		Final_StepCount++;
-// 	}
-// 	Final_Route[step_count].Task = nextTask.Task; // 添加任务
-
-// 	return true;
-// }
-
-// // 生成全部路线路线 返回 0 错误 1 成功
-// bool A_Star_GetRoute(void)
-// {
-// 	uint16_t tmp = ROUTE_TASK_NUMBER;
-
-// 	CurrentStaus = Route_Task[0].node; // 初始化当前位置
-
-// 	for (uint16_t i = 0; i < tmp - 1; i++)
-// 	{
-// 		A_Star_SetStartEnd(Route_Task[i].node.x, Route_Task[i].node.y, Route_Task[i + 1].node.x, Route_Task[i + 1].node.y);
-// 		if (A_Star_CalaculateRoute() == false)
-// 		{
-// 			return false;
-// 		}
-// 		A_Star_GetStepCount();
-// 		A_Star_PrintRoute();
-
-// 		int count = step_count;
-// 		while (count > 0)
-// 		{
-// 			if (count == step_count) // 节点开始，有任务
-// 			{
-// 				Final_Route[Final_StepCount].Task = Route_Task[i].Task; // 添加任务
-// 			}
-// 			else
-// 			{
-// 				Final_Route[Final_StepCount].Task = NULL;
-// 			}
-// 			Final_Route[Final_StepCount].node.x = path_array[count][0]; // 添加点
-// 			Final_Route[Final_StepCount].node.y = path_array[count][1];
-// 			count--;
-// 			Final_StepCount++;
-// 		}
-// 	}
-
-// 	// 添加终点
-// 	Final_Route[Final_StepCount] = Route_Task[tmp - 1]; // 添加终点
-// 	Final_StepCount++;
-
-// 	return true;
-// }
-
-// int main()
-// {
-// 	print_info("%d\r\n", A_Star_GetRoute());
-
-// 	print_info("%d\r\n", Final_StepCount);
-
-// 	for (size_t i = 0; i < Final_StepCount; i++)
-// 	{
-// 		print_info("(%d,%d)-->", Final_Route[i].x, Final_Route[i].y);
-// 	}
-
-// 	return 0;
-// }
-
-
-// 生成两个任务间的路线 返回 0 错误 1 成功
+// 生成两点间的路线
 bool A_Star_GetTestRoute(RouteNode_t current, RouteNode_t next, RouteNode_t *finalRoute, uint8_t *routeCount)
 {
-	Final_StepCount = 0; // 清空上一次路径计算数据
-	step_count = 0;
-
 	A_Star_SetStartEnd(current.x, current.y, next.x, next.y);
 	if (A_Star_CalaculateRoute() == false)
 	{
 		return false;
 	}
-	A_Star_GetStepCount();
-	A_Star_PrintRoute();
+	int stepCount = A_Star_GetStepCount();
 
-	int count = step_count;
-	while (count >= 0)
+	*routeCount = 0;
+
+	while (stepCount >= 0) // 取出路径缓存中的数据到finalRoute中（倒序）
 	{
-		finalRoute[Final_StepCount].x = path_array[count][0]; // 添加点
-		finalRoute[Final_StepCount].y = path_array[count][1];
-		count--;
-		Final_StepCount++;
+
+#if _A_STAR_ENABLE_OUTPUT_
+
+		if (stepCount > 0)
+			print_info("(%d,%d)->", path_array[stepCount][0], path_array[stepCount][1]);
+		else
+			print_info("(%d,%d)", path_array[stepCount][0], path_array[stepCount][1]);
+		delay_ms(50);
+
+#endif // _A_STAR_ENABLE_OUTPUT_
+
+		finalRoute[*routeCount].x = path_array[stepCount][0];
+		finalRoute[*routeCount].y = path_array[stepCount][1];
+		stepCount--;
+		(*routeCount)++;
 	}
 
-	*routeCount = Final_StepCount;
+#if _A_STAR_ENABLE_OUTPUT_
+
+	print_info("\r\n");
+	
+#endif // _A_STAR_ENABLE_OUTPUT_
 
 	return true;
 }

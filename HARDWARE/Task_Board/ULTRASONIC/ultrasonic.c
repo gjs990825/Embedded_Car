@@ -4,7 +4,7 @@
 #include "cba.h"
 
 uint32_t Ultrasonic_Num = 0; // 计数值
-uint16_t distance = 0;
+uint16_t tempDistance = 0;
 
 void Ultrasonic_Port(void)
 {
@@ -124,7 +124,7 @@ void EXTI4_IRQHandler(void)
 		if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_4) == RESET)
 		{
 			TIM_Cmd(TIM6, DISABLE);
-			distance = (uint16_t)((float)Ultrasonic_Num * 1.72f); // 计算距离定时10us，S=Vt/2 // edited
+			tempDistance = (uint16_t)((float)Ultrasonic_Num * 1.72f); // 计算距离定时10us，S=Vt/2 // edited
 		}
 		EXTI_ClearITPendingBit(EXTI_Line4);
 	}
@@ -140,7 +140,7 @@ uint16_t Ultrasonic_GetAverage(uint8_t times)
 	{
 		Ultrasonic_Ranging();
 		delay_ms(50);
-		tmp_dis += distance;
+		tmp_dis += tempDistance;
 	}
 	return (tmp_dis / times) - UltrasonicErrorValue;
 }
