@@ -301,10 +301,7 @@ bool A_Star_GetTestRoute(RouteNode_t current, RouteNode_t next, RouteNode_t *fin
 
 #if _A_STAR_ENABLE_OUTPUT_
 
-		if (stepCount > 0)
-			print_info("(%d,%d)->", path_array[stepCount][0], path_array[stepCount][1]);
-		else
-			print_info("(%d,%d)", path_array[stepCount][0], path_array[stepCount][1]);
+		print_info((stepCount > 0) ? "(%d,%d)->" : "(%d,%d)", path_array[stepCount][0], path_array[stepCount][1]);
 		delay_ms(50);
 
 #endif // _A_STAR_ENABLE_OUTPUT_
@@ -318,7 +315,7 @@ bool A_Star_GetTestRoute(RouteNode_t current, RouteNode_t next, RouteNode_t *fin
 #if _A_STAR_ENABLE_OUTPUT_
 
 	print_info("\r\n");
-	
+
 #endif // _A_STAR_ENABLE_OUTPUT_
 
 	return true;

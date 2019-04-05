@@ -5,7 +5,6 @@ static uint32_t Power_check_times; //电量检测周期
 static uint32_t WIFI_Upload_data_times; //通过Wifi上传数据周期
 static uint32_t RFID_Init_Check_times;
 
-
 int main(void)
 {
 	// uint16_t Light_Value = 0;	 //光强度值
@@ -28,7 +27,7 @@ int main(void)
 	Send_UpMotor(0, 0);
 
 	Send_DataToUsart("USART TEST\r\n", 13);
-	
+
 	while (1)
 	{
 		KEY_Check(); //按键检测

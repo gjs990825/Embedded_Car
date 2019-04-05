@@ -416,7 +416,7 @@ void Task_1_5(void)
 
     AGV_SendInfraredData(Infrared_AlarmON); // 发送红外信息 // 需要注掉！！！
     delay_ms(700);
-    AGV_SetTaskID(Get_TaskNumber("D4", RFID_DataBuffer), 0); // 设定任务点
+    AGV_SetTaskID(Get_TaskNumber("D4", RFID_DataBuffer, 1), 0); // 设定任务点
     AGV_SetRoute(RFID_DataBuffer);                           // 发送从车路径信息
     delay_ms(700);
     AGV_SetTowards(DIR_LEFT); // 设定车头朝向
@@ -425,16 +425,16 @@ void Task_1_5(void)
     delay_ms(700);            // 等待
     AGV_Start();
 
-    if (Get_TaskNumber("B1", RFID_DataBuffer) != -1) // 从车入库任务设定
+    if (Get_TaskNumber("B1", RFID_DataBuffer, 1) != -1) // 从车入库任务设定
     {
-        AGV_SetTaskID(Get_TaskNumber("B1", RFID_DataBuffer), 1);
+        AGV_SetTaskID(Get_TaskNumber("B1", RFID_DataBuffer, 1), 1);
     }
-    else if (Get_TaskNumber("B7", RFID_DataBuffer) != -1)
+    else if (Get_TaskNumber("B7", RFID_DataBuffer, 1) != -1)
     {
-        AGV_SetTaskID(Get_TaskNumber("B7", RFID_DataBuffer), 1);
+        AGV_SetTaskID(Get_TaskNumber("B7", RFID_DataBuffer, 1), 1);
     }
 
-    if (Get_TaskNumber("B2", RFID_DataBuffer) != -1) // 经过主车的路径
+    if (Get_TaskNumber("B2", RFID_DataBuffer, 1) != -1) // 经过主车的路径
     {
         ExcuteAndWait(Back_Off(30, Centimeter_Value * 35), Stop_Flag, FORBACKCOMPLETE);
     }
@@ -442,14 +442,14 @@ void Task_1_5(void)
     AGVComplete_Status.isSet = RESET;
     WaitForFlagInMs(AGVComplete_Status.isSet, SET, 25 * 1000); // 等待从车执行入库完成
 
-    if (Get_TaskNumber("B2", RFID_DataBuffer) != -1) // 经过主车的路径
+    if (Get_TaskNumber("B2", RFID_DataBuffer, 1) != -1) // 经过主车的路径
     {
         ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 35), Stop_Flag, FORBACKCOMPLETE);
     }
 
     // 计算到达道闸的时间(不过道闸)
-    // int8_t taskNumber1 = Get_TaskNumber("F4", RFID_DataBuffer);
-    // int8_t taskNumber2 = Get_TaskNumber("F2", RFID_DataBuffer);
+    // int8_t taskNumber1 = Get_TaskNumber("F4", RFID_DataBuffer, 1);
+    // int8_t taskNumber2 = Get_TaskNumber("F2", RFID_DataBuffer, 1);
     // int8_t taskNumber = (taskNumber1 < taskNumber2) ? taskNumber1 : taskNumber2;
 
     // if (taskNumber != -1) // 一个节点等待一秒

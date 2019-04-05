@@ -30,7 +30,7 @@ typedef enum
 	DIR_RIGHT
 } Driection_t;
 
-// 设定任务点（通过自动转换字符串生成笛卡尔坐标点信息）
+// 设定任务点（转换字符串生成坐标信息）
 typedef struct RouteSetting_Struct
 {
 	uint8_t coordinate[2];
@@ -46,18 +46,15 @@ extern uint8_t ROUTE_TASK_NUMBER;
 extern RouteSetting_t RFID_TestRoute[];
 extern uint8_t RFID_TESTROUTE_NUMBER;
 
-// 当前位置状态
 extern RouteNode_t CurrentStaus;
-// 下一个位置状态
 extern RouteNode_t NextStatus;
 
 // // 任务完成情况
 // extern int8_t RouteTask_Finished[ROUTE_TASK_NUMBER];
 
 RouteNode_t Coordinate_Covent(uint8_t str[2]);
-uint8_t *ReCoordinate_Covent(uint8_t x, uint8_t y);
-int8_t Get_TaskNumber(uint8_t coordinate[2], uint8_t *route);
-
+uint8_t *ReCoordinate_Covent(int8_t x, int8_t y);
 bool Generate_Routetask(RouteSetting_t routeSetting[], uint8_t count);
+int8_t Get_TaskNumber(uint8_t coordinate[2], uint8_t *route, uint8_t nTimes);
 
 #endif // _ROUTE_H_
