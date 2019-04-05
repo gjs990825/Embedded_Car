@@ -6,17 +6,26 @@
 #include "uart_a72.h"
 #include "delay.h"
 
-// // 定义连接模式
-// #define CONNECTION_MODE CONNECTION_WIFI
 // // 使用宏定义的函数（程序可能会增大）
 // #define USE_MACRO_FUNCTIONS false
 
-// // 连接方式
-// enum
-// {
-//     CONNECTION_SERIAL = 0,
-//     CONNECTION_WIFI
-// };
+// 定义连接模式
+#define WIRED_CONNECTION 0    // 有线连接（串口）
+#define WIRELESS_CONNECTION 1 // 无线连接（WIFI）
+
+// 选择与上位机的连接方式
+#define CONNECTION_MODE WIRELESS_CONNECTION
+
+// 自适应选择发送函数
+#if CONNECTION_MODE == WIRED_CONNECTION
+
+#define Send_ToHost Send_DataToUsart
+
+#elif CONNECTION_MODE == WIRELESS_CONNECTION
+
+#define Send_ToHost Send_WifiData_To_Fifo
+
+#endif
 
 // 上传数据包的结构
 enum
@@ -94,15 +103,6 @@ typedef struct ZigBee_DataStatus_Sturuct
     uint8_t isSet;
     uint32_t timeStamp;
 } ZigBee_DataStatus_t;
-
-#define Send_ToHost Send_WifiData_To_Fifo
-
-// // 自适应选择发送函数
-// #if CONNECTION_MODE == CONNECTION_SERIAL
-// #define Send_ToHost Send_DataToUsart // 函数声明在下面
-// #else
-// #define Send_ToHost Send_WifiData_To_Fifo
-// #endif // CONNECTION_MODE
 
 #define GetCmdFlag(id) CommandFlagStatus[id]
 
