@@ -240,13 +240,14 @@ void StreetLight_AdjustTo(uint8_t targetLevel)
 // ETC任务
 void ETC_Task(void)
 {
-    for (uint8_t i = 0; i < 10; i++) // 摇摆10次，不开直接走
-    {
-        if ((ETC_Status.isSet == SET) && Check_IsTimeOut(ETC_Status.timeStamp, 6 * 1000)) // 六秒前的数据作废
-            break;
-        ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 7), Stop_Flag, FORBACKCOMPLETE); // 跟着节拍
-        ExcuteAndWait(Back_Off(30, Centimeter_Value * 7), Stop_Flag, FORBACKCOMPLETE); // 一起摇摆
-    }
+    // 超时逻辑需要修正
+    // for (uint8_t i = 0; i < 10; i++) // 摇摆10次，不开直接走
+    // {
+    //     if ((ETC_Status.isSet == SET) && Check_IsTimeOut(ETC_Status.timeStamp, 6 * 1000)) // 六秒前的数据作废
+    //         break;
+    //     ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 7), Stop_Flag, FORBACKCOMPLETE); // 跟着节拍
+    //     ExcuteAndWait(Back_Off(30, Centimeter_Value * 7), Stop_Flag, FORBACKCOMPLETE); // 一起摇摆
+    // }
 }
 
 uint8_t RFID_x = 0, RFID_y = 0;

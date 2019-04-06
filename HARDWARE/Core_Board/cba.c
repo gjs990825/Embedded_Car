@@ -29,11 +29,17 @@
 
 // // 任务板调试配置
 #define Action_S1() Infrared_Send_A(Infrared_AlarmON)
-#define Action_S2() print_info("Diatance:%d\r\n", Ultrasonic_Task(20))
-#define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10))
+#define Action_S2() AGV_SetTaskID(1, 0)
+#define Action_S3() AGV_SendInfraredData(Infrared_AlarmON)
 #define Action_S4() Auto_Run()
 
+// // // 任务板调试配置
+// #define Action_S1() Infrared_Send_A(Infrared_AlarmON)
+// #define Action_S2() print_info("Diatance:%d\r\n", Ultrasonic_Task(20))
+// #define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10))
+// #define Action_S4() Auto_Run()
 // 核心板初始化（KEY/LED/BEEP）
+
 void Cba_Init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;

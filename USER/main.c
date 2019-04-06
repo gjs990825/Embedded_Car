@@ -1,4 +1,5 @@
 #include "hardware.h"
+#include "can_drv.h"
 
 static uint32_t Power_check_times; //电量检测周期
 // static uint32_t LED_twinkle_times;		//LED闪烁周期
@@ -27,6 +28,14 @@ int main(void)
 	Send_UpMotor(0, 0);
 
 	Send_DataToUsart("USART TEST\r\n", 13);
+
+	// while(1)
+	// {
+	// 	print_info("0123456789ABCDEF\r\n0123456789ABCDEF\r\n");
+	// 	delay_ms(10);
+		
+	// }
+	
 
 	while (1)
 	{

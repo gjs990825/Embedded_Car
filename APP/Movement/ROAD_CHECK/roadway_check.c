@@ -154,9 +154,30 @@ void Roadway_Check(void)
 // 电机控制（速度区间 -100 ~ 100)
 void Control(int L_Speed, int R_Speed)
 {
+    static int preLSpeed, preRSpeed;  // 上次的速度数据
+    static uint32_t preSpeedChanging; // 上次变更速度的时间戳
+
+    // 速度限幅
     LSpeed = constrain_int(L_Speed, -100, 100);
     RSpeed = constrain_int(R_Speed, -100, 100);
-    Send_UpMotor(LSpeed, RSpeed);
+
+    // 速度值改变则上传数据
+    if (LSpeed != preLSpeed || RSpeed != preRSpeed)
+    {
+        preLSpeed = LSpeed;
+        preRSpeed = RSpeed;
+        Send_UpMotor(LSpeed, RSpeed);
+        preSpeedChanging = Get_GlobalTimeStamp(); // 更新时间戳
+    }
+    else
+    {
+        // 间隔一定时间后发送一次速度信息，防止can丢包造成匀速行驶时的严重错误
+        if (Check_IsTimeOut(preSpeedChanging, 150))
+        {
+            Send_UpMotor(LSpeed, RSpeed);
+            preSpeedChanging = Get_GlobalTimeStamp();
+        }
+    }
 }
 
 // 获取循迹信息，计算白色的数量

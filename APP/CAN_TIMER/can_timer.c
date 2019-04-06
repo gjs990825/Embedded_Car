@@ -32,7 +32,6 @@ void TIM3_IRQHandler(void)
     {
         Can_WifiRx_Check();
 		Can_ZigBeeRx_Check();
-        // CanP_CanTx_Check(); // edited
         TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
     }
 }
