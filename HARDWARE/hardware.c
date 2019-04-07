@@ -26,8 +26,9 @@ void Hardware_Init(void)
 	my_mem_init(SRAMIN); // 初始化内部内存池
 	// my_mem_init(SRAMEX); // 初始化外部内存池（未设置，暂不可用）
 
+	CanTimer_Init(16799, 199);	  // CAN 数据检查
 	DebugTimer_Init(16799, 1999); // 调试（白卡检测）
-	CanTimer_Init(16799, 199);	// CAN 数据检查
+	DebugPin_Init();			  // 初始化调试用引脚
 
 	print_info("\r\nSystem running...\r\n");
 }

@@ -52,6 +52,29 @@ void DebugTimer_Init(uint16_t arr, uint16_t psc)
     TIM_Cmd(TIM5, DISABLE);
 }
 
+// 初始化调试用引脚
+void DebugPin_Init(void)
+{
+    GPIO_InitTypeDef GPIO_InitStructure;
+
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOH, ENABLE);
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);
+
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    GPIO_Init(GPIOF, &GPIO_InitStructure);
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+    GPIO_Init(GPIOH, &GPIO_InitStructure);
+
+    DEBUG_PIN_1 = 0;
+    DEBUG_PIN_2 = 0;
+    DEBUG_PIN_3 = 0;
+}
+
 // void Debug_CheckVar(void)
 // {
 //     for (uint8_t i = 0; i < varNumber; i++)

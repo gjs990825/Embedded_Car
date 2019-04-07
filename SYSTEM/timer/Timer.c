@@ -3,7 +3,6 @@
 #include "stdbool.h"
 
 volatile uint32_t global_times = 0;
-volatile uint32_t delay_ms_const = 0;
 
 void Timer_Init(uint16_t arr, uint16_t psc)
 {

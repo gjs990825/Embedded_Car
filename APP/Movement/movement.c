@@ -158,7 +158,7 @@ void Stop(void)
 	// Mp_Value = 0;
 	Control(0, 0);
 	PidData_Clear();
-	Beep(1);
+	delay_ms(70); // warning
 }
 
 // 前后移动 单位厘米 正负方向
