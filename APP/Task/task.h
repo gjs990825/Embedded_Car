@@ -4,7 +4,7 @@
 #include "sys.h"
 #include "protocol.h"
 #include "Timer.h"
-#include "roadway_check.h"
+//#include "roadway_check.h"
 
 extern uint8_t FOUND_RFID_CARD;
 extern uint8_t RFID_RoadSection;

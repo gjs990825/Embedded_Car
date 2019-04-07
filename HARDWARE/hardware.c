@@ -20,7 +20,7 @@ void Hardware_Init(void)
 	Can_check_Init(83, 999); // CAN 总线定时器初始化
 
 	Roadway_CheckTimInit(167, 1999); // 路况检测
-	Timer_Init(167, 999);			 // 串行数据通讯时间帧
+	Timer_Init(167, 999);			 // 全局时间
 	Readcard_Device_Init();			 // RC522 初始化
 
 	my_mem_init(SRAMIN); // 初始化内部内存池

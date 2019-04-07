@@ -243,7 +243,7 @@ void ETC_Task(void)
     // 超时逻辑需要修正
     // for (uint8_t i = 0; i < 10; i++) // 摇摆10次，不开直接走
     // {
-    //     if ((ETC_Status.isSet == SET) && Check_IsTimeOut(ETC_Status.timeStamp, 6 * 1000)) // 六秒前的数据作废
+    //     if ((ETC_Status.isSet == SET) && IsTimeOut(ETC_Status.timeStamp, 6 * 1000)) // 六秒前的数据作废
     //         break;
     //     ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 7), Stop_Flag, FORBACKCOMPLETE); // 跟着节拍
     //     ExcuteAndWait(Back_Off(30, Centimeter_Value * 7), Stop_Flag, FORBACKCOMPLETE); // 一起摇摆
@@ -282,7 +282,7 @@ void RFID_Task(void)
         ExcuteAndWait(Back_Off(30, Centimeter_Value * 2), Stop_Flag, FORBACKCOMPLETE);
     }
 
-    Control(Car_Speed, Car_Speed);
+    Update_MotorSpeed(Car_Speed, Car_Speed);
 }
 
 // 道闸显示车牌

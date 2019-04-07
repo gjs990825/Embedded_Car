@@ -53,7 +53,7 @@ void Process_DataFromHost(uint8_t mainCmd)
     switch (mainCmd)
     {
     case FromHost_Stop:
-        Control(0, 0);
+        Update_MotorSpeed(0, 0);
         Roadway_Flag_clean();
         break; // Í£Ö¹
 
@@ -83,12 +83,12 @@ void Process_DataFromHost(uint8_t mainCmd)
 
     case FromHost_TurnCountClockWiseToDigree:
         Turn_ByEncoder(-(int16_t)GetEncoderSetting());
-        Control(-SetSpeed, SetSpeed);
+        Update_MotorSpeed(-SetSpeed, SetSpeed);
         break; // ×ó×ªÍä--½Ç¶È
 
     case FromHost_TurnClockWiseToDigree:
         Turn_ByEncoder((int16_t)GetEncoderSetting());
-        Control(SetSpeed, -SetSpeed);
+        Update_MotorSpeed(SetSpeed, -SetSpeed);
         break; // ÓÒ×ªÍä--½Ç¶È
 
     case FromHost_InfraredFrontData:

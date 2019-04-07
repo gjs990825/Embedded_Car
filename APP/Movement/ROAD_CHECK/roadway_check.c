@@ -35,7 +35,7 @@ uint8_t NumberOfWhite = 0;
 // 方向权重(PID适应线性值，这里已更改为偏移值)
 int DirectionWights = 0;
 // 运行状态
-StopFlag_t Stop_Flag = TRACKING;
+uint8_t Stop_Flag = TRACKING;
 // 循迹模式
 TrackMode_t Track_Mode = TrackMode_NONE;
 // 定值前后和转向
@@ -112,11 +112,6 @@ void Roadway_Flag_clean(void)
 // 前后，转弯监测
 void Moving_ByEncoderCheck(void)
 {
-    if (Moving_ByEncoder == ENCODER_NONE)
-    {
-        return;
-    }
-
     switch (Moving_ByEncoder)
     {
     case ENCODER_GO:
@@ -140,26 +135,19 @@ void Moving_ByEncoderCheck(void)
     }
 }
 
-// 运动控制
-void Roadway_Check(void)
+// 更新速度值（速度区间 -100 ~ 100)
+void Update_MotorSpeed(int L_Speed, int R_Speed)
 {
-    if (Track_Mode != TrackMode_NONE)
-    {
-        TRACK_LINE();
-    }
-    Moving_ByEncoderCheck();
-    Control(LSpeed, RSpeed);
-}
-
-// 电机控制（速度区间 -100 ~ 100)
-void Control(int L_Speed, int R_Speed)
-{
-    static int preLSpeed, preRSpeed;  // 上次的速度数据
-    static uint32_t preSpeedChanging; // 上次变更速度的时间戳
-
     // 速度限幅
     LSpeed = constrain_int(L_Speed, -100, 100);
     RSpeed = constrain_int(R_Speed, -100, 100);
+}
+
+// 电机控制，提交电机速度更改
+void Submit_SpeedChanges(void)
+{
+    static int preLSpeed, preRSpeed;  // 上次的速度数据
+    static uint32_t preSpeedChanging; // 上次变更速度的时间戳
 
     // 速度值改变则上传数据
     if (LSpeed != preLSpeed || RSpeed != preRSpeed)
@@ -172,7 +160,7 @@ void Control(int L_Speed, int R_Speed)
     else
     {
         // 间隔一定时间后发送一次速度信息，防止can丢包造成匀速行驶时的严重错误
-        if (Check_IsTimeOut(preSpeedChanging, 150))
+        if (IsTimeOut(preSpeedChanging, 150))
         {
             Send_UpMotor(LSpeed, RSpeed);
             preSpeedChanging = Get_GlobalTimeStamp();
@@ -322,7 +310,7 @@ void TRACK_LINE(void)
     else if ((NumberOfWhite <= ALL_BLACK) && (Track_Mode == TrackMode_NORMAL)) // 全黑
     {
         Roadway_Flag_clean();
-        Control(0, 0);
+        Update_MotorSpeed(0, 0);
         Stop_Flag = CROSSROAD;
         isOutTrack = false;
     }
@@ -334,7 +322,7 @@ void TRACK_LINE(void)
             if (((H8[0] + Q7[0] + H8[7] + Q7[6]) <= 3) && (H8[3] & H8[4] & Q7[3]) && (((NextStatus.x % 2) && (NextStatus.y % 2)) != 0))
             {
                 Roadway_Flag_clean(); // 处理遇到十字线的情况
-                Control(0, 0);
+                Update_MotorSpeed(0, 0);
                 Stop_Flag = CROSSROAD;
                 FOUND_RFID_CARD = true;       // 找到白卡
                 Save_StatusBeforeFoundRFID(); // 保存当前状态
@@ -352,10 +340,25 @@ void TRACK_LINE(void)
             LSpeed = Car_Speed + PID_value;
             RSpeed = Car_Speed - PID_value;
             isOutTrack = false;
-            // Control(LSpeed, RSpeed);
+            // Update_MotorSpeed(LSpeed, RSpeed);
             // 因CAN发送出现过没有送达的现象，速度控制在定时器中断内实现
         }
     }
+}
+
+// 运动控制
+void Roadway_Check(void)
+{
+    if (Track_Mode != TrackMode_NONE)
+    {
+        TRACK_LINE();
+    }
+    if (Moving_ByEncoder != ENCODER_NONE)
+    {
+        Moving_ByEncoderCheck();
+    }
+    
+    Submit_SpeedChanges();
 }
 
 void Roadway_CheckTimInit(uint16_t arr, uint16_t psc)
@@ -382,12 +385,20 @@ void Roadway_CheckTimInit(uint16_t arr, uint16_t psc)
     TIM_Cmd(TIM9, ENABLE);
 }
 
+extern uint32_t lastStopStamp;
 void TIM1_BRK_TIM9_IRQHandler(void)
 {
     if (TIM_GetITStatus(TIM9, TIM_IT_Update) == SET)
     {
-        Mp_Value = Roadway_mp_Get();
-        Roadway_Check(); //路况检测
+        DEBUG_PIN_2_SET();
+
+        // 上一次停止时间未等待足够时间则不进行下一个动作，防止打滑
+        if (IsTimeOut(lastStopStamp, 300))
+        {
+            Mp_Value = Roadway_mp_Get();
+            Roadway_Check();
+        }
+        DEBUG_PIN_2_RESET();
     }
     TIM_ClearITPendingBit(TIM9, TIM_IT_Update);
 }

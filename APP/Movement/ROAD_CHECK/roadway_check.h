@@ -2,6 +2,7 @@
 #define __ROADWAY_H
 
 #include "sys.h"
+#include "movement.h"
 
 // 速度设定常量↓
 
@@ -71,12 +72,8 @@ void Roadway_Flag_clean(void);
 void Roadway_mp_syn(void);
 void Roadway_nav_syn(void);
 uint16_t Roadway_mp_Get(void);
-void Control(int LSpeed, int RSpeed);
 void Roadway_CheckTimInit(uint16_t arr, uint16_t psc);
 
-void Get_Track(void);
-void Get_DirectionWights(void);
-void TRACK_LINE(void);
-void Set_TunningDigree(uint16_t digree);
+void Update_MotorSpeed(int LSpeed, int RSpeed);
 
 #endif

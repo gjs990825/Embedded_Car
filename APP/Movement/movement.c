@@ -151,14 +151,15 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 
 // 基本运动控制函数↓↓
 
+uint32_t lastStopStamp = 0;
 // 停止运行，清空标志位，清空PID数据
 void Stop(void)
 {
 	Roadway_Flag_clean(); //清除标志位状态
 	// Mp_Value = 0;
-	Control(0, 0);
+	Update_MotorSpeed(0, 0);
 	PidData_Clear();
-	delay_ms(70); // warning
+	lastStopStamp = Get_GlobalTimeStamp(); // warning
 }
 
 // 前后移动 单位厘米 正负方向
@@ -171,12 +172,12 @@ void Move_ByEncoder(int speed, int16_t distance)
 
 	if (distance > 0)
 	{
-		Control(speed, speed);
+		Update_MotorSpeed(speed, speed);
 		Moving_ByEncoder = ENCODER_GO;
 	}
 	else
 	{
-		Control(-speed, -speed);
+		Update_MotorSpeed(-speed, -speed);
 		Moving_ByEncoder = ENCODER_BACK;
 	}
 }
@@ -189,7 +190,7 @@ void Go_Ahead(int speed, uint16_t encoderValue)
 	Moving_ByEncoder = ENCODER_GO;
 	temp_MP = encoderValue;
 	Track_Mode = TrackMode_NONE;
-	Control(speed, speed);
+	Update_MotorSpeed(speed, speed);
 }
 
 // 后退
@@ -200,7 +201,7 @@ void Back_Off(int speed, uint16_t encoderValue)
 	Moving_ByEncoder = ENCODER_BACK;
 	temp_MP = encoderValue;
 	Track_Mode = TrackMode_NONE;
-	Control(-speed, -speed);
+	Update_MotorSpeed(-speed, -speed);
 }
 
 // 开始循迹
@@ -231,12 +232,12 @@ void Turn_ByEncoder(int16_t digree)
 	Moving_ByEncoder = ENCODER_TurnByValue;
 	if (digree >= 0)
 	{
-		Control(Turn_Speed, -Turn_Speed);
+		Update_MotorSpeed(Turn_Speed, -Turn_Speed);
 		TurnByEncoder_Value = digree * ClockWiseDigreeToEncoder;
 	}
 	else
 	{
-		Control(-Turn_Speed, Turn_Speed);
+		Update_MotorSpeed(-Turn_Speed, Turn_Speed);
 		TurnByEncoder_Value = -digree * CountClockWiseDigreeToEncoder;
 	}
 }
@@ -257,10 +258,10 @@ void Turn_ByTrack(Driection_t dir)
 	TrackStatus = 0; // 清空标志位
 	if (dir == DIR_RIGHT)
 	{
-		Control(Turn_Speed, -Turn_Speed);
+		Update_MotorSpeed(Turn_Speed, -Turn_Speed);
 	}
 	else if (dir == DIR_LEFT)
 	{
-		Control(-Turn_Speed, Turn_Speed);
+		Update_MotorSpeed(-Turn_Speed, Turn_Speed);
 	}
 }

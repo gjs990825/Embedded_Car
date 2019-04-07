@@ -2,7 +2,7 @@
 #define __TIMER_H__
 
 // 返回是否超时（单位ms）
-#define Check_IsTimeOut(setTimeStamp, timeOutLimit) (global_times > (setTimeStamp + timeOutLimit))
+#define IsTimeOut(setTimeStamp, timeOutLimit) (global_times > (setTimeStamp + timeOutLimit))
 // 获取当前时间戳
 #define Get_GlobalTimeStamp() (global_times)
 

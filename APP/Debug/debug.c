@@ -70,9 +70,9 @@ void DebugPin_Init(void)
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
     GPIO_Init(GPIOH, &GPIO_InitStructure);
 
-    DEBUG_PIN_1 = 0;
-    DEBUG_PIN_2 = 0;
-    DEBUG_PIN_3 = 0;
+    DEBUG_PIN_1_RESET();
+    DEBUG_PIN_2_RESET();
+    DEBUG_PIN_3_RESET();
 }
 
 // void Debug_CheckVar(void)

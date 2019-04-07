@@ -25,7 +25,7 @@ int main(void)
 	Follower_Tab[0] = 0x55;
 	Follower_Tab[1] = 0x02;
 
-	Send_UpMotor(0, 0);
+	Update_MotorSpeed(0, 0);
 
 	Send_DataToUsart("USART TEST\r\n", 13);
 
