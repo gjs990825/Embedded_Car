@@ -7,7 +7,7 @@
 uint8_t  BUF[4];                  //接收数据缓存区
 
 
-void BH1750_PortInit()
+void BH1750_PortInit(void)
 {	
 	GPIO_InitTypeDef GPIO_InitStructure;
 

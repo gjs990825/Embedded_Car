@@ -27,13 +27,12 @@ int main(void)
 
 	Update_MotorSpeed(0, 0);
 
-	Send_DataToUsart("USART TEST\r\n", 13);
+	// Send_DataToUsart("USART TEST\r\n", 13);
 
 	// while(1)
 	// {
 	// 	print_info("0123456789ABCDEF\r\n0123456789ABCDEF\r\n");
 	// 	delay_ms(10);
-
 	// }
 
 	while (1)
@@ -51,7 +50,7 @@ int main(void)
 		// }
 		if (autoRunEnable)
 		{
-			Auto_Run();
+			Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
 			autoRunEnable = 0;
 		}
 

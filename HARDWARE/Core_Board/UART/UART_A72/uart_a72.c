@@ -63,8 +63,8 @@ void Uart_A72_PortInit(void)
 	USART_Cmd(UART4, ENABLE);	
 
 	NVIC_TypeDefStructure.NVIC_IRQChannel = UART4_IRQn;
-	NVIC_TypeDefStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_TypeDefStructure.NVIC_IRQChannelSubPriority = 2;
+	NVIC_TypeDefStructure.NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_TypeDefStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_TypeDefStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_TypeDefStructure);
 	
@@ -73,8 +73,8 @@ void Uart_A72_PortInit(void)
 	USART_Init(USART2, &USART_InitStructure);
 	
 	NVIC_TypeDefStructure.NVIC_IRQChannel = USART2_IRQn;
-	NVIC_TypeDefStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_TypeDefStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_TypeDefStructure.NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_TypeDefStructure.NVIC_IRQChannelSubPriority = 1;
 	NVIC_TypeDefStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_TypeDefStructure);
 	

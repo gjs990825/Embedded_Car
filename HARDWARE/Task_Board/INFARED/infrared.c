@@ -2,7 +2,7 @@
 #include "infrared.h"
 #include "delay.h"
 
-void Infrared_Init()
+void Infrared_Init(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
 

@@ -9,10 +9,15 @@
 
 #define DEBUG_PIN_1_SET() DEBUG_PIN_1 = 1
 #define DEBUG_PIN_1_RESET() DEBUG_PIN_1 = 0
+#define DEBUG_PIN_1_TOGGLE() DEBUG_PIN_1 = !DEBUG_PIN_1
+
 #define DEBUG_PIN_2_SET() DEBUG_PIN_2 = 1
 #define DEBUG_PIN_2_RESET() DEBUG_PIN_2 = 0
+#define DEBUG_PIN_2_TOGGLE() DEBUG_PIN_2 = !DEBUG_PIN_2
+
 #define DEBUG_PIN_3_SET() DEBUG_PIN_3 = 1
 #define DEBUG_PIN_3_RESET() DEBUG_PIN_3 = 0
+#define DEBUG_PIN_3_TOGGLE() DEBUG_PIN_3 = !DEBUG_PIN_3
 
 void DebugPin_Init(void);
 void DebugTimer_Init(uint16_t arr, uint16_t psc);

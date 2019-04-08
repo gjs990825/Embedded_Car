@@ -1,9 +1,11 @@
 #include "stm32f4xx.h"
 #include "Timer.h"
 #include "stdbool.h"
+#include "debug.h"
 
 volatile uint32_t global_times = 0;
 
+// 全局时间（TIM10）
 void Timer_Init(uint16_t arr, uint16_t psc)
 {
 	TIM_TimeBaseInitTypeDef TIM_InitStructure;
@@ -20,7 +22,7 @@ void Timer_Init(uint16_t arr, uint16_t psc)
 
 	NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_TIM10_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 6;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 
@@ -32,6 +34,7 @@ void TIM1_UP_TIM10_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM10, TIM_IT_Update) == SET)
 	{
+		DEBUG_PIN_3_TOGGLE();
 		global_times++;
 	}
 	TIM_ClearITPendingBit(TIM10, TIM_IT_Update);

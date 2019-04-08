@@ -3,8 +3,11 @@
 #include "delay.h"
 #include "cba.h"
 
+// Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
+// Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStaus);
+
 // // ƒ¨»œ≈‰÷√
-// #define Action_S1() Auto_Run()
+// #define Action_S1() Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
 // #define Action_S2() Start_VoiceCommandRecognition(3)
 // #define Action_S3() Test_RFID(5)
 // #define Action_S4() print_info("light:%d\r\n", BH1750_GetAverage(10))
@@ -22,7 +25,7 @@
 // #define Action_S4() AGV_SendInfraredData(Infrared_AlarmON)
 
 // // ∞◊ø®µ˜ ‘≈‰÷√
-// #define Action_S1() Test_RFID(7)
+// #define Action_S1() Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStaus);
 // #define Action_S2() Test_RFID(6)
 // #define Action_S3() Test_RFID(5)
 // #define Action_S4() Test_RFID(4)
@@ -31,13 +34,13 @@
 #define Action_S1() Infrared_Send_A(Infrared_AlarmON)
 #define Action_S2() AGV_SetTaskID(1, 0)
 #define Action_S3() AGV_SendInfraredData(Infrared_AlarmON)
-#define Action_S4() Auto_Run()
+#define Action_S4() Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStaus);
 
 // // // »ŒŒÒ∞Âµ˜ ‘≈‰÷√
 // #define Action_S1() Infrared_Send_A(Infrared_AlarmON)
 // #define Action_S2() print_info("Diatance:%d\r\n", Ultrasonic_Task(20))
 // #define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10))
-// #define Action_S4() Auto_Run()
+// #define Action_S4() Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
 // ∫À–ƒ∞Â≥ı ºªØ£®KEY/LED/BEEP£©
 
 void Cba_Init(void)
@@ -71,7 +74,7 @@ void Cba_Init(void)
 
 void Beep(uint8_t times)
 {
-	for(uint8_t i = 0; i < times; i++)
+	for (uint8_t i = 0; i < times; i++)
 	{
 		MP_SPK = 1;
 		delay_ms(70);

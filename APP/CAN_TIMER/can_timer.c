@@ -18,8 +18,8 @@ void CanTimer_Init(uint16_t arr, uint16_t psc)
     TIM_TimeBaseInit(TIM3, &TIM_InitStructure);
 
     NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 6;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
 
@@ -31,12 +31,8 @@ void TIM3_IRQHandler(void)
 {
     if (TIM_GetITStatus(TIM3, TIM_IT_Update) == SET)
     {
-        DEBUG_PIN_3_SET();
-
         Can_WifiRx_Check();
 		Can_ZigBeeRx_Check();
-
-        DEBUG_PIN_3_RESET();
 
         TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
     }

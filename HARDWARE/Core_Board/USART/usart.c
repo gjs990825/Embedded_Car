@@ -38,8 +38,8 @@ void USART1_Configure(uint32_t  baudrate)
 	USART_Init(USART1,&USART_TypeDefStructure);
 	
 	NVIC_TypeDefStructure.NVIC_IRQChannel = USART1_IRQn;
-	NVIC_TypeDefStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_TypeDefStructure.NVIC_IRQChannelSubPriority = 1;
+	NVIC_TypeDefStructure.NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_TypeDefStructure.NVIC_IRQChannelSubPriority = 3;
 	NVIC_TypeDefStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_TypeDefStructure);
 	
@@ -84,8 +84,8 @@ void UART4_Configure(uint32_t  baudrate)
 	USART_Init(USART1,&USART_TypeDefStructure);
 	
 	NVIC_TypeDefStructure.NVIC_IRQChannel = USART1_IRQn;
-	NVIC_TypeDefStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_TypeDefStructure.NVIC_IRQChannelSubPriority = 1;
+	NVIC_TypeDefStructure.NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_TypeDefStructure.NVIC_IRQChannelSubPriority = 3;
 	NVIC_TypeDefStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_TypeDefStructure);
 	

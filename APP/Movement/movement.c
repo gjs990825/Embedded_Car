@@ -9,18 +9,34 @@
 #include "route.h"
 #include "stdlib.h"
 
-// 全自动
-void Auto_Run(void)
-{
-	Generate_Routetask(Route_Task, ROUTE_TASK_NUMBER); // 初始化坐标信息
-	CurrentStaus = Route_Task[0].node;					   // 设定起始方向和坐标
+// // 全自动
+// void Auto_Run(void)
+// {
+// 	Generate_Routetask(Route_Task, ROUTE_TASK_NUMBER); // 初始化坐标信息
+// 	CurrentStaus = Route_Task[0].node;					   // 设定起始方向和坐标
 
-	for (uint8_t i = 0; i < ROUTE_TASK_NUMBER; i++)
+// 	for (uint8_t i = 0; i < ROUTE_TASK_NUMBER; i++)
+// 	{
+// 		Auto_RouteTask(&CurrentStaus, Route_Task[i].node);
+// 		if (Route_Task[i].Task != NULL)
+// 		{
+// 			Route_Task[i].Task(); // 任务非空时执行任务
+// 		}
+// 	}
+// }
+
+// 全自动
+void Auto_Run(RouteSetting_t *routeTask, uint8_t taskNumber, RouteNode_t *current)
+{
+	Generate_Routetask(routeTask, taskNumber); // 初始化坐标信息
+	*current = routeTask[0].node;			   // 设定起始方向和坐标
+
+	for (uint8_t i = 0; i < taskNumber; i++)
 	{
-		Auto_RouteTask(&CurrentStaus, Route_Task[i].node);
-		if (Route_Task[i].Task != NULL)
+		Auto_RouteTask(current, routeTask[i].node);
+		if (routeTask[i].Task != NULL)
 		{
-			Route_Task[i].Task(); // 任务非空时执行任务
+			routeTask[i].Task(); // 任务非空时执行任务
 		}
 	}
 }

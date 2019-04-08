@@ -71,10 +71,10 @@ void Timer4_Init(u16 arr, u16 psc)
     TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE); //使能指定的TIM4中断,允许更新中断
 
     //中断优先级NVIC设置
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+    // NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); // 有毒！！！！ // edited
     NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;           //TIM4中断
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; //先占优先级0级
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;        //从优先级3级
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3; //先占优先级0级
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;        //从优先级3级
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;           //IRQ通道被使能
     NVIC_Init(&NVIC_InitStructure);                           //初始化NVIC寄存器
 
