@@ -331,16 +331,13 @@ void TRACK_LINE(void)
             }
             else
             {
-                LSpeed = Car_Speed + PID_value;
-                RSpeed = Car_Speed - PID_value;
+                Update_MotorSpeed(Car_Speed + PID_value, Car_Speed - PID_value);
             }
         }
         else
         {
-            LSpeed = Car_Speed + PID_value;
-            RSpeed = Car_Speed - PID_value;
+            Update_MotorSpeed(Car_Speed + PID_value, Car_Speed - PID_value);
             isOutTrack = false;
-            // Update_MotorSpeed(LSpeed, RSpeed);
             // 因CAN发送出现过没有送达的现象，速度控制在定时器中断内实现
         }
     }
