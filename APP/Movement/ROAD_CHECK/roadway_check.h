@@ -29,7 +29,7 @@ static const int LongTrack_Value = (37.5f * Centimeter_Value);
 // Y轴中点循迹值
 static const int ShortTrack_Value = (30.0f * Centimeter_Value);
 // 到十字路口中心码盘值
-static const int ToCrossroadCenter = (15.2f * Centimeter_Value);
+static const int ToCrossroadCenter = (16.5f * Centimeter_Value);
 
 // 循迹模式
 typedef enum

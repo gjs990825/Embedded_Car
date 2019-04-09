@@ -259,7 +259,7 @@ void TRACK_LINE(void)
         }
         else if (TrackStatus == 1)
         {
-            if (NumberOfWhite < ALL_WHITE && ((outTrackStamp + 200) < Get_GlobalTimeStamp()))
+            if ((NumberOfWhite < ALL_WHITE) && IsTimeOut(outTrackStamp, 200))
             {
                 TrackStatus = 2;
                 PidData_Clear();
@@ -289,7 +289,7 @@ void TRACK_LINE(void)
             }
             else
             {
-                if (Get_GlobalTimeStamp() > (outTrackStamp + 60)) // 遇全白超过60ms
+                if (IsTimeOut(outTrackStamp, 60)) // 遇全白超过60ms
                 {
                     if (RFID_RoadSection) // 白卡路段
                     {
