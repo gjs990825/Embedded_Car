@@ -388,7 +388,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
 {
     if (TIM_GetITStatus(TIM9, TIM_IT_Update) == SET)
     {
-        DEBUG_PIN_2_SET();
+        // DEBUG_PIN_2_SET();
 
         // 上一次停止时间未等待足够时间则不进行下一个动作，防止打滑
         if (IsTimeOut(lastStopStamp, 300))
@@ -396,7 +396,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
             Mp_Value = Roadway_mp_Get();
             Roadway_Check();
         }
-        DEBUG_PIN_2_RESET();
+        // DEBUG_PIN_2_RESET();
     }
     TIM_ClearITPendingBit(TIM9, TIM_IT_Update);
 }

@@ -447,6 +447,11 @@
               <FileType>1</FileType>
               <FilePath>..\APP\AGV\agv.c</FilePath>
             </File>
+            <File>
+              <FileName>independent_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\Task\independent_task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -831,6 +836,16 @@
               <FileName>malloc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\MALLOC\malloc.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Doc</GroupName>
+          <Files>
+            <File>
+              <FileName>README.md</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\README.md</FilePath>
             </File>
           </Files>
         </Group>

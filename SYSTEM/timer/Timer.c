@@ -34,7 +34,7 @@ void TIM1_UP_TIM10_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM10, TIM_IT_Update) == SET)
 	{
-		DEBUG_PIN_3_TOGGLE();
+		// DEBUG_PIN_3_TOGGLE();
 		global_times++;
 	}
 	TIM_ClearITPendingBit(TIM10, TIM_IT_Update);

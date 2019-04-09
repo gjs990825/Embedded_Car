@@ -34,6 +34,12 @@ int main(void)
 	// 	print_info("0123456789ABCDEF\r\n0123456789ABCDEF\r\n");
 	// 	delay_ms(10);
 	// }
+	// while(1)
+	// {
+	// 	DEBUG_PIN_1_TOGGLE();
+	// 	delay(10);
+	// }
+	
 
 	while (1)
 	{

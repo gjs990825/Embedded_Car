@@ -117,7 +117,8 @@ typedef struct ZigBee_DataStatus_Sturuct
         }                               \
     } while (0)
 
-// void ExcuteNTimes(void(Task *)(void), N, delay);
+// 自动判断数据长度（传入参数不可为指针！）
+#define Infrared_Send_A(infraredData) Infrared_Send(infraredData, sizeof(infraredData))
 
 void Send_ZigBeeData(uint8_t *data);
 void Send_ZigBeeDataNTimes(uint8_t *data, uint8_t ntimes, uint16_t delay);
