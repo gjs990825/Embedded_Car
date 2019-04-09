@@ -6,43 +6,58 @@
 // Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
 // Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStaus);
 
-// // 默认配置
-// #define Action_S1() Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
-// #define Action_S2() Start_VoiceCommandRecognition(3)
-// #define Action_S3() Test_RFID(5)
-// #define Action_S4() print_info("light:%d\r\n", BH1750_GetAverage(10))
+#define KEY_DEFAULT 0
+#define KEY_DATA_INTERACTION 1
+#define KEY_AGV_TEST 2
+#define KEY_RFID_TEST 3
+#define KEY_TASK_BOARD_TEST 4
 
-// // 数据交互配置
-// #define Action_S1() print_info("Plate:%s\r\n", Get_PlateNumber())
-// #define Action_S2() print_info("QRCOde:%s\r\n", Get_QRCode(DataRequest_QRCode1, 0))
-// #define Action_S3() print_info("Shape:%d\r\n", Get_ShapeNumber(Shape_Triangle))
-// #define Action_S4() print_info("AllColor:%d\r\n", Get_AllColorCount())
+// 配置按键调试方案
+#define KEY_CONFIGURATION KEY_DEFAULT
 
-// // 从车测试配置
-// #define Action_S1() AGV_SetTowards(DIR_UP)
-// #define Action_S2() AGV_SetTaskID(1, 0)
-// #define Action_S3() AGV_SetRoute("G4F4F6D6D4D2F2G2")
-// #define Action_S4() AGV_SendInfraredData(Infrared_AlarmON)
+#if (KEY_CONFIGURATION == KEY_DEFAULT)
 
-// // 白卡调试配置
-// #define Action_S1() Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStaus);
-// #define Action_S2() Test_RFID(6)
-// #define Action_S3() Test_RFID(5)
-// #define Action_S4() Test_RFID(4)
+// 默认配置
+#define Action_S1() Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
+#define Action_S2() Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStaus);
+#define Action_S3() Test_RFID(5)
+#define Action_S4() print_info("light:%d\r\n", BH1750_GetAverage(10))
+
+#elif (KEY_CONFIGURATION == KEY_DATA_INTERACTION)
+
+// 数据交互配置
+#define Action_S1() print_info("Plate:%s\r\n", Get_PlateNumber())
+#define Action_S2() print_info("QRCOde:%s\r\n", Get_QRCode(DataRequest_QRCode1, 0))
+#define Action_S3() print_info("Shape:%d\r\n", Get_ShapeNumber(Shape_Triangle))
+#define Action_S4() print_info("AllColor:%d\r\n", Get_AllColorCount())
+
+#elif (KEY_CONFIGURATION == KEY_AGV_TEST)
+
+// 从车测试配置
+#define Action_S1() AGV_SetTowards(DIR_UP)
+#define Action_S2() AGV_SetTaskID(1, 0)
+#define Action_S3() AGV_SetRoute("B7B6D6D4G4")
+#define Action_S4() AGV_SendInfraredData(Infrared_AlarmON)
+
+#elif (KEY_CONFIGURATION == KEY_RFID_TEST)
+
+// 白卡调试配置
+#define Action_S1() Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStaus);
+#define Action_S2() Test_RFID(6)
+#define Action_S3() Test_RFID(5)
+#define Action_S4() Test_RFID(4)
+
+#elif (KEY_CONFIGURATION == KEY_TASK_BOARD_TEST)
 
 // // 任务板调试配置
 #define Action_S1() Infrared_Send_A(Infrared_AlarmON)
-#define Action_S2() AGV_SetTaskID(1, 0)
-#define Action_S3() AGV_SendInfraredData(Infrared_AlarmON)
-#define Action_S4() Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStaus);
+#define Action_S2() print_info("Diatance:%d\r\n", Ultrasonic_Task(20))
+#define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10))
+#define Action_S4() Start_VoiceCommandRecognition(3)
 
-// // // 任务板调试配置
-// #define Action_S1() Infrared_Send_A(Infrared_AlarmON)
-// #define Action_S2() print_info("Diatance:%d\r\n", Ultrasonic_Task(20))
-// #define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10))
-// #define Action_S4() Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
+#endif
+
 // 核心板初始化（KEY/LED/BEEP）
-
 void Cba_Init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
