@@ -44,9 +44,10 @@ void Ultrasonic_TIM(uint16_t arr, uint16_t psc)
 	TIM_InitStructure.TIM_Period = arr;
 	TIM_InitStructure.TIM_Prescaler = psc;
 	TIM_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	//此参数对基本定时器无效
-	//	TIM_InitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-	//	TIM_InitStructure.TIM_RepetitionCounter = 0;
+	
+	TIM_InitStructure.TIM_ClockDivision = TIM_CKD_DIV1; // 有毒！！！
+	TIM_InitStructure.TIM_RepetitionCounter = 0;
+
 	TIM_TimeBaseInit(TIM6, &TIM_InitStructure);
 
 	NVIC_InitStructure.NVIC_IRQChannel = TIM6_DAC_IRQn;

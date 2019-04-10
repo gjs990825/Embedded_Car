@@ -6,11 +6,11 @@ void Hardware_Init(void)
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); // 中断优先级分组
 	delay_init(168);
 
+	Hard_Can_Init();	// CAN 总线初始化
 	Tba_Init();			// 任务板初始化
 	Infrared_Init();	// 红外初始化
 	Cba_Init();			// 核心板初始化
 	Ultrasonic_Init();  // 超声波初始化
-	Hard_Can_Init();	// CAN 总线初始化
 	BH1750_Configure(); // BH1750 初始化
 	SYN7318_Init();		// 语音识别初始化
 	Electricity_Init(); // 电量检测初始化

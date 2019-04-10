@@ -149,6 +149,8 @@
    Standard Peripheral Library drivers code */
 /* #define USE_FULL_ASSERT    1 */
 
+#define USE_FULL_ASSERT    1 // edited
+
 /* Exported macro ------------------------------------------------------------*/
 #ifdef  USE_FULL_ASSERT
 

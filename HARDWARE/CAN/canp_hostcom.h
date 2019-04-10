@@ -60,5 +60,20 @@ GLOBAL void CanP_CanTx_Check_fIrq(void);
 
 #undef GLOBAL
 
+/////
+#include "stdbool.h"
+// 接收到循迹信息
+extern bool trackInfoReceived;
+
+static inline bool Get_TrackInfoReceived(void)
+{
+	return trackInfoReceived;
+}
+
+static inline void Set_TrackInfoReceived(bool status)
+{
+	trackInfoReceived = status;
+}
+
 #endif //__CANP_DISPCOM_H__
 

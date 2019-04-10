@@ -39,7 +39,6 @@ int main(void)
 	// 	DEBUG_PIN_1_TOGGLE();
 	// 	delay(10);
 	// }
-	
 
 	while (1)
 	{
@@ -122,5 +121,14 @@ int main(void)
 			// 	AGV_data_Falg = 0;
 			// }
 		}
+	}
+}
+
+// 参数错误的处理
+void assert_failed(uint8_t *file, uint32_t line)
+{
+	print_info("ERR: %s, %d\r\n", file, line);
+	for (;;)
+	{
 	}
 }

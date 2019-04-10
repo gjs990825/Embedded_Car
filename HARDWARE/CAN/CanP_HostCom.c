@@ -490,16 +490,17 @@ void CanP_TestFifo(void)
 	}
 }  
 
-
 /**
 函数功能: 循迹数据接收
 参    数: x1 低八位  x2 高七位
 返 回 值: 无
 */
+bool trackInfoReceived = false;
 void Host_Receive_UpTrack( u8 x1, u8 x2)  // 循迹数据接收处理函数
 {
 	Track_buf[0] = x1;
 	Track_buf[1] = x2;	 
+	trackInfoReceived = true;
 }
 
 
