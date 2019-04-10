@@ -139,7 +139,8 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 		}
 	}
 
-	if ((Moving_ByEncoder != ENCODER_NONE) || (Track_Mode == TrackMode_Turn)) // 有转向任务，等待完成
+	// 如果有转向任务，等待完成
+	if ((Moving_ByEncoder != ENCODER_NONE) || (Track_Mode == TrackMode_Turn))
 	{
 		WaitForFlag(Stop_Flag, TURNCOMPLETE);
 	}
@@ -154,9 +155,11 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 	}
 	else // 前方十字路口
 	{
-		Start_Tracking(Track_Speed); // 循迹到十字路口
+		// 循迹到十字路口
+		Start_Tracking(Track_Speed);
 		WaitForFlag(Stop_Flag, CROSSROAD);
-		ExcuteAndWait(Go_Ahead(Track_Speed, ToCrossroadCenter), Stop_Flag, FORBACKCOMPLETE); // 前进到十字路口中心
+		// 行驶到十字路口中心
+		ExcuteAndWait(Track_ByEncoder(Track_Speed, ToCrossroadCenter), Stop_Flag, FORBACKCOMPLETE);
 	}
 
 	// 更新当前位置信息和方向

@@ -24,12 +24,19 @@
 
 // 每厘米的码盘值
 #define Centimeter_Value 28.94f
+// 线宽
+static const int Track_Width = (3.0f * Centimeter_Value);
+
 // X轴中点循迹值
 static const int LongTrack_Value = (37.5f * Centimeter_Value);
 // Y轴中点循迹值
 static const int ShortTrack_Value = (30.0f * Centimeter_Value);
 // 到十字路口中心码盘值
 static const int ToCrossroadCenter = (16.5f * Centimeter_Value);
+
+
+// 每秒行进距离（速度50）
+static const float _CentermetersPerSecondAtSpeed50 = 36.0;
 
 // 循迹模式
 typedef enum
@@ -54,8 +61,6 @@ typedef enum
 extern int8_t Q7[7], H8[8];
 // 循迹灯亮起的个数
 extern uint8_t NumberOfWhite;
-// 方向权重
-extern int DirectionWights;
 // 循迹模式
 extern uint8_t Track_Mode;
 // 定值前后和转向
@@ -67,11 +72,9 @@ extern uint8_t Stop_Flag;
 extern int Car_Speed;
 extern uint16_t temp_MP;
 
-void Roadway_Check(void);
+
 void Roadway_Flag_clean(void);
 void Roadway_mp_syn(void);
-void Roadway_nav_syn(void);
-uint16_t Roadway_mp_Get(void);
 void Roadway_CheckTimInit(uint16_t arr, uint16_t psc);
 
 void Update_MotorSpeed(int LSpeed, int RSpeed);

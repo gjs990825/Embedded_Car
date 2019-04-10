@@ -7,7 +7,7 @@
 extern float PID_value;
 
 // 根据当前误差计算
-void Calculate_pid(int inputError);
+void Calculate_pid(float inputError);
 // 清空PID数据
 void PidData_Clear(void);
 

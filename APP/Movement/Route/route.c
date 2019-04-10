@@ -11,41 +11,41 @@ RouteNode_t NextStatus;
 // 任务完成情况
 // int8_t RouteTask_Finished[ROUTE_TASK_NUMBER] = {0};
 
-// 任务点设定
+// 坐标模板，初始坐标如果这里不设定需要在自动运行前初始化
 RouteSetting_t Route_Task[] = {
-    {.coordinate = "F7", .Task = Start_Task, .node.dir = DIR_UP},
-    {.coordinate = "F6", .Task = Task_F6},
-    {.coordinate = "D6", .Task = Task_3_1},
+    {.coordinate = "F7", .Task = NULL, .node.dir = DIR_UP},
+    {.coordinate = "F6", .Task = NULL},
+    {.coordinate = "D6", .Task = NULL},
     {.coordinate = "B6", .Task = NULL},
-    {.coordinate = "B4", .Task = Task_1_3},
-    {.coordinate = "B2", .Task = Task_1_5},
-    {.coordinate = "D2", .Task = Task_3_5},
-    {.coordinate = "F2", .Task = Task_5_5},
+    {.coordinate = "B4", .Task = NULL},
+    {.coordinate = "B2", .Task = NULL},
+    {.coordinate = "D2", .Task = NULL},
+    {.coordinate = "F2", .Task = NULL},
     {.coordinate = "F4", .Task = NULL},
     {.coordinate = "D4", .Task = NULL},
-    {.coordinate = "D6", .Task = Task_3_1_2},
-    {.coordinate = "F6", .Task = Task_F6_2},
-    // {.coordinate = "F7", .Task = NULL}, // 入库点
+    {.coordinate = "D6", .Task = NULL},
+    {.coordinate = "F6", .Task = NULL},
+    {.coordinate = "F7", .Task = NULL},
 };
-// 任务点个数
-uint8_t ROUTE_TASK_NUMBER = GET_ARRAY_LENGEH(Route_Task);
 
-// // 坐标模板，初始坐标如果这里不设定需要在自动运行前初始化
+// // 任务点设定
 // RouteSetting_t Route_Task[] = {
-//     {.coordinate = "F7", .Task = NULL, .node.dir = DIR_UP},
-//     {.coordinate = "F6", .Task = NULL},
-//     {.coordinate = "D6", .Task = NULL},
+//     {.coordinate = "F7", .Task = Start_Task, .node.dir = DIR_UP},
+//     {.coordinate = "F6", .Task = Task_F6},
+//     {.coordinate = "D6", .Task = Task_3_1},
 //     {.coordinate = "B6", .Task = NULL},
-//     {.coordinate = "B4", .Task = NULL},
-//     {.coordinate = "B2", .Task = NULL},
-//     {.coordinate = "D2", .Task = NULL},
-//     {.coordinate = "F2", .Task = NULL},
+//     {.coordinate = "B4", .Task = Task_1_3},
+//     {.coordinate = "B2", .Task = Task_1_5},
+//     {.coordinate = "D2", .Task = Task_3_5},
+//     {.coordinate = "F2", .Task = Task_5_5},
 //     {.coordinate = "F4", .Task = NULL},
 //     {.coordinate = "D4", .Task = NULL},
-//     {.coordinate = "D6", .Task = NULL},
-//     {.coordinate = "F6", .Task = NULL},
-//     {.coordinate = "F7", .Task = NULL},
+//     {.coordinate = "D6", .Task = Task_3_1_2},
+//     {.coordinate = "F6", .Task = Task_F6_2},
+//     // {.coordinate = "F7", .Task = NULL}, // 入库点
 // };
+// 任务点个数
+uint8_t ROUTE_TASK_NUMBER = GET_ARRAY_LENGEH(Route_Task);
 
 // RFID 寻卡测试用路径
 RouteSetting_t RFID_TestRoute[] = {

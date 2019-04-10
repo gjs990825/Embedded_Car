@@ -1,5 +1,4 @@
 #include "stm32f4xx.h"
-#include "CanP_Hostcom.h"
 #include "delay.h"
 #include "roadway_check.h"
 #include "cba.h"
@@ -9,6 +8,8 @@
 #include "hardware.h"
 #include "pid.h"
 #include "my_lib.h"
+#include "stdlib.h"
+#include "canp_hostcom.h"
 
 // 转向是否完成
 #define CheckTurnComplete(EncoderValue) \
@@ -24,20 +25,21 @@
 // 超过此数判定出线/遇到白卡
 #define ALL_WHITE 15
 // 低于此数判定撞线
-#define ALL_BLACK 7
+#define ALL_BLACK 9
 
 // 前七个循迹传感器
 int8_t Q7[7] = {0};
 // 后八个循迹传感器
 int8_t H8[8] = {0};
+// 所有循迹传感器数据按左到右顺序排列
+int8_t ALL_TRACK[15];
 // 当前白色数量
 uint8_t NumberOfWhite = 0;
-// 方向权重(PID适应线性值，这里已更改为偏移值)
-int DirectionWights = 0;
+
 // 运行状态
 uint8_t Stop_Flag = TRACKING;
 // 循迹模式
-TrackMode_t Track_Mode = TrackMode_NONE;
+uint8_t Track_Mode = TrackMode_NONE;
 // 定值前后和转向
 Moving_ByEncoder_t Moving_ByEncoder = ENCODER_NONE;
 // 定角度转向目标码盘值
@@ -115,14 +117,14 @@ void Moving_ByEncoderCheck(void)
     switch (Moving_ByEncoder)
     {
     case ENCODER_GO:
-        if (temp_MP <= Roadway_mp_Get())
+        if (temp_MP <= Mp_Value)
         {
             Stop();
             Stop_Flag = FORBACKCOMPLETE;
         }
         break;
     case ENCODER_BACK:
-        if (temp_MP <= Roadway_mp_Get())
+        if (temp_MP <= Mp_Value)
         {
             Stop();
             Stop_Flag = FORBACKCOMPLETE;
@@ -175,15 +177,21 @@ void Get_Track(void)
 
     NumberOfWhite = 0;
 
+    // 获取循迹灯信息和循迹灯亮灯数量
     for (uint8_t i = 0; i < 7; i++)
     {
         Q7[i] = (tmp >> i) & 0x01;
-        NumberOfWhite += Q7[i] ? 1 : 0;
         H8[i] = (tmp >> (8 + i)) & 0x01;
+
+        NumberOfWhite += Q7[i] ? 1 : 0;
         NumberOfWhite += H8[i] ? 1 : 0;
+
+        ALL_TRACK[i * 2] = H8[i];
+        ALL_TRACK[i * 2 + 1] = Q7[i];
     }
     H8[7] = (tmp >> (15)) & 0x01;
-    NumberOfWhite += H8[7] ? 1 : 0; // edited
+    NumberOfWhite += H8[7] ? 1 : 0;
+    ALL_TRACK[14] = H8[7];
 
 #if _TRACK_OUTPUT_
 
@@ -205,23 +213,75 @@ void Get_Track(void)
 // 计算方向权重
 void Get_DirectionWights(void)
 {
+    #define ARRAR_LENGTH 3
+    static float filterArray[ARRAR_LENGTH] = {0};
+    static uint8_t currentNumber = 0;
 
-    DirectionWights = 0;
-
-    for (uint8_t i = 1; i <= 4; i++)
+    // 计算各个点与临近点的和
+    int8_t all_weights[15] = {0};
+    for (uint8_t i = 1; i < 14; i++)
     {
-        DirectionWights += (H8[3 + i] - H8[4 - i]);
-    }
-    for (uint8_t i = 1; i <= 4; i++)
-    {
-        DirectionWights += (Q7[2 + i] - Q7[4 - i]);
+        for (uint8_t j = i - 1; j <= i + 1; j++)
+        {
+            all_weights[i] += ALL_TRACK[j];
+        }
     }
 
-    Calculate_pid(DirectionWights);
+    // 遍历找到最小值
+    int8_t minimum = 3;
+    for (uint8_t i = 1; i < 14; i++)
+    {
+        if (minimum > all_weights[i])
+            minimum = all_weights[i];
+    }
+
+    // 获取最小值正续和倒序编号（两个最小值情况）
+    // 丢弃第一位和最后一位，没有数据
+    int8_t errorValue1 = 0, errorValue2 = 14;
+    for (;;)
+    {
+        if (all_weights[++errorValue1] == minimum)
+            break;
+    }
+    for (;;)
+    {
+        if (all_weights[--errorValue2] == minimum)
+            break;
+    }
+
+    // 平均之后计算误差值
+    float errorValue = 7.0 - (errorValue1 + errorValue2) / 2.0;
+
+    filterArray[currentNumber++] = errorValue;
+    if (currentNumber >= ARRAR_LENGTH)
+        currentNumber = 0;
+
+    errorValue = 0;
+    for (uint8_t i = 0; i < ARRAR_LENGTH; i++)
+    {
+        errorValue += filterArray[i];
+    }
+    errorValue /= (float)ARRAR_LENGTH;
+
+    Calculate_pid(errorValue);
+    // PID_value = 60 * errorValue;
+
+    static uint32_t t = 0;
+    if (t++ == 5)
+    {
+        print_info("ERR %2.2f\r\n", errorValue);
+        t = 0;
+    }
 
 #if _TRACK_OUTPUT_
 
-    print_info("T:%d\r\n", DirectionWights);
+    static uint32_t t = 0;
+
+    if (t++ == 100)
+    {
+        print_info("ERR %2.2f\r\n", errorValue);
+        t = 0;
+    }
 
 #endif // _TRACK_OUTPUT_
 }
@@ -244,8 +304,18 @@ void TRACK_LINE(void)
         }
     }
 
-    Get_Track();
-    Get_DirectionWights();
+    // 没有接收到循迹信息不进行运算
+    if (Get_TrackInfoReceived())
+    {
+        DEBUG_PIN_1_SET();
+
+        Get_Track();
+        Get_DirectionWights();
+
+        Set_TrackInfoReceived(false);
+
+        DEBUG_PIN_1_RESET();
+    }
 
     if (Track_Mode == TrackMode_Turn) // 通过循迹线转向（效果不是很好，基本不用）
     {
@@ -354,7 +424,7 @@ void Roadway_Check(void)
     {
         Moving_ByEncoderCheck();
     }
-    
+
     Submit_SpeedChanges();
 }
 
@@ -388,7 +458,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
 {
     if (TIM_GetITStatus(TIM9, TIM_IT_Update) == SET)
     {
-        // DEBUG_PIN_2_SET();
+        DEBUG_PIN_2_SET();
 
         // 上一次停止时间未等待足够时间则不进行下一个动作，防止打滑
         if (IsTimeOut(lastStopStamp, 300))
@@ -396,7 +466,8 @@ void TIM1_BRK_TIM9_IRQHandler(void)
             Mp_Value = Roadway_mp_Get();
             Roadway_Check();
         }
-        // DEBUG_PIN_2_RESET();
+
+        DEBUG_PIN_2_RESET();
     }
     TIM_ClearITPendingBit(TIM9, TIM_IT_Update);
 }
