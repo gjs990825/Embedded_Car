@@ -210,13 +210,9 @@ void Get_Track(void)
 #endif // _TRACK_OUTPUT_
 }
 
-// 计算方向权重
-void Get_DirectionWights(void)
+// 计算输出速度值
+void Calculate_Speed(void)
 {
-    #define ARRAR_LENGTH 3
-    static float filterArray[ARRAR_LENGTH] = {0};
-    static uint8_t currentNumber = 0;
-
     // 计算各个点与临近点的和
     int8_t all_weights[15] = {0};
     for (uint8_t i = 1; i < 14; i++)
@@ -252,32 +248,29 @@ void Get_DirectionWights(void)
     // 平均之后计算误差值
     float errorValue = 7.0 - (errorValue1 + errorValue2) / 2.0;
 
+    // 滤波
+    #define FILTER_ARRAY_LENGTH 3
+    static float filterArray[FILTER_ARRAY_LENGTH] = {0};
+    static uint8_t currentNumber = 0;
+
     filterArray[currentNumber++] = errorValue;
-    if (currentNumber >= ARRAR_LENGTH)
+    if (currentNumber >= FILTER_ARRAY_LENGTH)
         currentNumber = 0;
 
     errorValue = 0;
-    for (uint8_t i = 0; i < ARRAR_LENGTH; i++)
+    for (uint8_t i = 0; i < FILTER_ARRAY_LENGTH; i++)
     {
         errorValue += filterArray[i];
     }
-    errorValue /= (float)ARRAR_LENGTH;
+    errorValue /= (float)FILTER_ARRAY_LENGTH;
 
     Calculate_pid(errorValue);
-    // PID_value = 60 * errorValue;
-
-    static uint32_t t = 0;
-    if (t++ == 5)
-    {
-        print_info("ERR %2.2f\r\n", errorValue);
-        t = 0;
-    }
-
+    
 #if _TRACK_OUTPUT_
 
     static uint32_t t = 0;
 
-    if (t++ == 100)
+    if (t++ == 5)
     {
         print_info("ERR %2.2f\r\n", errorValue);
         t = 0;
@@ -307,15 +300,13 @@ void TRACK_LINE(void)
     // 没有接收到循迹信息不进行运算
     if (Get_TrackInfoReceived())
     {
-        DEBUG_PIN_1_SET();
-
         Get_Track();
-        Get_DirectionWights();
+        Calculate_Speed();
 
         Set_TrackInfoReceived(false);
-
-        DEBUG_PIN_1_RESET();
     }
+
+#if _ENABLE_TURNING_BY_TRACK_
 
     if (Track_Mode == TrackMode_Turn) // 通过循迹线转向（效果不是很好，基本不用）
     {
@@ -347,6 +338,8 @@ void TRACK_LINE(void)
         }
         return;
     }
+
+#endif // _ENABLE_TURNING_BY_TRACK_
 
     if (NumberOfWhite >= ALL_WHITE) // 全白
     {
