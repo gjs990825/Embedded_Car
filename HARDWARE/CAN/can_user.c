@@ -2,7 +2,6 @@
 #include "stm32f4xx.h"
 #include "canP_HostCom.h"
 #include "delay.h"
-#include "data_channel.h"
 #include "roadway_check.h"
 
 #define __CAN_USER_C__

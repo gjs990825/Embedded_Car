@@ -1,7 +1,6 @@
 #include "stm32f4xx.h"
 #include "uart_drv.h"
 #include "can_user.h"
-#include "data_channel.h"
 #include "Timer.h"
 
 

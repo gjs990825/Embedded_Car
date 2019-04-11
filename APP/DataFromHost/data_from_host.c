@@ -1,7 +1,6 @@
 #include "data_from_host.h"
 #include "canP_HostCom.h"
 #include "delay.h"
-#include "data_channel.h"
 #include "roadway_check.h"
 #include "can_user.h"
 #include "tba.h"
