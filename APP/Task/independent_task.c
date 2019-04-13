@@ -72,19 +72,23 @@ void Set_CurrentCardInfo(RFID_Info_t *RFIDx)
     CurrentRFIDCard = RFIDx;
 }
 
+// 配置调试卡使用的信息
+uint8_t _testRFIDDataBlock = 5;
+uint8_t _testRFIDKey[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+uint8_t _testRFIDAuthMode = PICC_AUTHENT1A;
+
 // RFID测试任务开始
 void Task_RFIDTestStart(void)
 {
     RFID_Info_t *rfid = mymalloc(SRAMIN, sizeof(RFID_Info_t));
 
+    // 清空
     memset(rfid, 0, sizeof(RFID_Info_t));
 
-    for (uint8_t i = 0; i < 6; i++)
-    {
-        rfid->key[i] = 0xFF;
-    }
-    rfid->authMode = PICC_AUTHENT1A;
-    rfid->dataBlockLocation = 4;
+    // 写入调试信息
+    memcpy(rfid->key, _testRFIDKey, 6);
+    rfid->authMode = _testRFIDAuthMode;
+    rfid->dataBlockLocation = _testRFIDDataBlock;
 
     Set_CurrentCardInfo(rfid);
     RFID_RoadSection = true;
@@ -98,17 +102,12 @@ void Task_RFIDTestEnd(void)
     RFID_RoadSection = false;
 }
 
-// 使用默认key读某个扇区（测试）
+// 使用设定key读某个扇区
 void Test_RFID(uint8_t block)
 {
     uint8_t buf[17];
-    uint8_t key[8]; // 使用默认key
 
-    for (uint8_t i = 0; i < 8; i++)
-    {
-        key[i] = 0xFF;
-    }
-    if (PICC_ReadBlock(block, PICC_AUTHENT1A, key, buf) == SUCCESS)
+    if (PICC_ReadBlock(block, _testRFIDAuthMode, _testRFIDKey, buf) == SUCCESS)
     {
         for (uint8_t i = 0; i < 16; i++)
         {
