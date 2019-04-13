@@ -1,6 +1,8 @@
 #ifndef __TIMER_H__
 #define __TIMER_H__
 
+#include "sys.h"
+
 // 返回是否超时（单位ms）
 #define IsTimeOut(setTimeStamp, timeOutLimit) (global_times > (setTimeStamp + timeOutLimit))
 // 获取当前时间戳

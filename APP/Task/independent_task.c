@@ -1,52 +1,36 @@
 #include "independent_task.h"
-#include "sys.h"
 #include <stdio.h>
 #include <string.h>
-#include "stm32f4xx.h"
 #include "delay.h"
 #include "infrared.h"
 #include "cba.h"
 #include "ultrasonic.h"
 #include "canp_hostcom.h"
-#include "hard_can.h"
 #include "bh1750.h"
 #include "voice.h"
-#include "power_check.h"
-#include "can_user.h"
-#include "data_base.h"
 #include "roadway_check.h"
 #include "tba.h"
 #include "data_base.h"
-#include "swopt_drv.h"
 #include "uart_a72.h"
 #include "Can_check.h"
-#include "delay.h"
-#include "can_user.h"
-#include "Timer.h"
 #include "Rc522.h"
 #include "malloc.h"
-#include "a_star.h"
 #include "debug.h"
 #include "movement.h"
-#include "protocol.h"
-#include "hardware.h"
 #include "route.h"
-#include "ultrasonic.h"
 #include "my_lib.h"
 #include "Timer.h"
+#include "data_from_host.h"
 
+// RFID相关 ↓
 
 // 寻到白卡
 uint8_t FOUND_RFID_CARD = false;
 // 白卡路段
 uint8_t RFID_RoadSection = false;
-// 白卡坐标
-uint8_t RFID_x = 0, RFID_y = 0;
-// 白卡数据块位置
-uint8_t RFID_DataBlockLoation = 5;
-// 白卡数据存储
-uint8_t RFID_DataBuffer[17] = {0};
-
+// 当前卡信息指针
+RFID_Info_t *CurrentRFIDCard = NULL;
+// 遇到白卡时的状态数据
 struct StatusBeforeFoundRFID_Struct
 {
     uint8_t stopFlag;
@@ -57,10 +41,11 @@ struct StatusBeforeFoundRFID_Struct
     Moving_ByEncoder_t movingByencoder;
 } StatusBeforeFoundRFID;
 
-extern uint16_t Mp_Value;
 // 保存遇到白卡时候的状态
 void Save_StatusBeforeFoundRFID(void)
 {
+    extern uint16_t Mp_Value;
+
     StatusBeforeFoundRFID.movingByencoder = Moving_ByEncoder;
     StatusBeforeFoundRFID.currentEncoder = Mp_Value;
     StatusBeforeFoundRFID.stopFlag = Stop_Flag;
@@ -81,80 +66,121 @@ void Resume_StatusBeforeFoundRFID(uint16_t encoderChangeValue)
     Car_Speed = StatusBeforeFoundRFID.currentSpeed;
 }
 
-// 设定为白卡路段
-void Task_RFID_RoadSectionTrue(void)
+// 设定当前卡信息
+void Set_CurrentCardInfo(RFID_Info_t *RFIDx)
 {
+    CurrentRFIDCard = RFIDx;
+}
+
+// RFID测试任务开始
+void Task_RFIDTestStart(void)
+{
+    RFID_Info_t *rfid = mymalloc(SRAMIN, sizeof(RFID_Info_t));
+
+    memset(rfid, 0, sizeof(RFID_Info_t));
+
+    for (uint8_t i = 0; i < 6; i++)
+    {
+        rfid->key[i] = 0xFF;
+    }
+    rfid->authMode = PICC_AUTHENT1A;
+    rfid->dataBlockLocation = 4;
+
+    Set_CurrentCardInfo(rfid);
     RFID_RoadSection = true;
 }
 
-// 设定为非白卡路段
-void Task_RFID_RoadSectionFalse(void)
+// RFID测试任务结束
+void Task_RFIDTestEnd(void)
 {
+    myfree(SRAMIN, CurrentRFIDCard);
+    CurrentRFIDCard = NULL;
     RFID_RoadSection = false;
 }
 
-// RFID读卡，检测到执行读卡
-void RFID_Task(void)
-{
-    uint8_t i;
-    RFID_x = NextStatus.x; // 获取RFID位置
-    RFID_y = NextStatus.y;
-
-    print_info("FOUND_RFID:%d,%d\r\n", RFID_x, RFID_y);
-    ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 8), Stop_Flag, FORBACKCOMPLETE);
-    for (i = 0; i < 9; i++) // 读卡范围约 11.5-16.5，间隔读取()
-    {
-        if (Read_RFID_Block(RFID_DataBlockLoation, RFID_DataBuffer) == true)
-            break; // 读取成功，跳出
-        ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 1), Stop_Flag, FORBACKCOMPLETE);
-        delay_ms(500);
-    }
-
-    RFID_RoadSection = false; // 结束寻卡
-    FOUND_RFID_CARD = false;  // 清空标志位
-    TIM_Cmd(TIM5, DISABLE);   // 停止定时器
-
-    ExcuteAndWait(Back_Off(30, Centimeter_Value * (8 + i)), Stop_Flag, FORBACKCOMPLETE); // 返回读卡前位置
-    // 十字路口需要多退后一点，因为响应时间变长会多走一点
-    if (StatusBeforeFoundRFID.stopFlag == CROSSROAD)
-    {
-        ExcuteAndWait(Back_Off(30, Centimeter_Value * 2), Stop_Flag, FORBACKCOMPLETE);
-    }
-
-    Update_MotorSpeed(Car_Speed, Car_Speed);
-}
-
+// 使用默认key读某个扇区（测试）
 void Test_RFID(uint8_t block)
 {
     uint8_t buf[17];
-    Read_RFID_Block(block, buf);
-}
-
-// 读扇区 使用KEYA，存在buf里
-bool Read_RFID_Block(uint8_t block, uint8_t *buf)
-{
     uint8_t key[8]; // 使用默认key
 
     for (uint8_t i = 0; i < 8; i++)
     {
         key[i] = 0xFF;
     }
-    if (RFID_ReadBlock(block, key, buf) == MI_OK)
+    if (PICC_ReadBlock(block, PICC_AUTHENT1A, key, buf) == SUCCESS)
     {
         for (uint8_t i = 0; i < 16; i++)
         {
-            print_info("%X ", buf[i]);
+            print_info("%02X ", buf[i]);
+            delay_ms(5);
         }
         print_info("\r\n");
-        return true;
     }
     else
     {
         print_info("ERROR\r\n");
-        return false;
     }
 }
 
+// 读卡
+ErrorStatus Read_RFID(RFID_Info_t *RFIDx)
+{
+    ErrorStatus status = PICC_ReadBlock(RFIDx->dataBlockLocation, RFIDx->authMode, RFIDx->key, RFIDx->data);
+
+    if (status == SUCCESS)
+    {
+        for (uint8_t i = 0; i < 16; i++)
+        {
+            print_info("%02X ", RFIDx->data[i]);
+            delay_ms(5);
+        }
+        print_info("\r\n");
+    }
+    else
+    {
+        print_info("READ CARD FAIL\r\n");
+    }
+    return status;
+}
+
+// RFID读卡任务，检测到白卡时执行
+void RFID_Task(void)
+{
+    uint8_t i;
+
+    // 当前卡信息未设定，跳出
+    if (CurrentRFIDCard == NULL)
+        return;
+
+    // 记录位置信息
+    CurrentRFIDCard->coordinate = NextStatus;
+    print_info("Card At:(%d,%d)\r\n", CurrentRFIDCard->coordinate.x, CurrentRFIDCard->coordinate.y);
+
+    MOVE(8);
+    for (i = 0; i < 9; i++) // 读卡范围约 11.5-16.5，间隔一公分读取()
+    {
+        if (Read_RFID(CurrentRFIDCard) == SUCCESS)
+            break; // 读取成功，跳出
+        MOVE(1);
+        delay_ms(500);
+    }
+
+    RFID_RoadSection = false; // 结束寻卡
+    FOUND_RFID_CARD = false;  // 清空标志位
+    TIM_Cmd(TIM5, DISABLE);   // 停止定时器
+    MOVE(-(8 + i));           // 返回读卡前位置
+
+    // 十字路口需要多退后一点，因为响应时间变长会多走一点
+    if (StatusBeforeFoundRFID.stopFlag == CROSSROAD)
+    {
+        MOVE(-2);
+    }
+
+    Update_MotorSpeed(Car_Speed, Car_Speed);
+}
+
+// RFID相关 ↑
 
 // 交通灯识别
 void TrafficLight_Task(void)
@@ -171,7 +197,6 @@ void TFT_Task(void)
     Request_ToHost(RequestCmd_TFTRecognition);                            // 请求识别TFT内容
     WaitForFlagInMs(GetCmdFlag(FromHost_TFTRecognition), SET, 37 * 1000); // 等待识别完成
 }
-
 
 // TFT显示部分
 // TFT显示HEX
@@ -198,7 +223,7 @@ void RotationLED_Plate(uint8_t plate[6], uint8_t coord[2])
 }
 
 // 立体显示 显示距离
-void RotationLED_Distance(uint8_t dis)
+void RotationLED_Distance(uint16_t dis)
 {
     uint8_t buf[6] = {0x00};
 
@@ -228,13 +253,13 @@ void Start_Task(void)
     Set_tba_WheelLED(L_LED, RESET);
     Set_tba_WheelLED(R_LED, RESET);
 
-    LED_TimerStart();
+    Send_ZigBeeDataNTimes(ZigBee_LEDDisplayStartTimer, 3, 20);
 }
 
 // 终止任务
 void End_Task(void)
 {
-    LED_TimerStop();
+    Send_ZigBeeDataNTimes(ZigBee_LEDDisplayStopTimer, 3, 20);
     Set_tba_WheelLED(L_LED, SET);
     Set_tba_WheelLED(R_LED, SET);
     delay_ms(500);
@@ -298,7 +323,6 @@ void StreetLight_AdjustTo(uint8_t targetLevel)
     }
 }
 
-
 // 道闸显示车牌
 void BarrierGate_Plate(uint8_t plate[6])
 {
@@ -323,6 +347,7 @@ void BarrierGate_Task(uint8_t plate[6])
     delay_ms(790);
 }
 
+// 语音任务，错误重试2次
 void Voice_Task(void)
 {
     Start_VoiceCommandRecognition(3);
@@ -331,8 +356,7 @@ void Voice_Task(void)
 // ETC任务
 void ETC_Task(void)
 {
-    // 超时逻辑需要修正
-    for (uint8_t i = 0; i < 10; i++) // 摇摆10次，不开直接走
+    for (uint8_t i = 0; i < 10; i++) // 调整10次，不开直接走
     {
         // 六秒前的数据作废
         if ((ETC_Status.isSet == SET) && (!IsTimeOut(ETC_Status.timeStamp, 6 * 1000)))

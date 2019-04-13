@@ -1,28 +1,7 @@
 #ifndef __CBA_H
 #define __CBA_H
 
-#include "stm32f4xx.h"
 #include "sys.h"
-
-// 按键设置启动程序
-
-#include "infrared.h"
-#include "data_base.h"
-#include "Rc522.h"
-#include "a_star.h"
-#include "movement.h"
-#include "task.h"
-#include "can_user.h"
-#include "canp_hostcom.h"
-#include "data_base.h"
-#include "protocol.h"
-#include "roadway_check.h"
-#include "ultrasonic.h"
-#include "agv.h"
-#include "voice.h"
-#include "data_from_host.h"
-#include "debug.h"
-#include "bh1750.h"
 
 // 按键配置
 #define S1 PIin(4)

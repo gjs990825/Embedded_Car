@@ -105,6 +105,8 @@ typedef struct ZigBee_DataStatus_Sturuct
 } ZigBee_DataStatus_t;
 
 #define GetCmdFlag(id) CommandFlagStatus[id]
+#define SetCmdFlag(id) CommandFlagStatus[id] = SET
+#define ResetCmdFlag(id) CommandFlagStatus[id] = RESET
 
 // Ö´ÐÐN´Î£¬´øÑÓ³Ù
 #define ExcuteNTimes(Task, N, delay)    \

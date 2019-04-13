@@ -47,6 +47,8 @@ extern void Read_Card(void);
 
 int8_t RFID_ReadBlock(uint8_t block, uint8_t key[6], uint8_t *buf);
 
+ErrorStatus PICC_ReadBlock(uint8_t block, uint8_t authMode, uint8_t *key, uint8_t *buffer);
+
 
 
 /////////////////////////////////////////////////////////////////////

@@ -11,7 +11,6 @@
 #include "Timer.h"
 #include "agv.h"
 
-#define SetCmdFlag(flag) CommandFlagStatus[flag] = SET
 #define SetSpeed Wifi_Rx_Buf[Pack_SubCmd1]
 
 void SaveDataFromHost(uint8_t buf[6], uint8_t commandID, bool isFrontData)

@@ -35,6 +35,7 @@
 #include "my_lib.h"
 #include "seven_seg.h"
 #include "Timer.h"
+#include "agv.h"
 
 
 // 下面是坐标点对应的独立任务集合，独立任务进入前需要保证位置距离朝向等准确无误
@@ -58,8 +59,8 @@ void Task_F6(void)
     MOVE(-15);
     TURN(-40);
 
-    RFID_DataBlockLoation = Get_QRCode(DataRequest_QRCode1, 0x02)[0]; // 获取二维码信息中的RFID数据块信息
-    print_info("RFID_Block:%d\r\n", RFID_DataBlockLoation);
+//    RFID_DataBlockLoation = Get_QRCode(DataRequest_QRCode1, 0x02)[0]; // 获取二维码信息中的RFID数据块信息
+//    print_info("RFID_Block:%d\r\n", RFID_DataBlockLoation);
 
     CurrentStaus.dir = DIR_LEFT;
 }
@@ -109,8 +110,8 @@ void Task_1_5(void)
 
     AGV_SendInfraredData(Infrared_AlarmON); // 发送红外信息 // 需要注掉！！！
     delay_ms(700);
-    AGV_SetTaskID(Get_TaskNumber("D4", RFID_DataBuffer, 1), 0); // 设定任务点
-    AGV_SetRoute(RFID_DataBuffer);                              // 发送从车路径信息
+//    AGV_SetTaskID(Get_TaskNumber("D4", RFID_DataBuffer, 1), 0); // 设定任务点
+//    AGV_SetRoute(RFID_DataBuffer);                              // 发送从车路径信息
     delay_ms(700);
     AGV_SetTowards(DIR_LEFT); // 设定车头朝向
     delay_ms(700);            // 等待
@@ -118,31 +119,31 @@ void Task_1_5(void)
     delay_ms(700);            // 等待
     AGV_Start();
 
-    if (Get_TaskNumber("B1", RFID_DataBuffer, 1) != -1) // 从车入库任务设定
-    {
-        AGV_SetTaskID(Get_TaskNumber("B1", RFID_DataBuffer, 1), 1);
-    }
-    else if (Get_TaskNumber("B7", RFID_DataBuffer, 1) != -1)
-    {
-        AGV_SetTaskID(Get_TaskNumber("B7", RFID_DataBuffer, 1), 1);
-    }
+//    if (Get_TaskNumber("B1", RFID_DataBuffer, 1) != -1) // 从车入库任务设定
+//    {
+//        AGV_SetTaskID(Get_TaskNumber("B1", RFID_DataBuffer, 1), 1);
+//    }
+//    else if (Get_TaskNumber("B7", RFID_DataBuffer, 1) != -1)
+//    {
+//        AGV_SetTaskID(Get_TaskNumber("B7", RFID_DataBuffer, 1), 1);
+//    }
 
-    if (Get_TaskNumber("B2", RFID_DataBuffer, 1) != -1) // 经过主车的路径
-    {
-        ExcuteAndWait(Back_Off(30, Centimeter_Value * 35), Stop_Flag, FORBACKCOMPLETE);
-    }
+//    if (Get_TaskNumber("B2", RFID_DataBuffer, 1) != -1) // 经过主车的路径
+//    {
+//        ExcuteAndWait(Back_Off(30, Centimeter_Value * 35), Stop_Flag, FORBACKCOMPLETE);
+//    }
 
-    AGVComplete_Status.isSet = RESET;
-    WaitForFlagInMs(AGVComplete_Status.isSet, SET, 25 * 1000); // 等待从车执行入库完成
+//    AGVComplete_Status.isSet = RESET;
+//    WaitForFlagInMs(AGVComplete_Status.isSet, SET, 25 * 1000); // 等待从车执行入库完成
 
-    if (Get_TaskNumber("B2", RFID_DataBuffer, 1) != -1) // 经过主车的路径
-    {
-        ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 35), Stop_Flag, FORBACKCOMPLETE);
-    }
+//    if (Get_TaskNumber("B2", RFID_DataBuffer, 1) != -1) // 经过主车的路径
+//    {
+//        ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 35), Stop_Flag, FORBACKCOMPLETE);
+//    }
 
     ExcuteAndWait(Turn_ByEncoder(90 + 35), Stop_Flag, TURNCOMPLETE);
 
-    RotationLED_Plate(Get_PlateNumber(), ReCoordinate_Covent(RFID_x, RFID_y));
+//    RotationLED_Plate(Get_PlateNumber(), ReCoordinate_Covent(RFID_x, RFID_y));
 
     ExcuteAndWait(Turn_ByEncoder(-35), Stop_Flag, TURNCOMPLETE);
 

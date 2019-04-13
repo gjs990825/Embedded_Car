@@ -3,31 +3,31 @@
 
 #include "sys.h"
 #include "protocol.h"
+#include "route.h"
+
+// RFID相关 ↓
 
 extern uint8_t FOUND_RFID_CARD;
 extern uint8_t RFID_RoadSection;
-extern uint8_t RFID_x, RFID_y;
-extern uint8_t RFID_DataBlockLoation;
-extern uint8_t RFID_DataBuffer[17];
 
+typedef struct RFID_Info_Struct
+{
+    uint8_t dataBlockLocation;
+    uint8_t authMode;
+    RouteNode_t coordinate;
+    uint8_t key[6];
+    uint8_t data[17];
+} RFID_Info_t;
 
-// 快速发送单个指令(次数和延时在宏传递的参数中定义)
-#define LED_TimerStart() Send_ZigBeeDataNTimes(ZigBee_LEDDisplayStartTimer, 3, 20) // 开始计时
-#define LED_TimerStop() Send_ZigBeeDataNTimes(ZigBee_LEDDisplayStopTimer, 3, 20)   // 停止计时
-#define TFTPage_Next() Send_ZigBeeDataNTimes(ZigBee_TFTPageNext, 2, 100)           // TFT下一页
-
-
-// 红外指令
-
-#define Send_PlateToTFT()                             \
-    Send_ZigBeeDataNTimes(ZigBee_PlateTFT_1, 1, 600); \
-    Send_ZigBeeDataNTimes(ZigBee_PlateTFT_2, 1, 600)
-
+#define RFID_RoadSectionTrue() RFID_RoadSection = true
+#define RFID_RoadSectionFalse() RFID_RoadSection = false
 void Save_StatusBeforeFoundRFID(void);
 void Resume_StatusBeforeFoundRFID(uint16_t encoderChangeValue);
+void Task_RFIDTestStart(void);
+void Task_RFIDTestEnd(void);
+void Set_CurrentCardInfo(RFID_Info_t *RFIDx);
 
-void Task_RFID_RoadSectionTrue(void);
-void Task_RFID_RoadSectionFalse(void);
+// RFID相关 ↑
 
 void TFT_Task(void);
 void Start_Task(void);
@@ -44,8 +44,6 @@ void RFID_Task(void);
 void RotationLED_Plate(uint8_t plate[6], uint8_t coord[2]);
 
 void TFT_Hex(uint8_t dat[3]);
-
-bool Read_RFID_Block(uint8_t block, uint8_t *buf);
 
 void Test_RFID(uint8_t block);
 

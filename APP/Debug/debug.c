@@ -8,6 +8,7 @@
 #include "roadway_check.h"
 #include "tba.h"
 #include "delay.h"
+#include "independent_task.h"
 
 // #define varNumber 2
 // #define var1 Go_Flag
@@ -86,10 +87,12 @@ void DebugPin_Init(void)
 //         }
 //     }
 // }
-extern uint8_t FOUND_RFID_CARD;
+
 
 void TIM5_IRQHandler(void)
 {
+    extern uint8_t FOUND_RFID_CARD;
+    
     if (TIM_GetITStatus(TIM5, TIM_IT_Update) == SET)
     {
         if (FOUND_RFID_CARD)

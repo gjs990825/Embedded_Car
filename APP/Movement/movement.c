@@ -261,10 +261,12 @@ void Turn_ByEncoder(int16_t digree)
 	}
 }
 
-extern uint8_t TrackStatus;
+
 // 转到下一个循迹线（需要优化）
 void Turn_ByTrack(Driection_t dir)
 {
+	extern uint8_t TrackStatus;
+
 	if ((dir != DIR_RIGHT) && (dir != DIR_LEFT))
 	{
 		return;

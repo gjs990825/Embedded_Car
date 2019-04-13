@@ -3,6 +3,27 @@
 #include "delay.h"
 #include "cba.h"
 
+
+// 按键设置启动程序
+
+#include "infrared.h"
+#include "data_base.h"
+#include "Rc522.h"
+#include "a_star.h"
+#include "movement.h"
+#include "task.h"
+#include "can_user.h"
+#include "canp_hostcom.h"
+#include "data_base.h"
+#include "protocol.h"
+#include "roadway_check.h"
+#include "ultrasonic.h"
+#include "agv.h"
+#include "voice.h"
+#include "data_from_host.h"
+#include "debug.h"
+#include "bh1750.h"
+
 // Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
 // Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStaus);
 
@@ -13,7 +34,7 @@
 #define KEY_TASK_BOARD_TEST 4
 
 // 配置按键调试方案
-#define KEY_CONFIGURATION KEY_DEFAULT
+#define KEY_CONFIGURATION KEY_RFID_TEST
 
 #if (KEY_CONFIGURATION == KEY_DEFAULT)
 

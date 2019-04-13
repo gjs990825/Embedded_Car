@@ -1,4 +1,5 @@
 #include "route.h"
+#include "task.h"
 #include "string.h"
 #include "malloc.h"
 #include "debug.h"
@@ -50,10 +51,10 @@ uint8_t ROUTE_TASK_NUMBER = GET_ARRAY_LENGEH(Route_Task);
 // RFID —∞ø®≤‚ ‘”√¬∑æ∂
 RouteSetting_t RFID_TestRoute[] = {
     {.coordinate = "B7", .Task = NULL, .node.dir = DIR_UP},
-    {.coordinate = "B6", .Task = Task_RFID_RoadSectionTrue},
+    {.coordinate = "B6", .Task = Task_RFIDTestStart},
     {.coordinate = "B5", .Task = NULL},
     {.coordinate = "B4", .Task = NULL},
-    {.coordinate = "C4", .Task = Task_RFID_RoadSectionFalse},
+    {.coordinate = "C4", .Task = Task_RFIDTestEnd},
     {.coordinate = "D4", .Task = NULL},
 };
 uint8_t RFID_TESTROUTE_NUMBER = GET_ARRAY_LENGEH(RFID_TestRoute);

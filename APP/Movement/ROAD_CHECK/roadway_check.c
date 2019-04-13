@@ -10,6 +10,7 @@
 #include "my_lib.h"
 #include "stdlib.h"
 #include "canp_hostcom.h"
+#include "independent_task.h"
 
 // 转向是否完成
 #define CheckTurnComplete(EncoderValue) \
@@ -446,9 +447,11 @@ void Roadway_CheckTimInit(uint16_t arr, uint16_t psc)
     TIM_Cmd(TIM9, ENABLE);
 }
 
-extern uint32_t lastStopStamp;
+
 void TIM1_BRK_TIM9_IRQHandler(void)
 {
+    extern uint32_t lastStopStamp;
+    
     if (TIM_GetITStatus(TIM9, TIM_IT_Update) == SET)
     {
         DEBUG_PIN_2_SET();

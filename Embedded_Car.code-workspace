@@ -14,7 +14,24 @@
 			"route.h": "c",
 			"canp_hostcom.h": "c",
 			"data_channel.h": "c",
-			"my_lib.h": "c"
+			"my_lib.h": "c",
+			"mfrc522.h": "c",
+			"rc522.h": "c",
+			"independent_task.h": "c",
+			"delay.h": "c",
+			"cba.h": "c",
+			"sys.h": "c",
+			"power_check.h": "c",
+			"hard_can.h": "c",
+			"swopt_drv.h": "c",
+			"tba.h": "c",
+			"data_base.h": "c",
+			"can_user.h": "c",
+			"timer.h": "c",
+			"a_star.h": "c",
+			"debug.h": "c",
+			"protocol.h": "c",
+			"ultrasonic.h": "c"
 		}
 	}
 }
