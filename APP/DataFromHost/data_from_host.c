@@ -45,7 +45,7 @@ void SaveToZigBee(uint8_t buf[8])
     buf[5] = Wifi_Rx_Buf[5];
 }
 
-// ´¦ÀíÉÏÎ»»ú·¢ËÍµÄÊý¾Ý
+// å¤„ç†ä¸Šä½æœºå‘é€çš„æ•°æ®
 void Process_DataFromHost(uint8_t mainCmd)
 {
     switch (mainCmd)
@@ -53,155 +53,155 @@ void Process_DataFromHost(uint8_t mainCmd)
     case FromHost_Stop:
         Update_MotorSpeed(0, 0);
         Roadway_Flag_clean();
-        break; // Í£Ö¹
+        break; // åœæ­¢
 
     case FromHost_Go:
         Go_Ahead(SetSpeed, GetEncoderSetting());
-        break; // Ç°½ø
+        break; // å‰è¿›
 
     case FromHost_Back:
         Back_Off(SetSpeed, GetEncoderSetting());
-        break; // ºóÍË
+        break; // åŽé€€
 
     case FromHost_TurnLeft:
         Turn_ByEncoder(-90);
-        break; // ×ó×ª
+        break; // å·¦è½¬
 
     case FromHost_TurnRight:
         Turn_ByEncoder(90);
-        break; // ÓÒ×ª
+        break; // å³è½¬
 
     case FromHost_TrackLine:
         Start_Tracking(SetSpeed);
-        break; // Ñ­¼£
+        break; // å¾ªè¿¹
 
     case FromHost_EncoderClear:
 
-        break; // ÂëÅÌÇåÁã
+        break; // ç ç›˜æ¸…é›¶
 
     case FromHost_TurnCountClockWiseToDigree:
         Turn_ByEncoder(-(int16_t)GetEncoderSetting());
         Update_MotorSpeed(-SetSpeed, SetSpeed);
-        break; // ×ó×ªÍä--½Ç¶È
+        break; // å·¦è½¬å¼¯--è§’åº¦
 
     case FromHost_TurnClockWiseToDigree:
         Turn_ByEncoder((int16_t)GetEncoderSetting());
         Update_MotorSpeed(SetSpeed, -SetSpeed);
-        break; // ÓÒ×ªÍä--½Ç¶È
+        break; // å³è½¬å¼¯--è§’åº¦
 
     case FromHost_InfraredFrontData:
         SaveDataFromHost(Infrared_Data, mainCmd, true);
-        break; // ºìÍâÇ°ÈýÎ»Êý¾Ý
+        break; // çº¢å¤–å‰ä¸‰ä½æ•°æ®
 
     case FromHost_InfraredBackData:
         SaveDataFromHost(Infrared_Data, mainCmd, false);
-        break; // ºìÍâºóÈýÎ»Êý¾Ý
+        break; // çº¢å¤–åŽä¸‰ä½æ•°æ®
 
     case FromHost_InfraredSend:
         Infrared_Send_A(Infrared_Data);
-        break; // Í¨ÖªÐ¡³µµ¥Æ¬»ú·¢ËÍºìÍâÏß
+        break; // é€šçŸ¥å°è½¦å•ç‰‡æœºå‘é€çº¢å¤–çº¿
 
     case FromHost_TurnningLightControl:
         // Set_tba_WheelLED(L_LED, Wifi_Rx_Buf[Pack_SubCmd1]);
         // Set_tba_WheelLED(R_LED, Wifi_Rx_Buf[Pack_SubCmd2]);
-        break; // ×ªÏòµÆ¿ØÖÆ
+        break; // è½¬å‘ç¯æŽ§åˆ¶
 
     case FromHost_Beep:
         Set_tba_Beep(Wifi_Rx_Buf[Pack_SubCmd1]);
-        break; // ·äÃùÆ÷
+        break; // èœ‚é¸£å™¨
 
     case FromHost_NotUsed:
-        break; // ÔÝÎ´Ê¹ÓÃ
+        break; // æš‚æœªä½¿ç”¨
 
     case FromHost_InfraredPhotoPrevious:
         Infrared_Send_A(Infrared_PhotoNext);
-        break; // ºìÍâ·¢Éä¿ØÖÆÏàÆ¬ÉÏ·­
+        break; // çº¢å¤–å‘å°„æŽ§åˆ¶ç›¸ç‰‡ä¸Šç¿»
 
     case FromHost_InfraredPhotoNext:
         Infrared_Send_A(Infrared_PhotoPrevious);
-        break; // ºìÍâ·¢Éä¿ØÖÆÏàÆ¬ÏÂ·­
+        break; // çº¢å¤–å‘å°„æŽ§åˆ¶ç›¸ç‰‡ä¸‹ç¿»
 
     case FromHost_InfraredLightAdd1:
         Infrared_Send_A(Infrared_LightAdd1);
-        break; // ºìÍâ·¢Éä¿ØÖÆ¹âÔ´Ç¿¶ÈµµÎ»¼Ó1
+        break; // çº¢å¤–å‘å°„æŽ§åˆ¶å…‰æºå¼ºåº¦æ¡£ä½åŠ 1
 
     case FromHost_InfraredLightAdd2:
         Infrared_Send_A(Infrared_LightAdd2);
-        break; // ºìÍâ·¢Éä¿ØÖÆ¹âÔ´Ç¿¶ÈµµÎ»¼Ó2
+        break; // çº¢å¤–å‘å°„æŽ§åˆ¶å…‰æºå¼ºåº¦æ¡£ä½åŠ 2
 
     case FromHost_InfraredLightAdd3:
         Infrared_Send_A(Infrared_LightAdd3);
-        break; // ºìÍâ·¢Éä¿ØÖÆ¹âÔ´Ç¿¶ÈµµÎ»¼Ó3
+        break; // çº¢å¤–å‘å°„æŽ§åˆ¶å…‰æºå¼ºåº¦æ¡£ä½åŠ 3
 
     case FromHost_AGVReturnData:
         Host_AGV_Return_Flag = Wifi_Rx_Buf[Pack_SubCmd1];
-        break; // ´Ó³µ·µ»Ø
+        break; // ä»Žè½¦è¿”å›ž
 
     case FromHost_LEDDisplaySecomdRow:
         SaveToZigBee(ZigBee_LEDDisplayData);
         Send_ZigbeeData_To_Fifo(ZigBee_LEDDisplayData, 8);
-        break; // ÊýÂë¹ÜµÚ¶þÅÅÏÔÊ¾ÊÇÊý¾Ý
+        break; // æ•°ç ç®¡ç¬¬äºŒæŽ’æ˜¾ç¤ºæ˜¯æ•°æ®
 
     case FromHost_ReceivePresetHeadTowards:
         SaveToZigBee(ZigBee_AGVPreset);
         Send_ZigbeeData_To_Fifo(ZigBee_AGVPreset, 8);
-        break; // ½ÓÊÕÔ¤°¸³µÍ·ÉèÖÃ
+        break; // æŽ¥æ”¶é¢„æ¡ˆè½¦å¤´è®¾ç½®
 
     case FromHost_Start:
-        break; // Ð¡³µÆô¶¯ÃüÁî
+        break; // å°è½¦å¯åŠ¨å‘½ä»¤
 
     case FromHost_QRCodeRecognition:
         Set_tba_WheelLED(L_LED, 1);
         Set_tba_WheelLED(R_LED, 1);
-        break; // ¶þÎ¬ÂëÊ¶±ð
+        break; // äºŒç»´ç è¯†åˆ«
 
     case FromHost_PlateRecognition:
-        break; // ³µÅÆÊ¶±ð
+        break; // è½¦ç‰Œè¯†åˆ«
 
     case FromHost_ShapeRecongnition:
-        break; // Í¼ÏñÊ¶±ð
+        break; // å›¾åƒè¯†åˆ«
 
     case FromHost_TrafficLight:
-        break; // ½»Í¨µÆ
+        break; // äº¤é€šç¯
 
     case FromHost_StreetLight:
-        break; // Â·µÆ
+        break; // è·¯ç¯
 
     case FromHost_PlateData1:
         Infrared_PlateData1[2] = Wifi_Rx_Buf[3];
         Infrared_PlateData1[3] = Wifi_Rx_Buf[4];
         Infrared_PlateData1[4] = Wifi_Rx_Buf[5];
-        break; // ³µÅÆÐÅÏ¢1
+        break; // è½¦ç‰Œä¿¡æ¯1
 
     case FromHost_PlateData2:
         Infrared_PlateData1[5] = Wifi_Rx_Buf[3];
         Infrared_PlateData2[2] = Wifi_Rx_Buf[4];
         Infrared_PlateData2[3] = Wifi_Rx_Buf[5];
-        break; // ³µÅÆÐÅÏ¢2
+        break; // è½¦ç‰Œä¿¡æ¯2
 
     case FromHost_AlarmON:
         Infrared_AlarmData[0] = Wifi_Rx_Buf[3];
         Infrared_AlarmData[1] = Wifi_Rx_Buf[4];
         Infrared_AlarmData[2] = Wifi_Rx_Buf[5];
-        break; // ±¨¾¯Æ÷¿ª
+        break; // æŠ¥è­¦å™¨å¼€
 
     case FromHost_AlarmOFF:
         Infrared_AlarmData[3] = Wifi_Rx_Buf[3];
         Infrared_AlarmData[4] = Wifi_Rx_Buf[4];
         Infrared_AlarmData[5] = Wifi_Rx_Buf[5];
-        break; // ±¨¾¯Æ÷¹Ø
+        break; // æŠ¥è­¦å™¨å…³
 
     case FromHost_Garage:
         Set_tba_WheelLED(L_LED, 1);
         Set_tba_WheelLED(R_LED, 1);
-        break; // Á¢Ìå³µ¿â
+        break; // ç«‹ä½“è½¦åº“
 
     case FromHost_TFTRecognition:
-        break; // TFTÊ¶±ð
+        break; // TFTè¯†åˆ«
 
     case FromHost_AGVStart:
         AGV_Start();
-        break; // AGVÆô¶¯
+        break; // AGVå¯åŠ¨
     default:
         break;
     }
@@ -216,7 +216,7 @@ ZigBee_DataStatus_t AGVComplete_Status = {0, 0};
     X.isSet = SET;        \
     X.timeStamp = Get_GlobalTimeStamp()
 
-// ZigBeeÖ¸Áî´¦Àí
+// ZigBeeæŒ‡ä»¤å¤„ç†
 void ZigBee_CmdHandler(uint8_t cmd)
 {
     switch (cmd)
@@ -233,12 +233,12 @@ void ZigBee_CmdHandler(uint8_t cmd)
     }
 }
 
-// ´¦ÀíÉÏÎ»»ú·µ»ØµÄÊý¾Ý
+// å¤„ç†ä¸Šä½æœºè¿”å›žçš„æ•°æ®
 void HostData_Handler(uint8_t *buf)
 {
-    if (buf[Data_RequestID] > 0 && buf[Data_RequestID] <= DATA_REQUEST_NUMBER) // È·ÈÏÃüÁîÊÇ·ñÔÚÉè¶¨·¶Î§
+    if (buf[Data_RequestID] > 0 && buf[Data_RequestID] <= DATA_REQUEST_NUMBER) // ç¡®è®¤å‘½ä»¤æ˜¯å¦åœ¨è®¾å®šèŒƒå›´
     {
-        // ½á¹¹ÌåÊý×é DataBuffer ÖÐÈ¡³öID¶ÔÓ¦µÄÖ¸Õë£¬´ÓIDºÅÖ®ºó¿ªÊ¼£¬¿½±´ÏàÓ¦µÄID×Ö½ÚÊý
+        // ç»“æž„ä½“æ•°ç»„ DataBuffer ä¸­å–å‡ºIDå¯¹åº”çš„æŒ‡é’ˆï¼Œä»ŽIDå·ä¹‹åŽå¼€å§‹ï¼Œæ‹·è´ç›¸åº”çš„IDå­—èŠ‚æ•°
         memcpy(DataBuffer[buf[Data_RequestID]].buffer, &buf[Data_RequestID + 1], DataBuffer[buf[Data_RequestID]].Data_Length);
         DataBuffer[buf[Data_RequestID]].isSet = SET;
     }

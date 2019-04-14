@@ -35,7 +35,7 @@ void HC595_Write_Data(uint8_t dis_data)
     RCK_SET;
 }
 
-// ÏÔÊ¾²âÊÔ£¨ÓĞËÀÑ­»·£©
+// æ˜¾ç¤ºæµ‹è¯•ï¼ˆæœ‰æ­»å¾ªç¯ï¼‰
 void display(uint8_t a, uint8_t b)
 {
     while (1)

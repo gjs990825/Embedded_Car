@@ -3,12 +3,12 @@
 
 #include "sys.h"
 
-// ¼ÆËã³öµÄPIDÖµ
+// è®¡ç®—å‡ºçš„PIDå€¼
 extern float PID_value;
 
-// ¸ù¾İµ±Ç°Îó²î¼ÆËã
+// æ ¹æ®å½“å‰è¯¯å·®è®¡ç®—
 void Calculate_pid(float inputError);
-// Çå¿ÕPIDÊı¾İ
+// æ¸…ç©ºPIDæ•°æ®
 void PidData_Clear(void);
 
 

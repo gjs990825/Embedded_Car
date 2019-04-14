@@ -1,15 +1,15 @@
 #include "stm32f4xx.h"
 #include "tba.h"
 
-// ÈÎÎñ°å¹âÃôµç×èÅäÖÃ
+// ä»»åŠ¡æ¿å…‰æ•ç”µé˜»é…ç½®
 void Tba_Photoresistance_Config(void)
 {
 	GPIO_InitTypeDef GPIO_TypeDefStructure;
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);
 
 	GPIO_TypeDefStructure.GPIO_Pin = GPIO_Pin_8;
-	GPIO_TypeDefStructure.GPIO_Mode = GPIO_Mode_IN; //ÊäÈë
-	GPIO_TypeDefStructure.GPIO_PuPd = GPIO_PuPd_UP; //ÉÏÀ­
+	GPIO_TypeDefStructure.GPIO_Mode = GPIO_Mode_IN; //è¾“å…¥
+	GPIO_TypeDefStructure.GPIO_PuPd = GPIO_PuPd_UP; //ä¸Šæ‹‰
 	GPIO_Init(GPIOA, &GPIO_TypeDefStructure);
 }
 
@@ -18,24 +18,24 @@ uint8_t Get_tba_phsis_value(void)
 	return GPIO_ReadInputDataBit(GPIOG, GPIO_Pin_8);
 }
 
-// ÈÎÎñ°å·äÃùÆ÷ÅäÖÃ
+// ä»»åŠ¡æ¿èœ‚é¸£å™¨é…ç½®
 void Tba_Beep_Config(void)
 {
 	GPIO_InitTypeDef GPIO_TypeDefStructure;
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
 
 	GPIO_TypeDefStructure.GPIO_Pin = GPIO_Pin_13;
-	GPIO_TypeDefStructure.GPIO_Mode = GPIO_Mode_OUT;	 //ÊäÈë
-	GPIO_TypeDefStructure.GPIO_PuPd = GPIO_PuPd_UP;		 //ÉÏÀ­
-	GPIO_TypeDefStructure.GPIO_Speed = GPIO_Speed_50MHz; // ÓĞ¶¾£¡£¡
+	GPIO_TypeDefStructure.GPIO_Mode = GPIO_Mode_OUT;	 //è¾“å…¥
+	GPIO_TypeDefStructure.GPIO_PuPd = GPIO_PuPd_UP;		 //ä¸Šæ‹‰
+	GPIO_TypeDefStructure.GPIO_Speed = GPIO_Speed_50MHz; // æœ‰æ¯’ï¼ï¼
 	GPIO_Init(GPIOC, &GPIO_TypeDefStructure);
 	GPIO_SetBits(GPIOC, GPIO_Pin_13);
 }
 
 /**
-º¯Êı¹¦ÄÜ£ºÉèÖÃÈÎÎñ°å·äÃùÆ÷×´Ì¬
-²Î    Êı£ºswch SET ¿ªÆô RESET ¹Ø±Õ
-·µ »Ø Öµ£ºÎŞ
+å‡½æ•°åŠŸèƒ½ï¼šè®¾ç½®ä»»åŠ¡æ¿èœ‚é¸£å™¨çŠ¶æ€
+å‚    æ•°ï¼šswch SET å¼€å¯ RESET å…³é—­
+è¿” å› å€¼ï¼šæ— 
 */
 void Set_tba_Beep(uint8_t swch)
 {
@@ -49,7 +49,7 @@ void Set_tba_Beep(uint8_t swch)
 	}
 }
 
-// ÈÎÎñ°å×ªÏòµÆÅäÖÃ
+// ä»»åŠ¡æ¿è½¬å‘ç¯é…ç½®
 void Tba_WheelLED_Config(void)
 {
 	GPIO_InitTypeDef GPIO_TypeDefStructure;
@@ -57,17 +57,17 @@ void Tba_WheelLED_Config(void)
 
 	// LED_L -- PH10  LED_R --PH11
 	GPIO_TypeDefStructure.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_11;
-	GPIO_TypeDefStructure.GPIO_Mode = GPIO_Mode_OUT; //ÊäÈë
-	GPIO_TypeDefStructure.GPIO_PuPd = GPIO_PuPd_UP;  //ÉÏÀ­
+	GPIO_TypeDefStructure.GPIO_Mode = GPIO_Mode_OUT; //è¾“å…¥
+	GPIO_TypeDefStructure.GPIO_PuPd = GPIO_PuPd_UP;  //ä¸Šæ‹‰
 	GPIO_Init(GPIOH, &GPIO_TypeDefStructure);
 	GPIO_SetBits(GPIOH, GPIO_Pin_10 | GPIO_Pin_11);
 }
 
 /**
-º¯Êı¹¦ÄÜ: ÈÎÎñ°å×ªÏòµÆ¿ØÖÆ
-²Î    Êı£ºLorR  L_LED--×ó²à   R_LED--ÓÒ²à
-		  swch  SET -- ¿ª     RESET--¹Ø
-·µ »Ø Öµ: ÎŞ
+å‡½æ•°åŠŸèƒ½: ä»»åŠ¡æ¿è½¬å‘ç¯æ§åˆ¶
+å‚    æ•°ï¼šLorR  L_LED--å·¦ä¾§   R_LED--å³ä¾§
+		  swch  SET -- å¼€     RESET--å…³
+è¿” å› å€¼: æ— 
 */
 void Set_tba_WheelLED(uint8_t LorR, uint8_t swch)
 {
@@ -88,7 +88,7 @@ void Set_tba_WheelLED(uint8_t LorR, uint8_t swch)
 	}
 }
 
-// ÈÎÎñ°å³õÊ¼»¯
+// ä»»åŠ¡æ¿åˆå§‹åŒ–
 void Tba_Init(void)
 {
 	Tba_Photoresistance_Config();

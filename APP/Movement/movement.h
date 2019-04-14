@@ -5,17 +5,17 @@
 #include "a_star.h"
 #include "Timer.h"
 
-// Stop_FlagµÄÃ¶¾Ù
+// Stop_Flagçš„æšä¸¾
 typedef enum
 {
-	TRACKING = 0x00,		// Ñ­¼£×´Ì¬
-	CROSSROAD = 0x01,		// Ê®×ÖÂ·¿Ú
-	TURNCOMPLETE = 0x02,	// ×ªÍäÍê³É
-	FORBACKCOMPLETE = 0x03, // Ç°½øºóÍËÍê³É(¶¨³¤Ñ­¼£)
-	OUTTRACK = 0x04			// ³öÏß
+	TRACKING = 0x00,		// å¾ªè¿¹çŠ¶æ€
+	CROSSROAD = 0x01,		// åå­—è·¯å£
+	TURNCOMPLETE = 0x02,	// è½¬å¼¯å®Œæˆ
+	FORBACKCOMPLETE = 0x03, // å‰è¿›åé€€å®Œæˆ(å®šé•¿å¾ªè¿¹)
+	OUTTRACK = 0x04			// å‡ºçº¿
 } StopFlag_t;
 
-// µÈ´ıÄ³¸ö±êÖ¾Î»¡£×¢Òâ£º´Ë²Ù×÷Ã»ÓĞ³¬Ê±´¦Àí»úÖÆ
+// ç­‰å¾…æŸä¸ªæ ‡å¿—ä½ã€‚æ³¨æ„ï¼šæ­¤æ“ä½œæ²¡æœ‰è¶…æ—¶å¤„ç†æœºåˆ¶
 #define WaitForFlag(flag, status) \
 	do                            \
 	{                             \
@@ -24,7 +24,7 @@ typedef enum
 		};                        \
 	} while (0)
 
-// µÈ´ıÄ³¸ö±êÖ¾Î»£¬³¬Ê±ÔòºöÂÔ
+// ç­‰å¾…æŸä¸ªæ ‡å¿—ä½ï¼Œè¶…æ—¶åˆ™å¿½ç•¥
 #define WaitForFlagInMs(flag, status, timeout)                        \
 	do                                                                \
 	{                                                                 \
@@ -34,7 +34,7 @@ typedef enum
 		};                                                            \
 	} while (0)
 
-// µÈ´ı¶¯×÷Íê³É£¬ÓÃÓÚ×ªÏòÑ­¼£µÈ²»»á³¬Ê±µÄÈÎÎñ
+// ç­‰å¾…åŠ¨ä½œå®Œæˆï¼Œç”¨äºè½¬å‘å¾ªè¿¹ç­‰ä¸ä¼šè¶…æ—¶çš„ä»»åŠ¡
 #define ExcuteAndWait(action, Flag, waitStatus) \
 	do                                          \
 	{                                           \
@@ -43,11 +43,11 @@ typedef enum
 		Stop();                                 \
 	} while (0)
 
-// ¿ìËÙ¶¯×÷ºê¶¨Òå
+// å¿«é€ŸåŠ¨ä½œå®å®šä¹‰
 #define TURN(digree) ExcuteAndWait(Turn_ByEncoder(digree), Stop_Flag, TURNCOMPLETE)
 #define MOVE(distance) ExcuteAndWait(Move_ByEncoder(Mission_Speed, distance), Stop_Flag, FORBACKCOMPLETE)
 
-// »ù±¾ÔË¶¯¿ØÖÆ
+// åŸºæœ¬è¿åŠ¨æ§åˆ¶
 void Move_ByEncoder(int speed, int16_t distance);
 
 void Stop(void);
@@ -57,13 +57,12 @@ void Turn_ByEncoder(int16_t digree);
 void Track_ByEncoder(int speed, uint16_t setMP);
 void Start_Tracking(int speed);
 
-// Ñ­¼£Ïß×ªÍä£¨Î´×öÓÅ»¯£¬²»ÎÈ¶¨£©
+// å¾ªè¿¹çº¿è½¬å¼¯ï¼ˆæœªåšä¼˜åŒ–ï¼Œä¸ç¨³å®šï¼‰
 void Turn_ByTrack(Driection_t dir);
 
-// ×Ô¶¯Ö´ĞĞ
+// è‡ªåŠ¨æ‰§è¡Œ
 void Go_ToNextNode(RouteNode_t *current, RouteNode_t next);
 void Auto_RouteTask(RouteNode_t *current, RouteNode_t next);
-// void Auto_Run(void);
 void Auto_Run(RouteSetting_t *routeTask, uint8_t taskNumber, RouteNode_t *current);
 
 #endif // _MOVEMENT_H_

@@ -1,15 +1,15 @@
 
 
-// /***************************************ºìÍâ±êÖ¾Îï**************************************************/
+// /***************************************çº¢å¤–æ ‡å¿—ç‰©**************************************************/
 
 // extern uint8_t BJT_Flag;
 // extern uint8_t ZNLD_Flag;
 // extern uint8_t XZLED_Flag;
 
-// extern uint8_t HW_K[6];      //±¨¾¯Ì¨Êı¾İ´æ·Å
+// extern uint8_t HW_K[6];      //æŠ¥è­¦å°æ•°æ®å­˜æ”¾
 
-// extern uint8_t CP_SHOW1[6];  //Ğı×ªLED³µÅÆÊı¾İ1´æ·Å
-// extern uint8_t CP_SHOW2[6];  //Ğı×ªLED³µÅÆÊı¾İ2´æ·Å
+// extern uint8_t CP_SHOW1[6];  //æ—‹è½¬LEDè½¦ç‰Œæ•°æ®1å­˜æ”¾
+// extern uint8_t CP_SHOW2[6];  //æ—‹è½¬LEDè½¦ç‰Œæ•°æ®2å­˜æ”¾
 // extern uint8_t JL_SHOW[8];
 
 // extern uint8_t ZNLD[8];

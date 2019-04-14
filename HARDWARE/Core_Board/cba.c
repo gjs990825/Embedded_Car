@@ -3,8 +3,7 @@
 #include "delay.h"
 #include "cba.h"
 
-
-// °´¼üÉèÖÃÆô¶¯³ÌĞò
+// æŒ‰é”®è®¾ç½®å¯åŠ¨ç¨‹åº
 
 #include "infrared.h"
 #include "data_base.h"
@@ -33,12 +32,12 @@
 #define KEY_RFID_TEST 3
 #define KEY_TASK_BOARD_TEST 4
 
-// ÅäÖÃ°´¼üµ÷ÊÔ·½°¸
+// é…ç½®æŒ‰é”®è°ƒè¯•æ–¹æ¡ˆ
 #define KEY_CONFIGURATION KEY_RFID_TEST
 
 #if (KEY_CONFIGURATION == KEY_DEFAULT)
 
-// Ä¬ÈÏÅäÖÃ
+// é»˜è®¤é…ç½®
 #define Action_S1() Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
 #define Action_S2() Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStaus);
 #define Action_S3() Test_RFID(5)
@@ -46,7 +45,7 @@
 
 #elif (KEY_CONFIGURATION == KEY_DATA_INTERACTION)
 
-// Êı¾İ½»»¥ÅäÖÃ
+// æ•°æ®äº¤äº’é…ç½®
 #define Action_S1() print_info("Plate:%s\r\n", Get_PlateNumber())
 #define Action_S2() print_info("QRCOde:%s\r\n", Get_QRCode(DataRequest_QRCode1, 0))
 #define Action_S3() print_info("Shape:%d\r\n", Get_ShapeNumber(Shape_Triangle))
@@ -54,7 +53,7 @@
 
 #elif (KEY_CONFIGURATION == KEY_AGV_TEST)
 
-// ´Ó³µ²âÊÔÅäÖÃ
+// ä»è½¦æµ‹è¯•é…ç½®
 #define Action_S1() AGV_SetTowards(DIR_UP)
 #define Action_S2() AGV_SetTaskID(1, 0)
 #define Action_S3() AGV_SetRoute("B7B6D6D4G4")
@@ -62,7 +61,7 @@
 
 #elif (KEY_CONFIGURATION == KEY_RFID_TEST)
 
-// °×¿¨µ÷ÊÔÅäÖÃ
+// ç™½å¡è°ƒè¯•é…ç½®
 #define Action_S1() Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStaus);
 #define Action_S2() Test_RFID(6)
 #define Action_S3() Test_RFID(5)
@@ -70,7 +69,7 @@
 
 #elif (KEY_CONFIGURATION == KEY_TASK_BOARD_TEST)
 
-// // ÈÎÎñ°åµ÷ÊÔÅäÖÃ
+// // ä»»åŠ¡æ¿è°ƒè¯•é…ç½®
 #define Action_S1() Infrared_Send_A(Infrared_AlarmON)
 #define Action_S2() print_info("Diatance:%d\r\n", Ultrasonic_Task(20))
 #define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10))
@@ -78,7 +77,7 @@
 
 #endif
 
-// ºËĞÄ°å³õÊ¼»¯£¨KEY/LED/BEEP£©
+// æ ¸å¿ƒæ¿åˆå§‹åŒ–ï¼ˆKEY/LED/BEEPï¼‰
 void Cba_Init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -87,23 +86,23 @@ void Cba_Init(void)
 
 	//GPIOI4\5\6\7----KEY
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN; //Í¨ÓÃÊä³ö
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP; //ÉÏÀ­
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN; //é€šç”¨è¾“å‡º
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP; //ä¸Šæ‹‰
 	GPIO_Init(GPIOI, &GPIO_InitStructure);
 
 	//GPIOH12\13\14\15-----LED
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;  //Í¨ÓÃÊä³ö
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; //ÍÆÍìÊä³ö
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;   //ÉÏÀ­
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;  //é€šç”¨è¾“å‡º
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; //æ¨æŒ½è¾“å‡º
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;   //ä¸Šæ‹‰
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_Init(GPIOH, &GPIO_InitStructure);
 
 	//GPIOH5 ---- MP_SPK
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;  //Í¨ÓÃÊä³ö
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; //ÍÆÍìÊä³ö
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;   //ÉÏÀ­
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;  //é€šç”¨è¾“å‡º
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; //æ¨æŒ½è¾“å‡º
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;   //ä¸Šæ‹‰
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_Init(GPIOH, &GPIO_InitStructure);
 }
@@ -119,7 +118,7 @@ void Beep(uint8_t times)
 	}
 }
 
-// °´¼ü¼ì²â
+// æŒ‰é”®æ£€æµ‹
 void KEY_Check(void)
 {
 	if (S1 == 0)
@@ -127,7 +126,6 @@ void KEY_Check(void)
 		delay_ms(10);
 		if (S1 == 0)
 		{
-			// LED1 = !LED1;
 			while (!S1)
 				;
 			Action_S1();
@@ -138,7 +136,6 @@ void KEY_Check(void)
 		delay_ms(10);
 		if (S2 == 0)
 		{
-			// LED2 = !LED2;
 			while (!S2)
 				;
 			Action_S2();
@@ -149,7 +146,6 @@ void KEY_Check(void)
 		delay_ms(10);
 		if (S3 == 0)
 		{
-			// LED3 = !LED3;
 			while (!S3)
 				;
 			Action_S3();

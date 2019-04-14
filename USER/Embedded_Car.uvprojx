@@ -335,7 +335,7 @@
             <v6WtE>0</v6WtE>
             <v6Rtti>0</v6Rtti>
             <VariousControls>
-              <MiscControls></MiscControls>
+              <MiscControls>--no_multibyte_chars</MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F40_41xxx</Define>
               <Undefine></Undefine>
               <IncludePath>..\CMSIS;..\FWLIB\inc;..\USER;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\timer;..\my_lib;..\MALLOC;..\HARDWARE;..\HARDWARE\Task_Board;..\HARDWARE\Core_Board;..\HARDWARE\CAN;..\HARDWARE\Full;..\HARDWARE\Movement;..\HARDWARE\Task_Board\BH1705;..\HARDWARE\Task_Board\INFARED;..\HARDWARE\Task_Board\SYN7318;..\HARDWARE\Task_Board\ULTRASONIC;..\HARDWARE\Core_Board\POWER_CHECK;..\HARDWARE\Core_Board\UART;..\HARDWARE\Core_Board\UART_A72;..\HARDWARE\Core_Board\UART\UART_A72;..\APP\Movement;..\APP\Movement\A_Star;..\APP\Movement\PID;..\APP\Movement\ROAD_CHECK;..\APP\Debug;..\APP\Task;..\APP\CAN_TIMER;..\APP\Protocol;..\APP\Movement\Route;..\APP\DataFromHost;..\APP\AGV;..\HARDWARE\Task_Board\SevenSegmentDisplay;..\HARDWARE\Core_Board\RC522</IncludePath>

@@ -1,34 +1,36 @@
 #include "hardware.h"
 
-// ³õÊ¼»¯Ó²¼ş
+// åˆå§‹åŒ–ç¡¬ä»¶
 void Hardware_Init(void)
 {
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); // ÖĞ¶ÏÓÅÏÈ¼¶·Ö×é
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); // ä¸­æ–­ä¼˜å…ˆçº§åˆ†ç»„
 	delay_init(168);
 
-	Hard_Can_Init();	// CAN ×ÜÏß³õÊ¼»¯
-	Tba_Init();			// ÈÎÎñ°å³õÊ¼»¯
-	Infrared_Init();	// ºìÍâ³õÊ¼»¯
-	Cba_Init();			// ºËĞÄ°å³õÊ¼»¯
-	Ultrasonic_Init();  // ³¬Éù²¨³õÊ¼»¯
-	BH1750_Configure(); // BH1750 ³õÊ¼»¯
-	SYN7318_Init();		// ÓïÒôÊ¶±ğ³õÊ¼»¯
-	Electricity_Init(); // µçÁ¿¼ì²â³õÊ¼»¯
-	UartA72_Init();		// ÖÁ A72 ¿ª·¢°åµÄ´®¿Ú
+	Hard_Can_Init();	// CAN æ€»çº¿åˆå§‹åŒ–
+	Tba_Init();			// ä»»åŠ¡æ¿åˆå§‹åŒ–
+	Infrared_Init();	// çº¢å¤–åˆå§‹åŒ–
+	Cba_Init();			// æ ¸å¿ƒæ¿åˆå§‹åŒ–
+	Ultrasonic_Init();  // è¶…å£°æ³¢åˆå§‹åŒ–
+	BH1750_Configure(); // BH1750 åˆå§‹åŒ–
+	SYN7318_Init();		// è¯­éŸ³è¯†åˆ«åˆå§‹åŒ–
+	Electricity_Init(); // ç”µé‡æ£€æµ‹åˆå§‹åŒ–
+	UartA72_Init();		// è‡³ A72 å¼€å‘æ¿çš„ä¸²å£
 
-	// Ä¬ÈÏÖµ(83, 7)ÆµÂÊ¹ı¸ß£¬½µµÍËÙ¶ÈºóÄ¿Ç°Ã»ÓĞ·¢ÏÖÎÊÌâ
-	Can_check_Init(83, 999); // CAN ×ÜÏß¶¨Ê±Æ÷³õÊ¼»¯
+	// é»˜è®¤å€¼(83, 7)é¢‘ç‡è¿‡é«˜ï¼Œé™ä½é€Ÿåº¦åç›®å‰æ²¡æœ‰å‘ç°é—®é¢˜
+	Can_check_Init(83, 999); // CAN æ€»çº¿å®šæ—¶å™¨åˆå§‹åŒ–
 
-	Roadway_CheckTimInit(167, 1999); // Â·¿ö¼ì²â
-	Timer_Init(167, 999);			 // È«¾ÖÊ±¼ä
-	Readcard_Device_Init();			 // RC522 ³õÊ¼»¯
+	Roadway_CheckTimInit(167, 1999); // è·¯å†µæ£€æµ‹
+	Timer_Init(167, 999);			 // å…¨å±€æ—¶é—´
+	Readcard_Device_Init();			 // RC522 åˆå§‹åŒ–
 
-	my_mem_init(SRAMIN); // ³õÊ¼»¯ÄÚ²¿ÄÚ´æ³Ø
-	// my_mem_init(SRAMEX); // ³õÊ¼»¯Íâ²¿ÄÚ´æ³Ø£¨Î´ÉèÖÃ£¬Ôİ²»¿ÉÓÃ£©
+	my_mem_init(SRAMIN); // åˆå§‹åŒ–å†…éƒ¨å†…å­˜æ± 
+	// my_mem_init(SRAMEX);
+	// å¤–éƒ¨å†…å­˜æ± æœªé…ç½®æ¥å£ï¼Œæš‚ä¸å¯ç”¨
 
-	CanTimer_Init(16799, 199);	  // CAN Êı¾İ¼ì²é
-	DebugTimer_Init(16799, 1999); // µ÷ÊÔ£¨°×¿¨¼ì²â£©
-	DebugPin_Init();			  // ³õÊ¼»¯µ÷ÊÔÓÃÒı½Å
+	CanTimer_Init(16799, 199);	// CAN æ•°æ®æ£€æŸ¥
+	DebugTimer_Init(16799, 1999); // è°ƒè¯•ï¼ˆç™½å¡æ£€æµ‹ï¼‰
+	DebugPin_Init();			  // åˆå§‹åŒ–è°ƒè¯•ç”¨å¼•è„š
+	Update_MotorSpeed(0, 0);	  // ç”µæœºé€Ÿåº¦ç½®é›¶
 
 	print_info("\r\nSystem running...\r\n");
 }

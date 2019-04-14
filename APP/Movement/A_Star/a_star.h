@@ -4,11 +4,6 @@
 #include "sys.h"
 #include "route.h"
 
-// bool A_Star_GetRouteBewteenTasks(RouteNode_t current, Route_Task_t nextTask);
-bool A_Star_GetRoute(void);
-
-
-////
 bool A_Star_GetTestRoute(RouteNode_t current, RouteNode_t next, RouteNode_t *finalRoute, uint8_t *routeCount);
 
 #endif // _A_STAR_H_

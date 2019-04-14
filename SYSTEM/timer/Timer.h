@@ -3,37 +3,35 @@
 
 #include "sys.h"
 
-// ·µ»ØÊÇ·ñ³¬Ê±£¨µ¥Î»ms£©
+// è¿”å›žæ˜¯å¦è¶…æ—¶ï¼ˆå•ä½msï¼‰
 #define IsTimeOut(setTimeStamp, timeOutLimit) (global_times > (setTimeStamp + timeOutLimit))
-// »ñÈ¡µ±Ç°Ê±¼ä´Á
+// èŽ·å–å½“å‰æ—¶é—´æˆ³
 #define Get_GlobalTimeStamp() (global_times)
 
 extern volatile uint32_t global_times;
 
 void Timer_Init(uint16_t arr, uint16_t psc);
 
-// ³ÌÐòµ÷ÓÃÐèÒªºÄ·ÑÊ±¼ä£¬Ê¹ÓÃºê¶¨ÒåºÍÄÚÁªº¯Êý¼õÉÙÊ±¼ä¿ªÏú
-// warning : Ä¿Ç°Ã»ÓÐ½øÐÐÊý¾Ý½ÓÊÕ²Ù×÷£¬ºóÐøÐèÒªÑéÖ¤´Ë¸Ä¶¯¶Ô½ÓÊÕµÄÓ°Ïì
+// ç¨‹åºè°ƒç”¨éœ€è¦è€—è´¹æ—¶é—´ï¼Œä½¿ç”¨å®å®šä¹‰å’Œå†…è”å‡½æ•°å‡å°‘æ—¶é—´å¼€é”€
+// warning : ç›®å‰æ²¡æœ‰è¿›è¡Œæ•°æ®æŽ¥æ”¶æ“ä½œï¼ŒåŽç»­éœ€è¦éªŒè¯æ­¤æ”¹åŠ¨å¯¹æŽ¥æ”¶çš„å½±å“
 
-// Í¨¹ýÊ±¼ä´ÁÑÓÊ±£¨¾«¶È1ms£©
+// é€šè¿‡æ—¶é—´æˆ³å»¶æ—¶ï¼ˆç²¾åº¦1msï¼‰
 static inline void delay(uint16_t ms)
 {
     uint32_t startStamp = Get_GlobalTimeStamp();
-    for(;;)
+    for (;;)
     {
         if (IsTimeOut(startStamp, ms))
             break;
     }
 }
 
-// uint32_t gt_get_sub(uint32_t c);
 static inline uint32_t gt_get_sub(uint32_t c)
 {
     (c > global_times) ? (c -= global_times) : (c = 0);
     return c;
 }
 
-// uint32_t gt_get(void);
 #define gt_get Get_GlobalTimeStamp
 
 #endif

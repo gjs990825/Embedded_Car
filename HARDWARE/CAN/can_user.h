@@ -14,9 +14,9 @@
 extern uint8_t Wifi_Rx_Buf[ WIFI_MAX_NUM ];
 extern uint8_t Zigb_Rx_Buf[ ZIGB_RX_MAX ];
 extern uint8_t Wifi_Rx_num;
-extern uint8_t Wifi_Rx_flag;  //½ÓÊÕÍê³É±êÖ¾Î»
+extern uint8_t Wifi_Rx_flag;  //æ¥æ”¶å®Œæˆæ ‡å¿—ä½
 extern uint8_t Zigbee_Rx_num;
-extern uint8_t Zigbee_Rx_flag;  //½ÓÊÕÍê³É±êÖ¾Î»
+extern uint8_t Zigbee_Rx_flag;  //æ¥æ”¶å®Œæˆæ ‡å¿—ä½
 
 extern uint8_t Host_AGV_Return_Flag;
 extern uint8_t AGV_data_Falg;

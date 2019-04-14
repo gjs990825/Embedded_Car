@@ -5,7 +5,7 @@
 #include "protocol.h"
 #include "route.h"
 
-// RFIDÏà¹Ø ¡ý
+// RFIDç›¸å…³ â†“
 
 extern uint8_t FOUND_RFID_CARD;
 extern uint8_t RFID_RoadSection;
@@ -27,7 +27,7 @@ void Task_RFIDTestStart(void);
 void Task_RFIDTestEnd(void);
 void Set_CurrentCardInfo(RFID_Info_t *RFIDx);
 
-// RFIDÏà¹Ø ¡ü
+// RFIDç›¸å…³ â†‘
 
 void TFT_Task(void);
 void Start_Task(void);

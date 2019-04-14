@@ -2,7 +2,7 @@
 #include "Hard_Can.h"
 #include "cba.h"
 
-// CAN×ÜÏß¼ì²â³õÊ¼»¯£¨TIM7£©
+// CANæ€»çº¿æ£€æµ‹åˆå§‹åŒ–ï¼ˆTIM7ï¼‰
 void Can_check_Init(uint16_t arr,uint16_t psc)
 {
 	TIM_TimeBaseInitTypeDef TIM_InitStructure;
@@ -33,7 +33,7 @@ void TIM7_IRQHandler(void)
 	if(TIM_GetITStatus(TIM7,TIM_IT_Update) == SET)
 	{
 		// DEBUG_PIN_1_SET();
-		Hard_Can_While();								//CAN×ÜÏß¼ì²â
+		Hard_Can_While();								//CANæ€»çº¿æ£€æµ‹
 		// DEBUG_PIN_1_RESET();
 	}
 	TIM_ClearITPendingBit(TIM7,TIM_IT_Update);

@@ -5,20 +5,20 @@
 #include "CanP_HostCom.h"
 #include "data_filtering.h"
 
-#define POWER_CHECK_L 14 // µçÁ¿²É¼¯Í¨µÀ
+#define POWER_CHECK_L 14 // ç”µé‡é‡‡é›†é€šé“
 #define POWER_CHECK_R 15
-#define POWER_CHECK_NUM 3 // ADC²ÉÑù´ÎÊı
+#define POWER_CHECK_NUM 3 // ADCé‡‡æ ·æ¬¡æ•°
 
 #define PWR_MAX 12000.0 // 12V
 #define PWR_MIN 9000.0  // 9V
 #define PWR_DV (PWR_MAX - PWR_MIN)
 u8 Electric_Buf[2];
-float Pa = 0.0, Pb = 0.0; // ¼ÆËã²ÎÊı
+float Pa = 0.0, Pb = 0.0; // è®¡ç®—å‚æ•°
 
-u8 pwr_ck_l = 0; // µçÁ¿Êı¾İ
+u8 pwr_ck_l = 0; // ç”µé‡æ•°æ®
 u8 pwr_ck_r = 0;
 
-//³õÊ¼»¯ADC
+//åˆå§‹åŒ–ADC
 void ADC_Configure(void)
 {
 	ADC_InitTypeDef ADC_InitStructure;
@@ -34,21 +34,21 @@ void ADC_Configure(void)
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-	ADC_CommonStructure.ADC_Mode = ADC_Mode_Independent;					 //¶ÀÁ¢Ä£Ê½
-	ADC_CommonStructure.ADC_Prescaler = ADC_Prescaler_Div2;					 //ADC 2·ÖÆµ
-	ADC_CommonStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles; //Á½¸ö²ÉÑù¼ä¸ôÊ±¼ä
-	ADC_CommonStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled;		 //Ê§ÄÜADC DMA¹¦ÄÜ
+	ADC_CommonStructure.ADC_Mode = ADC_Mode_Independent;					 //ç‹¬ç«‹æ¨¡å¼
+	ADC_CommonStructure.ADC_Prescaler = ADC_Prescaler_Div2;					 //ADC 2åˆ†é¢‘
+	ADC_CommonStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles; //ä¸¤ä¸ªé‡‡æ ·é—´éš”æ—¶é—´
+	ADC_CommonStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled;		 //å¤±èƒ½ADC DMAåŠŸèƒ½
 	ADC_CommonInit(&ADC_CommonStructure);
 
-	RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC1, ENABLE);  //ADC1¸´Î»
-	RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC1, DISABLE); //¸´Î»½áÊø
+	RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC1, ENABLE);  //ADC1å¤ä½
+	RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC1, DISABLE); //å¤ä½ç»“æŸ
 
-	ADC_InitStructure.ADC_ScanConvMode = DISABLE;								//µ¥Í¨µÀ
-	ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;						//12Î»¾«¶È
-	ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;							//µ¥´Î×ª»»
-	ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None; //ÎŞ´¥·¢
-	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;						//Êı¾İÓÒ¶ÔÆë
-	ADC_InitStructure.ADC_NbrOfConversion = 1;									//Í¨µÀ¸öÊıÎª1
+	ADC_InitStructure.ADC_ScanConvMode = DISABLE;								//å•é€šé“
+	ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;						//12ä½ç²¾åº¦
+	ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;							//å•æ¬¡è½¬æ¢
+	ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None; //æ— è§¦å‘
+	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;						//æ•°æ®å³å¯¹é½
+	ADC_InitStructure.ADC_NbrOfConversion = 1;									//é€šé“ä¸ªæ•°ä¸º1
 	ADC_Init(ADC1, &ADC_InitStructure);
 
 	ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 1, ADC_SampleTime_144Cycles);
@@ -57,9 +57,9 @@ void ADC_Configure(void)
 }
 
 /**
-*º¯Êı¹¦ÄÜ: »ñÈ¡ADCÖµ
-*²Î    Êı: ÎŞ
-*·µ »Ø Öµ: ADC×ª»»Öµ
+*å‡½æ•°åŠŸèƒ½: è·å–ADCå€¼
+*å‚    æ•°: æ— 
+*è¿” å› å€¼: ADCè½¬æ¢å€¼
 **/
 uint16_t Get_ADC_Value()
 {
@@ -82,7 +82,7 @@ u16 Get_Electricity(u8 times)
 	return temp_val / times;
 }
 
-void Parameter_Init(void) // µçÁ¿¼ÆËã²ÎÊı³õÊ¼»¯
+void Parameter_Init(void) // ç”µé‡è®¡ç®—å‚æ•°åˆå§‹åŒ–
 {
 	Pb = (float)(PWR_MIN / PWR_DV);
 	Pb *= 100;
@@ -92,7 +92,7 @@ void Parameter_Init(void) // µçÁ¿¼ÆËã²ÎÊı³õÊ¼»¯
 	Pa = (float)((Pa * 100) / PWR_DV);
 }
 
-void Electricity_Init(void) // µçÁ¿¼ì²â³õÊ¼»¯
+void Electricity_Init(void) // ç”µé‡æ£€æµ‹åˆå§‹åŒ–
 {
 	Parameter_Init();
 	ADC_Configure();
@@ -113,7 +113,7 @@ void Power_Check(void)
 	temp_value = MLib_GetSub(temp, temp2);
 	if (temp2 == 0)
 	{
-		temp = (Pa * temp); // µçÁ¿¼ÆËã·½·¨
+		temp = (Pa * temp); // ç”µé‡è®¡ç®—æ–¹æ³•
 		if (temp < Pb)
 			pwr_ck_l = 0;
 		else
@@ -130,7 +130,7 @@ void Power_Check(void)
 	temp2 = temp;
 	if (temp_value > 10)
 	{
-		temp = (Pa * temp); // µçÁ¿¼ÆËã·½·¨
+		temp = (Pa * temp); // ç”µé‡è®¡ç®—æ–¹æ³•
 		if (temp < Pb)
 			pwr_ck_l = 0;
 		else

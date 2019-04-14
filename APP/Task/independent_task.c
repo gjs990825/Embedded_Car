@@ -22,15 +22,15 @@
 #include "Timer.h"
 #include "data_from_host.h"
 
-// RFIDÏà¹Ø ¡ı
+// RFIDç›¸å…³ â†“
 
-// Ñ°µ½°×¿¨
+// å¯»åˆ°ç™½å¡
 uint8_t FOUND_RFID_CARD = false;
-// °×¿¨Â·¶Î
+// ç™½å¡è·¯æ®µ
 uint8_t RFID_RoadSection = false;
-// µ±Ç°¿¨ĞÅÏ¢Ö¸Õë
+// å½“å‰å¡ä¿¡æ¯æŒ‡é’ˆ
 RFID_Info_t *CurrentRFIDCard = NULL;
-// Óöµ½°×¿¨Ê±µÄ×´Ì¬Êı¾İ
+// é‡åˆ°ç™½å¡æ—¶çš„çŠ¶æ€æ•°æ®
 struct StatusBeforeFoundRFID_Struct
 {
     uint8_t stopFlag;
@@ -41,7 +41,7 @@ struct StatusBeforeFoundRFID_Struct
     Moving_ByEncoder_t movingByencoder;
 } StatusBeforeFoundRFID;
 
-// ±£´æÓöµ½°×¿¨Ê±ºòµÄ×´Ì¬
+// ä¿å­˜é‡åˆ°ç™½å¡æ—¶å€™çš„çŠ¶æ€
 void Save_StatusBeforeFoundRFID(void)
 {
     extern uint16_t Mp_Value;
@@ -54,38 +54,38 @@ void Save_StatusBeforeFoundRFID(void)
     StatusBeforeFoundRFID.currentSpeed = Car_Speed;
 }
 
-// »Ö¸´×´Ì¬ encoderChangeValue: Ç°ºóÉè¶¨ÂëÅÌ²îÖµ
+// æ¢å¤çŠ¶æ€ encoderChangeValue: å‰åè®¾å®šç ç›˜å·®å€¼
 void Resume_StatusBeforeFoundRFID(uint16_t encoderChangeValue)
 {
-    Roadway_mp_syn(); // Í¬²½ÂëÅÌ
+    Roadway_mp_syn(); // åŒæ­¥ç ç›˜
     Moving_ByEncoder = StatusBeforeFoundRFID.movingByencoder;
     Stop_Flag = StatusBeforeFoundRFID.stopFlag;
     Track_Mode = StatusBeforeFoundRFID.trackMode;
-    // Ñ­¼£ĞÅÏ¢ÒÑÇå¿Õ£¬ĞèÒªÖØĞÂ¼ÆËã²¢¼õÈ¥Ö´ĞĞÖĞµÄĞĞ½øÖµ
+    // å¾ªè¿¹ä¿¡æ¯å·²æ¸…ç©ºï¼Œéœ€è¦é‡æ–°è®¡ç®—å¹¶å‡å»æ‰§è¡Œä¸­çš„è¡Œè¿›å€¼
     temp_MP = StatusBeforeFoundRFID.setEncoder - StatusBeforeFoundRFID.currentEncoder - encoderChangeValue;
     Car_Speed = StatusBeforeFoundRFID.currentSpeed;
 }
 
-// Éè¶¨µ±Ç°¿¨ĞÅÏ¢
+// è®¾å®šå½“å‰å¡ä¿¡æ¯
 void Set_CurrentCardInfo(RFID_Info_t *RFIDx)
 {
     CurrentRFIDCard = RFIDx;
 }
 
-// ÅäÖÃµ÷ÊÔ¿¨Ê¹ÓÃµÄĞÅÏ¢
+// é…ç½®è°ƒè¯•å¡ä½¿ç”¨çš„ä¿¡æ¯
 uint8_t _testRFIDDataBlock = 5;
 uint8_t _testRFIDKey[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 uint8_t _testRFIDAuthMode = PICC_AUTHENT1A;
 
-// RFID²âÊÔÈÎÎñ¿ªÊ¼
+// RFIDæµ‹è¯•ä»»åŠ¡å¼€å§‹
 void Task_RFIDTestStart(void)
 {
     RFID_Info_t *rfid = mymalloc(SRAMIN, sizeof(RFID_Info_t));
 
-    // Çå¿Õ
+    // æ¸…ç©º
     memset(rfid, 0, sizeof(RFID_Info_t));
 
-    // Ğ´Èëµ÷ÊÔĞÅÏ¢
+    // å†™å…¥è°ƒè¯•ä¿¡æ¯
     memcpy(rfid->key, _testRFIDKey, 6);
     rfid->authMode = _testRFIDAuthMode;
     rfid->dataBlockLocation = _testRFIDDataBlock;
@@ -94,7 +94,7 @@ void Task_RFIDTestStart(void)
     RFID_RoadSection = true;
 }
 
-// RFID²âÊÔÈÎÎñ½áÊø
+// RFIDæµ‹è¯•ä»»åŠ¡ç»“æŸ
 void Task_RFIDTestEnd(void)
 {
     myfree(SRAMIN, CurrentRFIDCard);
@@ -102,7 +102,7 @@ void Task_RFIDTestEnd(void)
     RFID_RoadSection = false;
 }
 
-// Ê¹ÓÃÉè¶¨key¶ÁÄ³¸öÉÈÇø
+// ä½¿ç”¨è®¾å®škeyè¯»æŸä¸ªæ‰‡åŒº
 void Test_RFID(uint8_t block)
 {
     uint8_t buf[17];
@@ -122,7 +122,7 @@ void Test_RFID(uint8_t block)
     }
 }
 
-// ¶Á¿¨
+// è¯»å¡
 ErrorStatus Read_RFID(RFID_Info_t *RFIDx)
 {
     ErrorStatus status = PICC_ReadBlock(RFIDx->dataBlockLocation, RFIDx->authMode, RFIDx->key, RFIDx->data);
@@ -143,34 +143,34 @@ ErrorStatus Read_RFID(RFID_Info_t *RFIDx)
     return status;
 }
 
-// RFID¶Á¿¨ÈÎÎñ£¬¼ì²âµ½°×¿¨Ê±Ö´ĞĞ
+// RFIDè¯»å¡ä»»åŠ¡ï¼Œæ£€æµ‹åˆ°ç™½å¡æ—¶æ‰§è¡Œ
 void RFID_Task(void)
 {
     uint8_t i;
 
-    // µ±Ç°¿¨ĞÅÏ¢Î´Éè¶¨£¬Ìø³ö
+    // å½“å‰å¡ä¿¡æ¯æœªè®¾å®šï¼Œè·³å‡º
     if (CurrentRFIDCard == NULL)
         return;
 
-    // ¼ÇÂ¼Î»ÖÃĞÅÏ¢
+    // è®°å½•ä½ç½®ä¿¡æ¯
     CurrentRFIDCard->coordinate = NextStatus;
     print_info("Card At:(%d,%d)\r\n", CurrentRFIDCard->coordinate.x, CurrentRFIDCard->coordinate.y);
 
     MOVE(8);
-    for (i = 0; i < 9; i++) // ¶Á¿¨·¶Î§Ô¼ 11.5-16.5£¬¼ä¸ôÒ»¹«·Ö¶ÁÈ¡()
+    for (i = 0; i < 9; i++) // è¯»å¡èŒƒå›´çº¦ 11.5-16.5ï¼Œé—´éš”ä¸€å…¬åˆ†è¯»å–()
     {
         if (Read_RFID(CurrentRFIDCard) == SUCCESS)
-            break; // ¶ÁÈ¡³É¹¦£¬Ìø³ö
+            break; // è¯»å–æˆåŠŸï¼Œè·³å‡º
         MOVE(1);
         delay_ms(500);
     }
 
-    RFID_RoadSection = false; // ½áÊøÑ°¿¨
-    FOUND_RFID_CARD = false;  // Çå¿Õ±êÖ¾Î»
-    TIM_Cmd(TIM5, DISABLE);   // Í£Ö¹¶¨Ê±Æ÷
-    MOVE(-(8 + i));           // ·µ»Ø¶Á¿¨Ç°Î»ÖÃ
+    RFID_RoadSection = false; // ç»“æŸå¯»å¡
+    FOUND_RFID_CARD = false;  // æ¸…ç©ºæ ‡å¿—ä½
+    TIM_Cmd(TIM5, DISABLE);   // åœæ­¢å®šæ—¶å™¨
+    MOVE(-(8 + i));           // è¿”å›è¯»å¡å‰ä½ç½®
 
-    // Ê®×ÖÂ·¿ÚĞèÒª¶àÍËºóÒ»µã£¬ÒòÎªÏìÓ¦Ê±¼ä±ä³¤»á¶à×ßÒ»µã
+    // åå­—è·¯å£éœ€è¦å¤šé€€åä¸€ç‚¹ï¼Œå› ä¸ºå“åº”æ—¶é—´å˜é•¿ä¼šå¤šèµ°ä¸€ç‚¹
     if (StatusBeforeFoundRFID.stopFlag == CROSSROAD)
     {
         MOVE(-2);
@@ -179,26 +179,26 @@ void RFID_Task(void)
     Update_MotorSpeed(Car_Speed, Car_Speed);
 }
 
-// RFIDÏà¹Ø ¡ü
+// RFIDç›¸å…³ â†‘
 
-// ½»Í¨µÆÊ¶±ğ
+// äº¤é€šç¯è¯†åˆ«
 void TrafficLight_Task(void)
 {
-    Send_ZigBeeDataNTimes(ZigBee_TrafficLightStartRecognition, 2, 200); // ¿ªÊ¼Ê¶±ğ½»Í¨µÆ
+    Send_ZigBeeDataNTimes(ZigBee_TrafficLightStartRecognition, 2, 200); // å¼€å§‹è¯†åˆ«äº¤é€šç¯
     delay_ms(700);
     Request_ToHost(RequestCmd_TrafficLight);
-    WaitForFlagInMs(GetCmdFlag(FromHost_TrafficLight), SET, 13 * 1000); // µÈ´ıÊ¶±ğÍê³É
+    WaitForFlagInMs(GetCmdFlag(FromHost_TrafficLight), SET, 13 * 1000); // ç­‰å¾…è¯†åˆ«å®Œæˆ
 }
 
-// TFTÍ¼ĞÎÍ¼ÏñÊ¶±ğ
+// TFTå›¾å½¢å›¾åƒè¯†åˆ«
 void TFT_Task(void)
 {
-    Request_ToHost(RequestCmd_TFTRecognition);                            // ÇëÇóÊ¶±ğTFTÄÚÈİ
-    WaitForFlagInMs(GetCmdFlag(FromHost_TFTRecognition), SET, 37 * 1000); // µÈ´ıÊ¶±ğÍê³É
+    Request_ToHost(RequestCmd_TFTRecognition);                            // è¯·æ±‚è¯†åˆ«TFTå†…å®¹
+    WaitForFlagInMs(GetCmdFlag(FromHost_TFTRecognition), SET, 37 * 1000); // ç­‰å¾…è¯†åˆ«å®Œæˆ
 }
 
-// TFTÏÔÊ¾²¿·Ö
-// TFTÏÔÊ¾HEX
+// TFTæ˜¾ç¤ºéƒ¨åˆ†
+// TFTæ˜¾ç¤ºHEX
 void TFT_Hex(uint8_t dat[3])
 {
     uint8_t buf[8] = {0x55, 0x0b, 0x10, 0x02, 0x00, 0x00, 0x12, 0xbb};
@@ -207,9 +207,9 @@ void TFT_Hex(uint8_t dat[3])
     Send_ZigBeeData(buf);
 }
 
-// Á¢ÌåÏÔÊ¾²¿·Ö
+// ç«‹ä½“æ˜¾ç¤ºéƒ¨åˆ†
 
-// Á¢ÌåÏÔÊ¾ ÏÔÊ¾³µÅÆ
+// ç«‹ä½“æ˜¾ç¤º æ˜¾ç¤ºè½¦ç‰Œ
 void RotationLED_Plate(uint8_t plate[6], uint8_t coord[2])
 {
     // Infrared_PlateData1[]
@@ -221,7 +221,7 @@ void RotationLED_Plate(uint8_t plate[6], uint8_t coord[2])
     Infrared_Send_A(Infrared_PlateData2);
 }
 
-// Á¢ÌåÏÔÊ¾ ÏÔÊ¾¾àÀë
+// ç«‹ä½“æ˜¾ç¤º æ˜¾ç¤ºè·ç¦»
 void RotationLED_Distance(uint16_t dis)
 {
     uint8_t buf[6] = {0x00};
@@ -233,7 +233,7 @@ void RotationLED_Distance(uint16_t dis)
     Infrared_Send_A(buf);
 }
 
-// ¶şÎ¬ÂëÊ¶±ğ
+// äºŒç»´ç è¯†åˆ«
 void QRCode_Task(uint8_t QRrequest)
 {
     GetCmdFlag(FromHost_QRCodeRecognition) = RESET;
@@ -241,7 +241,7 @@ void QRCode_Task(uint8_t QRrequest)
     WaitForFlagInMs(GetCmdFlag(FromHost_QRCodeRecognition), SET, 5 * 1000);
 }
 
-// ÆğÊ¼ÈÎÎñ
+// èµ·å§‹ä»»åŠ¡
 void Start_Task(void)
 {
     Set_tba_WheelLED(L_LED, SET);
@@ -255,7 +255,7 @@ void Start_Task(void)
     Send_ZigBeeDataNTimes(ZigBee_LEDDisplayStartTimer, 3, 20);
 }
 
-// ÖÕÖ¹ÈÎÎñ
+// ç»ˆæ­¢ä»»åŠ¡
 void End_Task(void)
 {
     Send_ZigBeeDataNTimes(ZigBee_LEDDisplayStopTimer, 3, 20);
@@ -268,7 +268,7 @@ void End_Task(void)
     Set_tba_WheelLED(R_LED, RESET);
 }
 
-// ledÏÔÊ¾¾àÀë£¨ÊäÈë¾àÀë£©
+// ledæ˜¾ç¤ºè·ç¦»ï¼ˆè¾“å…¥è·ç¦»ï¼‰
 void LEDDispaly_ShowDistance(uint16_t dis)
 {
     ZigBee_LEDDisplayDistanceData[4] = HEX2BCD(dis / 100);
@@ -276,7 +276,7 @@ void LEDDispaly_ShowDistance(uint16_t dis)
     Send_ZigBeeData(ZigBee_LEDDisplayDistanceData);
 }
 
-// Â·µÆµµÎ»µ÷½Ú£¬ÊäÈëÄ¿±êµµÎ»×Ô¶¯µ÷Õû
+// è·¯ç¯æ¡£ä½è°ƒèŠ‚ï¼Œè¾“å…¥ç›®æ ‡æ¡£ä½è‡ªåŠ¨è°ƒæ•´
 void StreetLight_AdjustTo(uint8_t targetLevel)
 {
     uint16_t temp_val[4], CurrentLightValue;
@@ -292,7 +292,7 @@ void StreetLight_AdjustTo(uint8_t targetLevel)
     }
     CurrentLightValue = temp_val[0];
 
-    bubble_sort(temp_val, 4); // ¶Ô»ñµÃÊı¾İÅÅĞòËã³ö³õÊ¼µµÎ»
+    bubble_sort(temp_val, 4); // å¯¹è·å¾—æ•°æ®æ’åºç®—å‡ºåˆå§‹æ¡£ä½
     for (i = 0; i < 4; i++)
     {
         if (CurrentLightValue == temp_val[i])
@@ -302,7 +302,7 @@ void StreetLight_AdjustTo(uint8_t targetLevel)
         }
     }
 
-    if (errorValue >= 0) // µ÷Õûµ½Ä¿±êµµÎ»
+    if (errorValue >= 0) // è°ƒæ•´åˆ°ç›®æ ‡æ¡£ä½
     {
         for (i = 0; i < errorValue; i++)
         {
@@ -322,7 +322,7 @@ void StreetLight_AdjustTo(uint8_t targetLevel)
     }
 }
 
-// µÀÕ¢ÏÔÊ¾³µÅÆ
+// é“é—¸æ˜¾ç¤ºè½¦ç‰Œ
 void BarrierGate_Plate(uint8_t plate[6])
 {
     memcpy(&ZigBee_PlateBarrierGate_1[3], plate, 3);
@@ -333,7 +333,7 @@ void BarrierGate_Plate(uint8_t plate[6])
     delay_ms(790);
 }
 
-// µÀÕ¢ÈÎÎñ
+// é“é—¸ä»»åŠ¡
 void BarrierGate_Task(uint8_t plate[6])
 {
     if (plate != NULL)
@@ -346,21 +346,21 @@ void BarrierGate_Task(uint8_t plate[6])
     delay_ms(790);
 }
 
-// ÓïÒôÈÎÎñ£¬´íÎóÖØÊÔ2´Î
+// è¯­éŸ³ä»»åŠ¡ï¼Œé”™è¯¯é‡è¯•2æ¬¡
 void Voice_Task(void)
 {
     Start_VoiceCommandRecognition(3);
 }
 
-// ETCÈÎÎñ
+// ETCä»»åŠ¡
 void ETC_Task(void)
 {
-    for (uint8_t i = 0; i < 10; i++) // µ÷Õû10´Î£¬²»¿ªÖ±½Ó×ß
+    for (uint8_t i = 0; i < 10; i++) // è°ƒæ•´10æ¬¡ï¼Œä¸å¼€ç›´æ¥èµ°
     {
-        // ÁùÃëÇ°µÄÊı¾İ×÷·Ï
+        // å…­ç§’å‰çš„æ•°æ®ä½œåºŸ
         if ((ETC_Status.isSet == SET) && (!IsTimeOut(ETC_Status.timeStamp, 6 * 1000)))
             break;
-        MOVE(7);  // ¸ú×Å½ÚÅÄ
-        MOVE(-7); // Ò»ÆğÒ¡°Ú
+        MOVE(7);  // è·Ÿç€èŠ‚æ‹
+        MOVE(-7); // ä¸€èµ·æ‘‡æ‘†
     }
 }

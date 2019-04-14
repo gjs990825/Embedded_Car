@@ -49,9 +49,9 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
 //______________________________________________________________________________
 
 /**
-º¯Êý¹¦ÄÜ£ºÅÐ¶Ï·¢ËÍÓÊÏäÊÇ·ñÎª¿Õ
-²Î    Êý£ºÎÞ
-·µ »Ø Öµ£ºÖ»Òª·¢ËÍÓÊÏäÖÐÈÎºÎÒ»¸öÓÊÏäÎª¿ÕÔò·µ»Ø1£¬Èô·¢ËÍÓÊÏä¶¼²»¿ÕÊ±Ôò·µ»Ø0
+å‡½æ•°åŠŸèƒ½ï¼šåˆ¤æ–­å‘é€é‚®ç®±æ˜¯å¦ä¸ºç©º
+å‚    æ•°ï¼šæ— 
+è¿” å›ž å€¼ï¼šåªè¦å‘é€é‚®ç®±ä¸­ä»»ä½•ä¸€ä¸ªé‚®ç®±ä¸ºç©ºåˆ™è¿”å›ž1ï¼Œè‹¥å‘é€é‚®ç®±éƒ½ä¸ç©ºæ—¶åˆ™è¿”å›ž0
 */
 uint8_t CanDrv_TxEmptyCheck(void)
 {
@@ -59,12 +59,12 @@ uint8_t CanDrv_TxEmptyCheck(void)
 }
 
 /**
-º¯Êý¹¦ÄÜ£ºCAN×ÜÏß·¢ËÍÊý¾Ý
-²Î    Êý£º*tbuf ´ý·¢ËÍÊý¾ÝÊý×éÖ¸Õë
-		  len ´ý·¢Êý¾Ý³¤¶È
-		  sid ±ê×¼ID
-		  eid À©Õ¹ID
-		  tmbox ·¢ËÍÓÊÏäºÅ 
+å‡½æ•°åŠŸèƒ½ï¼šCANæ€»çº¿å‘é€æ•°æ®
+å‚    æ•°ï¼š*tbuf å¾…å‘é€æ•°æ®æ•°ç»„æŒ‡é’ˆ
+		  len å¾…å‘æ•°æ®é•¿åº¦
+		  sid æ ‡å‡†ID
+		  eid æ‰©å±•ID
+		  tmbox å‘é€é‚®ç®±å· 
 */
 uint8_t CanDrv_TxData(uint8_t *tbuf,uint8_t len,uint32_t sid,uint32_t eid,uint8_t *tmbox)
 {
@@ -115,9 +115,9 @@ uint8_t CanDrv_TxDelay(uint8_t tmbox,uint32_t step,uint32_t m)
 }
 
 /**
-º¯Ê¹¹¦ÄÜ£ºµÈ´ý·¢ËÍÓÊÏäÎª¿Õ
-²Î    Êý£ºÎÞ
-·µ »Ø Öµ£ºÎÞ
+å‡½ä½¿åŠŸèƒ½ï¼šç­‰å¾…å‘é€é‚®ç®±ä¸ºç©º
+å‚    æ•°ï¼šæ— 
+è¿” å›ž å€¼ï¼šæ— 
 */
 void CanDrv_WhaitTxEmpty(void)
 {
@@ -148,22 +148,22 @@ uint8_t CanDrv_RxData(uint8_t *rbuf)
 }
 
 /**
-º¯Êý¹¦ÄÜ£º»ñÈ¡´¦ÀíÆ÷CAN FIFOÖÐÏûÏ¢
-²Î    Êý£ºCAN½ÓÊÕÏûÏ¢½á¹¹ÌåÖ¸Õë
-·µ »Ø Öµ: ¹ÒÆðÓÊÏä¸öÊý
+å‡½æ•°åŠŸèƒ½ï¼šèŽ·å–å¤„ç†å™¨CAN FIFOä¸­æ¶ˆæ¯
+å‚    æ•°ï¼šCANæŽ¥æ”¶æ¶ˆæ¯ç»“æž„ä½“æŒ‡é’ˆ
+è¿” å›ž å€¼: æŒ‚èµ·é‚®ç®±ä¸ªæ•°
 */
 uint8_t CanDrv_RxGetMeesage(CanRxMsg *p)
 {
 	uint8_t Rt = 0;
 	if(p != NULL)
 	{
-		Rt = CAN_MessagePending(CANx, CAN_FIFO0); 		 //¹ÒÆðÓÊÏä¸öÊý
-		if(Rt != 0)										 //ÓÊÏä¸öÊý²»ÎªÁã
+		Rt = CAN_MessagePending(CANx, CAN_FIFO0); 		 //æŒ‚èµ·é‚®ç®±ä¸ªæ•°
+		if(Rt != 0)										 //é‚®ç®±ä¸ªæ•°ä¸ä¸ºé›¶
 		{
-			CAN_Receive(CAN1, CAN_FIFO0, p);			 //CAN×ÜÏß´ÓFIFO0µÄ¹ÒÆðÓÊÏäÖÐ¶ÁÈ¡ÏûÏ¢
+			CAN_Receive(CAN1, CAN_FIFO0, p);			 //CANæ€»çº¿ä»ŽFIFO0çš„æŒ‚èµ·é‚®ç®±ä¸­è¯»å–æ¶ˆæ¯
 		}
 	}
-	return Rt;											 //·µ»Ø¹ÒÆðÓÊÏä¸öÊý
+	return Rt;											 //è¿”å›žæŒ‚èµ·é‚®ç®±ä¸ªæ•°
 }
 
 //______________________________________________________________________________

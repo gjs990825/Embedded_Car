@@ -4,41 +4,41 @@
 #include "sys.h"
 #include "movement.h"
 
-// ËÙ¶ÈÉè¶¨³£Á¿¡ı
+// é€Ÿåº¦è®¾å®šå¸¸é‡â†“
 
-// Ñ­¼£ËÙ¶È
+// å¾ªè¿¹é€Ÿåº¦
 #define Track_Speed 50 // 55
-// ×ªÍäËÙ¶È
+// è½¬å¼¯é€Ÿåº¦
 #define Turn_Speed 85 // 85
-// ÈÎÎñÖ´ĞĞÖĞµ÷ÕûËÙ¶È
-#define Mission_Speed 30 // ÂıËÙ·ÀÖ¹´ò»¬
+// ä»»åŠ¡æ‰§è¡Œä¸­è°ƒæ•´é€Ÿåº¦
+#define Mission_Speed 30 // æ…¢é€Ÿé˜²æ­¢æ‰“æ»‘
 
-// ½Ç¶È×ª»»µ½ÂëÅÌ³£Á¿¡ı
+// è§’åº¦è½¬æ¢åˆ°ç ç›˜å¸¸é‡â†“
 
-// Ë³Ê±Õë×ª»»±¶Êı
-#define ClockWiseDigreeToEncoder 10.54f //¾ÉÈüµÀ 10.1f
-// ÄæÊ±Õë×ª»»±¶Êı
-#define CountClockWiseDigreeToEncoder 9.25f // ¾É 9.83f
+// é¡ºæ—¶é’ˆè½¬æ¢å€æ•°
+#define ClockWiseDigreeToEncoder 10.54f //æ—§èµ›é“ 10.1f
+// é€†æ—¶é’ˆè½¬æ¢å€æ•°
+#define CountClockWiseDigreeToEncoder 9.25f // æ—§ 9.83f
 
-// Ñ­¼£¾àÀë³£Á¿¡ı
+// å¾ªè¿¹è·ç¦»å¸¸é‡â†“
 
-// Ã¿ÀåÃ×µÄÂëÅÌÖµ
+// æ¯å˜ç±³çš„ç ç›˜å€¼
 #define Centimeter_Value 28.94f
-// Ïß¿í
+// çº¿å®½
 static const int Track_Width = (3.0f * Centimeter_Value);
 
-// XÖáÖĞµãÑ­¼£Öµ
+// Xè½´ä¸­ç‚¹å¾ªè¿¹å€¼
 static const int LongTrack_Value = (37.5f * Centimeter_Value);
-// YÖáÖĞµãÑ­¼£Öµ
+// Yè½´ä¸­ç‚¹å¾ªè¿¹å€¼
 static const int ShortTrack_Value = (30.0f * Centimeter_Value);
-// µ½Ê®×ÖÂ·¿ÚÖĞĞÄÂëÅÌÖµ
+// åˆ°åå­—è·¯å£ä¸­å¿ƒç ç›˜å€¼
 static const int ToCrossroadCenter = (16.5f * Centimeter_Value);
 
 
-// Ã¿ÃëĞĞ½ø¾àÀë£¨ËÙ¶È50£©
+// æ¯ç§’è¡Œè¿›è·ç¦»ï¼ˆé€Ÿåº¦50ï¼‰
 static const float _CentermetersPerSecondAtSpeed50 = 36.0;
 
-// Ñ­¼£Ä£Ê½
+// å¾ªè¿¹æ¨¡å¼
 typedef enum
 {
     TrackMode_NONE = 0,
@@ -48,7 +48,7 @@ typedef enum
     TrackMode_Turn
 } TrackMode_t;
 
-// ¸ù¾İÂëÅÌÖµÔË¶¯µÄÄ£Ê½
+// æ ¹æ®ç ç›˜å€¼è¿åŠ¨çš„æ¨¡å¼
 typedef enum
 {
     ENCODER_NONE = 0,
@@ -57,15 +57,15 @@ typedef enum
     ENCODER_TurnByValue
 } Moving_ByEncoder_t;
 
-// Ñ­¼£µÆĞÅÏ¢
+// å¾ªè¿¹ç¯ä¿¡æ¯
 extern int8_t Q7[7], H8[8];
-// Ñ­¼£µÆÁÁÆğµÄ¸öÊı
+// å¾ªè¿¹ç¯äº®èµ·çš„ä¸ªæ•°
 extern uint8_t NumberOfWhite;
-// Ñ­¼£Ä£Ê½
+// å¾ªè¿¹æ¨¡å¼
 extern uint8_t Track_Mode;
-// ¶¨ÖµÇ°ºóºÍ×ªÏò
+// å®šå€¼å‰åå’Œè½¬å‘
 extern Moving_ByEncoder_t Moving_ByEncoder;
-// ¶¨½Ç¶È×ªÏòÄ¿±êÂëÅÌÖµ
+// å®šè§’åº¦è½¬å‘ç›®æ ‡ç ç›˜å€¼
 extern uint16_t TurnByEncoder_Value;
 
 extern uint8_t Stop_Flag;

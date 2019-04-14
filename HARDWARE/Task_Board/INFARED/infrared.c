@@ -10,9 +10,9 @@ void Infrared_Init(void)
 
     //GPIOF11
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;  //Í¨ÓÃÊä³ö
-    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; //ÍÆÍìÊä³ö
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;   //ÉÏÀ­
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;  //é€šç”¨è¾“å‡º
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; //æ¨æŒ½è¾“å‡º
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;   //ä¸Šæ‹‰
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
     GPIO_Init(GPIOF, &GPIO_InitStructure);
 
@@ -20,10 +20,10 @@ void Infrared_Init(void)
 }
 
 /***************************************************************
-** ¹¦ÄÜ£º     ºìÍâ·¢Éä×Ó³ÌĞò
-** ²ÎÊı£º	  *s£ºÖ¸ÏòÒª·¢ËÍµÄÊı¾İ
-**             n£ºÊı¾İ³¤¶È
-** ·µ»ØÖµ£º    ÎŞ
+** åŠŸèƒ½ï¼š     çº¢å¤–å‘å°„å­ç¨‹åº
+** å‚æ•°ï¼š	  *sï¼šæŒ‡å‘è¦å‘é€çš„æ•°æ®
+**             nï¼šæ•°æ®é•¿åº¦
+** è¿”å›å€¼ï¼š    æ— 
 ****************************************************************/
 void Infrared_Send(u8 *s, int n)
 {
@@ -40,24 +40,24 @@ void Infrared_Send(u8 *s, int n)
         for (j = 0; j < 8; j++)
         {
             temp = (s[i] >> j) & 0x01;
-            if (temp == 0) //·¢Éä0
+            if (temp == 0) //å‘å°„0
             {
                 RI_TXD = 0;
-                delay_us(500); //ÑÓÊ±0.5ms
+                delay_us(500); //å»¶æ—¶0.5ms
                 RI_TXD = 1;
-                delay_us(500); //ÑÓÊ±0.5ms
+                delay_us(500); //å»¶æ—¶0.5ms
             }
-            if (temp == 1) //·¢Éä1
+            if (temp == 1) //å‘å°„1
             {
                 RI_TXD = 0;
-                delay_us(500); //ÑÓÊ±0.5ms
+                delay_us(500); //å»¶æ—¶0.5ms
                 RI_TXD = 1;
                 delay_ms(1);
-                delay_us(800); //ÑÓÊ±1.69ms  690
+                delay_us(800); //å»¶æ—¶1.69ms  690
             }
         }
     }
-    RI_TXD = 0;    //½áÊø
-    delay_us(560); //ÑÓÊ±0.56ms
-    RI_TXD = 1;    //¹Ø±ÕºìÍâ·¢Éä
+    RI_TXD = 0;    //ç»“æŸ
+    delay_us(560); //å»¶æ—¶0.56ms
+    RI_TXD = 1;    //å…³é—­çº¢å¤–å‘å°„
 }

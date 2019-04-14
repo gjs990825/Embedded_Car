@@ -38,8 +38,8 @@
 #include "agv.h"
 
 
-// ÏÂÃæÊÇ×ø±êµã¶ÔÓ¦µÄ¶ÀÁ¢ÈÎÎñ¼¯ºÏ£¬¶ÀÁ¢ÈÎÎñ½øÈëÇ°ĞèÒª±£Ö¤Î»ÖÃ¾àÀë³¯ÏòµÈ×¼È·ÎŞÎó
-// ÈÎÎñ½áÊøºÍ¿ªÊ¼³µÉí·½Ïò²»Ò»ÑùµÄĞèÒªÊÖ¶¯ÉèÖÃ CurrentStaus.dir = DIR_XX;
+// ä¸‹é¢æ˜¯åæ ‡ç‚¹å¯¹åº”çš„ç‹¬ç«‹ä»»åŠ¡é›†åˆï¼Œç‹¬ç«‹ä»»åŠ¡è¿›å…¥å‰éœ€è¦ä¿è¯ä½ç½®è·ç¦»æœå‘ç­‰å‡†ç¡®æ— è¯¯
+// ä»»åŠ¡ç»“æŸå’Œå¼€å§‹è½¦èº«æ–¹å‘ä¸ä¸€æ ·çš„éœ€è¦æ‰‹åŠ¨è®¾ç½® CurrentStaus.dir = DIR_XX;
 
 void Task_5_0(void)
 {
@@ -54,12 +54,12 @@ void Task_F6(void)
 
     delay_ms(700);
     QRCode_Task(RequestCmd_QRCode1);
-    RFID_Key = Get_QRCode(DataRequest_QRCode1, 0x01); // »ñÈ¡ÃÜÔ¿
+    RFID_Key = Get_QRCode(DataRequest_QRCode1, 0x01); // è·å–å¯†é’¥
 
     MOVE(-15);
     TURN(-40);
 
-//    RFID_DataBlockLoation = Get_QRCode(DataRequest_QRCode1, 0x02)[0]; // »ñÈ¡¶şÎ¬ÂëĞÅÏ¢ÖĞµÄRFIDÊı¾İ¿éĞÅÏ¢
+//    RFID_DataBlockLoation = Get_QRCode(DataRequest_QRCode1, 0x02)[0]; // è·å–äºŒç»´ç ä¿¡æ¯ä¸­çš„RFIDæ•°æ®å—ä¿¡æ¯
 //    print_info("RFID_Block:%d\r\n", RFID_DataBlockLoation);
 
     CurrentStaus.dir = DIR_LEFT;
@@ -68,27 +68,27 @@ void Task_F6(void)
 void Task_3_1(void)
 {
     TrafficLight_Task();
-    RFID_RoadSection = true; // °×¿¨Â·¶Î¿ªÊ¼
+    RFID_RoadSection = true; // ç™½å¡è·¯æ®µå¼€å§‹
 }
 
 uint16_t distanceMeasured = 0;
 
 void Task_1_3(void)
 {
-    ExcuteAndWait(Turn_ByEncoder(-93), Stop_Flag, TURNCOMPLETE); // ĞŞÕıÖµ
+    ExcuteAndWait(Turn_ByEncoder(-93), Stop_Flag, TURNCOMPLETE); // ä¿®æ­£å€¼
     ExcuteAndWait(Back_Off(30, Centimeter_Value * 13), Stop_Flag, FORBACKCOMPLETE);
 
     delay_ms(700);
     QRCode_Task(RequestCmd_QRCode2);
-    AGV_SendInfraredData(Get_QRCode(DataRequest_QRCode2, 0x00)); // ·¢ËÍºìÍâÊı¾İµ½´Ó³µ
+    AGV_SendInfraredData(Get_QRCode(DataRequest_QRCode2, 0x00)); // å‘é€çº¢å¤–æ•°æ®åˆ°ä»è½¦
 
     distanceMeasured = Ultrasonic_GetAverage(20);
-    LEDDispaly_ShowDistance(distanceMeasured); // ·¢Á½´Î·ÀÖ¹¶ª°ü
+    LEDDispaly_ShowDistance(distanceMeasured); // å‘ä¸¤æ¬¡é˜²æ­¢ä¸¢åŒ…
     delay_ms(700);
     LEDDispaly_ShowDistance(distanceMeasured);
 
     ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 13), Stop_Flag, FORBACKCOMPLETE);
-    ExcuteAndWait(Turn_ByEncoder(93), Stop_Flag, TURNCOMPLETE); // ĞŞÕıÖµ
+    ExcuteAndWait(Turn_ByEncoder(93), Stop_Flag, TURNCOMPLETE); // ä¿®æ­£å€¼
 }
 
 void Task_1_5(void)
@@ -108,18 +108,18 @@ void Task_1_5(void)
     TFT_Hex(Get_ShapeInfo());
     delay_ms(790);
 
-    AGV_SendInfraredData(Infrared_AlarmON); // ·¢ËÍºìÍâĞÅÏ¢ // ĞèÒª×¢µô£¡£¡£¡
+    AGV_SendInfraredData(Infrared_AlarmON); // å‘é€çº¢å¤–ä¿¡æ¯ // éœ€è¦æ³¨æ‰ï¼ï¼ï¼
     delay_ms(700);
-//    AGV_SetTaskID(Get_TaskNumber("D4", RFID_DataBuffer, 1), 0); // Éè¶¨ÈÎÎñµã
-//    AGV_SetRoute(RFID_DataBuffer);                              // ·¢ËÍ´Ó³µÂ·¾¶ĞÅÏ¢
+//    AGV_SetTaskID(Get_TaskNumber("D4", RFID_DataBuffer, 1), 0); // è®¾å®šä»»åŠ¡ç‚¹
+//    AGV_SetRoute(RFID_DataBuffer);                              // å‘é€ä»è½¦è·¯å¾„ä¿¡æ¯
     delay_ms(700);
-    AGV_SetTowards(DIR_LEFT); // Éè¶¨³µÍ·³¯Ïò
-    delay_ms(700);            // µÈ´ı
-    AGV_Start();              // ´Ó³µÆô¶¯
-    delay_ms(700);            // µÈ´ı
+    AGV_SetTowards(DIR_LEFT); // è®¾å®šè½¦å¤´æœå‘
+    delay_ms(700);            // ç­‰å¾…
+    AGV_Start();              // ä»è½¦å¯åŠ¨
+    delay_ms(700);            // ç­‰å¾…
     AGV_Start();
 
-//    if (Get_TaskNumber("B1", RFID_DataBuffer, 1) != -1) // ´Ó³µÈë¿âÈÎÎñÉè¶¨
+//    if (Get_TaskNumber("B1", RFID_DataBuffer, 1) != -1) // ä»è½¦å…¥åº“ä»»åŠ¡è®¾å®š
 //    {
 //        AGV_SetTaskID(Get_TaskNumber("B1", RFID_DataBuffer, 1), 1);
 //    }
@@ -128,15 +128,15 @@ void Task_1_5(void)
 //        AGV_SetTaskID(Get_TaskNumber("B7", RFID_DataBuffer, 1), 1);
 //    }
 
-//    if (Get_TaskNumber("B2", RFID_DataBuffer, 1) != -1) // ¾­¹ıÖ÷³µµÄÂ·¾¶
+//    if (Get_TaskNumber("B2", RFID_DataBuffer, 1) != -1) // ç»è¿‡ä¸»è½¦çš„è·¯å¾„
 //    {
 //        ExcuteAndWait(Back_Off(30, Centimeter_Value * 35), Stop_Flag, FORBACKCOMPLETE);
 //    }
 
 //    AGVComplete_Status.isSet = RESET;
-//    WaitForFlagInMs(AGVComplete_Status.isSet, SET, 25 * 1000); // µÈ´ı´Ó³µÖ´ĞĞÈë¿âÍê³É
+//    WaitForFlagInMs(AGVComplete_Status.isSet, SET, 25 * 1000); // ç­‰å¾…ä»è½¦æ‰§è¡Œå…¥åº“å®Œæˆ
 
-//    if (Get_TaskNumber("B2", RFID_DataBuffer, 1) != -1) // ¾­¹ıÖ÷³µµÄÂ·¾¶
+//    if (Get_TaskNumber("B2", RFID_DataBuffer, 1) != -1) // ç»è¿‡ä¸»è½¦çš„è·¯å¾„
 //    {
 //        ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 35), Stop_Flag, FORBACKCOMPLETE);
 //    }
@@ -191,7 +191,7 @@ void Task_F6_2(void)
 //     Beep(2);
 
 //     delay_ms(700);
-//     delay_ms(700); // µÈ´ıÉãÏñÍ··´Ó¦
+//     delay_ms(700); // ç­‰å¾…æ‘„åƒå¤´ååº”
 //     TFT_Task();
 
 //     ExcuteAndWait(Back_Off(30, Centimeter_Value * 17), Stop_Flag, FORBACKCOMPLETE);
@@ -200,7 +200,7 @@ void Task_F6_2(void)
 //     RotationLED_Task();
 
 //     ExcuteAndWait(Turn_ByEncoder(35), Stop_Flag, TURNCOMPLETE);
-//     CurrentStaus.dir = DIR_LEFT; // ÓëÈÎÎñ¿ªÊ¼Ê±·½Ïò²»Ò»ÖÂ
+//     CurrentStaus.dir = DIR_LEFT; // ä¸ä»»åŠ¡å¼€å§‹æ—¶æ–¹å‘ä¸ä¸€è‡´
 // }
 
 // void Task_3_5(void)
@@ -211,7 +211,7 @@ void Task_F6_2(void)
 
 //     ExcuteAndWait(Turn_ByEncoder(-22), Stop_Flag, TURNCOMPLETE);
 
-//     RFID_RoadSection = true; // °×¿¨Â·¶Î¿ªÊ¼
+//     RFID_RoadSection = true; // ç™½å¡è·¯æ®µå¼€å§‹
 // }
 
 // void Task_1_5(void)
@@ -222,7 +222,7 @@ void Task_F6_2(void)
 //     QRCode_Task();
 
 //     uint16_t distanceMeasured = Ultrasonic_GetAverage(20);
-//     LEDDispaly_ShowDistance(distanceMeasured); // ·¢Á½´Î·ÀÖ¹¶ª°ü
+//     LEDDispaly_ShowDistance(distanceMeasured); // å‘ä¸¤æ¬¡é˜²æ­¢ä¸¢åŒ…
 //     delay_ms(700);
 //     LEDDispaly_ShowDistance(distanceMeasured);
 
@@ -231,9 +231,9 @@ void Task_F6_2(void)
 
 // void Task_1_3(void)
 // {
-//     RFID_RoadSection = false; // °×¿¨Â·¶Î½áÊø
+//     RFID_RoadSection = false; // ç™½å¡è·¯æ®µç»“æŸ
 
-//     // Â·µÆ
+//     // è·¯ç¯
 //     ExcuteAndWait(Turn_ByEncoder(90), Stop_Flag, TURNCOMPLETE);
 //     ExcuteAndWait(Go_Ahead(30, Centimeter_Value * 5), Stop_Flag, FORBACKCOMPLETE);
 
@@ -272,7 +272,7 @@ void Task_F6_2(void)
 
 // void Task_3_1(void)
 // {
-//     // Èë¿â
+//     // å…¥åº“
 //     delay_ms(500);
 //     Send_ZigBeeData(ZigBee_WirelessChargingON);
 //     delay_ms(700);

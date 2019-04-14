@@ -4,22 +4,22 @@
 #include "sys.h"
 #include "stddef.h"
 
-// Â·¾¶µã½á¹¹
+// è·¯å¾„ç‚¹ç»“æ„
 typedef struct RouteNode_Struct
 {
 	int8_t x;
 	int8_t y;
-	int8_t dir; // ÓÃµ½²»¶à£¬ĞèÒª¾«¼ò
+	int8_t dir; // ç”¨åˆ°ä¸å¤šï¼Œéœ€è¦ç²¾ç®€
 } RouteNode_t;
 
-// Â·¾¶µã£¨°üº¬ÈÎÎñĞÅÏ¢£©
+// è·¯å¾„ç‚¹ï¼ˆåŒ…å«ä»»åŠ¡ä¿¡æ¯ï¼‰
 typedef struct Route_Task_Struct
 {
 	RouteNode_t node;
 	void (*Task)(void);
 } Route_Task_t;
 
-// ·½Ïò£¨³µÍ·³¯Ïò£©
+// æ–¹å‘ï¼ˆè½¦å¤´æœå‘ï¼‰
 typedef enum
 {
 	DIR_NOTSET = 0,
@@ -29,7 +29,7 @@ typedef enum
 	DIR_RIGHT
 } Driection_t;
 
-// Éè¶¨ÈÎÎñµã£¨×ª»»×Ö·û´®Éú³É×ø±êĞÅÏ¢£©
+// è®¾å®šä»»åŠ¡ç‚¹ï¼ˆè½¬æ¢å­—ç¬¦ä¸²ç”Ÿæˆåæ ‡ä¿¡æ¯ï¼‰
 typedef struct RouteSetting_Struct
 {
 	uint8_t coordinate[2];
@@ -37,18 +37,18 @@ typedef struct RouteSetting_Struct
 	void (*Task)(void);
 } RouteSetting_t;
 
-// ÈÎÎñÉè¶¨ºÍÈÎÎñ¸öÊı
+// ä»»åŠ¡è®¾å®šå’Œä»»åŠ¡ä¸ªæ•°
 extern RouteSetting_t Route_Task[];
 extern uint8_t ROUTE_TASK_NUMBER;
 
-// Ñ°¿¨²âÊÔÓÃÂ·¾¶
+// å¯»å¡æµ‹è¯•ç”¨è·¯å¾„
 extern RouteSetting_t RFID_TestRoute[];
 extern uint8_t RFID_TESTROUTE_NUMBER;
 
 extern RouteNode_t CurrentStaus;
 extern RouteNode_t NextStatus;
 
-// // ÈÎÎñÍê³ÉÇé¿ö
+// // ä»»åŠ¡å®Œæˆæƒ…å†µ
 // extern int8_t RouteTask_Finished[ROUTE_TASK_NUMBER];
 
 RouteNode_t Coordinate_Covent(uint8_t str[2]);

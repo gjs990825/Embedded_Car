@@ -21,7 +21,7 @@ void Calculate_pid(float inputError)
     I = I + error;
     D = error - previous_error;
 
-    constrain_float(I, -200, 200); // »ı·ÖÏŞ·ù
+    constrain_float(I, -200, 200); // ç§¯åˆ†é™å¹…
 
     PID_value = (Kp * P) + (Ki * I) + (Kd * D);
     PID_value = constrain_float(PID_value, -180, 180);

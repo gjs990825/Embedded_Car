@@ -12,7 +12,7 @@
 #include "canp_hostcom.h"
 #include "independent_task.h"
 
-// ×ªÏòÊÇ·ñÍê³É
+// è½¬å‘æ˜¯å¦å®Œæˆ
 #define CheckTurnComplete(EncoderValue) \
     if (Mp_Value >= EncoderValue)       \
     {                                   \
@@ -20,54 +20,54 @@
         Stop_Flag = TURNCOMPLETE;       \
     }
 
-// Ê¹ÄÜÑ­¼£ĞÅÏ¢Êä³ö
+// ä½¿èƒ½å¾ªè¿¹ä¿¡æ¯è¾“å‡º
 #define _TRACK_OUTPUT_ 0
 
-// ³¬¹ı´ËÊıÅĞ¶¨³öÏß/Óöµ½°×¿¨
+// è¶…è¿‡æ­¤æ•°åˆ¤å®šå‡ºçº¿/é‡åˆ°ç™½å¡
 #define ALL_WHITE 15
-// µÍÓÚ´ËÊıÅĞ¶¨×²Ïß
+// ä½äºæ­¤æ•°åˆ¤å®šæ’çº¿
 #define ALL_BLACK 9
 
-// Ç°Æß¸öÑ­¼£´«¸ĞÆ÷
+// å‰ä¸ƒä¸ªå¾ªè¿¹ä¼ æ„Ÿå™¨
 int8_t Q7[7] = {0};
-// ºó°Ë¸öÑ­¼£´«¸ĞÆ÷
+// åå…«ä¸ªå¾ªè¿¹ä¼ æ„Ÿå™¨
 int8_t H8[8] = {0};
-// ËùÓĞÑ­¼£´«¸ĞÆ÷Êı¾İ°´×óµ½ÓÒË³ĞòÅÅÁĞ
+// æ‰€æœ‰å¾ªè¿¹ä¼ æ„Ÿå™¨æ•°æ®æŒ‰å·¦åˆ°å³é¡ºåºæ’åˆ—
 int8_t ALL_TRACK[15];
-// µ±Ç°°×É«ÊıÁ¿
+// å½“å‰ç™½è‰²æ•°é‡
 uint8_t NumberOfWhite = 0;
 
-// ÔËĞĞ×´Ì¬
+// è¿è¡ŒçŠ¶æ€
 uint8_t Stop_Flag = TRACKING;
-// Ñ­¼£Ä£Ê½
+// å¾ªè¿¹æ¨¡å¼
 uint8_t Track_Mode = TrackMode_NONE;
-// ¶¨ÖµÇ°ºóºÍ×ªÏò
+// å®šå€¼å‰åå’Œè½¬å‘
 Moving_ByEncoder_t Moving_ByEncoder = ENCODER_NONE;
-// ¶¨½Ç¶È×ªÏòÄ¿±êÂëÅÌÖµ
+// å®šè§’åº¦è½¬å‘ç›®æ ‡ç ç›˜å€¼
 uint16_t TurnByEncoder_Value = 0;
 
-// ×óÓÒËÙ¶È
+// å·¦å³é€Ÿåº¦
 int LSpeed = 0, RSpeed = 0;
-// Ñ­¼£Ê±³µËÙ
+// å¾ªè¿¹æ—¶è½¦é€Ÿ
 int Car_Speed = 0;
 
-// Ä¿±êÂëÅÌÖµ
+// ç›®æ ‡ç ç›˜å€¼
 uint16_t temp_MP = 0;
-// µ±Ç°µÄÂëÅÌÖµ
+// å½“å‰çš„ç ç›˜å€¼
 uint16_t Mp_Value = 0;
 
-// Ö®Ç°»ñÈ¡µÄÂëÅÌÖµ
+// ä¹‹å‰è·å–çš„ç ç›˜å€¼
 int16_t Roadway_cmp;
-// ´ÓCAN»ñÈ¡µÄÊµÊ±ÂëÅÌÖµ
+// ä»CANè·å–çš„å®æ—¶ç ç›˜å€¼
 extern int16_t CanHost_Mp;
 
-// ÂëÅÌÍ¬²½
+// ç ç›˜åŒæ­¥
 void Roadway_mp_syn(void)
 {
     Roadway_cmp = CanHost_Mp;
 }
 
-// ÂëÅÌ»ñÈ¡
+// ç ç›˜è·å–
 uint16_t Roadway_mp_Get(void)
 {
     uint32_t ct;
@@ -84,13 +84,13 @@ uint16_t Roadway_mp_Get(void)
 uint16_t Roadway_Navig;
 extern uint16_t CanHost_Navig;
 
-// ½Ç¶ÈÍ¬²½
+// è§’åº¦åŒæ­¥
 void Roadway_nav_syn(void)
 {
     Roadway_Navig = CanHost_Navig;
 }
 
-// »ñÈ¡½Ç¶È²îÖµ
+// è·å–è§’åº¦å·®å€¼
 uint16_t Roadway_nav_Get(void)
 {
     uint16_t ct;
@@ -103,7 +103,7 @@ uint16_t Roadway_nav_Get(void)
     return ct;
 }
 
-// Çå³ı±êÖ¾Î»
+// æ¸…é™¤æ ‡å¿—ä½
 void Roadway_Flag_clean(void)
 {
     Stop_Flag = TRACKING;
@@ -112,7 +112,7 @@ void Roadway_Flag_clean(void)
     Moving_ByEncoder = ENCODER_NONE;
 }
 
-// Ç°ºó£¬×ªÍä¼à²â
+// å‰åï¼Œè½¬å¼¯ç›‘æµ‹
 void Moving_ByEncoderCheck(void)
 {
     switch (Moving_ByEncoder)
@@ -138,31 +138,31 @@ void Moving_ByEncoderCheck(void)
     }
 }
 
-// ¸üĞÂËÙ¶ÈÖµ£¨ËÙ¶ÈÇø¼ä -100 ~ 100)
+// æ›´æ–°é€Ÿåº¦å€¼ï¼ˆé€Ÿåº¦åŒºé—´ -100 ~ 100)
 void Update_MotorSpeed(int L_Speed, int R_Speed)
 {
-    // ËÙ¶ÈÏŞ·ù
+    // é€Ÿåº¦é™å¹…
     LSpeed = constrain_int(L_Speed, -100, 100);
     RSpeed = constrain_int(R_Speed, -100, 100);
 }
 
-// µç»ú¿ØÖÆ£¬Ìá½»µç»úËÙ¶È¸ü¸Ä
+// ç”µæœºæ§åˆ¶ï¼Œæäº¤ç”µæœºé€Ÿåº¦æ›´æ”¹
 void Submit_SpeedChanges(void)
 {
-    static int preLSpeed, preRSpeed;  // ÉÏ´ÎµÄËÙ¶ÈÊı¾İ
-    static uint32_t preSpeedChanging; // ÉÏ´Î±ä¸üËÙ¶ÈµÄÊ±¼ä´Á
+    static int preLSpeed, preRSpeed;  // ä¸Šæ¬¡çš„é€Ÿåº¦æ•°æ®
+    static uint32_t preSpeedChanging; // ä¸Šæ¬¡å˜æ›´é€Ÿåº¦çš„æ—¶é—´æˆ³
 
-    // ËÙ¶ÈÖµ¸Ä±äÔòÉÏ´«Êı¾İ
+    // é€Ÿåº¦å€¼æ”¹å˜åˆ™ä¸Šä¼ æ•°æ®
     if (LSpeed != preLSpeed || RSpeed != preRSpeed)
     {
         preLSpeed = LSpeed;
         preRSpeed = RSpeed;
         Send_UpMotor(LSpeed, RSpeed);
-        preSpeedChanging = Get_GlobalTimeStamp(); // ¸üĞÂÊ±¼ä´Á
+        preSpeedChanging = Get_GlobalTimeStamp(); // æ›´æ–°æ—¶é—´æˆ³
     }
     else
     {
-        // ¼ä¸ôÒ»¶¨Ê±¼äºó·¢ËÍÒ»´ÎËÙ¶ÈĞÅÏ¢£¬·ÀÖ¹can¶ª°üÔì³ÉÔÈËÙĞĞÊ»Ê±µÄÑÏÖØ´íÎó
+        // é—´éš”ä¸€å®šæ—¶é—´åå‘é€ä¸€æ¬¡é€Ÿåº¦ä¿¡æ¯ï¼Œé˜²æ­¢canä¸¢åŒ…é€ æˆåŒ€é€Ÿè¡Œé©¶æ—¶çš„ä¸¥é‡é”™è¯¯
         if (IsTimeOut(preSpeedChanging, 150))
         {
             Send_UpMotor(LSpeed, RSpeed);
@@ -171,14 +171,14 @@ void Submit_SpeedChanges(void)
     }
 }
 
-// »ñÈ¡Ñ­¼£ĞÅÏ¢£¬¼ÆËã°×É«µÄÊıÁ¿
+// è·å–å¾ªè¿¹ä¿¡æ¯ï¼Œè®¡ç®—ç™½è‰²çš„æ•°é‡
 void Get_Track(void)
 {
     uint16_t tmp = Get_Host_UpTrack(TRACK_ALL);
 
     NumberOfWhite = 0;
 
-    // »ñÈ¡Ñ­¼£µÆĞÅÏ¢ºÍÑ­¼£µÆÁÁµÆÊıÁ¿
+    // è·å–å¾ªè¿¹ç¯ä¿¡æ¯å’Œå¾ªè¿¹ç¯äº®ç¯æ•°é‡
     for (uint8_t i = 0; i < 7; i++)
     {
         Q7[i] = (tmp >> i) & 0x01;
@@ -211,10 +211,10 @@ void Get_Track(void)
 #endif // _TRACK_OUTPUT_
 }
 
-// ¼ÆËãÊä³öËÙ¶ÈÖµ
+// è®¡ç®—è¾“å‡ºé€Ÿåº¦å€¼
 void Calculate_Speed(void)
 {
-    // ¼ÆËã¸÷¸öµãÓëÁÙ½üµãµÄºÍ
+    // è®¡ç®—å„ä¸ªç‚¹ä¸ä¸´è¿‘ç‚¹çš„å’Œ
     int8_t all_weights[15] = {0};
     for (uint8_t i = 1; i < 14; i++)
     {
@@ -224,7 +224,7 @@ void Calculate_Speed(void)
         }
     }
 
-    // ±éÀúÕÒµ½×îĞ¡Öµ
+    // éå†æ‰¾åˆ°æœ€å°å€¼
     int8_t minimum = 3;
     for (uint8_t i = 1; i < 14; i++)
     {
@@ -232,8 +232,8 @@ void Calculate_Speed(void)
             minimum = all_weights[i];
     }
 
-    // »ñÈ¡×îĞ¡ÖµÕıĞøºÍµ¹Ğò±àºÅ£¨Á½¸ö×îĞ¡ÖµÇé¿ö£©
-    // ¶ªÆúµÚÒ»Î»ºÍ×îºóÒ»Î»£¬Ã»ÓĞÊı¾İ
+    // è·å–æœ€å°å€¼æ­£ç»­å’Œå€’åºç¼–å·ï¼ˆä¸¤ä¸ªæœ€å°å€¼æƒ…å†µï¼‰
+    // ä¸¢å¼ƒç¬¬ä¸€ä½å’Œæœ€åä¸€ä½ï¼Œæ²¡æœ‰æ•°æ®
     int8_t errorValue1 = 0, errorValue2 = 14;
     for (;;)
     {
@@ -246,10 +246,10 @@ void Calculate_Speed(void)
             break;
     }
 
-    // Æ½¾ùÖ®ºó¼ÆËãÎó²îÖµ
+    // å¹³å‡ä¹‹åè®¡ç®—è¯¯å·®å€¼
     float errorValue = 7.0 - (errorValue1 + errorValue2) / 2.0;
 
-    // ÂË²¨
+    // æ»¤æ³¢
     #define FILTER_ARRAY_LENGTH 3
     static float filterArray[FILTER_ARRAY_LENGTH] = {0};
     static uint8_t currentNumber = 0;
@@ -284,7 +284,7 @@ uint8_t TrackStatus = 0;
 uint8_t isOutTrack = false;
 uint32_t outTrackStamp;
 
-// Ñ­¼£
+// å¾ªè¿¹
 void TRACK_LINE(void)
 {
 
@@ -298,7 +298,7 @@ void TRACK_LINE(void)
         }
     }
 
-    // Ã»ÓĞ½ÓÊÕµ½Ñ­¼£ĞÅÏ¢²»½øĞĞÔËËã
+    // æ²¡æœ‰æ¥æ”¶åˆ°å¾ªè¿¹ä¿¡æ¯ä¸è¿›è¡Œè¿ç®—
     if (Get_TrackInfoReceived())
     {
         Get_Track();
@@ -309,7 +309,7 @@ void TRACK_LINE(void)
 
 #if _ENABLE_TURNING_BY_TRACK_
 
-    if (Track_Mode == TrackMode_Turn) // Í¨¹ıÑ­¼£Ïß×ªÏò£¨Ğ§¹û²»ÊÇºÜºÃ£¬»ù±¾²»ÓÃ£©
+    if (Track_Mode == TrackMode_Turn) // é€šè¿‡å¾ªè¿¹çº¿è½¬å‘ï¼ˆæ•ˆæœä¸æ˜¯å¾ˆå¥½ï¼ŒåŸºæœ¬ä¸ç”¨ï¼‰
     {
         if (TrackStatus == 0)
         {
@@ -342,9 +342,9 @@ void TRACK_LINE(void)
 
 #endif // _ENABLE_TURNING_BY_TRACK_
 
-    if (NumberOfWhite >= ALL_WHITE) // È«°×
+    if (NumberOfWhite >= ALL_WHITE) // å…¨ç™½
     {
-        if ((Track_Mode == TrackMode_NORMAL) || (Track_Mode == TrackMode_ENCODER)) // Ñ­¼£×´Ì¬
+        if ((Track_Mode == TrackMode_NORMAL) || (Track_Mode == TrackMode_ENCODER)) // å¾ªè¿¹çŠ¶æ€
         {
             if (isOutTrack == false)
             {
@@ -353,25 +353,25 @@ void TRACK_LINE(void)
             }
             else
             {
-                if (IsTimeOut(outTrackStamp, 60)) // ÓöÈ«°×³¬¹ı60ms
+                if (IsTimeOut(outTrackStamp, 60)) // é‡å…¨ç™½è¶…è¿‡60ms
                 {
-                    if (RFID_RoadSection) // °×¿¨Â·¶Î
+                    if (RFID_RoadSection) // ç™½å¡è·¯æ®µ
                     {
-                        FOUND_RFID_CARD = true;       // ÕÒµ½°×¿¨
-                        Save_StatusBeforeFoundRFID(); // ±£´æµ±Ç°×´Ì¬
-                        Stop();                       // ÔİÍ£ÔËĞĞ
-                        TIM_Cmd(TIM5, ENABLE);        // Ê¹ÄÜRFID´¦Àí¶¨Ê±Æ÷
+                        FOUND_RFID_CARD = true;       // æ‰¾åˆ°ç™½å¡
+                        Save_StatusBeforeFoundRFID(); // ä¿å­˜å½“å‰çŠ¶æ€
+                        Stop();                       // æš‚åœè¿è¡Œ
+                        TIM_Cmd(TIM5, ENABLE);        // ä½¿èƒ½RFIDå¤„ç†å®šæ—¶å™¨
                     }
                     else
                     {
                         // Stop();
-                        Stop_Flag = OUTTRACK; // ³öÏß
+                        Stop_Flag = OUTTRACK; // å‡ºçº¿
                     }
                 }
             }
         }
     }
-    else if ((NumberOfWhite <= ALL_BLACK) && (Track_Mode == TrackMode_NORMAL)) // È«ºÚ
+    else if ((NumberOfWhite <= ALL_BLACK) && (Track_Mode == TrackMode_NORMAL)) // å…¨é»‘
     {
         Roadway_Flag_clean();
         Update_MotorSpeed(0, 0);
@@ -380,18 +380,18 @@ void TRACK_LINE(void)
     }
     else
     {
-        if (RFID_RoadSection && (FOUND_RFID_CARD == false)) // °×¿¨Â·¶Î£¬µÚÒ»´ÎÓöµ½¿¨
+        if (RFID_RoadSection && (FOUND_RFID_CARD == false)) // ç™½å¡è·¯æ®µï¼Œç¬¬ä¸€æ¬¡é‡åˆ°å¡
         {
-            // ÅĞ¶¨Ñ­¼£µÆÊÇ·ñÓĞ·´°×µÄÇé¿ö // ×îÖĞ¼äÈıÎ»±ØĞëÎª°×É«£¬×îÁ½±ßÖÁÉÙÓĞÒ»¸öºÚÉ«£¬²¢ÇÒÏÂÒ»×ø±êÎªÂ·¿Ú
+            // åˆ¤å®šå¾ªè¿¹ç¯æ˜¯å¦æœ‰åç™½çš„æƒ…å†µ // æœ€ä¸­é—´ä¸‰ä½å¿…é¡»ä¸ºç™½è‰²ï¼Œæœ€ä¸¤è¾¹è‡³å°‘æœ‰ä¸€ä¸ªé»‘è‰²ï¼Œå¹¶ä¸”ä¸‹ä¸€åæ ‡ä¸ºè·¯å£
             if (((H8[0] + Q7[0] + H8[7] + Q7[6]) <= 3) && (H8[3] & H8[4] & Q7[3]) && (((NextStatus.x % 2) && (NextStatus.y % 2)) != 0))
             {
-                Roadway_Flag_clean(); // ´¦ÀíÓöµ½Ê®×ÖÏßµÄÇé¿ö
+                Roadway_Flag_clean(); // å¤„ç†é‡åˆ°åå­—çº¿çš„æƒ…å†µ
                 Update_MotorSpeed(0, 0);
                 Stop_Flag = CROSSROAD;
-                FOUND_RFID_CARD = true;       // ÕÒµ½°×¿¨
-                Save_StatusBeforeFoundRFID(); // ±£´æµ±Ç°×´Ì¬
-                Stop();                       // ÔİÍ£ÔËĞĞ
-                TIM_Cmd(TIM5, ENABLE);        // Ê¹ÄÜRFID´¦Àí¶¨Ê±Æ÷
+                FOUND_RFID_CARD = true;       // æ‰¾åˆ°ç™½å¡
+                Save_StatusBeforeFoundRFID(); // ä¿å­˜å½“å‰çŠ¶æ€
+                Stop();                       // æš‚åœè¿è¡Œ
+                TIM_Cmd(TIM5, ENABLE);        // ä½¿èƒ½RFIDå¤„ç†å®šæ—¶å™¨
             }
             else
             {
@@ -402,12 +402,12 @@ void TRACK_LINE(void)
         {
             Update_MotorSpeed(Car_Speed + PID_value, Car_Speed - PID_value);
             isOutTrack = false;
-            // ÒòCAN·¢ËÍ³öÏÖ¹ıÃ»ÓĞËÍ´ïµÄÏÖÏó£¬ËÙ¶È¿ØÖÆÔÚ¶¨Ê±Æ÷ÖĞ¶ÏÄÚÊµÏÖ
+            // å› CANå‘é€å‡ºç°è¿‡æ²¡æœ‰é€è¾¾çš„ç°è±¡ï¼Œé€Ÿåº¦æ§åˆ¶åœ¨å®šæ—¶å™¨ä¸­æ–­å†…å®ç°
         }
     }
 }
 
-// ÔË¶¯¿ØÖÆ
+// è¿åŠ¨æ§åˆ¶
 void Roadway_Check(void)
 {
     if (Track_Mode != TrackMode_NONE)
@@ -422,7 +422,7 @@ void Roadway_Check(void)
     Submit_SpeedChanges();
 }
 
-// Â·¿ö¼ì²â£¨TIM9£©
+// è·¯å†µæ£€æµ‹ï¼ˆTIM9ï¼‰
 void Roadway_CheckTimInit(uint16_t arr, uint16_t psc)
 {
     TIM_TimeBaseInitTypeDef TIM_InitStructure;
@@ -456,7 +456,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
     {
         DEBUG_PIN_2_SET();
 
-        // ÉÏÒ»´ÎÍ£Ö¹Ê±¼äÎ´µÈ´ı×ã¹»Ê±¼äÔò²»½øĞĞÏÂÒ»¸ö¶¯×÷£¬·ÀÖ¹´ò»¬
+        // ä¸Šä¸€æ¬¡åœæ­¢æ—¶é—´æœªç­‰å¾…è¶³å¤Ÿæ—¶é—´åˆ™ä¸è¿›è¡Œä¸‹ä¸€ä¸ªåŠ¨ä½œï¼Œé˜²æ­¢æ‰“æ»‘
         if (IsTimeOut(lastStopStamp, 300))
         {
             Mp_Value = Roadway_mp_Get();

@@ -5,7 +5,7 @@
 
 volatile uint32_t global_times = 0;
 
-// È«¾ÖÊ±¼ä£¨TIM10£©
+// å…¨å±€æ—¶é—´ï¼ˆTIM10ï¼‰
 void Timer_Init(uint16_t arr, uint16_t psc)
 {
 	TIM_TimeBaseInitTypeDef TIM_InitStructure;
@@ -39,19 +39,3 @@ void TIM1_UP_TIM10_IRQHandler(void)
 	}
 	TIM_ClearITPendingBit(TIM10, TIM_IT_Update);
 }
-
-// // »ñÈ¡µ±Ç°Ê±¼ä£¨ms£©
-// uint32_t gt_get(void)
-// {
-// 	return global_times;
-// }
-
-// // »ñÈ¡Óëµ±Ç°Ê±¼äµÄ²îÖµ
-// uint32_t gt_get_sub(uint32_t c)
-// {
-// 	if (c > global_times)
-// 		c -= global_times;
-// 	else
-// 		c = 0;
-// 	return c;
-// }

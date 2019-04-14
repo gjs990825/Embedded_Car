@@ -1,73 +1,32 @@
 #include "hardware.h"
 #include "can_drv.h"
 
-static uint32_t Power_check_times; //µçÁ¿¼ì²âÖÜÆÚ
-// static uint32_t LED_twinkle_times;		//LEDÉÁË¸ÖÜÆÚ
-static uint32_t WIFI_Upload_data_times; //Í¨¹ıWifiÉÏ´«Êı¾İÖÜÆÚ
-static uint32_t RFID_Init_Check_times;
-
 int main(void)
 {
-	// uint16_t Light_Value = 0;	 //¹âÇ¿¶ÈÖµ
-	// uint16_t CodedDisk_Value = 0; //ÂëÅÌ
-	// uint16_t Nav_Value = 0;		  //½Ç¶È
+	uint32_t PowerCheckStamp = 0;
+	uint32_t RFIDCheckStamp = 0;
 
-	Hardware_Init(); //Ó²¼ş³õÊ¼»¯
-
-	// LED_twinkle_times = gt_get() + 50;
-	Power_check_times = gt_get() + 200;
-	WIFI_Upload_data_times = gt_get() + 200;
-	RFID_Init_Check_times = gt_get() + 200;
-
-	Principal_Tab[0] = 0x55;
-	Principal_Tab[1] = 0xAA;
-
-	Follower_Tab[0] = 0x55;
-	Follower_Tab[1] = 0x02;
-
-	Update_MotorSpeed(0, 0);
-
-	// Send_DataToUsart("USART TEST\r\n", 13);
-
-	// while(1)
-	// {
-	// 	print_info("0123456789ABCDEF\r\n0123456789ABCDEF\r\n");
-	// 	delay_ms(10);
-	// }
-	// while(1)
-	// {
-	// 	DEBUG_PIN_1_TOGGLE();
-	// 	delay(10);
-	// }
+	Hardware_Init(); // ç¡¬ä»¶åˆå§‹åŒ–
 
 	while (1)
 	{
-		KEY_Check(); //°´¼ü¼ì²â
+		KEY_Check(); //æŒ‰é”®æ£€æµ‹
 
-		// ÏÖÔÚ·ÅÔÚÖĞ¶ÏÖĞ
-		// Can_WifiRx_Check();
-		// Can_ZigBeeRx_Check();
-
-		// if(gt_get_sub(LED_twinkle_times) == 0)
-		// {
-		// 	LED_twinkle_times =  gt_get() + 50;			//LED4×´Ì¬È¡·´
-		// 	LED4 = !LED4;
-		// }
 		if (autoRunEnable)
 		{
 			Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
 			autoRunEnable = 0;
 		}
 
-		if (gt_get_sub(Power_check_times) == 0)
+		if (IsTimeOut(PowerCheckStamp, 200))
 		{
-			Power_check_times = gt_get() + 200; //µç³ØµçÁ¿¼ì²â
+			PowerCheckStamp = Get_GlobalTimeStamp();
 			Power_Check();
 		}
 
-		if (gt_get_sub(RFID_Init_Check_times) == 0)
+		if (IsTimeOut(RFIDCheckStamp, 300))
 		{
-			RFID_Init_Check_times = gt_get() + 200; //RFID³õÊ¼»¯¼ì²â
+			RFIDCheckStamp = Get_GlobalTimeStamp();
 			if (Rc522_GetLinkFlag() == 0)
 			{
 				Readcard_Device_Init();
@@ -80,51 +39,10 @@ int main(void)
 				Rc522_LinkTest();
 			}
 		}
-
-		if (gt_get_sub(WIFI_Upload_data_times) == 0)
-		{
-			// WIFI_Upload_data_times = gt_get() + 200;
-
-			// if (Host_AGV_Return_Flag == RESET)
-			// {
-			// 	Principal_Tab[2] = Stop_Flag;			  //ÔËĞĞ×´Ì¬
-			// 	Principal_Tab[3] = Get_tba_phsis_value(); //¹âÃô×´Ì¬Öµ·µ»Ø
-
-			// 	Ultrasonic_Ranging(); //³¬Éù²¨Êı¾İ
-			// 	Principal_Tab[4] = distance % 256;
-			// 	Principal_Tab[5] = distance / 256;
-
-			// 	Light_Value = Get_Bh_Value();		  //¹âÇ¿¶È´«¸ĞÆ÷
-			// 	Principal_Tab[6] = Light_Value % 256; //¹âÕÕÊı¾İ
-			// 	Principal_Tab[7] = Light_Value / 256;
-
-			// 	CodedDisk_Value = CanHost_Mp; //ÂëÅÌ
-			// 	Principal_Tab[8] = CodedDisk_Value % 256;
-			// 	Principal_Tab[9] = CodedDisk_Value / 256;
-
-			// 	Nav_Value = CanHost_Navig; //½Ç¶È
-			// 	Principal_Tab[10] = Nav_Value % 256;
-			// 	Principal_Tab[11] = Nav_Value / 256;
-
-			// 	Send_WifiData_To_Fifo(Principal_Tab, 12);
-			// 	UartA72_TxClear();
-			// 	UartA72_TxAddStr(Principal_Tab, 12);
-			// 	UartA72_TxStart();
-			// }
-			// else if ((Host_AGV_Return_Flag == SET) && (AGV_data_Falg == SET))
-			// {
-
-			// 	UartA72_TxClear();
-			// 	UartA72_TxAddStr(Follower_Tab, 50);
-			// 	UartA72_TxStart();
-			// 	Send_WifiData_To_Fifo(Follower_Tab, 50);
-			// 	AGV_data_Falg = 0;
-			// }
-		}
 	}
 }
 
-// ²ÎÊı´íÎóµÄ´¦Àí
+// å‚æ•°é”™è¯¯çš„å¤„ç†
 void assert_failed(uint8_t *file, uint32_t line)
 {
 	print_info("ERR: %s, %d\r\n", file, line);

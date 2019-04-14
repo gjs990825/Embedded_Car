@@ -5,14 +5,14 @@
 #include "debug.h"
 #include "my_lib.h"
 
-// µ±Ç°Î»ÖÃ×´Ì¬
+// å½“å‰ä½ç½®çŠ¶æ€
 RouteNode_t CurrentStaus;
-// ÏÂÒ»¸öÎ»ÖÃºÍ×´Ì¬
+// ä¸‹ä¸€ä¸ªä½ç½®å’ŒçŠ¶æ€
 RouteNode_t NextStatus;
-// ÈÎÎñÍê³ÉÇé¿ö
+// ä»»åŠ¡å®Œæˆæƒ…å†µ
 // int8_t RouteTask_Finished[ROUTE_TASK_NUMBER] = {0};
 
-// ×ø±êÄ£°å£¬³õÊ¼×ø±êÈç¹ûÕâÀï²»Éè¶¨ĞèÒªÔÚ×Ô¶¯ÔËĞĞÇ°³õÊ¼»¯
+// åæ ‡æ¨¡æ¿ï¼Œåˆå§‹åæ ‡å¦‚æœè¿™é‡Œä¸è®¾å®šéœ€è¦åœ¨è‡ªåŠ¨è¿è¡Œå‰åˆå§‹åŒ–
 RouteSetting_t Route_Task[] = {
     {.coordinate = "F7", .Task = NULL, .node.dir = DIR_UP},
     {.coordinate = "F6", .Task = NULL},
@@ -29,7 +29,7 @@ RouteSetting_t Route_Task[] = {
     {.coordinate = "F7", .Task = NULL},
 };
 
-// // ÈÎÎñµãÉè¶¨
+// // ä»»åŠ¡ç‚¹è®¾å®š
 // RouteSetting_t Route_Task[] = {
 //     {.coordinate = "F7", .Task = Start_Task, .node.dir = DIR_UP},
 //     {.coordinate = "F6", .Task = Task_F6},
@@ -43,12 +43,12 @@ RouteSetting_t Route_Task[] = {
 //     {.coordinate = "D4", .Task = NULL},
 //     {.coordinate = "D6", .Task = Task_3_1_2},
 //     {.coordinate = "F6", .Task = Task_F6_2},
-//     // {.coordinate = "F7", .Task = NULL}, // Èë¿âµã
+//     // {.coordinate = "F7", .Task = NULL}, // å…¥åº“ç‚¹
 // };
-// ÈÎÎñµã¸öÊı
+// ä»»åŠ¡ç‚¹ä¸ªæ•°
 uint8_t ROUTE_TASK_NUMBER = GET_ARRAY_LENGEH(Route_Task);
 
-// RFID Ñ°¿¨²âÊÔÓÃÂ·¾¶
+// RFID å¯»å¡æµ‹è¯•ç”¨è·¯å¾„
 RouteSetting_t RFID_TestRoute[] = {
     {.coordinate = "B7", .Task = NULL, .node.dir = DIR_UP},
     {.coordinate = "B6", .Task = Task_RFIDTestStart},
@@ -59,7 +59,7 @@ RouteSetting_t RFID_TestRoute[] = {
 };
 uint8_t RFID_TESTROUTE_NUMBER = GET_ARRAY_LENGEH(RFID_TestRoute);
 
-// ×ª»»×Ö·û´®µ½×ø±êµã
+// è½¬æ¢å­—ç¬¦ä¸²åˆ°åæ ‡ç‚¹
 RouteNode_t Coordinate_Covent(uint8_t coordinate[2])
 {
     static const RouteNode_t badNode = {.x = -1, .y = -1, .dir = DIR_NOTSET};
@@ -70,20 +70,20 @@ RouteNode_t Coordinate_Covent(uint8_t coordinate[2])
     {
         outNode.x = coordinate[0] - 'A';
     }
-    else // ²»ºÏ·¨µÄx×ø±ê
+    else // ä¸åˆæ³•çš„xåæ ‡
         return badNode;
 
     if ((coordinate[1] >= '1') && (coordinate[1] <= '7'))
     {
         outNode.y = '7' - coordinate[1];
     }
-    else // ²»ºÏ·¨µÄy×ø±ê
+    else // ä¸åˆæ³•çš„yåæ ‡
         return badNode;
 
     return outNode;
 }
 
-// ×ª»»×ø±êµãµ½×Ö·û´®
+// è½¬æ¢åæ ‡ç‚¹åˆ°å­—ç¬¦ä¸²
 uint8_t *ReCoordinate_Covent(int8_t x, int8_t y)
 {
     static const char *badCoordinate = "\0\0";
@@ -93,20 +93,20 @@ uint8_t *ReCoordinate_Covent(int8_t x, int8_t y)
     {
         tempCoordinate[0] = 'A' + x;
     }
-    else // ²»ºÏ·¨µÄx×ø±ê
+    else // ä¸åˆæ³•çš„xåæ ‡
         return (uint8_t *)badCoordinate;
 
     if (y >= 0 && y <= 6)
     {
         tempCoordinate[1] = '7' - y;
     }
-    else // ²»ºÏ·¨µÄy×ø±ê
+    else // ä¸åˆæ³•çš„yåæ ‡
         return (uint8_t *)badCoordinate;
 
     return tempCoordinate;
 }
 
-// »ñÈ¡ÈÎÎñµãÔÚÂ·¾¶ÖĞ³öÏÖµÚn´ÎµÄÎ»ÖÃ£¬·µ»Ø-1Îª´íÎó
+// è·å–ä»»åŠ¡ç‚¹åœ¨è·¯å¾„ä¸­å‡ºç°ç¬¬næ¬¡çš„ä½ç½®ï¼Œè¿”å›-1ä¸ºé”™è¯¯
 int8_t Get_TaskNumber(uint8_t coordinate[2], uint8_t *route, uint8_t nTimes)
 {
     uint8_t count = 0;
@@ -125,14 +125,14 @@ int8_t Get_TaskNumber(uint8_t coordinate[2], uint8_t *route, uint8_t nTimes)
             return -1;
         else
         {
-            tempRoute = location + 2; // Ö¸ÏòÏÂÒ»¸ö×ø±êµãµÄ×Ö·û
+            tempRoute = location + 2; // æŒ‡å‘ä¸‹ä¸€ä¸ªåæ ‡ç‚¹çš„å­—ç¬¦
             if (++count >= nTimes)
-                return (location - (char *)route) / 2; // Ëã³öµÚn´Î³öÏÖµÄÈÎÎñÎ»ÖÃ
+                return (location - (char *)route) / 2; // ç®—å‡ºç¬¬næ¬¡å‡ºç°çš„ä»»åŠ¡ä½ç½®
         }
     }
 }
 
-// ´ÓÉè¶¨Â·¾¶ÖĞµÄ×Ö·û´®Éú³É×ø±êÂ·¾¶
+// ä»è®¾å®šè·¯å¾„ä¸­çš„å­—ç¬¦ä¸²ç”Ÿæˆåæ ‡è·¯å¾„
 bool Generate_Routetask(RouteSetting_t routeSetting[], uint8_t count)
 {
     RouteNode_t tempNode;
@@ -140,11 +140,11 @@ bool Generate_Routetask(RouteSetting_t routeSetting[], uint8_t count)
     for (uint8_t i = 0; i < count; i++)
     {
         tempNode = Coordinate_Covent(routeSetting[i].coordinate);
-        routeSetting[i].node.x = tempNode.x; // ·ÀÖ¹Éè¶¨µÄ·½Ïò±»±ä¸ü
+        routeSetting[i].node.x = tempNode.x; // é˜²æ­¢è®¾å®šçš„æ–¹å‘è¢«å˜æ›´
         routeSetting[i].node.y = tempNode.y;
 
         if (routeSetting[i].node.x == -1 || routeSetting[i].node.y == -1)
-            return false; // ÎŞĞ§½Úµã£¬ÍË³ö
+            return false; // æ— æ•ˆèŠ‚ç‚¹ï¼Œé€€å‡º
 
         print_info((i < count - 1) ? "(%d, %d)->" : "(%d, %d)", routeSetting[i].node.x, routeSetting[i].node.y);
         delay_ms(50);

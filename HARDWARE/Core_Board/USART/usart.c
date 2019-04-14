@@ -6,133 +6,122 @@ uint8_t RX_OK = RESET;
 uint8_t Length_num = 0;
 uint8_t RX_Data[RX_Length];
 
-
-
-void USART1_Configure(uint32_t  baudrate)
+void USART1_Configure(uint32_t baudrate)
 {
-	GPIO_InitTypeDef  GPIO_TypeDefStructure;
+	GPIO_InitTypeDef GPIO_TypeDefStructure;
 	USART_InitTypeDef USART_TypeDefStructure;
-	NVIC_InitTypeDef  NVIC_TypeDefStructure;
-	
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA,ENABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1,ENABLE);
-	
-	GPIO_PinAFConfig(GPIOA,GPIO_PinSource9,GPIO_AF_USART1);
-	GPIO_PinAFConfig(GPIOA,GPIO_PinSource10,GPIO_AF_USART1);
-	
+	NVIC_InitTypeDef NVIC_TypeDefStructure;
+
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);
+
 	//PA9-Tx
-	GPIO_TypeDefStructure.GPIO_Pin = GPIO_Pin_9|GPIO_Pin_10;
-	GPIO_TypeDefStructure.GPIO_Mode = GPIO_Mode_AF;		//¸´ÓÃ¹¦ÄÜ
-	GPIO_TypeDefStructure.GPIO_OType = GPIO_OType_PP; //ÍÆÍìÊä³ö
-	GPIO_TypeDefStructure.GPIO_PuPd = GPIO_PuPd_UP;   //ÉÏÀ­
+	GPIO_TypeDefStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10;
+	GPIO_TypeDefStructure.GPIO_Mode = GPIO_Mode_AF;   //å¤ç”¨åŠŸèƒ½
+	GPIO_TypeDefStructure.GPIO_OType = GPIO_OType_PP; //æŽ¨æŒ½è¾“å‡º
+	GPIO_TypeDefStructure.GPIO_PuPd = GPIO_PuPd_UP;   //ä¸Šæ‹‰
 	GPIO_TypeDefStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_Init(GPIOA,&GPIO_TypeDefStructure);
-	
-	USART_TypeDefStructure.USART_BaudRate = baudrate;					       //²¨ÌØÂÊ
-	USART_TypeDefStructure.USART_HardwareFlowControl = 				       //ÎÞÓ²¼þ¿ØÖÆÁ÷
-												 USART_HardwareFlowControl_None;  
-	USART_TypeDefStructure.USART_Mode = USART_Mode_Tx|USART_Mode_Rx; //½ÓÊÕÓë·¢ËÍÄ£Ê½
-	USART_TypeDefStructure.USART_Parity = USART_Parity_No; 		       //ÎÞÐ£ÑéÎ»
-	USART_TypeDefStructure.USART_StopBits = USART_StopBits_1;        //Í£Ö¹Î»1
-	USART_TypeDefStructure.USART_WordLength = USART_WordLength_8b;   //Êý¾ÝÎ»8Î»
-	USART_Init(USART1,&USART_TypeDefStructure);
-	
+	GPIO_Init(GPIOA, &GPIO_TypeDefStructure);
+
+	USART_TypeDefStructure.USART_BaudRate = baudrate;  //æ³¢ç‰¹çŽ‡
+	USART_TypeDefStructure.USART_HardwareFlowControl = //æ— ç¡¬ä»¶æŽ§åˆ¶æµ
+		USART_HardwareFlowControl_None;
+	USART_TypeDefStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx; //æŽ¥æ”¶ä¸Žå‘é€æ¨¡å¼
+	USART_TypeDefStructure.USART_Parity = USART_Parity_No;			   //æ— æ ¡éªŒä½
+	USART_TypeDefStructure.USART_StopBits = USART_StopBits_1;		   //åœæ­¢ä½1
+	USART_TypeDefStructure.USART_WordLength = USART_WordLength_8b;	 //æ•°æ®ä½8ä½
+	USART_Init(USART1, &USART_TypeDefStructure);
+
 	NVIC_TypeDefStructure.NVIC_IRQChannel = USART1_IRQn;
 	NVIC_TypeDefStructure.NVIC_IRQChannelPreemptionPriority = 1;
 	NVIC_TypeDefStructure.NVIC_IRQChannelSubPriority = 3;
 	NVIC_TypeDefStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_TypeDefStructure);
-	
-	USART_ITConfig(USART1,USART_IT_RXNE,ENABLE);
-	USART_Cmd(USART1,ENABLE);
-	
+
+	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+	USART_Cmd(USART1, ENABLE);
 }
 
 void USART2_Configure()
 {
-
-
 }
 
-void UART4_Configure(uint32_t  baudrate)
+void UART4_Configure(uint32_t baudrate)
 {
-	GPIO_InitTypeDef  GPIO_TypeDefStructure;
+	GPIO_InitTypeDef GPIO_TypeDefStructure;
 	USART_InitTypeDef USART_TypeDefStructure;
-	NVIC_InitTypeDef  NVIC_TypeDefStructure;
-	
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA,ENABLE);
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4,ENABLE);
-	
-	GPIO_PinAFConfig(GPIOA,GPIO_PinSource9,GPIO_AF_USART1);
-	GPIO_PinAFConfig(GPIOA,GPIO_PinSource10,GPIO_AF_USART1);
-	
+	NVIC_InitTypeDef NVIC_TypeDefStructure;
+
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE);
+
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);
+
 	//PA9-Tx
-	GPIO_TypeDefStructure.GPIO_Pin = GPIO_Pin_9|GPIO_Pin_10;
-	GPIO_TypeDefStructure.GPIO_Mode = GPIO_Mode_AF;		//¸´ÓÃ¹¦ÄÜ
-	GPIO_TypeDefStructure.GPIO_OType = GPIO_OType_PP; //ÍÆÍìÊä³ö
-	GPIO_TypeDefStructure.GPIO_PuPd = GPIO_PuPd_UP;   //ÉÏÀ­
+	GPIO_TypeDefStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10;
+	GPIO_TypeDefStructure.GPIO_Mode = GPIO_Mode_AF;   //å¤ç”¨åŠŸèƒ½
+	GPIO_TypeDefStructure.GPIO_OType = GPIO_OType_PP; //æŽ¨æŒ½è¾“å‡º
+	GPIO_TypeDefStructure.GPIO_PuPd = GPIO_PuPd_UP;   //ä¸Šæ‹‰
 	GPIO_TypeDefStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_Init(GPIOA,&GPIO_TypeDefStructure);
-	
-	USART_TypeDefStructure.USART_BaudRate = baudrate;					       //²¨ÌØÂÊ
-	USART_TypeDefStructure.USART_HardwareFlowControl = 				       //ÎÞÓ²¼þ¿ØÖÆÁ÷
-												 USART_HardwareFlowControl_None;  
-	USART_TypeDefStructure.USART_Mode = USART_Mode_Tx|USART_Mode_Rx; //½ÓÊÕÓë·¢ËÍÄ£Ê½
-	USART_TypeDefStructure.USART_Parity = USART_Parity_No; 		       //ÎÞÐ£ÑéÎ»
-	USART_TypeDefStructure.USART_StopBits = USART_StopBits_1;        //Í£Ö¹Î»1
-	USART_TypeDefStructure.USART_WordLength = USART_WordLength_8b;   //Êý¾ÝÎ»8Î»
-	USART_Init(USART1,&USART_TypeDefStructure);
-	
+	GPIO_Init(GPIOA, &GPIO_TypeDefStructure);
+
+	USART_TypeDefStructure.USART_BaudRate = baudrate;  //æ³¢ç‰¹çŽ‡
+	USART_TypeDefStructure.USART_HardwareFlowControl = //æ— ç¡¬ä»¶æŽ§åˆ¶æµ
+		USART_HardwareFlowControl_None;
+	USART_TypeDefStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx; //æŽ¥æ”¶ä¸Žå‘é€æ¨¡å¼
+	USART_TypeDefStructure.USART_Parity = USART_Parity_No;			   //æ— æ ¡éªŒä½
+	USART_TypeDefStructure.USART_StopBits = USART_StopBits_1;		   //åœæ­¢ä½1
+	USART_TypeDefStructure.USART_WordLength = USART_WordLength_8b;	 //æ•°æ®ä½8ä½
+	USART_Init(USART1, &USART_TypeDefStructure);
+
 	NVIC_TypeDefStructure.NVIC_IRQChannel = USART1_IRQn;
 	NVIC_TypeDefStructure.NVIC_IRQChannelPreemptionPriority = 1;
 	NVIC_TypeDefStructure.NVIC_IRQChannelSubPriority = 3;
 	NVIC_TypeDefStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_TypeDefStructure);
-	
-	USART_ITConfig(USART1,USART_IT_RXNE,ENABLE);
-	USART_Cmd(USART1,ENABLE);
 
-
+	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+	USART_Cmd(USART1, ENABLE);
 }
-
-
 
 void USART1_IRQHandler()
 {
-	if(RX_OK == RESET)
+	if (RX_OK == RESET)
 	{
-		if(USART_GetITStatus(USART1,USART_IT_RXNE) == SET)
+		if (USART_GetITStatus(USART1, USART_IT_RXNE) == SET)
 		{
-				
-				RX_Data[Length_num] = USART_ReceiveData(USART1);
-				Length_num++;
-			    if(Length_num >= RX_Length)
-				{
-					Length_num = 0;
-					RX_OK = SET;
-				}
-				USART_ClearITPendingBit(USART1,USART_IT_RXNE);
+
+			RX_Data[Length_num] = USART_ReceiveData(USART1);
+			Length_num++;
+			if (Length_num >= RX_Length)
+			{
+				Length_num = 0;
+				RX_OK = SET;
+			}
+			USART_ClearITPendingBit(USART1, USART_IT_RXNE);
 		}
 	}
 }
 
-
 void USART_TX_Byte(uint8_t data)
 {
-	USART_SendData(USART1,data);
-	while(USART_GetFlagStatus(USART1,USART_FLAG_TXE) == RESET);
+	USART_SendData(USART1, data);
+	while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET)
+		;
 }
 
-
-void USART1_TX_Data(uint8_t *data,uint8_t length)
+void USART1_TX_Data(uint8_t *data, uint8_t length)
 {
 	uint8_t i = 0;
 	do
 	{
-		USART_TX_Byte(*(data+i));
+		USART_TX_Byte(*(data + i));
 		i++;
-	}		
-	while(i<length);
+	} while (i < length);
 }
 
 void USART1_TX_String(uint8_t *src)
@@ -140,11 +129,7 @@ void USART1_TX_String(uint8_t *src)
 	uint8_t i = 0;
 	do
 	{
-		USART_TX_Byte(*(src+i));
+		USART_TX_Byte(*(src + i));
 		i++;
-	}
-	while(*(src+i) != '\0');
+	} while (*(src + i) != '\0');
 }
-
-
-

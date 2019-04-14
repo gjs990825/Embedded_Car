@@ -9,48 +9,32 @@
 #include "route.h"
 #include "stdlib.h"
 
-// // È«×Ô¶¯
-// void Auto_Run(void)
-// {
-// 	Generate_Routetask(Route_Task, ROUTE_TASK_NUMBER); // ³õÊ¼»¯×ø±êĞÅÏ¢
-// 	CurrentStaus = Route_Task[0].node;					   // Éè¶¨ÆğÊ¼·½ÏòºÍ×ø±ê
-
-// 	for (uint8_t i = 0; i < ROUTE_TASK_NUMBER; i++)
-// 	{
-// 		Auto_RouteTask(&CurrentStaus, Route_Task[i].node);
-// 		if (Route_Task[i].Task != NULL)
-// 		{
-// 			Route_Task[i].Task(); // ÈÎÎñ·Ç¿ÕÊ±Ö´ĞĞÈÎÎñ
-// 		}
-// 	}
-// }
-
-// È«×Ô¶¯
+// å…¨è‡ªåŠ¨
 void Auto_Run(RouteSetting_t *routeTask, uint8_t taskNumber, RouteNode_t *current)
 {
-	Generate_Routetask(routeTask, taskNumber); // ³õÊ¼»¯×ø±êĞÅÏ¢
-	*current = routeTask[0].node;			   // Éè¶¨ÆğÊ¼·½ÏòºÍ×ø±ê
+	Generate_Routetask(routeTask, taskNumber); // åˆå§‹åŒ–åæ ‡ä¿¡æ¯
+	*current = routeTask[0].node;			   // è®¾å®šèµ·å§‹æ–¹å‘å’Œåæ ‡
 
 	for (uint8_t i = 0; i < taskNumber; i++)
 	{
 		Auto_RouteTask(current, routeTask[i].node);
 		if (routeTask[i].Task != NULL)
 		{
-			routeTask[i].Task(); // ÈÎÎñ·Ç¿ÕÊ±Ö´ĞĞÈÎÎñ
+			routeTask[i].Task(); // ä»»åŠ¡éç©ºæ—¶æ‰§è¡Œä»»åŠ¡
 		}
 	}
 }
 
-// ´Óµ±Ç°ÈÎÎñµãĞĞÊ»µ½ÏÂÒ»¸öÈÎÎñµã
+// ä»å½“å‰ä»»åŠ¡ç‚¹è¡Œé©¶åˆ°ä¸‹ä¸€ä¸ªä»»åŠ¡ç‚¹
 void Auto_RouteTask(RouteNode_t *current, RouteNode_t next)
 {
-	RouteNode_t *route = mymalloc(SRAMIN, sizeof(RouteNode_t) * 12); // Á½µã¼ä×î¶à12Í¾¾¶µã
+	RouteNode_t *route = mymalloc(SRAMIN, sizeof(RouteNode_t) * 12); // ä¸¤ç‚¹é—´æœ€å¤š12é€”å¾„ç‚¹
 	uint8_t routeCount = 0;
 
 	A_Star_GetTestRoute(*current, next, route, &routeCount);
 	print_info("routeCount = %d\r\n", routeCount);
 
-	// Ìø¹ıµÚÒ»¸öµã£¬ÒòÎªµ±Ç°¾ÍÔÚµÚÒ»¸öµã¡£
+	// è·³è¿‡ç¬¬ä¸€ä¸ªç‚¹ï¼Œå› ä¸ºå½“å‰å°±åœ¨ç¬¬ä¸€ä¸ªç‚¹ã€‚
 	for (uint8_t i = 1; i < routeCount; i++)
 	{
 		NextStatus = route[i];
@@ -59,14 +43,14 @@ void Auto_RouteTask(RouteNode_t *current, RouteNode_t next)
 	myfree(SRAMIN, route);
 }
 
-// ĞĞÊ»µ½ÏÂÒ»¸ö½Úµã
+// è¡Œé©¶åˆ°ä¸‹ä¸€ä¸ªèŠ‚ç‚¹
 void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 {
 	int8_t finalDir = 0;
 	int8_t x = next.x - current->x;
 	int8_t y = next.y - current->y;
 
-	NextStatus = next; // ÏÂÒ»¸ö×ø±êĞÅÏ¢¸üĞÂ
+	NextStatus = next; // ä¸‹ä¸€ä¸ªåæ ‡ä¿¡æ¯æ›´æ–°
 
 	if ((x > 1 || y > 1 || x < -1 || y < -1) || (x != 0 && y != 0))
 	{
@@ -92,7 +76,7 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 	}
 	else
 	{
-		print_info("Same Node\r\n"); // Í¬Ò»µã
+		print_info("Same Node\r\n"); // åŒä¸€ç‚¹
 		return;
 	}
 
@@ -139,49 +123,49 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 		}
 	}
 
-	// Èç¹ûÓĞ×ªÏòÈÎÎñ£¬µÈ´ıÍê³É
+	// å¦‚æœæœ‰è½¬å‘ä»»åŠ¡ï¼Œç­‰å¾…å®Œæˆ
 	if ((Moving_ByEncoder != ENCODER_NONE) || (Track_Mode == TrackMode_Turn))
 	{
 		WaitForFlag(Stop_Flag, TURNCOMPLETE);
 	}
 
-	if (next.x % 2 == 0) // XÖáÎªÅ¼ÊıµÄ×ø±ê
+	if (next.x % 2 == 0) // Xè½´ä¸ºå¶æ•°çš„åæ ‡
 	{
 		ExcuteAndWait(Track_ByEncoder(Track_Speed, LongTrack_Value), Stop_Flag, FORBACKCOMPLETE);
 	}
-	else if (next.y % 2 == 0) // YÖáÎªÅ¼ÊıµÄ×ø±ê
+	else if (next.y % 2 == 0) // Yè½´ä¸ºå¶æ•°çš„åæ ‡
 	{
 		ExcuteAndWait(Track_ByEncoder(Track_Speed, ShortTrack_Value), Stop_Flag, FORBACKCOMPLETE);
 	}
-	else // Ç°·½Ê®×ÖÂ·¿Ú
+	else // å‰æ–¹åå­—è·¯å£
 	{
-		// Ñ­¼£µ½Ê®×ÖÂ·¿Ú
+		// å¾ªè¿¹åˆ°åå­—è·¯å£
 		Start_Tracking(Track_Speed);
 		WaitForFlag(Stop_Flag, CROSSROAD);
-		// ĞĞÊ»µ½Ê®×ÖÂ·¿ÚÖĞĞÄ
+		// è¡Œé©¶åˆ°åå­—è·¯å£ä¸­å¿ƒ
 		ExcuteAndWait(Track_ByEncoder(Track_Speed, ToCrossroadCenter), Stop_Flag, FORBACKCOMPLETE);
 	}
 
-	// ¸üĞÂµ±Ç°Î»ÖÃĞÅÏ¢ºÍ·½Ïò
+	// æ›´æ–°å½“å‰ä½ç½®ä¿¡æ¯å’Œæ–¹å‘
 	current->x = next.x;
 	current->y = next.y;
 	current->dir = finalDir;
 }
 
-// »ù±¾ÔË¶¯¿ØÖÆº¯Êı¡ı¡ı
+// åŸºæœ¬è¿åŠ¨æ§åˆ¶å‡½æ•°â†“â†“
 
 uint32_t lastStopStamp = 0;
-// Í£Ö¹ÔËĞĞ£¬Çå¿Õ±êÖ¾Î»£¬Çå¿ÕPIDÊı¾İ
+// åœæ­¢è¿è¡Œï¼Œæ¸…ç©ºæ ‡å¿—ä½ï¼Œæ¸…ç©ºPIDæ•°æ®
 void Stop(void)
 {
-	Roadway_Flag_clean(); //Çå³ı±êÖ¾Î»×´Ì¬
+	Roadway_Flag_clean(); //æ¸…é™¤æ ‡å¿—ä½çŠ¶æ€
 	// Mp_Value = 0;
 	Update_MotorSpeed(0, 0);
 	PidData_Clear();
 	lastStopStamp = Get_GlobalTimeStamp(); // warning
 }
 
-// Ç°ºóÒÆ¶¯ µ¥Î»ÀåÃ× Õı¸º·½Ïò
+// å‰åç§»åŠ¨ å•ä½å˜ç±³ æ­£è´Ÿæ–¹å‘
 void Move_ByEncoder(int speed, int16_t distance)
 {
 	Roadway_mp_syn();
@@ -201,7 +185,7 @@ void Move_ByEncoder(int speed, int16_t distance)
 	}
 }
 
-// Ç°½ø
+// å‰è¿›
 void Go_Ahead(int speed, uint16_t encoderValue)
 {
 	Roadway_mp_syn();
@@ -212,7 +196,7 @@ void Go_Ahead(int speed, uint16_t encoderValue)
 	Update_MotorSpeed(speed, speed);
 }
 
-// ºóÍË
+// åé€€
 void Back_Off(int speed, uint16_t encoderValue)
 {
 	Roadway_mp_syn();
@@ -223,7 +207,7 @@ void Back_Off(int speed, uint16_t encoderValue)
 	Update_MotorSpeed(-speed, -speed);
 }
 
-// ¿ªÊ¼Ñ­¼£
+// å¼€å§‹å¾ªè¿¹
 void Start_Tracking(int speed)
 {
 	Stop_Flag = TRACKING;
@@ -232,7 +216,7 @@ void Start_Tracking(int speed)
 	Car_Speed = speed;
 }
 
-// ¸ù¾İÂëÅÌÉè¶¨ÖµÑ­¼£
+// æ ¹æ®ç ç›˜è®¾å®šå€¼å¾ªè¿¹
 void Track_ByEncoder(int speed, uint16_t setMP)
 {
 	Roadway_mp_syn();
@@ -242,7 +226,7 @@ void Track_ByEncoder(int speed, uint16_t setMP)
 	Car_Speed = speed;
 }
 
-// ¸ù¾İÂëÅÌÖµ×ªÈÎÒâ½Ç¶È
+// æ ¹æ®ç ç›˜å€¼è½¬ä»»æ„è§’åº¦
 void Turn_ByEncoder(int16_t digree)
 {
 	Roadway_mp_syn();
@@ -262,7 +246,7 @@ void Turn_ByEncoder(int16_t digree)
 }
 
 
-// ×ªµ½ÏÂÒ»¸öÑ­¼£Ïß£¨ĞèÒªÓÅ»¯£©
+// è½¬åˆ°ä¸‹ä¸€ä¸ªå¾ªè¿¹çº¿ï¼ˆéœ€è¦ä¼˜åŒ–ï¼‰
 void Turn_ByTrack(Driection_t dir)
 {
 	extern uint8_t TrackStatus;
@@ -276,7 +260,7 @@ void Turn_ByTrack(Driection_t dir)
 	Track_Mode = TrackMode_Turn;
 	Moving_ByEncoder = ENCODER_NONE;
 
-	TrackStatus = 0; // Çå¿Õ±êÖ¾Î»
+	TrackStatus = 0; // æ¸…ç©ºæ ‡å¿—ä½
 	if (dir == DIR_RIGHT)
 	{
 		Update_MotorSpeed(Turn_Speed, -Turn_Speed);

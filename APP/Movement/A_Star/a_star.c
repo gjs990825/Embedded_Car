@@ -7,7 +7,7 @@
 #include "debug.h"
 #include "malloc.h"
 
-// Ê¹ÄÜÂ·¾¶Êä³ö
+// ä½¿èƒ½è·¯å¾„è¾“å‡º
 #define _A_STAR_ENABLE_OUTPUT_ 1
 
 #define X_LENTH 7
@@ -15,27 +15,27 @@
 
 typedef struct AStarNode
 {
-	int s_x;					// x×ø±ê(×îÖÕÊä³öÂ·¾¶ĞèÒª)
-	int s_y;					// y×ø±ê
-	int s_g;					// Æğµãµ½´ËµãµÄ¾àÀë( ÓÉgºÍh¿ÉÒÔµÃµ½f£¬´Ë´¦fÊ¡ÂÔ£¬f=g+h )
-	int s_h;					// Æô·¢º¯ÊıÔ¤²âµÄ´Ëµãµ½ÖÕµãµÄ¾àÀë
-	int s_style;				// ½áµãÀàĞÍ£ºÆğÊ¼µã£¬ÖÕµã£¬ÕÏ°­Îï
-	struct AStarNode *s_parent; // ¸¸½Úµã
-	int s_is_in_closetable;		// ÊÇ·ñÔÚclose±íÖĞ
-	int s_is_in_opentable;		// ÊÇ·ñÔÚopen±íÖĞ
+	int s_x;					// xåæ ‡(æœ€ç»ˆè¾“å‡ºè·¯å¾„éœ€è¦)
+	int s_y;					// yåæ ‡
+	int s_g;					// èµ·ç‚¹åˆ°æ­¤ç‚¹çš„è·ç¦»( ç”±gå’Œhå¯ä»¥å¾—åˆ°fï¼Œæ­¤å¤„fçœç•¥ï¼Œf=g+h )
+	int s_h;					// å¯å‘å‡½æ•°é¢„æµ‹çš„æ­¤ç‚¹åˆ°ç»ˆç‚¹çš„è·ç¦»
+	int s_style;				// ç»“ç‚¹ç±»å‹ï¼šèµ·å§‹ç‚¹ï¼Œç»ˆç‚¹ï¼Œéšœç¢ç‰©
+	struct AStarNode *s_parent; // çˆ¶èŠ‚ç‚¹
+	int s_is_in_closetable;		// æ˜¯å¦åœ¨closeè¡¨ä¸­
+	int s_is_in_opentable;		// æ˜¯å¦åœ¨openè¡¨ä¸­
 } AStarNode, *pAStarNode;
 
-// Éú³ÉÂ·¾¶
+// ç”Ÿæˆè·¯å¾„
 int8_t path_array[X_LENTH * Y_LENTH][2];
-// // ²½Êı
+// // æ­¥æ•°
 // int8_t step_count = -1;
 
-// ¶¨ÒåµãÀàĞÍ
-#define STARTNODE 1 // Æğµã
-#define ENDNODE 2   // ÖÕµã
-#define BARRIER 3   // ÕÏ°­
+// å®šä¹‰ç‚¹ç±»å‹
+#define STARTNODE 1 // èµ·ç‚¹
+#define ENDNODE 2   // ç»ˆç‚¹
+#define BARRIER 3   // éšœç¢
 
-// µØÍ¼ÉèÖÃ
+// åœ°å›¾è®¾ç½®
 const int8_t maze[X_LENTH][Y_LENTH] = {
 	{3, 0, 3, 0, 3, 0, 3},
 	{0, 0, 0, 0, 0, 0, 0},
@@ -45,15 +45,15 @@ const int8_t maze[X_LENTH][Y_LENTH] = {
 	{0, 0, 0, 0, 0, 0, 0},
 	{3, 0, 3, 0, 3, 0, 3}};
 
-AStarNode map_maze[X_LENTH][Y_LENTH];	  // ½áµãÊı×é
-pAStarNode open_table[X_LENTH * Y_LENTH];  // open±í
-pAStarNode close_table[X_LENTH * Y_LENTH]; // close±í
-int8_t open_node_count;					   // open±íÖĞ½ÚµãÊıÁ¿
-int8_t close_node_count;				   // close±íÖĞ½áµãÊıÁ¿
-AStarNode *start_node = NULL;			   // ÆğÊ¼µã
-AStarNode *end_node = NULL;				   // ½áÊøµã
+AStarNode map_maze[X_LENTH][Y_LENTH];	  // ç»“ç‚¹æ•°ç»„
+pAStarNode open_table[X_LENTH * Y_LENTH];  // openè¡¨
+pAStarNode close_table[X_LENTH * Y_LENTH]; // closeè¡¨
+int8_t open_node_count;					   // openè¡¨ä¸­èŠ‚ç‚¹æ•°é‡
+int8_t close_node_count;				   // closeè¡¨ä¸­ç»“ç‚¹æ•°é‡
+AStarNode *start_node = NULL;			   // èµ·å§‹ç‚¹
+AStarNode *end_node = NULL;				   // ç»“æŸç‚¹
 
-// ½»»»Á½¸öÔªËØ
+// äº¤æ¢ä¸¤ä¸ªå…ƒç´ 
 void swap(int idx1, int idx2)
 {
 	pAStarNode tmp = open_table[idx1];
@@ -61,25 +61,25 @@ void swap(int idx1, int idx2)
 	open_table[idx2] = tmp;
 }
 
-// ¶Ñµ÷Õû
+// å †è°ƒæ•´
 void adjust_heap(int nIndex)
 {
 	int curr = nIndex;
-	int child = curr * 2 + 1;	// µÃµ½×óº¢×Óidx( ÏÂ±ê´Ó0¿ªÊ¼£¬ËùÓĞ×öº¢×ÓÊÇcurr*2+1 )
-	int parent = (curr - 1) / 2; // µÃµ½Ë«Ç×idx
+	int child = curr * 2 + 1;	// å¾—åˆ°å·¦å­©å­idx( ä¸‹æ ‡ä»0å¼€å§‹ï¼Œæ‰€æœ‰åšå­©å­æ˜¯curr*2+1 )
+	int parent = (curr - 1) / 2; // å¾—åˆ°åŒäº²idx
 
 	if (nIndex < 0 || nIndex >= open_node_count)
 	{
 		return;
 	}
 
-	// ÍùÏÂµ÷Õû( Òª±È½Ï×óÓÒº¢×ÓºÍcuur parent )
+	// å¾€ä¸‹è°ƒæ•´( è¦æ¯”è¾ƒå·¦å³å­©å­å’Œcuur parent )
 	while (child < open_node_count)
 	{
-		// Ğ¡¸ù¶ÑÊÇË«Ç×ÖµĞ¡ÓÚº¢×ÓÖµ
+		// å°æ ¹å †æ˜¯åŒäº²å€¼å°äºå­©å­å€¼
 		if (child + 1 < open_node_count && open_table[child]->s_g + open_table[child]->s_h > open_table[child + 1]->s_g + open_table[child + 1]->s_h)
 		{
-			++child; // ÅĞ¶Ï×óÓÒº¢×Ó´óĞ¡
+			++child; // åˆ¤æ–­å·¦å³å­©å­å¤§å°
 		}
 
 		if (open_table[curr]->s_g + open_table[curr]->s_h <= open_table[child]->s_g + open_table[child]->s_h)
@@ -88,9 +88,9 @@ void adjust_heap(int nIndex)
 		}
 		else
 		{
-			swap(child, curr);	// ½»»»½Úµã
-			curr = child;		  // ÔÙÅĞ¶Ïµ±Ç°º¢×Ó½Úµã
-			child = curr * 2 + 1; // ÔÙÅĞ¶Ï×óº¢×Ó
+			swap(child, curr);	// äº¤æ¢èŠ‚ç‚¹
+			curr = child;		  // å†åˆ¤æ–­å½“å‰å­©å­èŠ‚ç‚¹
+			child = curr * 2 + 1; // å†åˆ¤æ–­å·¦å­©å­
 		}
 	}
 
@@ -99,7 +99,7 @@ void adjust_heap(int nIndex)
 		return;
 	}
 
-	// ÍùÉÏµ÷Õû( Ö»ĞèÒª±È½Ïcuur childºÍparent )
+	// å¾€ä¸Šè°ƒæ•´( åªéœ€è¦æ¯”è¾ƒcuur childå’Œparent )
 	while (curr != 0)
 	{
 		if (open_table[curr]->s_g + open_table[curr]->s_h >= open_table[parent]->s_g + open_table[parent]->s_h)
@@ -115,19 +115,19 @@ void adjust_heap(int nIndex)
 	}
 }
 
-// ÅĞ¶ÏÁÚ¾ÓµãÊÇ·ñ¿ÉÒÔ½øÈëopen±í
+// åˆ¤æ–­é‚»å±…ç‚¹æ˜¯å¦å¯ä»¥è¿›å…¥openè¡¨
 void insert_to_opentable(int x, int y, pAStarNode curr_node, pAStarNode end_node, int w)
 {
 	int i;
 
-	if (map_maze[x][y].s_style != BARRIER) // ²»ÊÇÕÏ°­Îï
+	if (map_maze[x][y].s_style != BARRIER) // ä¸æ˜¯éšœç¢ç‰©
 	{
-		if (!map_maze[x][y].s_is_in_closetable) // ²»ÔÚ±Õ±íÖĞ
+		if (!map_maze[x][y].s_is_in_closetable) // ä¸åœ¨é—­è¡¨ä¸­
 		{
-			if (map_maze[x][y].s_is_in_opentable) // ÔÚopen±íÖĞ
+			if (map_maze[x][y].s_is_in_opentable) // åœ¨openè¡¨ä¸­
 			{
-				// ĞèÒªÅĞ¶ÏÊÇ·ñÊÇÒ»Ìõ¸üÓÅ»¯µÄÂ·¾¶
-				if (map_maze[x][y].s_g > curr_node->s_g + w) // Èç¹û¸üÓÅ»¯
+				// éœ€è¦åˆ¤æ–­æ˜¯å¦æ˜¯ä¸€æ¡æ›´ä¼˜åŒ–çš„è·¯å¾„
+				if (map_maze[x][y].s_g > curr_node->s_g + w) // å¦‚æœæ›´ä¼˜åŒ–
 				{
 					map_maze[x][y].s_g = curr_node->s_g + w;
 					map_maze[x][y].s_parent = curr_node;
@@ -140,10 +140,10 @@ void insert_to_opentable(int x, int y, pAStarNode curr_node, pAStarNode end_node
 						}
 					}
 
-					adjust_heap(i); // ÏÂÃæµ÷Õûµã
+					adjust_heap(i); // ä¸‹é¢è°ƒæ•´ç‚¹
 				}
 			}
-			else // ²»ÔÚopenÖĞ
+			else // ä¸åœ¨openä¸­
 			{
 				map_maze[x][y].s_g = curr_node->s_g + w;
 				map_maze[x][y].s_h = abs(end_node->s_x - x) + abs(end_node->s_y - y);
@@ -155,8 +155,8 @@ void insert_to_opentable(int x, int y, pAStarNode curr_node, pAStarNode end_node
 	}
 }
 
-// ²éÕÒÁÚ¾Ó
-// ¶ÔÉÏÏÂ×óÓÒ4¸öÁÚ¾Ó½øĞĞ²éÕÒ
+// æŸ¥æ‰¾é‚»å±…
+// å¯¹ä¸Šä¸‹å·¦å³4ä¸ªé‚»å±…è¿›è¡ŒæŸ¥æ‰¾
 void get_neighbors(pAStarNode curr_node, pAStarNode end_node)
 {
 	int x = curr_node->s_x;
@@ -183,7 +183,7 @@ void get_neighbors(pAStarNode curr_node, pAStarNode end_node)
 	}
 }
 
-// ³õÊ¼»¯µØÍ¼
+// åˆå§‹åŒ–åœ°å›¾
 void A_Star_InitMap(void)
 {
 	for (int8_t i = 0; i < X_LENTH; ++i)
@@ -202,7 +202,7 @@ void A_Star_InitMap(void)
 	}
 }
 
-// ÖØĞÂ¼ÆËãÂ·¾¶Ê±ºòµ÷ÓÃ
+// é‡æ–°è®¡ç®—è·¯å¾„æ—¶å€™è°ƒç”¨
 void A_Star_SetStartEnd(int start_x, int start_y, int end_x, int end_y)
 {
 	A_Star_InitMap();
@@ -220,13 +220,13 @@ void A_Star_SetStartEnd(int start_x, int start_y, int end_x, int end_y)
 	end_node = &(map_maze[end_x][end_y]);
 }
 
-// ¼ÆËãÂ·¾¶ ·µ»Ø£º1£ºÕÒµ½Â·¾¶ 0£ºÊ§°Ü
+// è®¡ç®—è·¯å¾„ è¿”å›ï¼š1ï¼šæ‰¾åˆ°è·¯å¾„ 0ï¼šå¤±è´¥
 bool A_Star_CalaculateRoute(void)
 {
-	// ÏÂÃæÊ¹ÓÃA*Ëã·¨µÃµ½Â·¾¶
-	open_table[open_node_count++] = start_node; // ÆğÊ¼µã¼ÓÈëopen±í
+	// ä¸‹é¢ä½¿ç”¨A*ç®—æ³•å¾—åˆ°è·¯å¾„
+	open_table[open_node_count++] = start_node; // èµ·å§‹ç‚¹åŠ å…¥openè¡¨
 
-	start_node->s_is_in_opentable = 1; // ¼ÓÈëopen±í
+	start_node->s_is_in_opentable = 1; // åŠ å…¥openè¡¨
 	start_node->s_g = 0;
 	start_node->s_h = abs(end_node->s_x - start_node->s_x) + abs(end_node->s_y - start_node->s_y);
 	start_node->s_parent = NULL;
@@ -237,26 +237,26 @@ bool A_Star_CalaculateRoute(void)
 	}
 
 	bool is_found = false;
-	AStarNode *curr_node; // µ±Ç°µã
+	AStarNode *curr_node; // å½“å‰ç‚¹
 
 	while (1)
 	{
-		curr_node = open_table[0];					   // open±íµÄµÚÒ»¸öµãÒ»¶¨ÊÇfÖµ×îĞ¡µÄµã(Í¨¹ı¶ÑÅÅĞòµÃµ½µÄ)
-		open_table[0] = open_table[--open_node_count]; // ×îºóÒ»¸öµã·Åµ½µÚÒ»¸öµã£¬È»ºó½øĞĞ¶Ñµ÷Õû
-		adjust_heap(0);								   // µ÷Õû¶Ñ
+		curr_node = open_table[0];					   // openè¡¨çš„ç¬¬ä¸€ä¸ªç‚¹ä¸€å®šæ˜¯få€¼æœ€å°çš„ç‚¹(é€šè¿‡å †æ’åºå¾—åˆ°çš„)
+		open_table[0] = open_table[--open_node_count]; // æœ€åä¸€ä¸ªç‚¹æ”¾åˆ°ç¬¬ä¸€ä¸ªç‚¹ï¼Œç„¶åè¿›è¡Œå †è°ƒæ•´
+		adjust_heap(0);								   // è°ƒæ•´å †
 
-		close_table[close_node_count++] = curr_node; // µ±Ç°µã¼ÓÈëclose±í
-		curr_node->s_is_in_closetable = 1;			 // ÒÑ¾­ÔÚclose±íÖĞÁË
+		close_table[close_node_count++] = curr_node; // å½“å‰ç‚¹åŠ å…¥closeè¡¨
+		curr_node->s_is_in_closetable = 1;			 // å·²ç»åœ¨closeè¡¨ä¸­äº†
 
-		if (curr_node->s_x == end_node->s_x && curr_node->s_y == end_node->s_y) // ÖÕµãÔÚcloseÖĞ£¬½áÊø
+		if (curr_node->s_x == end_node->s_x && curr_node->s_y == end_node->s_y) // ç»ˆç‚¹åœ¨closeä¸­ï¼Œç»“æŸ
 		{
 			is_found = true;
 			break;
 		}
 
-		get_neighbors(curr_node, end_node); // ¶ÔÁÚ¾ÓµÄ´¦Àí
+		get_neighbors(curr_node, end_node); // å¯¹é‚»å±…çš„å¤„ç†
 
-		if (open_node_count == 0) // Ã»ÓĞÂ·¾¶µ½´ï
+		if (open_node_count == 0) // æ²¡æœ‰è·¯å¾„åˆ°è¾¾
 		{
 			is_found = false;
 			break;
@@ -268,8 +268,8 @@ bool A_Star_CalaculateRoute(void)
 
 int A_Star_GetStepCount(void)
 {
-	AStarNode *curr_node; // µ±Ç°µã
-	int top = -1;		  // Õ»¶¥
+	AStarNode *curr_node; // å½“å‰ç‚¹
+	int top = -1;		  // æ ˆé¡¶
 
 	curr_node = end_node;
 
@@ -284,7 +284,7 @@ int A_Star_GetStepCount(void)
 	return top;
 }
 
-// Éú³ÉÁ½µã¼äµÄÂ·Ïß
+// ç”Ÿæˆä¸¤ç‚¹é—´çš„è·¯çº¿
 bool A_Star_GetTestRoute(RouteNode_t current, RouteNode_t next, RouteNode_t *finalRoute, uint8_t *routeCount)
 {
 	A_Star_SetStartEnd(current.x, current.y, next.x, next.y);
@@ -296,7 +296,7 @@ bool A_Star_GetTestRoute(RouteNode_t current, RouteNode_t next, RouteNode_t *fin
 
 	*routeCount = 0;
 
-	while (stepCount >= 0) // È¡³öÂ·¾¶»º´æÖĞµÄÊı¾İµ½finalRouteÖĞ£¨µ¹Ğò£©
+	while (stepCount >= 0) // å–å‡ºè·¯å¾„ç¼“å­˜ä¸­çš„æ•°æ®åˆ°finalRouteä¸­ï¼ˆå€’åºï¼‰
 	{
 
 #if _A_STAR_ENABLE_OUTPUT_

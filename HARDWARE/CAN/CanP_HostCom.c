@@ -23,15 +23,15 @@ uint16_t CanHost_Navig;
 
 #define CAN_CURR_MODE	4
 /*
-1	µç»ú
-2	Ñ°¼£
-3	µ¼º½
-4	Ñ°¼£+µ¼º½
-5	Ö÷»ú
+1	ç”µæœº
+2	å¯»è¿¹
+3	å¯¼èˆª
+4	å¯»è¿¹+å¯¼èˆª
+5	ä¸»æœº
 6	WIFI
 6	ZIGBEE
-8	ÏÔÊ¾
-9	WIFI+ZIGBEE+ÏÔÊ¾
+8	æ˜¾ç¤º
+9	WIFI+ZIGBEE+æ˜¾ç¤º
 */
 
 
@@ -165,52 +165,52 @@ void CanP_CanRx_TrackUp(void)
 
 
 /**
-º¯Êý¹¦ÄÜ£º»ñÈ¡¹ÒÆðÓÊÏäÖÐÏûÏ¢
-		  ÅÐ¶ÏÓÊÏäË÷ÒýºÅ ÏòÖ¸¶¨×Ô¶¨ÒåFifoÖÐÐ´ÈëÊý¾Ý
-		  Í³¼ÆÓÊÏäË÷ÒýºÅ
-²Î    Êý: ÎÞ
-·µ »Ø Öµ: ÎÞ
+å‡½æ•°åŠŸèƒ½ï¼šèŽ·å–æŒ‚èµ·é‚®ç®±ä¸­æ¶ˆæ¯
+		  åˆ¤æ–­é‚®ç®±ç´¢å¼•å· å‘æŒ‡å®šè‡ªå®šä¹‰Fifoä¸­å†™å…¥æ•°æ®
+		  ç»Ÿè®¡é‚®ç®±ç´¢å¼•å·
+å‚    æ•°: æ— 
+è¿” å›ž å€¼: æ— 
 */
 void CanP_CanRx_Irq(void)
 {
-	CanDrv_RxGetMeesage(&crm);							 //»ñÈ¡¹ÒÆðÓÊÏäÖÐÏûÏ¢
-	switch(crm.FMI)										 //ÅÐ¶ÏÏûÏ¢ÓÊÏäË÷Òý
+	CanDrv_RxGetMeesage(&crm);							 //èŽ·å–æŒ‚èµ·é‚®ç®±ä¸­æ¶ˆæ¯
+	switch(crm.FMI)										 //åˆ¤æ–­æ¶ˆæ¯é‚®ç®±ç´¢å¼•
 	{
 	case 0:			//disp
-		FifoDrv_BufWrite(&Fifo_Info,crm.Data,crm.DLC);	 //ÏòFifo_InfoÖÐÐ´ÈëÏûÏ¢
+		FifoDrv_BufWrite(&Fifo_Info,crm.Data,crm.DLC);	 //å‘Fifo_Infoä¸­å†™å…¥æ¶ˆæ¯
 		break;
 	case 1:			//wifi rx
-		FifoDrv_BufWrite(&Fifo_WifiRx,crm.Data,crm.DLC); //ÏòFifo_WifiRxÖÐÐ´ÈëÏûÏ¢
+		FifoDrv_BufWrite(&Fifo_WifiRx,crm.Data,crm.DLC); //å‘Fifo_WifiRxä¸­å†™å…¥æ¶ˆæ¯
 		break;
 	case 2:			//zigbee rx
-		FifoDrv_BufWrite(&Fifo_ZigbRx,crm.Data,crm.DLC); //ÏòFifo_ZigbRxÖÐÐ´ÈëÏûÏ¢
+		FifoDrv_BufWrite(&Fifo_ZigbRx,crm.Data,crm.DLC); //å‘Fifo_ZigbRxä¸­å†™å…¥æ¶ˆæ¯
 		break;
 	default:
-		if((crm.FMI >= 3)&&(crm.FMI <= 6))				 //ÅÐ¶ÏÓÊÏäË÷Òý
-			memcpy(crbuf[crm.FMI-3],crm.Data,8);		 //Ïòcrbuf¶þÎ¬Êý×éÖÐÐ´ÈëÊý¾Ý
+		if((crm.FMI >= 3)&&(crm.FMI <= 6))				 //åˆ¤æ–­é‚®ç®±ç´¢å¼•
+			memcpy(crbuf[crm.FMI-3],crm.Data,8);		 //å‘crbufäºŒç»´æ•°ç»„ä¸­å†™å…¥æ•°æ®
 		break;
 	}
 	if(crm.FMI <= 6)								
-		CanP_RxFMI_Flag |= bit_tab[crm.FMI];			//Í³¼ÆÓÊÏäË÷ÒýºÅ 
+		CanP_RxFMI_Flag |= bit_tab[crm.FMI];			//ç»Ÿè®¡é‚®ç®±ç´¢å¼•å· 
 }
 
 
 /**
-º¯Êý¹¦ÄÜ£ºCAN½ÓÊÕ¼ì²â
-²Î    Êý: ÎÞ
-·µ »Ø Öµ: ÎÞ
+å‡½æ•°åŠŸèƒ½ï¼šCANæŽ¥æ”¶æ£€æµ‹
+å‚    æ•°: æ— 
+è¿” å›ž å€¼: æ— 
 */
 void CanP_CanRx_Check(void)
 {
-	while(CanDrv_RxCheck())								//¼ì²â½ÓÊÕ¹ÒÆðÓÊÏä²»Îª¿Õ								
+	while(CanDrv_RxCheck())								//æ£€æµ‹æŽ¥æ”¶æŒ‚èµ·é‚®ç®±ä¸ä¸ºç©º								
 	{
-		CanP_CanRx_Irq();								//´Ó¹ÒÆðÓÊÏäÖÐ»ñÈ¡ÏûÏ¢£¬²¢ÏòÖ¸¶¨×Ô¶¨ÒåFifoÖÐÐ´ÈëÏûÏ¢
+		CanP_CanRx_Irq();								//ä»ŽæŒ‚èµ·é‚®ç®±ä¸­èŽ·å–æ¶ˆæ¯ï¼Œå¹¶å‘æŒ‡å®šè‡ªå®šä¹‰Fifoä¸­å†™å…¥æ¶ˆæ¯
 	}
 }
 
 
 /**
-º¯Êý¹¦ÄÜ£ºÅÐ¶ÏÖ¸¶¨×Ô¶¨ÒåFifoÖÐ»ñÈ¡Êý¾Ý²¢±£´æ
+å‡½æ•°åŠŸèƒ½ï¼šåˆ¤æ–­æŒ‡å®šè‡ªå®šä¹‰Fifoä¸­èŽ·å–æ•°æ®å¹¶ä¿å­˜
 */
 void CanP_Host_Main(void)
 {
@@ -263,7 +263,7 @@ void CanP_Host_Main(void)
 						
 					break;
 				}
-				CanP_RxFMI_Flag &= bit_and_tab[i];				//Çå³ýÓÊÏäË÷ºÅ 
+				CanP_RxFMI_Flag &= bit_and_tab[i];				//æ¸…é™¤é‚®ç®±ç´¢å· 
 			}			
 		}
 	}
@@ -286,14 +286,14 @@ void CanP_CanTx_Check(void)
 	while(f)
 	{
 		f = 0;
-		i = FifoDrv_BufRead(&Fifo_Info,ctbuf,8);// µ÷ÊÔÐÅÏ¢		
+		i = FifoDrv_BufRead(&Fifo_Info,ctbuf,8);// è°ƒè¯•ä¿¡æ¯		
 		if(i)
 		{
 			CanDrv_WhaitTxEmpty();
 			CanDrv_TxData(ctbuf,i,CAN_SID_HL(ID_DISP,0),0,&tmbox);
 			f = 1;
 		}
-		i = FifoDrv_BufRead(&Fifo_WifiTx,ctbuf,8); // wifiÐÅÏ¢
+		i = FifoDrv_BufRead(&Fifo_WifiTx,ctbuf,8); // wifiä¿¡æ¯
 		if(i)
 		{	
 			CanDrv_WhaitTxEmpty();
@@ -301,7 +301,7 @@ void CanP_CanTx_Check(void)
 			f = 1;
 		}
 		
-		i = FifoDrv_BufRead(&Fifo_ZigbTx,ctbuf,8);// ZigbeeÐÅÏ¢
+		i = FifoDrv_BufRead(&Fifo_ZigbTx,ctbuf,8);// Zigbeeä¿¡æ¯
 		if(i)
 		{	
 			CanDrv_WhaitTxEmpty();
@@ -370,9 +370,9 @@ void CanP_CanTx_Check_fIrq(void)
 }
 
 /**
-º¯Êý¹¦ÄÜ£ºÉÏ´«µçÁ¿ÐÅÏ¢
-²Î    Êý£ºx1 ×ó²àµçÁ¿  x2ÓÒ²àµçÁ¿
-·µ »Ø Öµ£ºÎÞ
+å‡½æ•°åŠŸèƒ½ï¼šä¸Šä¼ ç”µé‡ä¿¡æ¯
+å‚    æ•°ï¼šx1 å·¦ä¾§ç”µé‡  x2å³ä¾§ç”µé‡
+è¿” å›ž å€¼ï¼šæ— 
 */
 void Send_Electric(u8 x1, u8 x2)  
 {
@@ -385,14 +385,14 @@ void Send_Electric(u8 x1, u8 x2)
 	txbuf[1] = 1;
 	txbuf[2] = x2;
 	
-	//CanDrv_WhaitTxEmpty();									//ÅÐ¶Ï²¢µÈ´ý·¢ËÍÓÊÏäÎª¿Õ
-	//CanDrv_TxData(txbuf,3,CAN_SID_HL(ID_HOST,0),0,_NULL);	//ÏòCAN×ÜÏß·¢ËÍÊý¾Ý
+	//CanDrv_WhaitTxEmpty();									//åˆ¤æ–­å¹¶ç­‰å¾…å‘é€é‚®ç®±ä¸ºç©º
+	//CanDrv_TxData(txbuf,3,CAN_SID_HL(ID_HOST,0),0,_NULL);	//å‘CANæ€»çº¿å‘é€æ•°æ®
 	CanP_Cmd_Write(CANP_CMD_ID_POWER,txbuf,3,CAN_SID_HL(ID_HOST,0),0);
 	
 }
 
 /**
-Î´Ê¹ÓÃ
+æœªä½¿ç”¨
 */
 void Send_CodedCnt(void)
 {
@@ -407,9 +407,9 @@ void Send_CodedCnt(void)
 }
 
 /**
-º¯Êý¹¦ÄÜ£ºÉÏ´«µ÷ÊÔÐÅÏ¢
-²Î    Êý£º*s µ÷ÊÔÐÅÏ¢Ö¸Õë len ÐÅÏ¢³¤¶È
-·µ »Ø Öµ£ºÎÞ
+å‡½æ•°åŠŸèƒ½ï¼šä¸Šä¼ è°ƒè¯•ä¿¡æ¯
+å‚    æ•°ï¼š*s è°ƒè¯•ä¿¡æ¯æŒ‡é’ˆ len ä¿¡æ¯é•¿åº¦
+è¿” å›ž å€¼ï¼šæ— 
 */
 //void Send_Debug_Info(u8 *s,u8 len)
 //{	  
@@ -424,9 +424,9 @@ void Send_CodedCnt(void)
 //}
 
 /**
-º¯Êý¹¦ÄÜ£º·¢ËÍµç»ú×ªËÙ
-²Î    Êý£ºx1 ×ó²àµç»úËÙ¶È  x2 ÓÒ²àµç»ú×ªËÙ
-·µ »Ø Öµ£ºÎÞ
+å‡½æ•°åŠŸèƒ½ï¼šå‘é€ç”µæœºè½¬é€Ÿ
+å‚    æ•°ï¼šx1 å·¦ä¾§ç”µæœºé€Ÿåº¦  x2 å³ä¾§ç”µæœºè½¬é€Ÿ
+è¿” å›ž å€¼ï¼šæ— 
 */
 void Send_UpMotor( int x1, int x2)
 {
@@ -446,10 +446,10 @@ void Send_UpMotor( int x1, int x2)
 		CanP_Cmd_Write(CANP_CMD_ID_MOTO,txbuf,4,CAN_SID_HL(ID_MOTOR,0),0);
 }
 
- /** ÔÝÎ´Ê¹ÓÃ
-º¯Êý¹¦ÄÜ£º·¢ËÍµç×ÓÂÞÅÌÊý¾Ý
-²Î    Êý£ºc Ö¸¶¨½Ç¶È
-·µ »Ø Öµ£ºÎÞ
+ /** æš‚æœªä½¿ç”¨
+å‡½æ•°åŠŸèƒ½ï¼šå‘é€ç”µå­ç½—ç›˜æ•°æ®
+å‚    æ•°ï¼šc æŒ‡å®šè§’åº¦
+è¿” å›ž å€¼ï¼šæ— 
 */
 void Send_UpCompass(uint16_t c)
 {
@@ -461,10 +461,10 @@ void Send_UpCompass(uint16_t c)
 }
 
 
-/** ÔÝÎ´Ê¹ÓÃ
-º¯Êý¹¦ÄÜ£ºCAN×ÜÏßÊý¾Ý´«Êä²âÊÔ
-²Î    Êý£ºÎÞ
-·µ »Ø Öµ: ÎÞ
+/** æš‚æœªä½¿ç”¨
+å‡½æ•°åŠŸèƒ½ï¼šCANæ€»çº¿æ•°æ®ä¼ è¾“æµ‹è¯•
+å‚    æ•°ï¼šæ— 
+è¿” å›ž å€¼: æ— 
 */
 void CanP_TestFifo(void)
 {
@@ -491,12 +491,12 @@ void CanP_TestFifo(void)
 }  
 
 /**
-º¯Êý¹¦ÄÜ: Ñ­¼£Êý¾Ý½ÓÊÕ
-²Î    Êý: x1 µÍ°ËÎ»  x2 ¸ßÆßÎ»
-·µ »Ø Öµ: ÎÞ
+å‡½æ•°åŠŸèƒ½: å¾ªè¿¹æ•°æ®æŽ¥æ”¶
+å‚    æ•°: x1 ä½Žå…«ä½  x2 é«˜ä¸ƒä½
+è¿” å›ž å€¼: æ— 
 */
 bool trackInfoReceived = false;
-void Host_Receive_UpTrack( u8 x1, u8 x2)  // Ñ­¼£Êý¾Ý½ÓÊÕ´¦Àíº¯Êý
+void Host_Receive_UpTrack( u8 x1, u8 x2)  // å¾ªè¿¹æ•°æ®æŽ¥æ”¶å¤„ç†å‡½æ•°
 {
 	Track_buf[0] = x1;
 	Track_buf[1] = x2;	 
@@ -505,11 +505,11 @@ void Host_Receive_UpTrack( u8 x1, u8 x2)  // Ñ­¼£Êý¾Ý½ÓÊÕ´¦Àíº¯Êý
 
 
 /**
-º¯Êý¹¦ÄÜ£º»ñÈ¡¡¢´¦ÀíÑ­¼£Êý¾Ý
-²Î    Êý£ºmode : TRACK_ALL »ñÈ¡ËùÓÐÊý¾Ý TRACK_Q7 »ñÈ¡ÆßÎ»Ñ­¼£Êý¾Ý TRACK_H8 »ñÈ¡°ËÎ»Ñ­¼£Êý¾Ý
-·µ »Ø Öµ£ºRt Ñ­¼£Êý¾Ý
+å‡½æ•°åŠŸèƒ½ï¼šèŽ·å–ã€å¤„ç†å¾ªè¿¹æ•°æ®
+å‚    æ•°ï¼šmode : TRACK_ALL èŽ·å–æ‰€æœ‰æ•°æ® TRACK_Q7 èŽ·å–ä¸ƒä½å¾ªè¿¹æ•°æ® TRACK_H8 èŽ·å–å…«ä½å¾ªè¿¹æ•°æ®
+è¿” å›ž å€¼ï¼šRt å¾ªè¿¹æ•°æ®
 */
-u16  Get_Host_UpTrack( u8 mode)  // »ñÈ¡Ñ­¼£Êý¾Ý
+u16  Get_Host_UpTrack( u8 mode)  // èŽ·å–å¾ªè¿¹æ•°æ®
 {
 	uint16_t Rt = 0;
 	switch(mode)
@@ -528,15 +528,15 @@ u16  Get_Host_UpTrack( u8 mode)  // »ñÈ¡Ñ­¼£Êý¾Ý
 }
 
 /**
-º¯Êý¹¦ÄÜ£ºÉèÖÃÑ­¼£°å·¢Éä¹¦ÂÊ
-²Î    Êý£ºpower ´ýÉèÖÃÑ­¼£°å¹¦ÂÊ
-·µ »Ø Öµ£ºÎÞ
+å‡½æ•°åŠŸèƒ½ï¼šè®¾ç½®å¾ªè¿¹æ¿å‘å°„åŠŸçŽ‡
+å‚    æ•°ï¼špower å¾…è®¾ç½®å¾ªè¿¹æ¿åŠŸçŽ‡
+è¿” å›ž å€¼ï¼šæ— 
 */
-void Set_Track_Pwr( u16 power) // ÉèÖÃÑ°¼£°å·¢Éä¹¦ÂÊ
+void Set_Track_Pwr( u16 power) // è®¾ç½®å¯»è¿¹æ¿å‘å°„åŠŸçŽ‡
 {
 	u8 txbuf[3];
 	
-	txbuf[0] = 0X03;  //ÃüÁî¹Ø¼ü×Ö
+	txbuf[0] = 0X03;  //å‘½ä»¤å…³é”®å­—
 	txbuf[1] = (power>> 8)&0xff;
 	txbuf[2] = (power)&0xff;
 	//CanDrv_WhaitTxEmpty();
@@ -545,16 +545,16 @@ void Set_Track_Pwr( u16 power) // ÉèÖÃÑ°¼£°å·¢Éä¹¦ÂÊ
 }
 
 
-/** ÔÝÎ´Ê¹ÓÃ
-º¯Êý¹¦ÄÜ£º·¢ËÍÉèÖÃÑ­¼£°å²ÎÊý
-²Î    Êý£ºÎÞ
-·µ »Ø Öµ£ºÎÞ
+/** æš‚æœªä½¿ç”¨
+å‡½æ•°åŠŸèƒ½ï¼šå‘é€è®¾ç½®å¾ªè¿¹æ¿å‚æ•°
+å‚    æ•°ï¼šæ— 
+è¿” å›ž å€¼ï¼šæ— 
 */
 void Set_Track_Yzbj(u8 addr, u16 ydata)
 {
 	u8 txbuf[4];
 	
-	txbuf[0] = 0X04;  //ÃüÁî¹Ø¼ü×Ö
+	txbuf[0] = 0X04;  //å‘½ä»¤å…³é”®å­—
 	txbuf[1] = addr;
 	txbuf[2] = (ydata>> 8)&0xff;
 	txbuf[3] = (ydata)&0xff;
@@ -563,16 +563,16 @@ void Set_Track_Yzbj(u8 addr, u16 ydata)
 	CanP_Cmd_Write(CANP_CMD_ID_T1,txbuf,4,CAN_SID_HL(ID_TRACK,ID_HOST),0);
 }
 
-/** ÔÝÎ´Ê¹ÓÃ
-º¯Êý¹¦ÄÜ£ºÉèÖÃÑ­¼£³õÊ¼»¯
-²Î	  Êý£ºÎÞ
-·µ »Ø Öµ£ºÎÞ
+/** æš‚æœªä½¿ç”¨
+å‡½æ•°åŠŸèƒ½ï¼šè®¾ç½®å¾ªè¿¹åˆå§‹åŒ–
+å‚	  æ•°ï¼šæ— 
+è¿” å›ž å€¼ï¼šæ— 
 */
 void Set_Track_Init( void)
 {
 	u8 i;          
-#define T_POWER 820   // ¹¦ÂÊ³õÊ¼»¯
-#define T_BJYZ  7000  // ±È½ÏãÐÖµ³õÊ¼»¯
+#define T_POWER 820   // åŠŸçŽ‡åˆå§‹åŒ–
+#define T_BJYZ  7000  // æ¯”è¾ƒé˜ˆå€¼åˆå§‹åŒ–
 	
 	Set_Track_Pwr( T_POWER);
 	delay_ms(100);
@@ -585,15 +585,15 @@ void Set_Track_Init( void)
 }
 
 /** 
-º¯Êý¹¦ÄÜ£ºÉèÖÃÑ­¼£°åÉÏ´«Êý¾ÝÊ±¼ä
-²Î    Êý: ÎÞ
-·µ »Ø Öµ: ÎÞ
+å‡½æ•°åŠŸèƒ½ï¼šè®¾ç½®å¾ªè¿¹æ¿ä¸Šä¼ æ•°æ®æ—¶é—´
+å‚    æ•°: æ— 
+è¿” å›ž å€¼: æ— 
 */
-void Host_Set_UpTrack( u8 time)  // ÉèÖÃÑ­¼£Êý¾ÝÉÏ´«Ê±¼ä¼ä¸ô
+void Host_Set_UpTrack( u8 time)  // è®¾ç½®å¾ªè¿¹æ•°æ®ä¸Šä¼ æ—¶é—´é—´éš”
 {
 #if 1
 	u8 txbuf[2];
-	txbuf[0] = 0X02;  //ÃüÁî¹Ø¼ü×Ö
+	txbuf[0] = 0X02;  //å‘½ä»¤å…³é”®å­—
 	txbuf[1] = time;
 	//CanDrv_WhaitTxEmpty();
 	//CanDrv_TxData(txbuf,2,CAN_SID_HL(ID_TRACK,ID_HOST),0,_NULL);   
@@ -603,9 +603,9 @@ void Host_Set_UpTrack( u8 time)  // ÉèÖÃÑ­¼£Êý¾ÝÉÏ´«Ê±¼ä¼ä¸ô
 }
 
 /**
-º¯Êý¹¦ÄÜ£º½«Êý¾Ý·¢ËÍÖÁZigBeeÄ£¿é
-²Î    Êý£ºÎÞ
-·µ »Ø Öµ£ºÎÞ
+å‡½æ•°åŠŸèƒ½ï¼šå°†æ•°æ®å‘é€è‡³ZigBeeæ¨¡å—
+å‚    æ•°ï¼šæ— 
+è¿” å›ž å€¼ï¼šæ— 
 */
 void Send_ZigbeeData_To_Fifo( u8 *p ,u8 len)   
 {
@@ -613,9 +613,9 @@ void Send_ZigbeeData_To_Fifo( u8 *p ,u8 len)
 }
 
 /**
-º¯Êý¹¦ÄÜ£º½«Êý¾Ý·¢ËÍÖÁWIFIÄ£¿é
-²Î    Êý£ºÎÞ
-·µ »Ø Öµ£ºÎÞ
+å‡½æ•°åŠŸèƒ½ï¼šå°†æ•°æ®å‘é€è‡³WIFIæ¨¡å—
+å‚    æ•°ï¼šæ— 
+è¿” å›ž å€¼ï¼šæ— 
 */
 void Send_WifiData_To_Fifo( u8 *p ,u8 len)   
 {

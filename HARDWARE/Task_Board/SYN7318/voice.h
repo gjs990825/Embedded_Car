@@ -14,12 +14,12 @@ extern uint16_t USART6_RX_STA;
 
 enum
 {
-    VoiceCmd_NotUsed = 0x01,         // Î´Ê¹ÓÃ
-    VoiceCmd_TurnRignt = 0x02,       // ÏòÓÒ×ªÍä
-    VoiceCmd_NOTurnRight = 0x03,     // ½ûÖ¹ÓÒ×ª
-    VoiceCmd_DrvingToLeft = 0x04,    // ×ó²àĞĞÊ»
-    VoiceCmd_NODrivingToLeft = 0x05, // ×óĞĞ±»½û
-    VoiceCmd_TurnAround = 0x06       // Ô­µØµôÍ·
+    VoiceCmd_NotUsed = 0x01,         // æœªä½¿ç”¨
+    VoiceCmd_TurnRignt = 0x02,       // å‘å³è½¬å¼¯
+    VoiceCmd_NOTurnRight = 0x03,     // ç¦æ­¢å³è½¬
+    VoiceCmd_DrvingToLeft = 0x04,    // å·¦ä¾§è¡Œé©¶
+    VoiceCmd_NODrivingToLeft = 0x05, // å·¦è¡Œè¢«ç¦
+    VoiceCmd_TurnAround = 0x06       // åŸåœ°æ‰å¤´
 };
 
 void USART6_Init(uint32_t baudrate);

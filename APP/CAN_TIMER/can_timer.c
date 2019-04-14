@@ -2,7 +2,7 @@
 #include "canp_hostcom.h"
 #include "debug.h"
 
-// ³õÊ¼»¯CANÊı¾İ¼ì²é(ZigBeeºÍWiFi)¶¨Ê±Æ÷(TIM3)
+// åˆå§‹åŒ–CANæ•°æ®æ£€æŸ¥(ZigBeeå’ŒWiFi)å®šæ—¶å™¨(TIM3)
 void CanTimer_Init(uint16_t arr, uint16_t psc)
 {
     TIM_TimeBaseInitTypeDef TIM_InitStructure;

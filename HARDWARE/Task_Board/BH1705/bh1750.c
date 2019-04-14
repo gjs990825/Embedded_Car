@@ -2,8 +2,8 @@
 #include "delay.h"
 #include "bh1750.h"
 
-#define SlaveAddress 0x46 //¶¨ÒåÆ÷¼þÔÚIIC×ÜÏßÖÐµÄ´ÓµØÖ·,¸ù¾ÝALT  ADDRESSµØÖ·Òý½Å²»Í¬ÐÞ¸Ä
-uint8_t BUF[4];           //½ÓÊÕÊý¾Ý»º´æÇø
+#define SlaveAddress 0x46 //å®šä¹‰å™¨ä»¶åœ¨IICæ€»çº¿ä¸­çš„ä»Žåœ°å€,æ ¹æ®ALT  ADDRESSåœ°å€å¼•è„šä¸åŒä¿®æ”¹
+uint8_t BUF[4];           //æŽ¥æ”¶æ•°æ®ç¼“å­˜åŒº
 
 void BH1750_PortInit(void)
 {
@@ -33,7 +33,7 @@ void SDA_OUT()
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL; // ÓÐ¶¾£¡£¡£¡
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL; // æœ‰æ¯’ï¼ï¼ï¼
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
     GPIO_Init(GPIOB, &GPIO_InitStructure);
 }
@@ -46,177 +46,177 @@ void SDA_IN()
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz; // ÓÐ¶¾£¡£¡£¡
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz; // æœ‰æ¯’ï¼ï¼ï¼
     GPIO_Init(GPIOB, &GPIO_InitStructure);
 }
 
 /***************************************************************
-** ¹¦ÄÜ£º     ²úÉúIICÆðÊ¼ÐÅºÅ
-** ²ÎÊý£º	  ÎÞ²ÎÊý
-** ·µ»ØÖµ£º    ÎÞ
+** åŠŸèƒ½ï¼š     äº§ç”ŸIICèµ·å§‹ä¿¡å·
+** å‚æ•°ï¼š	  æ— å‚æ•°
+** è¿”å›žå€¼ï¼š    æ— 
 ****************************************************************/
 void BH1750_Start()
 {
-    SDA_OUT(); //sdaÏßÊä³ö
+    SDA_OUT(); //sdaçº¿è¾“å‡º
     IIC_SDA = 1;
     IIC_SCL = 1;
     delay_us(4);
     IIC_SDA = 0; //START:when CLK is high,DATA change form high to low
     delay_us(4);
-    IIC_SCL = 0; //Ç¯×¡I2C×ÜÏß£¬×¼±¸·¢ËÍ»ò½ÓÊÕÊý¾Ý
+    IIC_SCL = 0; //é’³ä½I2Cæ€»çº¿ï¼Œå‡†å¤‡å‘é€æˆ–æŽ¥æ”¶æ•°æ®
 }
 /***************************************************************
-** ¹¦ÄÜ£º     ²úÉúIICÍ£Ö¹ÐÅºÅ
-** ²ÎÊý£º	  ÎÞ²ÎÊý
-** ·µ»ØÖµ£º    ÎÞ
+** åŠŸèƒ½ï¼š     äº§ç”ŸIICåœæ­¢ä¿¡å·
+** å‚æ•°ï¼š	  æ— å‚æ•°
+** è¿”å›žå€¼ï¼š    æ— 
 ****************************************************************/
 void BH1750_Stop()
 {
-    SDA_OUT();   //sdaÏßÊä³ö
+    SDA_OUT();   //sdaçº¿è¾“å‡º
     IIC_SDA = 0; //STOP:when CLK is high DATA change form low to high
     IIC_SCL = 1;
     delay_us(4);
-    IIC_SDA = 1; //·¢ËÍI2C×ÜÏß½áÊøÐÅºÅ
+    IIC_SDA = 1; //å‘é€I2Cæ€»çº¿ç»“æŸä¿¡å·
     delay_us(4);
 }
 /***************************************************************
-** ¹¦ÄÜ£º     ²úÉúIICÓ¦´ðÐÅºÅ
-** ²ÎÊý£º	  ÎÞ²ÎÊý
-** ·µ»ØÖµ£º    ÎÞ
+** åŠŸèƒ½ï¼š     äº§ç”ŸIICåº”ç­”ä¿¡å·
+** å‚æ•°ï¼š	  æ— å‚æ•°
+** è¿”å›žå€¼ï¼š    æ— 
 ****************************************************************/
 void BH1750_SendACK(u8 ack)
 {
-    SDA_OUT(); //sdaÏßÊä³ö
+    SDA_OUT(); //sdaçº¿è¾“å‡º
     if (ack)
-        IIC_SDA = 1; //Ð´Ó¦´ðÐÅºÅ
+        IIC_SDA = 1; //å†™åº”ç­”ä¿¡å·
     else
         IIC_SDA = 0;
-    IIC_SCL = 1; //À­¸ßÊ±ÖÓÏß
-    delay_us(2); //ÑÓÊ±
-    IIC_SCL = 0; //À­µÍÊ±ÖÓÏß
-    delay_us(2); //ÑÓÊ±
+    IIC_SCL = 1; //æ‹‰é«˜æ—¶é’Ÿçº¿
+    delay_us(2); //å»¶æ—¶
+    IIC_SCL = 0; //æ‹‰ä½Žæ—¶é’Ÿçº¿
+    delay_us(2); //å»¶æ—¶
 }
 
 /***************************************************************
-** ¹¦ÄÜ£º     ²úÉúIIC½ÓÊÕÐÅºÅ
-** ²ÎÊý£º	  ÎÞ²ÎÊý
-** ·µ»ØÖµ£º    ÎÞ
+** åŠŸèƒ½ï¼š     äº§ç”ŸIICæŽ¥æ”¶ä¿¡å·
+** å‚æ•°ï¼š	  æ— å‚æ•°
+** è¿”å›žå€¼ï¼š    æ— 
 ****************************************************************/
 u8 BH1750_RecvACK()
 {
     u8 data;
-    SDA_IN();        //SDAÉèÖÃÎªÊäÈë
-    IIC_SCL = 1;     //À­¸ßÊ±ÖÓÏß
-    delay_us(2);     //ÑÓÊ±
-    data = READ_SDA; //¶ÁÓ¦´ðÐÅºÅ
-    IIC_SCL = 0;     //À­µÍÊ±ÖÓÏß
-    delay_us(2);     //ÑÓÊ±
+    SDA_IN();        //SDAè®¾ç½®ä¸ºè¾“å…¥
+    IIC_SCL = 1;     //æ‹‰é«˜æ—¶é’Ÿçº¿
+    delay_us(2);     //å»¶æ—¶
+    data = READ_SDA; //è¯»åº”ç­”ä¿¡å·
+    IIC_SCL = 0;     //æ‹‰ä½Žæ—¶é’Ÿçº¿
+    delay_us(2);     //å»¶æ—¶
     return data;
 }
 /***************************************************************
-** ¹¦ÄÜ£º     ÏòIIC×ÜÏß·¢ËÍÒ»¸ö×Ö½ÚÊý¾Ý
-** ²ÎÊý£º	  dat£ºÒ»×Ö½ÚÊý¾Ý
-** ·µ»ØÖµ£º    ÎÞ
+** åŠŸèƒ½ï¼š     å‘IICæ€»çº¿å‘é€ä¸€ä¸ªå­—èŠ‚æ•°æ®
+** å‚æ•°ï¼š	  datï¼šä¸€å­—èŠ‚æ•°æ®
+** è¿”å›žå€¼ï¼š    æ— 
 ****************************************************************/
 void BH1750_SendByte(u8 dat)
 {
     u8 i, bit;
-    SDA_OUT();              //sdaÏßÊä³ö
-    for (i = 0; i < 8; i++) //8Î»¼ÆÊýÆ÷
+    SDA_OUT();              //sdaçº¿è¾“å‡º
+    for (i = 0; i < 8; i++) //8ä½è®¡æ•°å™¨
     {
         bit = dat & 0x80;
         if (bit)
             IIC_SDA = 1;
         else
             IIC_SDA = 0;
-        dat <<= 1;   //ÒÆ³öÊý¾ÝµÄ×î¸ßÎ»
-        IIC_SCL = 1; //À­¸ßÊ±ÖÓÏß
-        delay_us(2); //ÑÓÊ±
-        IIC_SCL = 0; //À­µÍÊ±ÖÓÏß
-        delay_us(2); //ÑÓÊ±
+        dat <<= 1;   //ç§»å‡ºæ•°æ®çš„æœ€é«˜ä½
+        IIC_SCL = 1; //æ‹‰é«˜æ—¶é’Ÿçº¿
+        delay_us(2); //å»¶æ—¶
+        IIC_SCL = 0; //æ‹‰ä½Žæ—¶é’Ÿçº¿
+        delay_us(2); //å»¶æ—¶
     }
     BH1750_RecvACK();
 }
 /***************************************************************
-** ¹¦ÄÜ£º     ´ÓIIC×ÜÏß½ÓÊÕÒ»¸ö×Ö½ÚÊý¾Ý
-** ²ÎÊý£º	  ÎÞ²ÎÊý
-** ·µ»ØÖµ£º   dat£º½ÓÊÕÒ»×Ö½ÚÊý¾Ý
+** åŠŸèƒ½ï¼š     ä»ŽIICæ€»çº¿æŽ¥æ”¶ä¸€ä¸ªå­—èŠ‚æ•°æ®
+** å‚æ•°ï¼š	  æ— å‚æ•°
+** è¿”å›žå€¼ï¼š   datï¼šæŽ¥æ”¶ä¸€å­—èŠ‚æ•°æ®
 ****************************************************************/
 u8 BH1750_RecvByte()
 {
     u8 i;
     u8 dat = 0;
-    SDA_IN();               //SDAÉèÖÃÎªÊäÈë
-    IIC_SDA = 1;            //Ê¹ÄÜÄÚ²¿ÉÏÀ­,×¼±¸¶ÁÈ¡Êý¾Ý,
-    for (i = 0; i < 8; i++) //8Î»¼ÆÊýÆ÷
+    SDA_IN();               //SDAè®¾ç½®ä¸ºè¾“å…¥
+    IIC_SDA = 1;            //ä½¿èƒ½å†…éƒ¨ä¸Šæ‹‰,å‡†å¤‡è¯»å–æ•°æ®,
+    for (i = 0; i < 8; i++) //8ä½è®¡æ•°å™¨
     {
         dat <<= 1;
-        IIC_SCL = 1; //À­¸ßÊ±ÖÓÏß
-        delay_us(2); //ÑÓÊ±
+        IIC_SCL = 1; //æ‹‰é«˜æ—¶é’Ÿçº¿
+        delay_us(2); //å»¶æ—¶
         if (READ_SDA)
             dat += 1;
-        IIC_SCL = 0; //À­µÍÊ±ÖÓÏß
-        delay_us(2); //ÑÓÊ±
+        IIC_SCL = 0; //æ‹‰ä½Žæ—¶é’Ÿçº¿
+        delay_us(2); //å»¶æ—¶
     }
     return dat;
 }
 
 /***************************************************************
-** ¹¦ÄÜ£º     Ïòbh1750Ð´ÈëÃüÁî
-** ²ÎÊý£º	  ÎÞ²ÎÊý
-** ·µ»ØÖµ£º   ÎÞ
+** åŠŸèƒ½ï¼š     å‘bh1750å†™å…¥å‘½ä»¤
+** å‚æ•°ï¼š	  æ— å‚æ•°
+** è¿”å›žå€¼ï¼š   æ— 
 ****************************************************************/
 void Single_Write_BH1750(u8 REG_Address)
 {
-    BH1750_Start();                //ÆðÊ¼ÐÅºÅ
-    BH1750_SendByte(SlaveAddress); //·¢ËÍÉè±¸µØÖ·+Ð´ÐÅºÅ
-    BH1750_SendByte(REG_Address);  //ÄÚ²¿¼Ä´æÆ÷µØÖ·£¬
-    BH1750_Stop();                 //·¢ËÍÍ£Ö¹ÐÅºÅ
+    BH1750_Start();                //èµ·å§‹ä¿¡å·
+    BH1750_SendByte(SlaveAddress); //å‘é€è®¾å¤‡åœ°å€+å†™ä¿¡å·
+    BH1750_SendByte(REG_Address);  //å†…éƒ¨å¯„å­˜å™¨åœ°å€ï¼Œ
+    BH1750_Stop();                 //å‘é€åœæ­¢ä¿¡å·
 }
 
 /***************************************************************
-** ¹¦ÄÜ£º     Á¬Ðø¶Á³öBH1750ÄÚ²¿Êý¾Ý 
-** ²ÎÊý£º	  ÎÞ²ÎÊý
-** ·µ»ØÖµ£º   ÎÞ
+** åŠŸèƒ½ï¼š     è¿žç»­è¯»å‡ºBH1750å†…éƒ¨æ•°æ® 
+** å‚æ•°ï¼š	  æ— å‚æ•°
+** è¿”å›žå€¼ï¼š   æ— 
 ****************************************************************/
 void Multiple_Read_BH1750(void)
 {
     u8 i;
-    BH1750_Start();                    //ÆðÊ¼ÐÅºÅ
-    BH1750_SendByte(SlaveAddress + 1); //·¢ËÍÉè±¸µØÖ·+¶ÁÐÅºÅ
+    BH1750_Start();                    //èµ·å§‹ä¿¡å·
+    BH1750_SendByte(SlaveAddress + 1); //å‘é€è®¾å¤‡åœ°å€+è¯»ä¿¡å·
 
-    for (i = 0; i < 3; i++) //Á¬Ðø¶ÁÈ¡2¸öµØÖ·Êý¾Ý£¬´æ´¢ÖÐBUF
+    for (i = 0; i < 3; i++) //è¿žç»­è¯»å–2ä¸ªåœ°å€æ•°æ®ï¼Œå­˜å‚¨ä¸­BUF
     {
-        BUF[i] = BH1750_RecvByte(); //BUF[0]´æ´¢0x32µØÖ·ÖÐµÄÊý¾Ý
+        BUF[i] = BH1750_RecvByte(); //BUF[0]å­˜å‚¨0x32åœ°å€ä¸­çš„æ•°æ®
         if (i == 3)
         {
-            BH1750_SendACK(1); //×îºóÒ»¸öÊý¾ÝÐèÒª»ØNOACK
+            BH1750_SendACK(1); //æœ€åŽä¸€ä¸ªæ•°æ®éœ€è¦å›žNOACK
         }
         else
         {
-            BH1750_SendACK(0); //»ØÓ¦ACK
+            BH1750_SendACK(0); //å›žåº”ACK
         }
     }
-    BH1750_Stop(); //Í£Ö¹ÐÅºÅ
+    BH1750_Stop(); //åœæ­¢ä¿¡å·
                    //   delay_ms(150);
 }
 
 /***************************************************************
-** ¹¦ÄÜ£º     ³õÊ¼»¯BH1750
-** ²ÎÊý£º	  ÎÞ²ÎÊý
-** ·µ»ØÖµ£º   ÎÞ
+** åŠŸèƒ½ï¼š     åˆå§‹åŒ–BH1750
+** å‚æ•°ï¼š	  æ— å‚æ•°
+** è¿”å›žå€¼ï¼š   æ— 
 ****************************************************************/
 void BH1750_Configure(void)
 {
     BH1750_PortInit();
     Single_Write_BH1750(0x01);
-    ADDR = 0; //½«ADDRÎ»³õÊ¼»¯À­µÍ
+    ADDR = 0; //å°†ADDRä½åˆå§‹åŒ–æ‹‰ä½Ž
 }
 
 /***************************************************************
-** ¹¦ÄÜ£º     ¶ÁÈ¡¹âÕÕ¶È
-** ²ÎÊý£º	  ÎÞ²ÎÊý
-** ·µ»ØÖµ£º   data£º·µ»Ø¹âÕÕ¶ÈÖµ
+** åŠŸèƒ½ï¼š     è¯»å–å…‰ç…§åº¦
+** å‚æ•°ï¼š	  æ— å‚æ•°
+** è¿”å›žå€¼ï¼š   dataï¼šè¿”å›žå…‰ç…§åº¦å€¼
 ****************************************************************/
 uint16_t Get_Bh_Value(void)
 {
@@ -225,10 +225,10 @@ uint16_t Get_Bh_Value(void)
     int dis_data;
     Single_Write_BH1750(0x01); // power on
     Single_Write_BH1750(0x10); // H- resolution mode
-                               //    delay_ms(200);              //ÑÓÊ±200ms
-    Multiple_Read_BH1750();    //Á¬Ðø¶Á³öÊý¾Ý£¬´æ´¢ÔÚBUFÖÐ
+                               //    delay_ms(200);              //å»¶æ—¶200ms
+    Multiple_Read_BH1750();    //è¿žç»­è¯»å‡ºæ•°æ®ï¼Œå­˜å‚¨åœ¨BUFä¸­
     dis_data = BUF[0];
-    dis_data = (dis_data << 8) + BUF[1]; //ºÏ³ÉÊý¾Ý£¬¼´¹âÕÕÊý¾Ý
+    dis_data = (dis_data << 8) + BUF[1]; //åˆæˆæ•°æ®ï¼Œå³å…‰ç…§æ•°æ®
     temp = (float)dis_data / 1.2f;
     data = (int)temp;
     return data;
@@ -237,7 +237,7 @@ uint16_t Get_Bh_Value(void)
 uint16_t BH1750_GetAverage(uint8_t times)
 {
     uint32_t temp = 0;
-    // ÓÐ¿Ó£¬³õÊ¼»¯ºóÐèÒªÑÓÊ±£¬¹Ù·½´úÂë×¢ÊÍµôÁËÑÓÊ± // ÓÐ¶¾£¡£¡£¡
+    // æœ‰å‘ï¼Œåˆå§‹åŒ–åŽéœ€è¦å»¶æ—¶ï¼Œå®˜æ–¹ä»£ç æ³¨é‡ŠæŽ‰äº†å»¶æ—¶ // æœ‰æ¯’ï¼ï¼ï¼
     Single_Write_BH1750(0x01); // power on
     Single_Write_BH1750(0x10); // H- resolution mode
     delay_ms(200);

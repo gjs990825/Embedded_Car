@@ -4,31 +4,13 @@
 #include "route.h"
 #include "a_star.h"
 
-// ÏòAGV·¢ËÍµÄÊý¾Ýbuffer
+// å‘AGVå‘é€çš„æ•°æ®buffer
 uint8_t DataToAGV[] = {0x55, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
 
 #define ClearAGVCmd() memset(&DataToAGV[Pack_MainCmd], 0, 4)
-
-// #define ClearAGVCmd()                \
-//     do                               \
-//     {                                \
-//         DataToAGV[Pack_MainCmd] = 0; \
-//         DataToAGV[Pack_SubCmd1] = 0; \
-//         DataToAGV[Pack_SubCmd2] = 0; \
-//         DataToAGV[Pack_SubCmd3] = 0; \
-//     } while (0)
-
 #define SendAGVCmd() Send_ZigBeeData(DataToAGV)
 
-// // »ù±¾ÔË¶¯¿ØÖÆ
-// void Stop(void);
-// void Go_Ahead(int speed, uint16_t encoder);
-// void Back_Off(int speed, uint16_t encoder);
-// void Turn_ByEncoder(int16_t digree);
-// void Track_ByEncoder(int speed, uint16_t setencoder);
-// void Start_Tracking(int speed);
-
-// Í£Ö¹
+// åœæ­¢
 void AGV_Stop(void)
 {
     ClearAGVCmd();
@@ -36,7 +18,7 @@ void AGV_Stop(void)
     SendAGVCmd();
 }
 
-// Ç°½ø
+// å‰è¿›
 void AGV_Go(uint8_t speed, uint16_t encoder)
 {
     ClearAGVCmd();
@@ -47,7 +29,7 @@ void AGV_Go(uint8_t speed, uint16_t encoder)
     SendAGVCmd();
 }
 
-// ºóÍË
+// åŽé€€
 void AGV_Back(uint8_t speed, uint16_t encoder)
 {
     ClearAGVCmd();
@@ -58,7 +40,7 @@ void AGV_Back(uint8_t speed, uint16_t encoder)
     SendAGVCmd();
 }
 
-// ×ªÏò
+// è½¬å‘
 void AGV_Turn(int16_t speed)
 {
     ClearAGVCmd();
@@ -67,7 +49,7 @@ void AGV_Turn(int16_t speed)
     SendAGVCmd();
 }
 
-// Ñ­¼£
+// å¾ªè¿¹
 void AGV_TrackLine(uint8_t speed)
 {
     ClearAGVCmd();
@@ -76,7 +58,7 @@ void AGV_TrackLine(uint8_t speed)
     SendAGVCmd();
 }
 
-// Çå¿ÕÂëÅÌÖµ
+// æ¸…ç©ºç ç›˜å€¼
 void AGV_ClearEncoder(void)
 {
     ClearAGVCmd();
@@ -84,7 +66,7 @@ void AGV_ClearEncoder(void)
     SendAGVCmd();
 }
 
-// ·¢ËÍºìÍâÊý¾Ý(´Ë´¦ÒÑÒÆ³ýÁ¢¼´·¢ËÍµÄ¹¦ÄÜ£¬´Ó³µ×ÔÐÐ·¢ËÍ)
+// å‘é€çº¢å¤–æ•°æ®(æ­¤å¤„å·²ç§»é™¤ç«‹å³å‘é€çš„åŠŸèƒ½ï¼Œä»Žè½¦è‡ªè¡Œå‘é€)
 void AGV_SendInfraredData(uint8_t irData[6])
 {
     ClearAGVCmd();
@@ -102,7 +84,7 @@ void AGV_SendInfraredData(uint8_t irData[6])
     // SendAGVCmd();
 }
 
-// ×ªÏòµÆ
+// è½¬å‘ç¯
 void AGV_TurnningLightControl(bool left, bool right)
 {
     ClearAGVCmd();
@@ -112,7 +94,7 @@ void AGV_TurnningLightControl(bool left, bool right)
     SendAGVCmd();
 }
 
-// ·äÃùÆ÷
+// èœ‚é¸£å™¨
 void AGV_Beep(bool status)
 {
     ClearAGVCmd();
@@ -121,7 +103,7 @@ void AGV_Beep(bool status)
     SendAGVCmd();
 }
 
-// µç×ÓÏà²á 1 ÏÂ·­ 0 ÉÏ·­
+// ç”µå­ç›¸å†Œ 1 ä¸‹ç¿» 0 ä¸Šç¿»
 void AGV_PhotoChange(bool dir)
 {
     ClearAGVCmd();
@@ -129,7 +111,7 @@ void AGV_PhotoChange(bool dir)
     SendAGVCmd();
 }
 
-// ¹âÔ´µµÎ»¼Ó£¨1 - 3£©
+// å…‰æºæ¡£ä½åŠ ï¼ˆ1 - 3ï¼‰
 void AGV_LightAdd(uint8_t level)
 {
     if (level > 3 || level < 1)
@@ -141,7 +123,7 @@ void AGV_LightAdd(uint8_t level)
     SendAGVCmd();
 }
 
-// ·µ»ØÊý¾Ý
+// è¿”å›žæ•°æ®
 void AGV_UploadData(bool sta)
 {
     ClearAGVCmd();
@@ -150,7 +132,7 @@ void AGV_UploadData(bool sta)
     SendAGVCmd();
 }
 
-// ÓïÒôÊ¶±ð
+// è¯­éŸ³è¯†åˆ«
 void AGV_VoiceRecognition(bool sta)
 {
     ClearAGVCmd();
@@ -159,7 +141,7 @@ void AGV_VoiceRecognition(bool sta)
     SendAGVCmd();
 }
 
-// AGVÆô¶¯
+// AGVå¯åŠ¨
 void AGV_Start(void)
 {
     ClearAGVCmd();
@@ -196,7 +178,7 @@ void AGV_SetRouteFromTask(RouteNode_t task[], uint8_t length)
     }
 }
 
-// ·¢ËÍ¹æ»®µÄÂ·¾¶µ½´Ó³µ
+// å‘é€è§„åˆ’çš„è·¯å¾„åˆ°ä»Žè½¦
 void AGV_SetRoute(uint8_t *str)
 {
     uint8_t length = strlen((char *)str) / 2;
@@ -212,7 +194,7 @@ void AGV_SetRoute(uint8_t *str)
     }
 }
 
-// Éè¶¨´Ó³µµÄÈÎÎñ
+// è®¾å®šä»Žè½¦çš„ä»»åŠ¡
 void AGV_SetTaskID(uint8_t routeNumber, uint8_t taskNumber)
 {
     ClearAGVCmd();

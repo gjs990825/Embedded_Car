@@ -6,17 +6,17 @@
 #include "uart_a72.h"
 #include "delay.h"
 
-// // Ê¹ÓÃºê¶¨ÒåµÄº¯Êı£¨³ÌĞò¿ÉÄÜ»áÔö´ó£©
+// // ä½¿ç”¨å®å®šä¹‰çš„å‡½æ•°ï¼ˆç¨‹åºå¯èƒ½ä¼šå¢å¤§ï¼‰
 // #define USE_MACRO_FUNCTIONS false
 
-// ¶¨ÒåÁ¬½ÓÄ£Ê½
-#define WIRED_CONNECTION 0    // ÓĞÏßÁ¬½Ó£¨´®¿Ú£©
-#define WIRELESS_CONNECTION 1 // ÎŞÏßÁ¬½Ó£¨WIFI£©
+// å®šä¹‰è¿æ¥æ¨¡å¼
+#define WIRED_CONNECTION 0    // æœ‰çº¿è¿æ¥ï¼ˆä¸²å£ï¼‰
+#define WIRELESS_CONNECTION 1 // æ— çº¿è¿æ¥ï¼ˆWIFIï¼‰
 
-// Ñ¡ÔñÓëÉÏÎ»»úµÄÁ¬½Ó·½Ê½
+// é€‰æ‹©ä¸ä¸Šä½æœºçš„è¿æ¥æ–¹å¼
 #define CONNECTION_MODE WIRELESS_CONNECTION
 
-// ×ÔÊÊÓ¦Ñ¡Ôñ·¢ËÍº¯Êı
+// è‡ªé€‚åº”é€‰æ‹©å‘é€å‡½æ•°
 #if CONNECTION_MODE == WIRED_CONNECTION
 
 #define Send_ToHost Send_DataToUsart
@@ -27,7 +27,7 @@
 
 #endif
 
-// ÉÏ´«Êı¾İ°üµÄ½á¹¹
+// ä¸Šä¼ æ•°æ®åŒ…çš„ç»“æ„
 enum
 {
     Pack_Header1 = 0,
@@ -40,64 +40,64 @@ enum
     Pack_Ending
 };
 
-// ÉÏÎ»»ú·¢ËÍµÄÊı¾İ±êÊ¶
+// ä¸Šä½æœºå‘é€çš„æ•°æ®æ ‡è¯†
 enum
 {
-    // ¹Ù·½ÎÄµµÄÚÖ¸Áî
-    FromHost_Stop = 0x01,                       // Í£Ö¹
-    FromHost_Go = 0x02,                         // Ç°½ø
-    FromHost_Back = 0x03,                       // ºóÍË
-    FromHost_TurnLeft = 0x04,                   // ×ó×ª
-    FromHost_TurnRight = 0x05,                  // ÓÒ×ª
-    FromHost_TrackLine = 0x06,                  // Ñ­¼£
-    FromHost_EncoderClear = 0x07,               // ÂëÅÌÇåÁã
-    FromHost_TurnCountClockWiseToDigree = 0x08, // ×ó×ªÍä--½Ç¶È
-    FromHost_TurnClockWiseToDigree = 0x09,      // ÓÒ×ªÍä--½Ç¶È
-    FromHost_InfraredFrontData = 0x10,          // ºìÍâÇ°ÈıÎ»Êı¾İ
-    FromHost_InfraredBackData = 0x11,           // ºìÍâºóÈıÎ»Êı¾İ
-    FromHost_InfraredSend = 0x12,               // Í¨ÖªĞ¡³µµ¥Æ¬»ú·¢ËÍºìÍâÏß
-    FromHost_TurnningLightControl = 0x20,       // ×ªÏòµÆ¿ØÖÆ
-    FromHost_Beep = 0x30,                       // ·äÃùÆ÷
-    FromHost_NotUsed = 0x40,                    // ÔİÎ´Ê¹ÓÃ
-    FromHost_InfraredPhotoPrevious = 0x50,      // ºìÍâ·¢Éä¿ØÖÆÏàÆ¬ÉÏ·­
-    FromHost_InfraredPhotoNext = 0x51,          // ºìÍâ·¢Éä¿ØÖÆÏàÆ¬ÏÂ·­
-    FromHost_InfraredLightAdd1 = 0x61,          // ºìÍâ·¢Éä¿ØÖÆ¹âÔ´Ç¿¶ÈµµÎ»¼Ó1
-    FromHost_InfraredLightAdd2 = 0x62,          // ºìÍâ·¢Éä¿ØÖÆ¹âÔ´Ç¿¶ÈµµÎ»¼Ó2
-    FromHost_InfraredLightAdd3 = 0x63,          // ºìÍâ·¢Éä¿ØÖÆ¹âÔ´Ç¿¶ÈµµÎ»¼Ó3
-    FromHost_AGVReturnData = 0x80,              // ´Ó³µ·µ»ØÊı¾İ
-    FromHost_VoiceRecognition = 0x90,           // ÓïÒôÊ¶±ğ
-    // ×Ô¶¨ÒåµÄÖ¸Áî
-    FromHost_AGVOpenMvQRCode = 0x92,          // OpenMv¶şÎ¬ÂëÊ¶±ğ
-    FromHost_AGVStart = 0xD0,                 // ´Ó³µÆô¶¯
-    FromHost_LEDDisplaySecomdRow = 0xc1,      // ÊıÂë¹ÜµÚ¶şÅÅÏÔÊ¾ÊÇÊı¾İ
-    FromHost_ReceivePresetHeadTowards = 0x71, // ½ÓÊÕÔ¤°¸³µÍ·ÉèÖÃ
-    FromHost_Start = 0xA1,                    // Ğ¡³µÆô¶¯ÃüÁî
-    FromHost_QRCodeRecognition = 0xA2,        // ¶şÎ¬ÂëÊ¶±ğ
-    FromHost_PlateRecognition = 0xA3,         // ³µÅÆÊ¶±ğ
-    FromHost_ShapeRecongnition = 0xA4,        // Í¼ÏñÊ¶±ğ
-    FromHost_TrafficLight = 0xA5,             // ½»Í¨µÆ
-    FromHost_StreetLight = 0xA6,              // Â·µÆ
-    FromHost_AlarmON = 0xA7,                  // ±¨¾¯Æ÷¿ª
-    FromHost_AlarmOFF = 0xA8,                 // ±¨¾¯Æ÷¹Ø
-    FromHost_PlateData1 = 0x88,               // ³µÅÆĞÅÏ¢1
-    FromHost_PlateData2 = 0x99,               // ³µÅÆĞÅÏ¢2
-    FromHost_Garage = 0xB1,                   // Á¢Ìå³µ¿â
-    FromHost_TFTRecognition = 0xAC,           // TFTÊ¶±ğ
+    // å®˜æ–¹æ–‡æ¡£å†…æŒ‡ä»¤
+    FromHost_Stop = 0x01,                       // åœæ­¢
+    FromHost_Go = 0x02,                         // å‰è¿›
+    FromHost_Back = 0x03,                       // åé€€
+    FromHost_TurnLeft = 0x04,                   // å·¦è½¬
+    FromHost_TurnRight = 0x05,                  // å³è½¬
+    FromHost_TrackLine = 0x06,                  // å¾ªè¿¹
+    FromHost_EncoderClear = 0x07,               // ç ç›˜æ¸…é›¶
+    FromHost_TurnCountClockWiseToDigree = 0x08, // å·¦è½¬å¼¯--è§’åº¦
+    FromHost_TurnClockWiseToDigree = 0x09,      // å³è½¬å¼¯--è§’åº¦
+    FromHost_InfraredFrontData = 0x10,          // çº¢å¤–å‰ä¸‰ä½æ•°æ®
+    FromHost_InfraredBackData = 0x11,           // çº¢å¤–åä¸‰ä½æ•°æ®
+    FromHost_InfraredSend = 0x12,               // é€šçŸ¥å°è½¦å•ç‰‡æœºå‘é€çº¢å¤–çº¿
+    FromHost_TurnningLightControl = 0x20,       // è½¬å‘ç¯æ§åˆ¶
+    FromHost_Beep = 0x30,                       // èœ‚é¸£å™¨
+    FromHost_NotUsed = 0x40,                    // æš‚æœªä½¿ç”¨
+    FromHost_InfraredPhotoPrevious = 0x50,      // çº¢å¤–å‘å°„æ§åˆ¶ç›¸ç‰‡ä¸Šç¿»
+    FromHost_InfraredPhotoNext = 0x51,          // çº¢å¤–å‘å°„æ§åˆ¶ç›¸ç‰‡ä¸‹ç¿»
+    FromHost_InfraredLightAdd1 = 0x61,          // çº¢å¤–å‘å°„æ§åˆ¶å…‰æºå¼ºåº¦æ¡£ä½åŠ 1
+    FromHost_InfraredLightAdd2 = 0x62,          // çº¢å¤–å‘å°„æ§åˆ¶å…‰æºå¼ºåº¦æ¡£ä½åŠ 2
+    FromHost_InfraredLightAdd3 = 0x63,          // çº¢å¤–å‘å°„æ§åˆ¶å…‰æºå¼ºåº¦æ¡£ä½åŠ 3
+    FromHost_AGVReturnData = 0x80,              // ä»è½¦è¿”å›æ•°æ®
+    FromHost_VoiceRecognition = 0x90,           // è¯­éŸ³è¯†åˆ«
+    // è‡ªå®šä¹‰çš„æŒ‡ä»¤
+    FromHost_AGVOpenMvQRCode = 0x92,          // OpenMväºŒç»´ç è¯†åˆ«
+    FromHost_AGVStart = 0xD0,                 // ä»è½¦å¯åŠ¨
+    FromHost_LEDDisplaySecomdRow = 0xc1,      // æ•°ç ç®¡ç¬¬äºŒæ’æ˜¾ç¤ºæ˜¯æ•°æ®
+    FromHost_ReceivePresetHeadTowards = 0x71, // æ¥æ”¶é¢„æ¡ˆè½¦å¤´è®¾ç½®
+    FromHost_Start = 0xA1,                    // å°è½¦å¯åŠ¨å‘½ä»¤
+    FromHost_QRCodeRecognition = 0xA2,        // äºŒç»´ç è¯†åˆ«
+    FromHost_PlateRecognition = 0xA3,         // è½¦ç‰Œè¯†åˆ«
+    FromHost_ShapeRecongnition = 0xA4,        // å›¾åƒè¯†åˆ«
+    FromHost_TrafficLight = 0xA5,             // äº¤é€šç¯
+    FromHost_StreetLight = 0xA6,              // è·¯ç¯
+    FromHost_AlarmON = 0xA7,                  // æŠ¥è­¦å™¨å¼€
+    FromHost_AlarmOFF = 0xA8,                 // æŠ¥è­¦å™¨å…³
+    FromHost_PlateData1 = 0x88,               // è½¦ç‰Œä¿¡æ¯1
+    FromHost_PlateData2 = 0x99,               // è½¦ç‰Œä¿¡æ¯2
+    FromHost_Garage = 0xB1,                   // ç«‹ä½“è½¦åº“
+    FromHost_TFTRecognition = 0xAC,           // TFTè¯†åˆ«
 
-    // ´Ó³µ×¨ÓĞµÄÖ¸Áî
-    FromHost_AGVRouting = 0xA9, // AGV ½ÓÊÕÂ·¾¶ÉèÖÃ
-    FromHost_AGVSetTask = 0xAA, // AGV ½ÓÊÕÈÎÎñÉèÖÃ
+    // ä»è½¦ä¸“æœ‰çš„æŒ‡ä»¤
+    FromHost_AGVRouting = 0xA9, // AGV æ¥æ”¶è·¯å¾„è®¾ç½®
+    FromHost_AGVSetTask = 0xAA, // AGV æ¥æ”¶ä»»åŠ¡è®¾ç½®
 };
 
-// ZigBee ·µ»ØÊı¾İÍ·
+// ZigBee è¿”å›æ•°æ®å¤´
 enum
 {
-    Return_BarrierGate = 0x03, // µÀÕ¢µÄ·µ»ØÊı¾İ
-    Return_ETC = 0x0C,         // ETCµÄ·µ»ØÊı¾İ
-    Return_AGVComplete = 0x66, // ´Ó³µÈë¿âÍê³É
+    Return_BarrierGate = 0x03, // é“é—¸çš„è¿”å›æ•°æ®
+    Return_ETC = 0x0C,         // ETCçš„è¿”å›æ•°æ®
+    Return_AGVComplete = 0x66, // ä»è½¦å…¥åº“å®Œæˆ
 };
 
-// ZigBee»Ø´«µÄÊı¾İ×´Ì¬ºÍÊ±¼ä´Á
+// ZigBeeå›ä¼ çš„æ•°æ®çŠ¶æ€å’Œæ—¶é—´æˆ³
 typedef struct ZigBee_DataStatus_Sturuct
 {
     uint8_t isSet;
@@ -108,7 +108,7 @@ typedef struct ZigBee_DataStatus_Sturuct
 #define SetCmdFlag(id) CommandFlagStatus[id] = SET
 #define ResetCmdFlag(id) CommandFlagStatus[id] = RESET
 
-// Ö´ĞĞN´Î£¬´øÑÓ³Ù
+// æ‰§è¡ŒNæ¬¡ï¼Œå¸¦å»¶è¿Ÿ
 #define ExcuteNTimes(Task, N, delay)    \
     do                                  \
     {                                   \
@@ -119,7 +119,7 @@ typedef struct ZigBee_DataStatus_Sturuct
         }                               \
     } while (0)
 
-// ×Ô¶¯ÅĞ¶ÏÊı¾İ³¤¶È£¨´«Èë²ÎÊı²»¿ÉÎªÖ¸Õë£¡£©
+// è‡ªåŠ¨åˆ¤æ–­æ•°æ®é•¿åº¦ï¼ˆä¼ å…¥å‚æ•°ä¸å¯ä¸ºæŒ‡é’ˆï¼ï¼‰
 #define Infrared_Send_A(infraredData) Infrared_Send(infraredData, sizeof(infraredData))
 
 void Send_ZigBeeData(uint8_t *data);
@@ -127,78 +127,79 @@ void Send_ZigBeeDataNTimes(uint8_t *data, uint8_t ntimes, uint16_t delay);
 void Request_ToHost(uint8_t request);
 void Request_Data(uint8_t dataRequest[2]);
 
-/***************************************ÇëÇóÃüÁî Request_XX**************************************************/
-// ÉÏÎ»»úÃ»ÓĞ½øĞĞÊı¾İĞ£Ñé£¬Ğ£ÑéºÍ(Request_ToHostArray[Pack_CheckSum])ÎŞÊÓ
+/***************************************è¯·æ±‚å‘½ä»¤ Request_XX**************************************************/
+// ä¸Šä½æœºæ²¡æœ‰è¿›è¡Œæ•°æ®æ ¡éªŒï¼Œæ ¡éªŒå’Œ(Request_ToHostArray[Pack_CheckSum])æ— è§†
 
-// °üÍ·Îª 0x55, 0x03 £¬°üÎ²Îª 0xBB µÄÖ¸Áî(ÇëÇóÉÏÎ»»úÈÎÎñ), Request_ToHostArray[Pack_MainCmd]Ìæ»»ÎªÇëÇó±àºÅ
+// åŒ…å¤´ä¸º 0x55, 0x03 ï¼ŒåŒ…å°¾ä¸º 0xBB çš„æŒ‡ä»¤(è¯·æ±‚ä¸Šä½æœºä»»åŠ¡), Request_ToHostArray[Pack_MainCmd]æ›¿æ¢ä¸ºè¯·æ±‚ç¼–å·
 enum
 {
-    RequestCmd_QRCode1 = 0x01,           // ¶şÎ¬Âë1
-    RequestCmd_QRCode2 = 0x02,           // ¶şÎ¬Âë2
-    RequestCmd_StreetLight = 0x31,       // ÖÇÄÜÂ·µÆ
-    RequestCmd_Garage = 0x05,            // Á¢Ìå³µ¿â
-    RequestCmd_TFTShow = 0x06,           // TFTÏÔÊ¾
-    RequestCmd_BarrierGate = 0x03,       // µÀÕ¢ÏÔÊ¾
-    RequestCmd_LEDShow = 0x08,           // LED±êÖ¾ÎïÏÔÊ¾
-    RequestCmd_PlateRecognition = 0x11,  // ³µÅÆÊ¶±ğ
-    RequestCmd_ShapeRecongnition = 0x21, // Í¼ĞÎÊ¶±ğ
+    RequestCmd_QRCode1 = 0x01,           // äºŒç»´ç 1
+    RequestCmd_QRCode2 = 0x02,           // äºŒç»´ç 2
+    RequestCmd_StreetLight = 0x31,       // æ™ºèƒ½è·¯ç¯
+    RequestCmd_Garage = 0x05,            // ç«‹ä½“è½¦åº“
+    RequestCmd_TFTShow = 0x06,           // TFTæ˜¾ç¤º
+    RequestCmd_BarrierGate = 0x03,       // é“é—¸æ˜¾ç¤º
+    RequestCmd_LEDShow = 0x08,           // LEDæ ‡å¿—ç‰©æ˜¾ç¤º
+    RequestCmd_PlateRecognition = 0x11,  // è½¦ç‰Œè¯†åˆ«
+    RequestCmd_ShapeRecongnition = 0x21, // å›¾å½¢è¯†åˆ«
     RequestCmd_AGV = 0x07,               // AGV
-    RequestCmd_Ultrasonic = 0x41,        // ³¬Éù²¨
-    RequestCmd_Alarm = 0x51,             // ±¨¾¯Ì¨
-    RequestCmd_TrafficLight = 0x81,      // ½»Í¨µÆ
-    RequestCmd_RotatingLED = 0x91,       // Ğı×ªLED(Á¢ÌåÏÔÊ¾)
-    RequestCmd_TFTRecognition = 0x66,    // TFTÊ¶±ğ
+    RequestCmd_Ultrasonic = 0x41,        // è¶…å£°æ³¢
+    RequestCmd_Alarm = 0x51,             // æŠ¥è­¦å°
+    RequestCmd_TrafficLight = 0x81,      // äº¤é€šç¯
+    RequestCmd_RotatingLED = 0x91,       // æ—‹è½¬LED(ç«‹ä½“æ˜¾ç¤º)
+    RequestCmd_TFTRecognition = 0x66,    // TFTè¯†åˆ«
 };
 
 extern uint8_t RequestCmd_ToHostArray[];
 
-// °üÍ·Îª 0x55, 0x0D £¬°üÎ²Îª 0xBB µÄÖ¸Áî(»ñÈ¡ĞÅÏ¢) »ñÈ¡µÄĞÅÏ¢ÔÚCan_WifiRx_CheckÖĞ¸ù¾İ·µ»Ø±àºÅ½øĞĞ´¢´æ
-static uint8_t RequestData_GarageFloor[2] = {0x02, 0x01}; // ÇëÇó³µ¿âÎ»ÓÚµÚ¼¸²ã
-static uint8_t RequestData_Infrared[2] = {0x02, 0x02};    // ÇëÇóºìÍâ
+// åŒ…å¤´ä¸º 0x55, 0x0D ï¼ŒåŒ…å°¾ä¸º 0xBB çš„æŒ‡ä»¤(è·å–ä¿¡æ¯) è·å–çš„ä¿¡æ¯åœ¨Can_WifiRx_Checkä¸­æ ¹æ®è¿”å›ç¼–å·è¿›è¡Œå‚¨å­˜
+static uint8_t RequestData_GarageFloor[2] = {0x02, 0x01}; // è¯·æ±‚è½¦åº“ä½äºç¬¬å‡ å±‚
+static uint8_t RequestData_Infrared[2] = {0x02, 0x02};    // è¯·æ±‚çº¢å¤–
 
-// ¼ÓÒ»ÒòÎª 0x00 Î´Ê¹ÓÃ
+// åŠ ä¸€å› ä¸º 0x00 æœªä½¿ç”¨
 #define DATA_REQUEST_NUMBER (12 + 1)
 
-// Êı¾İÇëÇóµÄ°ü½á¹¹
+// æ•°æ®è¯·æ±‚çš„åŒ…ç»“æ„
 enum
 {
     Data_Header1 = 0, // 0x56
     Data_Header2,     // 0x66
-    Data_RequestID,   // ÇëÇóID
+    Data_RequestID,   // è¯·æ±‚ID
 };
 
-// Êı¾İÇëÇóºÍ·µ»Ø
+// æ•°æ®è¯·æ±‚å’Œè¿”å›
 enum
 {
-    DataRequest_PlateNumber = 0x01, // ³µÅÆºÅ
-    DataRequest_QRCode1,            // ¶şÎ¬Âë1
-    DataRequest_QRCode2,            // ¶şÎ¬Âë2
-    DataRequest_QRCodeSecondCar,    // ¶şÎ¬Âë3
-    DataRequest_TrafficLight,       // ½»Í¨µÆ
-    DataRequest_ShapeNumber,        // ĞÎ×´ÊıÁ¿
-    DataRequest_ColorNumber,        // ÑÕÉ«ÊıÁ¿
-    DataRequest_ShapeColorNumber,   // ĞÎ×´ÑÕÉ«ÊıÁ¿
-    DataRequest_RFID,               // RFIDÊı¾İ
-    DataRequest_Preset1,            // Ô¤Éè1
-    DataRequest_Preset2,            // Ô¤Éè2
-    DataRequest_Preset3,            // Ô¤Éè3
+    DataRequest_NotUsed = 0x00,   // æœªä½¿ç”¨
+    DataRequest_PlateNumber,      // è½¦ç‰Œå·
+    DataRequest_QRCode1,          // äºŒç»´ç 1
+    DataRequest_QRCode2,          // äºŒç»´ç 2
+    DataRequest_QRCodeSecondCar,  // äºŒç»´ç 3
+    DataRequest_TrafficLight,     // äº¤é€šç¯
+    DataRequest_ShapeNumber,      // å½¢çŠ¶æ•°é‡
+    DataRequest_ColorNumber,      // é¢œè‰²æ•°é‡
+    DataRequest_ShapeColorNumber, // å½¢çŠ¶é¢œè‰²æ•°é‡
+    DataRequest_RFID,             // RFIDæ•°æ®
+    DataRequest_Preset1,          // é¢„è®¾1
+    DataRequest_Preset2,          // é¢„è®¾2
+    DataRequest_Preset3,          // é¢„è®¾3
 };
 
-// ¶¨ÒåÃ¿ÖÖÊı¾İµÄ³¤¶È
+// å®šä¹‰æ¯ç§æ•°æ®çš„é•¿åº¦
 enum
 {
-    DataLength_PlateNumber = 6,      // ³µÅÆºÅ
-    DataLength_QRCode1 = 8,          // ¶şÎ¬Âë1
-    DataLength_QRCode2 = 8,          // ¶şÎ¬Âë2
-    DataLength_QRCodeSecondCar = 8,  // ¶şÎ¬Âë3
-    DataLength_TrafficLight = 1,     // ½»Í¨µÆ
-    DataLength_ShapeNumber = 1,      // ĞÎ×´ÊıÁ¿
-    DataLength_ColorNumber = 1,      // ÑÕÉ«ÊıÁ¿
-    DataLength_ShapeColorNumber = 1, // ĞÎ×´ÑÕÉ«ÊıÁ¿
-    DataLength_RFID = 16,            // RFIDÊı¾İ
-    DataLength_Preset1 = 16,         // Ô¤Éè1
-    DataLength_Preset2 = 16,         // Ô¤Éè2
-    DataLength_Preset3 = 16,         // Ô¤Éè3
+    DataLength_PlateNumber = 6,      // è½¦ç‰Œå·
+    DataLength_QRCode1 = 8,          // äºŒç»´ç 1
+    DataLength_QRCode2 = 8,          // äºŒç»´ç 2
+    DataLength_QRCodeSecondCar = 8,  // äºŒç»´ç 3
+    DataLength_TrafficLight = 1,     // äº¤é€šç¯
+    DataLength_ShapeNumber = 1,      // å½¢çŠ¶æ•°é‡
+    DataLength_ColorNumber = 1,      // é¢œè‰²æ•°é‡
+    DataLength_ShapeColorNumber = 1, // å½¢çŠ¶é¢œè‰²æ•°é‡
+    DataLength_RFID = 16,            // RFIDæ•°æ®
+    DataLength_Preset1 = 16,         // é¢„è®¾1
+    DataLength_Preset2 = 16,         // é¢„è®¾2
+    DataLength_Preset3 = 16,         // é¢„è®¾3
 };
 
 typedef struct DataSetting_Struct
@@ -210,102 +211,108 @@ typedef struct DataSetting_Struct
 
 extern DataSetting_t DataBuffer[DATA_REQUEST_NUMBER];
 
-// ½»Í¨µÆ¶¨Òå
+// äº¤é€šç¯å®šä¹‰
 enum
 {
-    TrafficLight_Red = 0x00,
-    TrafficLight_Yellow,
-    TrafficLight_Green,
+    TrafficLight_Red = 0, // çº¢ç¯
+    TrafficLight_Yellow,  // é»„ç¯
+    TrafficLight_Green,   // ç»¿ç¯
 };
 
-// ĞÎ×´¶¨Òå
+// å½¢çŠ¶å®šä¹‰
 enum
 {
-    Shape_Triangle = 0x00, // Èı½ÇĞÎ
-    Shape_Circle,          // Ô²ĞÎ
-    Shape_Rectangle,       // ¾ØĞÎ
-    Shape_Diamond,         // ÁâĞÎ
-    Shape_Pentagram,       // Îå½ÇĞÇ
+    Shape_NotDefined = 0, // æœªå®šä¹‰
+    Shape_Rectangle,      // çŸ©å½¢
+    Shape_Circle,         // åœ†å½¢
+    Shape_Triangle,       // ä¸‰è§’å½¢
+    Shape_Diamond,        // è±å½¢
+    Shape_Trapezoid,      // æ¢¯å½¢
+    Shape_Pie,            // é¥¼å›¾
+    Shape_Traget,         // é¶å›¾
+    Shape_Bar,            // æ¡å½¢å›¾
+    Shape_Pentagram,      // äº”è§’æ˜Ÿ
 };
 
-// ÑÕÉ«¶¨Òå
+// é¢œè‰²å®šä¹‰
 enum
 {
-    Color_Red = 0, // ºì
-    Color_Green,   // ÂÌ
-    Color_Blue,    // À¶
-    Color_Yellow,  // »Æ
-    Color_Purple,  // ×Ï
-    Color_Cyan,    // Çà
-    Color_Black,   // ºÚ
-    Color_White,   // °×
+    Color_NotDefined = 0, // æœªå®šä¹‰
+    Color_Red,            // çº¢
+    Color_Green,          // ç»¿
+    Color_Blue,           // è“
+    Color_Yellow,         // é»„
+    Color_Purple,         // ç´«
+    Color_Cyan,           // é’
+    Color_Black,          // é»‘
+    Color_White,          // ç™½
 };
 
-/***************************************ºìÍâÖ¸Áî Infrared_XX[X]**************************************************/
-// ÉÏÎ»»úÎŞ·¨Ö±½Ó·¢ËÍ
+/***************************************çº¢å¤–æŒ‡ä»¤ Infrared_XX[X]**************************************************/
+// ä¸Šä½æœºæ— æ³•ç›´æ¥å‘é€
 extern uint8_t Infrared_Data[6];
-static uint8_t Infrared_PhotoPrevious[4] = {0x80, 0x7F, 0x05, ~(0x05)};     // ÕÕÆ¬ÉÏ·­
-static uint8_t Infrared_PhotoNext[4] = {0x80, 0x7F, 0x1B, ~(0x1B)};         // ÕÕÆ¬ÏÂ·­
-static uint8_t Infrared_LightAdd1[4] = {0x00, 0xFF, 0x0C, ~(0x0C)};         // ¹âÔ´µµÎ»¼Ó1
-static uint8_t Infrared_LightAdd2[4] = {0x00, 0xFF, 0x18, ~(0x18)};         // ¹âÔ´µµÎ»¼Ó2
-static uint8_t Infrared_LightAdd3[4] = {0x00, 0xFF, 0x5E, ~(0x5E)};         // ¹âÔ´µµÎ»¼Ó3
-static uint8_t Infrared_TunnelFanOn[4] = {0x00, 0xFF, 0x45, ~(0x45)};       // ËíµÀ·çÉÈÏµÍ³´ò¿ª
-static uint8_t Infrared_AlarmON[6] = {0x03, 0x05, 0x14, 0x45, 0xDE, 0x92};  // ±¨¾¯Æ÷´ò¿ª
-static uint8_t Infrared_AlarmOFF[6] = {0x67, 0x34, 0x78, 0xA2, 0xFD, 0x27}; // ±¨¾¯Æ÷¹Ø±Õ
-extern uint8_t Infrared_AlarmData[6];                                       // ±¨¾¯Æ÷ĞÅÏ¢
-// Á¢ÌåÏÔÊ¾
-extern uint8_t Infrared_PlateData1[6]; // ³µÅÆĞÅÏ¢1
-extern uint8_t Infrared_PlateData2[6]; // ³µÅÆĞÅÏ¢2
-// LEDÏÔÊ¾£¨ÊıÂë¹Ü£©
+static uint8_t Infrared_PhotoPrevious[4] = {0x80, 0x7F, 0x05, ~(0x05)};     // ç…§ç‰‡ä¸Šç¿»
+static uint8_t Infrared_PhotoNext[4] = {0x80, 0x7F, 0x1B, ~(0x1B)};         // ç…§ç‰‡ä¸‹ç¿»
+static uint8_t Infrared_LightAdd1[4] = {0x00, 0xFF, 0x0C, ~(0x0C)};         // å…‰æºæ¡£ä½åŠ 1
+static uint8_t Infrared_LightAdd2[4] = {0x00, 0xFF, 0x18, ~(0x18)};         // å…‰æºæ¡£ä½åŠ 2
+static uint8_t Infrared_LightAdd3[4] = {0x00, 0xFF, 0x5E, ~(0x5E)};         // å…‰æºæ¡£ä½åŠ 3
+static uint8_t Infrared_TunnelFanOn[4] = {0x00, 0xFF, 0x45, ~(0x45)};       // éš§é“é£æ‰‡ç³»ç»Ÿæ‰“å¼€
+static uint8_t Infrared_AlarmON[6] = {0x03, 0x05, 0x14, 0x45, 0xDE, 0x92};  // æŠ¥è­¦å™¨æ‰“å¼€
+static uint8_t Infrared_AlarmOFF[6] = {0x67, 0x34, 0x78, 0xA2, 0xFD, 0x27}; // æŠ¥è­¦å™¨å…³é—­
+extern uint8_t Infrared_AlarmData[6];                                       // æŠ¥è­¦å™¨ä¿¡æ¯
+// ç«‹ä½“æ˜¾ç¤º
+extern uint8_t Infrared_PlateData1[6]; // è½¦ç‰Œä¿¡æ¯1
+extern uint8_t Infrared_PlateData2[6]; // è½¦ç‰Œä¿¡æ¯2
+// LEDæ˜¾ç¤ºï¼ˆæ•°ç ç®¡ï¼‰
 extern uint8_t ZigBee_LEDDisplayDistanceData[8];
 
-/***************************************ZigBee Êı¾İ ZigBee_XX[8]**************************************************/
-static uint8_t ZigBee_BarrierGateOPEN[8] = {0x55, 0x03, 0x01, 0x01, 0x00, 0x00, 0x02, 0xBB};  // µÀÕ¢¿ªÆô
-static uint8_t ZigBee_BarrierGateCLOSE[8] = {0x55, 0x03, 0x01, 0x02, 0x00, 0x00, 0x03, 0xBB}; // µÀÕ¢¹Ø±Õ
-static uint8_t ZigBee_TFTPagePrevious[8] = {0x55, 0x0b, 0x10, 0x01, 0x00, 0x00, 0x11, 0xbb};  // TFTÏòÉÏ·­Ò³
-static uint8_t ZigBee_TFTPageNext[8] = {0x55, 0x0b, 0x10, 0x02, 0x00, 0x00, 0x12, 0xbb};      // TFTÏòÏÂ·­Ò³
-static uint8_t ZigBee_TFTPageAuto[8] = {0x55, 0x0b, 0x10, 0x03, 0x00, 0x00, 0x13, 0xbb};      // TFT×Ô¶¯·­Ò³
+/***************************************ZigBee æ•°æ® ZigBee_XX[8]**************************************************/
+static uint8_t ZigBee_BarrierGateOPEN[8] = {0x55, 0x03, 0x01, 0x01, 0x00, 0x00, 0x02, 0xBB};  // é“é—¸å¼€å¯
+static uint8_t ZigBee_BarrierGateCLOSE[8] = {0x55, 0x03, 0x01, 0x02, 0x00, 0x00, 0x03, 0xBB}; // é“é—¸å…³é—­
+static uint8_t ZigBee_TFTPagePrevious[8] = {0x55, 0x0b, 0x10, 0x01, 0x00, 0x00, 0x11, 0xbb};  // TFTå‘ä¸Šç¿»é¡µ
+static uint8_t ZigBee_TFTPageNext[8] = {0x55, 0x0b, 0x10, 0x02, 0x00, 0x00, 0x12, 0xbb};      // TFTå‘ä¸‹ç¿»é¡µ
+static uint8_t ZigBee_TFTPageAuto[8] = {0x55, 0x0b, 0x10, 0x03, 0x00, 0x00, 0x13, 0xbb};      // TFTè‡ªåŠ¨ç¿»é¡µ
 
-// µÀÕ¢ÏÔÊ¾³µÅÆ(Î´Ğ£Ñé£¬Ô­ÒòÔİÊ±Î´Öª)
+// é“é—¸æ˜¾ç¤ºè½¦ç‰Œ(æœªæ ¡éªŒï¼ŒåŸå› æš‚æ—¶æœªçŸ¥)
 static uint8_t ZigBee_PlateBarrierGate_1[8] = {0x55, 0x03, 0x10, 0x43, 0x36, 0x37, 0x00, 0xBB};
 static uint8_t ZigBee_PlateBarrierGate_2[8] = {0x55, 0x03, 0x11, 0x38, 0x47, 0x31, 0x00, 0xBB};
 
-// TFTÏÔÊ¾³µÅÆ(Î´Ğ£Ñé£¬Ô­ÒòÔİÊ±Î´Öª)
-static uint8_t ZigBee_PlateTFT_1[8] = {0x55, 0x0b, 0x20, 0x41, 0x31, 0x32, 0xC4, 0xBB}; // ÊÖ¶¯Ğ£Ñé
-static uint8_t ZigBee_PlateTFT_2[8] = {0x55, 0x0b, 0x21, 0x33, 0x42, 0x34, 0xCA, 0xBB}; // ÊÖ¶¯Ğ£Ñé
+// TFTæ˜¾ç¤ºè½¦ç‰Œ(æœªæ ¡éªŒï¼ŒåŸå› æš‚æ—¶æœªçŸ¥)
+static uint8_t ZigBee_PlateTFT_1[8] = {0x55, 0x0b, 0x20, 0x41, 0x31, 0x32, 0xC4, 0xBB}; // æ‰‹åŠ¨æ ¡éªŒ
+static uint8_t ZigBee_PlateTFT_2[8] = {0x55, 0x0b, 0x21, 0x33, 0x42, 0x34, 0xCA, 0xBB}; // æ‰‹åŠ¨æ ¡éªŒ
 
-// ½»Í¨µÆ
-static uint8_t ZigBee_TrafficLightStartRecognition[8] = {0x55, 0x0E, 0x01, 0x00, 0x00, 0x00, 0x01, 0xBB}; //½øÈëÊ¶±ğÄ£Ê½
+// äº¤é€šç¯
+static uint8_t ZigBee_TrafficLightStartRecognition[8] = {0x55, 0x0E, 0x01, 0x00, 0x00, 0x00, 0x01, 0xBB}; //è¿›å…¥è¯†åˆ«æ¨¡å¼
 
-// ÎŞÏß³äµç
-static uint8_t ZigBee_WirelessChargingON[8] = {0x55, 0x0a, 0x01, 0x01, 0x00, 0x00, 0x02, 0xBB}; //¿ªÆôÎŞÏß³äµçÕ¾
+// æ— çº¿å……ç”µ
+static uint8_t ZigBee_WirelessChargingON[8] = {0x55, 0x0a, 0x01, 0x01, 0x00, 0x00, 0x02, 0xBB}; //å¼€å¯æ— çº¿å……ç”µç«™
 
-// LEDÏÔÊ¾±êÖ¾Îï
-extern uint8_t ZigBee_LEDDisplayData[8];                                                          // ÊıÂë¹ÜÏÔÊ¾Êı¾İ
-static uint8_t ZigBee_LEDDisplayStartTimer[8] = {0x55, 0x04, 0x03, 0x01, 0x00, 0x00, 0x04, 0xBB}; // ÊıÂë¹Ü¿ªÊ¼¼ÆÊ±
-static uint8_t ZigBee_LEDDisplayStopTimer[8] = {0x55, 0x04, 0x03, 0x00, 0x00, 0x00, 0x03, 0xBB};  // ÊıÂë¹Ü¹Ø±Õ¼ÆÊ±
-static uint8_t ZigBee_LEDDisplayDistance[8] = {0x55, 0x04, 0x04, 0x00, 0x02, 0x00, 0x06, 0xBB};   // ÊıÂë¹ÜÏÔÊ¾¾àÀë
+// LEDæ˜¾ç¤ºæ ‡å¿—ç‰©
+extern uint8_t ZigBee_LEDDisplayData[8];                                                          // æ•°ç ç®¡æ˜¾ç¤ºæ•°æ®
+static uint8_t ZigBee_LEDDisplayStartTimer[8] = {0x55, 0x04, 0x03, 0x01, 0x00, 0x00, 0x04, 0xBB}; // æ•°ç ç®¡å¼€å§‹è®¡æ—¶
+static uint8_t ZigBee_LEDDisplayStopTimer[8] = {0x55, 0x04, 0x03, 0x00, 0x00, 0x00, 0x03, 0xBB};  // æ•°ç ç®¡å…³é—­è®¡æ—¶
+static uint8_t ZigBee_LEDDisplayDistance[8] = {0x55, 0x04, 0x04, 0x00, 0x02, 0x00, 0x06, 0xBB};   // æ•°ç ç®¡æ˜¾ç¤ºè·ç¦»
 
-// ÓïÒô²¥±¨Ö¸Áî
-static uint8_t ZigBee_VoiceRandom[8] = {0x55, 0x06, 0x20, 0x01, 0x00, 0x00, 0x00, 0xBB};         // Ëæ»ú²¥±¨ÓïÒôÖ¸Áî
-static uint8_t ZigBee_VoiceTurnRight[8] = {0x55, 0x06, 0x10, 0x02, 0x00, 0x00, 0x12, 0xBB};      // ÏòÓÒ×ªÍä
-static uint8_t ZigBee_VoiceNOTurnRight[8] = {0x55, 0x06, 0x10, 0x03, 0x00, 0x00, 0x13, 0xBB};    // ½ûÖ¹ÓÒ×ª
-static uint8_t ZigBee_VoiceDriveLeft[8] = {0x55, 0x06, 0x10, 0x04, 0x00, 0x00, 0x14, 0xBB};      // ×ó²àĞĞÊ»
-static uint8_t ZigBee_VoiceNODriveLeft[8] = {0x55, 0x06, 0x10, 0x05, 0x00, 0x00, 0x15, 0xBB};    // ×óĞĞ±»½û
-static uint8_t ZigBee_VoiceTurnAround[8] = {0x55, 0x06, 0x10, 0x06, 0x00, 0x00, 0x16, 0xBB};     // Ô­µØµôÍ·
-static uint8_t ZigBee_VoiceDriveAssistant[8] = {0x55, 0x06, 0x10, 0x01, 0x00, 0x00, 0x11, 0xBB}; // ¼İÊ»ÖúÊÖ
+// è¯­éŸ³æ’­æŠ¥æŒ‡ä»¤
+static uint8_t ZigBee_VoiceRandom[8] = {0x55, 0x06, 0x20, 0x01, 0x00, 0x00, 0x00, 0xBB};         // éšæœºæ’­æŠ¥è¯­éŸ³æŒ‡ä»¤
+static uint8_t ZigBee_VoiceTurnRight[8] = {0x55, 0x06, 0x10, 0x02, 0x00, 0x00, 0x12, 0xBB};      // å‘å³è½¬å¼¯
+static uint8_t ZigBee_VoiceNOTurnRight[8] = {0x55, 0x06, 0x10, 0x03, 0x00, 0x00, 0x13, 0xBB};    // ç¦æ­¢å³è½¬
+static uint8_t ZigBee_VoiceDriveLeft[8] = {0x55, 0x06, 0x10, 0x04, 0x00, 0x00, 0x14, 0xBB};      // å·¦ä¾§è¡Œé©¶
+static uint8_t ZigBee_VoiceNODriveLeft[8] = {0x55, 0x06, 0x10, 0x05, 0x00, 0x00, 0x15, 0xBB};    // å·¦è¡Œè¢«ç¦
+static uint8_t ZigBee_VoiceTurnAround[8] = {0x55, 0x06, 0x10, 0x06, 0x00, 0x00, 0x16, 0xBB};     // åŸåœ°æ‰å¤´
+static uint8_t ZigBee_VoiceDriveAssistant[8] = {0x55, 0x06, 0x10, 0x01, 0x00, 0x00, 0x11, 0xBB}; // é©¾é©¶åŠ©æ‰‹
 
-// ´Ó³µÖ¸Áî
-extern uint8_t ZigBee_AGVStart[8];                                                         // ´Ó³µÆô¶¯ÃüÁî
-extern uint8_t ZigBee_AGVPreset[8];                                                        // ´Ó³µÔ¤°¸
-static uint8_t ZigBee_AGVOpenMV[8] = {0x55, 0x02, 0x92, 0x01, 0x00, 0x00, 0x00, 0xBB};     // Æô¶¯´Ó³µ¶şÎ¬ÂëÊ¶±ğ
-static uint8_t ZigBee_AGVTurnLED[8] = {0x55, 0x02, 0x20, 0x01, 0x01, 0x00, 0x00, 0xBB};    // ´Ó³µ×ªÏòµÆ
-static uint8_t ZigBee_GarageLayers1[8] = {0x55, 0x0D, 0x01, 0x01, 0x00, 0x00, 0x00, 0xBB}; // Í£µ½1²ã
-static uint8_t ZigBee_GarageLayers2[8] = {0x55, 0x0D, 0x01, 0x02, 0x00, 0x00, 0x00, 0xBB}; // Í£µ½2²ã
-static uint8_t ZigBee_GarageLayers3[8] = {0x55, 0x0D, 0x01, 0x03, 0x00, 0x00, 0x00, 0xBB}; // Í£µ½3²ã
-static uint8_t ZigBee_GarageLayers4[8] = {0x55, 0x0D, 0x01, 0x04, 0x00, 0x00, 0x00, 0xBB}; // Í£µ½4²ã
+// ä»è½¦æŒ‡ä»¤
+extern uint8_t ZigBee_AGVStart[8];                                                         // ä»è½¦å¯åŠ¨å‘½ä»¤
+extern uint8_t ZigBee_AGVPreset[8];                                                        // ä»è½¦é¢„æ¡ˆ
+static uint8_t ZigBee_AGVOpenMV[8] = {0x55, 0x02, 0x92, 0x01, 0x00, 0x00, 0x00, 0xBB};     // å¯åŠ¨ä»è½¦äºŒç»´ç è¯†åˆ«
+static uint8_t ZigBee_AGVTurnLED[8] = {0x55, 0x02, 0x20, 0x01, 0x01, 0x00, 0x00, 0xBB};    // ä»è½¦è½¬å‘ç¯
+static uint8_t ZigBee_GarageLayers1[8] = {0x55, 0x0D, 0x01, 0x01, 0x00, 0x00, 0x00, 0xBB}; // åœåˆ°1å±‚
+static uint8_t ZigBee_GarageLayers2[8] = {0x55, 0x0D, 0x01, 0x02, 0x00, 0x00, 0x00, 0xBB}; // åœåˆ°2å±‚
+static uint8_t ZigBee_GarageLayers3[8] = {0x55, 0x0D, 0x01, 0x03, 0x00, 0x00, 0x00, 0xBB}; // åœåˆ°3å±‚
+static uint8_t ZigBee_GarageLayers4[8] = {0x55, 0x0D, 0x01, 0x04, 0x00, 0x00, 0x00, 0xBB}; // åœåˆ°4å±‚
 
-// µ±Ç°Ö¸Áî×´Ì¬ºÍÊı¾İÄÚÈİ´æ·Å(Ö¸Áî²»Á¬ĞøºÍ±êÖ¾Î»Ê¹ÓÃÔì³ÉµÄ¿Õ¼äÀË·ÑÔİÊ±Î´½â¾ö)
+// å½“å‰æŒ‡ä»¤çŠ¶æ€å’Œæ•°æ®å†…å®¹å­˜æ”¾(æŒ‡ä»¤ä¸è¿ç»­å’Œæ ‡å¿—ä½ä½¿ç”¨é€ æˆçš„ç©ºé—´æµªè´¹æš‚æ—¶æœªè§£å†³)
 extern uint8_t CommandFlagStatus[0xFF];
 
 void Send_DataToUsart(uint8_t *buf, uint32_t length);

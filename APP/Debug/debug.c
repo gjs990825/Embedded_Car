@@ -53,7 +53,7 @@ void DebugTimer_Init(uint16_t arr, uint16_t psc)
     TIM_Cmd(TIM5, DISABLE);
 }
 
-// ³õÊ¼»¯µ÷ÊÔÓÃÒı½Å
+// åˆå§‹åŒ–è°ƒè¯•ç”¨å¼•è„š
 void DebugPin_Init(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
@@ -99,7 +99,7 @@ void TIM5_IRQHandler(void)
         {
             TIM_Cmd(TIM5, DISABLE);
             RFID_Task();
-            Resume_StatusBeforeFoundRFID(0); // Ç°ºó¾àÀë²îÖµ¸üÕı£¬»Ö¸´ÔË¶¯×´Ì¬
+            Resume_StatusBeforeFoundRFID(0); // å‰åè·ç¦»å·®å€¼æ›´æ­£ï¼Œæ¢å¤è¿åŠ¨çŠ¶æ€
         }
         TIM_ClearITPendingBit(TIM5, TIM_IT_Update);
     }

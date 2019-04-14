@@ -2,10 +2,10 @@
 #define __BH1750_H	 
 #include "sys.h"
 
-//IO操作函数	 
+//IO鎿嶄綔鍑芥暟	 
 #define IIC_SCL    PBout(6) //SCL 
-#define IIC_SDA    PBout(7) //SDA输出	 
-#define READ_SDA   PBin(7)  //SDA输入 
+#define IIC_SDA    PBout(7) //SDA杈撳嚭	 
+#define READ_SDA   PBin(7)  //SDA杈撳叆 
 #define ADDR 	   PGout(15) 
 
 void BH1750_Configure(void);

@@ -17,16 +17,16 @@
 #include "protocol.h"
 #include "data_from_host.h"
 
-////////////ÁÙÊ±
+////////////ä¸´æ—¶
 
 ////////////
 
 uint8_t Wifi_Rx_Buf[WIFI_MAX_NUM];
 uint8_t Zigb_Rx_Buf[ZIGB_RX_MAX];
 uint8_t Wifi_Rx_num;
-uint8_t Wifi_Rx_flag; //½ÓÊÕÍê³É±êÖ¾Î»
+uint8_t Wifi_Rx_flag; //æ¥æ”¶å®Œæˆæ ‡å¿—ä½
 uint8_t Zigbee_Rx_num;
-uint8_t Zigbee_Rx_flag; //½ÓÊÕÍê³É±êÖ¾Î»
+uint8_t Zigbee_Rx_flag; //æ¥æ”¶å®Œæˆæ ‡å¿—ä½
 
 uint8_t Host_AGV_Return_Flag = RESET;
 uint8_t AGV_data_Falg = RESET;
@@ -51,14 +51,14 @@ void Can_WifiRx_Save(uint8_t res)
 
 uint8_t Rx_Flag;
 
-void Normal_data(void) // Õı³£½ÓÊÕ8×Ö½Ú¿ØÖÆÖ¸Áî
+void Normal_data(void) // æ­£å¸¸æ¥æ”¶8å­—èŠ‚æ§åˆ¶æŒ‡ä»¤
 {
     u8 sum = 0;
 
-    if (Wifi_Rx_Buf[7] == 0xbb) // ÅĞ¶Ï°üÎ²
+    if (Wifi_Rx_Buf[7] == 0xbb) // åˆ¤æ–­åŒ…å°¾
     {
-        //Ö÷Ö¸ÁîÓëÈıÎ»¸±Ö¸Áî×óÇóºÍĞ£Ñé
-        //×¢Òâ£ºÔÚÇóºÍÒç³öÊ±Ó¦¸Ã¶ÔºÍ×ö256È¡Óà¡£
+        //ä¸»æŒ‡ä»¤ä¸ä¸‰ä½å‰¯æŒ‡ä»¤å·¦æ±‚å’Œæ ¡éªŒ
+        //æ³¨æ„ï¼šåœ¨æ±‚å’Œæº¢å‡ºæ—¶åº”è¯¥å¯¹å’Œåš256å–ä½™ã€‚
         sum = (Wifi_Rx_Buf[2] + Wifi_Rx_Buf[3] + Wifi_Rx_Buf[4] + Wifi_Rx_Buf[5]) % 256;
         if (sum == Wifi_Rx_Buf[6])
         {
@@ -69,12 +69,12 @@ void Normal_data(void) // Õı³£½ÓÊÕ8×Ö½Ú¿ØÖÆÖ¸Áî
     }
 }
 
-void Abnormal_data(void) //Êı¾İÒì³£´¦Àí
+void Abnormal_data(void) //æ•°æ®å¼‚å¸¸å¤„ç†
 {
     u8 i, j;
     u8 sum = 0;
 
-    if (Wifi_Rx_num < 8) // Òì³£Êı¾İ×Ö½ÚÊıĞ¡ÓÚ8×Ö½Ú²»×ö´¦Àí
+    if (Wifi_Rx_num < 8) // å¼‚å¸¸æ•°æ®å­—èŠ‚æ•°å°äº8å­—èŠ‚ä¸åšå¤„ç†
     {
         Rx_Flag = 0;
     }
@@ -82,17 +82,17 @@ void Abnormal_data(void) //Êı¾İÒì³£´¦Àí
     {
         for (i = 0; i <= (Wifi_Rx_num - 7); i++)
         {
-            if (Wifi_Rx_Buf[i] == 0x55) // Ñ°ÕÒ°üÍ·
+            if (Wifi_Rx_Buf[i] == 0x55) // å¯»æ‰¾åŒ…å¤´
             {
-                if (Wifi_Rx_Buf[i + 7] == 0xbb) // ÅĞ¶Ï°üÎ²
+                if (Wifi_Rx_Buf[i + 7] == 0xbb) // åˆ¤æ–­åŒ…å°¾
                 {
                     sum = (Wifi_Rx_Buf[i + 2] + Wifi_Rx_Buf[i + 3] + Wifi_Rx_Buf[i + 4] + Wifi_Rx_Buf[i + 5]) % 256;
 
-                    if (sum == Wifi_Rx_Buf[i + 6]) // ÅĞ¶ÏÇóºÍ
+                    if (sum == Wifi_Rx_Buf[i + 6]) // åˆ¤æ–­æ±‚å’Œ
                     {
                         for (j = 0; j < 8; j++)
                         {
-                            Wifi_Rx_Buf[j] = Wifi_Rx_Buf[j + i]; // Êı¾İ°áÒÆ
+                            Wifi_Rx_Buf[j] = Wifi_Rx_Buf[j + i]; // æ•°æ®æ¬ç§»
                         }
                         Rx_Flag = 1;
                     }
@@ -104,7 +104,7 @@ void Abnormal_data(void) //Êı¾İÒì³£´¦Àí
     }
 }
 
-uint8_t Infrared_Tab[6]; //ºìÍâÊı¾İ´æ·ÅÊı×é
+uint8_t Infrared_Tab[6]; //çº¢å¤–æ•°æ®å­˜æ”¾æ•°ç»„
 
 void Can_WifiRx_Check(void)
 {
@@ -116,14 +116,14 @@ void Can_WifiRx_Check(void)
             {
                 Send_ZigbeeData_To_Fifo(Wifi_Rx_Buf, (Wifi_Rx_num + 1));
             }
-            else if (Wifi_Rx_Buf[0] == 0x55) // ÆÕÍ¨WIFIÖ¸Áî
+            else if (Wifi_Rx_Buf[0] == 0x55) // æ™®é€šWIFIæŒ‡ä»¤
             {
                 Normal_data();
             }
-            else if (Wifi_Rx_Buf[0] == 0x56) // ×Ô¶¨ÒåÊı¾İ´¦Àí
+            else if (Wifi_Rx_Buf[0] == 0x56) // è‡ªå®šä¹‰æ•°æ®å¤„ç†
             {
                 HostData_Handler(Wifi_Rx_Buf);
-                Rx_Flag = 0; // Ìø¹ıºóĞøµÄÊı¾İ´¦Àí
+                Rx_Flag = 0; // è·³è¿‡åç»­çš„æ•°æ®å¤„ç†
             }
             else
             {
@@ -136,7 +136,7 @@ void Can_WifiRx_Check(void)
     {
         if (Wifi_Rx_Buf[1] == 0xAA)
         {
-            Process_DataFromHost(Wifi_Rx_Buf[2]); // ÅĞ¶ÏÖ¸Áî£¬Ö´ĞĞ¡¢ÖÃÎ»
+            Process_DataFromHost(Wifi_Rx_Buf[2]); // åˆ¤æ–­æŒ‡ä»¤ï¼Œæ‰§è¡Œã€ç½®ä½
         }
         else
         {
@@ -147,9 +147,9 @@ void Can_WifiRx_Check(void)
 }
 
 /**
-º¯Êı¹¦ÄÜ£º±£´æZigBeeÊı¾İ
-²Î    Êı: ÎŞ
-·µ »Ø Öµ£ºÎŞ
+å‡½æ•°åŠŸèƒ½ï¼šä¿å­˜ZigBeeæ•°æ®
+å‚    æ•°: æ— 
+è¿” å› å€¼ï¼šæ— 
 */
 void Can_ZigBeeRx_Save(uint8_t res)
 {
@@ -178,9 +178,9 @@ void Can_ZigBeeRx_Save(uint8_t res)
 }
 
 /**
-º¯Êı¹¦ÄÜ£ºZigBeeÊı¾İ¼à²â
-²Î    Êı£ºÎŞ
-·µ »Ø Öµ£ºÎŞ
+å‡½æ•°åŠŸèƒ½ï¼šZigBeeæ•°æ®ç›‘æµ‹
+å‚    æ•°ï¼šæ— 
+è¿” å› å€¼ï¼šæ— 
 */
 void Can_ZigBeeRx_Check(void)
 {
@@ -188,10 +188,10 @@ void Can_ZigBeeRx_Check(void)
     {
         if (gt_get_sub(canu_zibe_rxtime) == 0)
         {
-            ZigBee_CmdHandler(Zigb_Rx_Buf[1]); // ¶ÔÊÕµ½µÄZigBeeÖ¸Áî»òÊı¾İ½øĞĞ´¦Àí // edited
+            ZigBee_CmdHandler(Zigb_Rx_Buf[1]); // å¯¹æ”¶åˆ°çš„ZigBeeæŒ‡ä»¤æˆ–æ•°æ®è¿›è¡Œå¤„ç† // edited
 
 
-            if (Zigb_Rx_Buf[1] == 0x03) // µÀÕ¢
+            if (Zigb_Rx_Buf[1] == 0x03) // é“é—¸
             {
                 if (Zigb_Rx_Buf[2] == 0x01)
                 {
@@ -208,60 +208,60 @@ void Can_ZigBeeRx_Check(void)
                     }
                 }
             }
-            else if ((Zigb_Rx_Buf[1] == 0x0E) && (Zigb_Rx_Buf[2] == 0x01)) //½»Í¨µÆ±êÖ¾Îï
+            else if ((Zigb_Rx_Buf[1] == 0x0E) && (Zigb_Rx_Buf[2] == 0x01)) //äº¤é€šç¯æ ‡å¿—ç‰©
             {
-                Stop_Flag = Zigb_Rx_Buf[4]; // 0x07½øÈëÊ¶±ğÄ£Ê½ 0x08 Î´½øÈëÊ¶±ğÄ£Ê½
+                Stop_Flag = Zigb_Rx_Buf[4]; // 0x07è¿›å…¥è¯†åˆ«æ¨¡å¼ 0x08 æœªè¿›å…¥è¯†åˆ«æ¨¡å¼
             }
-            else if ((Zigb_Rx_Buf[1] == 0x0D) && (Zigb_Rx_Buf[2] == 0x03)) //Á¢Ìå³µ¿â±êÖ¾Îï
+            else if ((Zigb_Rx_Buf[1] == 0x0D) && (Zigb_Rx_Buf[2] == 0x03)) //ç«‹ä½“è½¦åº“æ ‡å¿—ç‰©
             {
-                if (Zigb_Rx_Buf[3] == 0x01) //»ñÈ¡Á¢Ìå³µ¿âµ±Ç°²ãÊı
+                if (Zigb_Rx_Buf[3] == 0x01) //è·å–ç«‹ä½“è½¦åº“å½“å‰å±‚æ•°
                 {
                     switch (Zigb_Rx_Buf[4])
                     {
                     case 1:
-                        Stop_Flag = 0x09; //µÚÒ»²ã
+                        Stop_Flag = 0x09; //ç¬¬ä¸€å±‚
                         break;
                     case 2:
-                        Stop_Flag = 0x0A; //µÚ¶ş²ã
+                        Stop_Flag = 0x0A; //ç¬¬äºŒå±‚
                         break;
                     case 3:
-                        Stop_Flag = 0x0B; //µÚÈı²ã
+                        Stop_Flag = 0x0B; //ç¬¬ä¸‰å±‚
                         break;
                     case 4:
-                        Stop_Flag = 0x0C; //µÚËÄ²ã
+                        Stop_Flag = 0x0C; //ç¬¬å››å±‚
                         break;
                     }
                 }
-                else if (Zigb_Rx_Buf[3] == 0x02) //»ñÈ¡Á¢Ìå³µ¿âµ±Ç°ºìÍâ×´Ì¬
+                else if (Zigb_Rx_Buf[3] == 0x02) //è·å–ç«‹ä½“è½¦åº“å½“å‰çº¢å¤–çŠ¶æ€
                 {
                     if ((Zigb_Rx_Buf[4] == 0x01) && (Zigb_Rx_Buf[5] == 0x01))
                     {
-                        Stop_Flag = 0x11; //Ç°²àºìÍâ´¥·¢¡¢ºó²àºìÍâ´¥·¢
+                        Stop_Flag = 0x11; //å‰ä¾§çº¢å¤–è§¦å‘ã€åä¾§çº¢å¤–è§¦å‘
                     }
                     else if ((Zigb_Rx_Buf[4] == 0x02) && (Zigb_Rx_Buf[5] == 0x02))
                     {
-                        Stop_Flag = 0x22; //Ç°²àºìÍâÎ´´¥·¢¡¢ºó²àºìÍâÎ´´¥·¢
+                        Stop_Flag = 0x22; //å‰ä¾§çº¢å¤–æœªè§¦å‘ã€åä¾§çº¢å¤–æœªè§¦å‘
                     }
                     else if ((Zigb_Rx_Buf[4] == 0x01) && (Zigb_Rx_Buf[5] == 0x02))
                     {
-                        Stop_Flag = 0x12; //Ç°²àºìÍâ´¥·¢¡¢ºó²àºìÍâÎ´´¥·¢
+                        Stop_Flag = 0x12; //å‰ä¾§çº¢å¤–è§¦å‘ã€åä¾§çº¢å¤–æœªè§¦å‘
                     }
                     else if ((Zigb_Rx_Buf[4] == 0x02) && (Zigb_Rx_Buf[5] == 0x01))
                     {
-                        Stop_Flag = 0x21; //Ç°²àºìÍâÎ´´¥·¢¡¢ºó²àºìÍâ´¥·¢
+                        Stop_Flag = 0x21; //å‰ä¾§çº¢å¤–æœªè§¦å‘ã€åä¾§çº¢å¤–è§¦å‘
                     }
                 }
             }
-            else if ((Zigb_Rx_Buf[0] == 0x55) && (Zigb_Rx_Buf[1] == 0x02)) //·µ»Ø´Ó³µÊı¾İ
+            else if ((Zigb_Rx_Buf[0] == 0x55) && (Zigb_Rx_Buf[1] == 0x02)) //è¿”å›ä»è½¦æ•°æ®
             {
                 memcpy(Follower_Tab, Zigb_Rx_Buf, 50);
                 AGV_data_Falg = SET;
             }
-            else if (Zigb_Rx_Buf[1] == 0x06) //ÓïÒô²¥±¨·µ»Ø
+            else if (Zigb_Rx_Buf[1] == 0x06) //è¯­éŸ³æ’­æŠ¥è¿”å›
             {
                 if (Zigb_Rx_Buf[2] == 0x01)
                 {
-                    Stop_Flag = Zigb_Rx_Buf[3]; // ÓïÒôĞ¾Æ¬×´Ì¬·µ»Ø
+                    Stop_Flag = Zigb_Rx_Buf[3]; // è¯­éŸ³èŠ¯ç‰‡çŠ¶æ€è¿”å›
                 }
             }
             Zigbee_Rx_flag = 0;
@@ -269,10 +269,10 @@ void Can_ZigBeeRx_Check(void)
     }
 }
 
-/** ÔİÎ´Ê¹ÓÃ
-º¯Êı¹¦ÄÜ£ºÉèÖÃÑ­¼£ÉÏ´«¸üĞÂÊ±¼ä
-²Î    Êı£ºÎŞ
-·µ »Ø Öµ£ºÎŞ
+/** æš‚æœªä½¿ç”¨
+å‡½æ•°åŠŸèƒ½ï¼šè®¾ç½®å¾ªè¿¹ä¸Šä¼ æ›´æ–°æ—¶é—´
+å‚    æ•°ï¼šæ— 
+è¿” å› å€¼ï¼šæ— 
 */
 void Canuser_upTrackTime(void)
 {
@@ -290,13 +290,13 @@ void Canuser_upTrackTime(void)
 #define UART_or_CAN 0 //  0---UART  1---CAN
 
 /**
-º¯Êı¹¦ÄÜ£ºCAN²éÑ¯¡¢·¢ËÍ½ÓÊÕ¼ì²â
-²Î    Êı£ºÎŞ
-·µ »Ø Öµ£ºÎŞ
+å‡½æ•°åŠŸèƒ½ï¼šCANæŸ¥è¯¢ã€å‘é€æ¥æ”¶æ£€æµ‹
+å‚    æ•°ï¼šæ— 
+è¿” å› å€¼ï¼šæ— 
 */
 void Canuser_main(void)
 {
     CanP_Host_Main();
-    //CanP_CanTx_Check();				//CAN×ÜÏß·¢ËÍÊı¾İ¼à²â
+    //CanP_CanTx_Check();				//CANæ€»çº¿å‘é€æ•°æ®ç›‘æµ‹
     CanP_CanTx_Check_fIrq();
 }

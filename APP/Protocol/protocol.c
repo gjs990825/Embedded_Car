@@ -1,7 +1,7 @@
 #include "protocol.h"
 #include "stddef.h"
 
-// ÇëÇóÊı¾İµÄbuffer
+// è¯·æ±‚æ•°æ®çš„buffer
 uint8_t Data_PlateNumber[DataLength_PlateNumber];
 uint8_t Data_QRCode1[DataLength_QRCode1];
 uint8_t Data_QRCode2[DataLength_QRCode2];
@@ -15,7 +15,7 @@ uint8_t Data_Preset1[DataLength_Preset1];
 uint8_t Data_Preset2[DataLength_Preset2];
 uint8_t Data_Preset3[DataLength_Preset3];
 
-// ´¢´æbufferÖ¸Õë/³¤¶È/×´Ì¬µÄ½á¹¹ÌåÊı×é
+// å‚¨å­˜bufferæŒ‡é’ˆ/é•¿åº¦/çŠ¶æ€çš„ç»“æ„ä½“æ•°ç»„
 DataSetting_t DataBuffer[] = {
     {(uint8_t *)NULL, 0, 0},
     {Data_PlateNumber, DataLength_PlateNumber, RESET},
@@ -32,37 +32,37 @@ DataSetting_t DataBuffer[] = {
     {Data_Preset3, DataLength_Preset3, RESET},
 };
 
-// ÇëÇóÖ¸ÁîÊ¹ÓÃµÄbuffer
+// è¯·æ±‚æŒ‡ä»¤ä½¿ç”¨çš„buffer
 uint8_t Request_ToHostArray[] = {0x55, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
 uint8_t ZigBee_LEDDisplayData[8] = {0x55, 0x04, 0x02, 0xA1, 0xB2, 0xC3, 0x18, 0xBB};
 uint8_t ZigBee_AGVStart[8] = {0x55, 0x02, 0xd0, 0x00, 0x00, 0x00, 0x00, 0xBB};
 uint8_t ZigBee_AGVPreset[8] = {0x55, 0x02, 0xd8, 0x00, 0x00, 0x00, 0x00, 0xBB};
 
-// ºìÍâ·¢ËÍ³µÅÆÊı¾İ
+// çº¢å¤–å‘é€è½¦ç‰Œæ•°æ®
 uint8_t Infrared_PlateData1[6] = {0xFF, 0x20, 0x41, 0x31, 0x42, 0x32};
 uint8_t Infrared_PlateData2[6] = {0xFF, 0x10, 0x43, 0x35, 0x45, 0x31};
 
-//±¨¾¯Ì¨Êı¾İ
+//æŠ¥è­¦å°æ•°æ®
 uint8_t Infrared_AlarmData[6] = {0x03, 0x05, 0x14, 0x45, 0xDE, 0x92};
 
-// ºìÍâÊı¾İ
+// çº¢å¤–æ•°æ®
 uint8_t Infrared_Data[6];
 
-// Ğı×ªled
+// æ—‹è½¬led
 uint8_t ZigBee_LEDDisplayDistanceData[8] = {0x55, 0x04, 0x04, 0x00, 0x02, 0x00, 0x06, 0xBB};
 
-// Î´´¦Àí/Î´Ê¹ÓÃ/Î´Öª µÄ Ö¸Áî/Êı¾İ
-// u8 BJM1[8] = {0x55, 0x02, 0xd1, 0x00, 0x00, 0x00, 0x00, 0xbb}; //·¢ËÍ¸ø´Ó³µµÄ±¨¾¯Âë
+// æœªå¤„ç†/æœªä½¿ç”¨/æœªçŸ¥ çš„ æŒ‡ä»¤/æ•°æ®
+// u8 BJM1[8] = {0x55, 0x02, 0xd1, 0x00, 0x00, 0x00, 0x00, 0xbb}; //å‘é€ç»™ä»è½¦çš„æŠ¥è­¦ç 
 // u8 BJM2[8] = {0x55, 0x02, 0xd2, 0x00, 0x00, 0x00, 0x00, 0xbb};
 // u8 HW_BJ[6] = {0x03, 0x05, 0x14, 0x45, 0xDE, 0x92};
 // u8 DW[8] = {0x55, 0x02, 0xd3, 0x00, 0x00, 0x00, 0x00, 0xbb};
 // u8 AGV_start[8] = {0x55, 0x02, 0xd0, 0x00, 0x00, 0x00, 0x00, 0xBB};
-// u8 AGV_ZNLD[8] = {0x55, 0x02, 0xd3, 0x00, 0x00, 0x00, 0x00, 0xBB}; //Ô¤°¸Â·µÆµµÎ»ÉèÖÃ
+// u8 AGV_ZNLD[8] = {0x55, 0x02, 0xd3, 0x00, 0x00, 0x00, 0x00, 0xBB}; //é¢„æ¡ˆè·¯ç¯æ¡£ä½è®¾ç½®
 
 uint8_t CommandFlagStatus[0xFF] = {0};
 
 #if 0
-// CÖĞÃ»ÓĞ·ºĞÍ£¬ÓĞĞ©º¯Êı²»ÈİÒ×ÊµÏÖ£¬ËùÒÔÕâÀïºê¶¨ÒåÊµÏÖ
+// Cä¸­æ²¡æœ‰æ³›å‹ï¼Œæœ‰äº›å‡½æ•°ä¸å®¹æ˜“å®ç°ï¼Œæ‰€ä»¥è¿™é‡Œå®å®šä¹‰å®ç°
 void ExcuteNTimes(void(Task *)(void), N, delay)
 {
     for (uint8_t i = 0; i < N; i++)
@@ -75,14 +75,14 @@ void ExcuteNTimes(void(Task *)(void), N, delay)
 
 #if !USE_MACRO_FUNCTIONS
 
-// µ¥´Î·¢ËÍ£¬´øĞ£Ñé
+// å•æ¬¡å‘é€ï¼Œå¸¦æ ¡éªŒ
 void Send_ZigBeeData(uint8_t *data)
 {
     Check_Sum(data);
     Send_ZigbeeData_To_Fifo(data, 8);
 }
 
-// ¶à´Î·¢ËÍ£¬´øĞ£Ñé
+// å¤šæ¬¡å‘é€ï¼Œå¸¦æ ¡éªŒ
 void Send_ZigBeeDataNTimes(uint8_t *data, uint8_t ntimes, uint16_t delay)
 {
     Check_Sum(data);
@@ -104,7 +104,7 @@ void Request_Data(uint8_t dataRequest[2])
 
 #endif
 
-// ·¢ËÍÊı¾İµ½´®¿Ú(A72¿ª·¢°å)
+// å‘é€æ•°æ®åˆ°ä¸²å£(A72å¼€å‘æ¿)
 void Send_DataToUsart(uint8_t *buf, uint32_t length)
 {
     UartA72_TxClear();
@@ -112,7 +112,7 @@ void Send_DataToUsart(uint8_t *buf, uint32_t length)
     UartA72_TxStart();
 }
 
-// ½«Ğ£ÑéºÍÌîÈëcmd[Pack_CheckSum]ÖĞ
+// å°†æ ¡éªŒå’Œå¡«å…¥cmd[Pack_CheckSum]ä¸­
 void Check_Sum(uint8_t *cmd)
 {
     uint16_t temp = cmd[2] + cmd[3] + cmd[4] + cmd[5];

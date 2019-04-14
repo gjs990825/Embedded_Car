@@ -4,14 +4,10 @@
 #ifndef __INFRARED_H
 #define __INFRARED_H
 
-// ºìÍâ·¢ËÍ
-#define RI_TXD PFout(11)  
+// çº¢å¤–å‘é€
+#define RI_TXD PFout(11)
 
 void Infrared_Init(void);
-void Infrared_Send(u8 *s,int n);
+void Infrared_Send(u8 *s, int n);
 
 #endif
-
-
-
-

@@ -9,9 +9,9 @@
 #define GLOBAL extern
 #endif
 
-#define   TRACK_Q7    7   // Ç°7Î»Ñ°¼£Êı¾İ
-#define   TRACK_H8    8   // ºó8Î»Ñ°¼£Êı¾İ
-#define   TRACK_ALL   0   // ËùÓĞÑ°¼£Êı¾İ
+#define   TRACK_Q7    7   // å‰7ä½å¯»è¿¹æ•°æ®
+#define   TRACK_H8    8   // å8ä½å¯»è¿¹æ•°æ®
+#define   TRACK_ALL   0   // æ‰€æœ‰å¯»è¿¹æ•°æ®
 
 GLOBAL void CanP_Init(void);
 GLOBAL void CanP_FifoInit(void);
@@ -62,7 +62,7 @@ GLOBAL void CanP_CanTx_Check_fIrq(void);
 
 /////
 #include "stdbool.h"
-// ½ÓÊÕµ½Ñ­¼£ĞÅÏ¢
+// æ¥æ”¶åˆ°å¾ªè¿¹ä¿¡æ¯
 extern bool trackInfoReceived;
 
 static inline bool Get_TrackInfoReceived(void)
