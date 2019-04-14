@@ -1,13 +1,12 @@
 #include "movement.h"
 #include "roadway_check.h"
 #include "CanP_Hostcom.h"
-#include "cba.h"
-#include "hardware.h"
 #include "a_star.h"
 #include "pid.h"
-#include "task.h"
 #include "route.h"
 #include "stdlib.h"
+#include "malloc.h"
+#include "debug.h"
 
 // 全自动
 void Auto_Run(RouteSetting_t *routeTask, uint8_t taskNumber, RouteNode_t *current)

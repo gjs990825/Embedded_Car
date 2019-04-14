@@ -1,5 +1,4 @@
 #include "protocol.h"
-#include "stddef.h"
 
 // 请求数据的buffer
 uint8_t Data_PlateNumber[DataLength_PlateNumber];

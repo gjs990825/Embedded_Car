@@ -2,7 +2,6 @@
 #define __TASK_H_
 
 #include "sys.h"
-#include "protocol.h"
 #include "independent_task.h"
 
 void Task_F6(void);

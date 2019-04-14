@@ -1,5 +1,4 @@
 #include "hardware.h"
-#include "can_drv.h"
 
 int main(void)
 {

@@ -3,11 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "canp_hostcom.h"
-#include "cba.h"
-#include "roadway_check.h"
-#include "tba.h"
-#include "delay.h"
 #include "independent_task.h"
 
 // #define varNumber 2

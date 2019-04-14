@@ -3,6 +3,7 @@
 
 #include "stm32f4xx.h"
 #include <stdbool.h>
+#include <stddef.h>
 
 // 位带操作,实现51类似的GPIO控制功能
 // 具体实现思想,参考<<CM3权威指南>>第五章(87页~92页).

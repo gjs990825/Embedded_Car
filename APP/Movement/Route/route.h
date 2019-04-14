@@ -2,7 +2,6 @@
 #define _ROUTE_H_
 
 #include "sys.h"
-#include "stddef.h"
 
 // 路径点结构
 typedef struct RouteNode_Struct
