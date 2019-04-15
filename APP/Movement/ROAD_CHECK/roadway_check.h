@@ -57,6 +57,16 @@ typedef enum
     ENCODER_TurnByValue
 } Moving_ByEncoder_t;
 
+// 使能循迹信息输出
+#define _TRACK_OUTPUT_ 0
+
+// 大于等于此数判定出线/遇到白卡
+#define ALL_WHITE 15
+#define IS_All_WHITE(x) (x >= ALL_WHITE)
+// 低于此数判定撞线
+#define ALL_BLACK 9
+#define IS_ALL_BLACK(x) (x <= ALL_BLACK)
+
 // 循迹灯信息
 extern int8_t Q7[7], H8[8];
 // 循迹灯亮起的个数
@@ -75,8 +85,11 @@ extern uint16_t temp_MP;
 
 void Roadway_Flag_clean(void);
 void Roadway_mp_syn(void);
+uint16_t Roadway_mp_Get(void);
 void Roadway_CheckTimInit(uint16_t arr, uint16_t psc);
 
 void Update_MotorSpeed(int LSpeed, int RSpeed);
+void Submit_SpeedChanges(void);
+void Get_Track(void);
 
 #endif

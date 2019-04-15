@@ -85,12 +85,10 @@ void DebugPin_Init(void)
 
 
 void TIM5_IRQHandler(void)
-{
-    extern uint8_t FOUND_RFID_CARD;
-    
+{    
     if (TIM_GetITStatus(TIM5, TIM_IT_Update) == SET)
     {
-        if (FOUND_RFID_CARD)
+        if (FOUND_RFID_CARD && RFID_RoadSection)
         {
             TIM_Cmd(TIM5, DISABLE);
             RFID_Task();

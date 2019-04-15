@@ -31,42 +31,103 @@ RFID_Info_t *CurrentRFIDCard = NULL;
 struct StatusBeforeFoundRFID_Struct
 {
     uint8_t stopFlag;
-    uint16_t setEncoder;
-    uint16_t currentEncoder;
     uint8_t trackMode;
-    uint8_t currentSpeed;
+    int8_t currentSpeed;
     Moving_ByEncoder_t movingByencoder;
+    uint16_t remainEncoderValue;
 } StatusBeforeFoundRFID;
 
+extern uint16_t Mp_Value;
 // 保存遇到白卡时候的状态
 void Save_StatusBeforeFoundRFID(void)
 {
     extern uint16_t Mp_Value;
+    extern int LSpeed, RSpeed;
 
     StatusBeforeFoundRFID.movingByencoder = Moving_ByEncoder;
-    StatusBeforeFoundRFID.currentEncoder = Mp_Value;
     StatusBeforeFoundRFID.stopFlag = Stop_Flag;
     StatusBeforeFoundRFID.trackMode = Track_Mode;
-    StatusBeforeFoundRFID.setEncoder = temp_MP;
-    StatusBeforeFoundRFID.currentSpeed = Car_Speed;
+    StatusBeforeFoundRFID.currentSpeed = (LSpeed + RSpeed) / 2;
+    StatusBeforeFoundRFID.remainEncoderValue = temp_MP - Mp_Value;
 }
 
 // 恢复状态 encoderChangeValue: 前后设定码盘差值
 void Resume_StatusBeforeFoundRFID(uint16_t encoderChangeValue)
 {
+    uint16_t Roadway_mp_Get(void);
+
     Roadway_mp_syn(); // 同步码盘
+    Mp_Value = Roadway_mp_Get();
+
     Moving_ByEncoder = StatusBeforeFoundRFID.movingByencoder;
     Stop_Flag = StatusBeforeFoundRFID.stopFlag;
     Track_Mode = StatusBeforeFoundRFID.trackMode;
     // 循迹信息已清空，需要重新计算并减去执行中的行进值
-    temp_MP = StatusBeforeFoundRFID.setEncoder - StatusBeforeFoundRFID.currentEncoder - encoderChangeValue;
-    Car_Speed = StatusBeforeFoundRFID.currentSpeed;
+    temp_MP = Mp_Value + StatusBeforeFoundRFID.remainEncoderValue;
+    int8_t currentSpeed = StatusBeforeFoundRFID.currentSpeed;
+    Update_MotorSpeed(currentSpeed, currentSpeed);
+    Submit_SpeedChanges();
 }
 
 // 设定当前卡信息
 void Set_CurrentCardInfo(RFID_Info_t *RFIDx)
 {
     CurrentRFIDCard = RFIDx;
+}
+
+// 读卡
+ErrorStatus Read_RFID(RFID_Info_t *RFIDx)
+{
+    ErrorStatus status = PICC_ReadBlock(RFIDx->dataBlockLocation, RFIDx->authMode, RFIDx->key, RFIDx->data);
+
+    if (status == SUCCESS)
+    {
+        for (uint8_t i = 0; i < 16; i++)
+        {
+            print_info("%02X ", RFIDx->data[i]);
+            delay_ms(5);
+        }
+        print_info("\r\n");
+    }
+    else
+    {
+        print_info("READ CARD FAIL\r\n");
+    }
+    return status;
+}
+
+// RFID读卡任务，检测到白卡时执行
+void RFID_Task(void)
+{
+    uint8_t i;
+
+    // 当前卡信息未设定，跳出
+    if (CurrentRFIDCard == NULL)
+        return;
+
+    // 记录位置信息
+    CurrentRFIDCard->coordinate = NextStatus;
+    print_info("Card At:(%d,%d)\r\n", CurrentRFIDCard->coordinate.x, CurrentRFIDCard->coordinate.y);
+
+    MOVE(8);
+    for (i = 0; i < 9; i++) // 读卡范围约 11.5-16.5，间隔一公分读取()
+    {
+        MOVE(1);
+        if (Read_RFID(CurrentRFIDCard) == SUCCESS)
+            break; // 读取成功，跳出
+        delay_ms(500);
+    }
+
+    RFID_RoadSection = false; // 结束寻卡
+    FOUND_RFID_CARD = false;  // 清空标志位
+    TIM_Cmd(TIM5, DISABLE);   // 停止定时器
+    MOVE(-(8 + i));           // 返回读卡前位置
+
+    // 十字路口需要多退后一点，因为响应时间变长会多走一点
+    if ((NextStatus.x % 2) && (NextStatus.y % 2) != 0)
+    {
+        MOVE(-2);
+    }
 }
 
 // 配置调试卡使用的信息
@@ -117,63 +178,6 @@ void Test_RFID(uint8_t block)
     {
         print_info("ERROR\r\n");
     }
-}
-
-// 读卡
-ErrorStatus Read_RFID(RFID_Info_t *RFIDx)
-{
-    ErrorStatus status = PICC_ReadBlock(RFIDx->dataBlockLocation, RFIDx->authMode, RFIDx->key, RFIDx->data);
-
-    if (status == SUCCESS)
-    {
-        for (uint8_t i = 0; i < 16; i++)
-        {
-            print_info("%02X ", RFIDx->data[i]);
-            delay_ms(5);
-        }
-        print_info("\r\n");
-    }
-    else
-    {
-        print_info("READ CARD FAIL\r\n");
-    }
-    return status;
-}
-
-// RFID读卡任务，检测到白卡时执行
-void RFID_Task(void)
-{
-    uint8_t i;
-
-    // 当前卡信息未设定，跳出
-    if (CurrentRFIDCard == NULL)
-        return;
-
-    // 记录位置信息
-    CurrentRFIDCard->coordinate = NextStatus;
-    print_info("Card At:(%d,%d)\r\n", CurrentRFIDCard->coordinate.x, CurrentRFIDCard->coordinate.y);
-
-    MOVE(8);
-    for (i = 0; i < 9; i++) // 读卡范围约 11.5-16.5，间隔一公分读取()
-    {
-        if (Read_RFID(CurrentRFIDCard) == SUCCESS)
-            break; // 读取成功，跳出
-        MOVE(1);
-        delay_ms(500);
-    }
-
-    RFID_RoadSection = false; // 结束寻卡
-    FOUND_RFID_CARD = false;  // 清空标志位
-    TIM_Cmd(TIM5, DISABLE);   // 停止定时器
-    MOVE(-(8 + i));           // 返回读卡前位置
-
-    // 十字路口需要多退后一点，因为响应时间变长会多走一点
-    if (StatusBeforeFoundRFID.stopFlag == CROSSROAD)
-    {
-        MOVE(-2);
-    }
-
-    Update_MotorSpeed(Car_Speed, Car_Speed);
 }
 
 // RFID相关 ↑

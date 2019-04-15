@@ -7,6 +7,7 @@
 #include "stdlib.h"
 #include "malloc.h"
 #include "debug.h"
+#include "independent_task.h"
 
 // 全自动
 void Auto_Run(RouteSetting_t *routeTask, uint8_t taskNumber, RouteNode_t *current)
@@ -141,8 +142,34 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 		// 循迹到十字路口
 		Start_Tracking(Track_Speed);
 		WaitForFlag(Stop_Flag, CROSSROAD);
+
 		// 行驶到十字路口中心
-		ExcuteAndWait(Track_ByEncoder(Track_Speed, ToCrossroadCenter), Stop_Flag, FORBACKCOMPLETE);
+		// ExcuteAndWait(Go_Ahead(Track_Speed, ToCrossroadCenter), Stop_Flag, FORBACKCOMPLETE);
+		// 应对放在十字线后面的白卡
+		Go_Ahead(Track_Speed, ToCrossroadCenter);
+		Submit_SpeedChanges(); // 提交速度更改
+
+		while (Stop_Flag != FORBACKCOMPLETE)
+		{
+			extern uint8_t RFID_RoadSection;
+			extern uint8_t FOUND_RFID_CARD;
+
+			if (RFID_RoadSection && (FOUND_RFID_CARD == false))
+			{
+				Get_Track();
+				if (IS_All_WHITE(NumberOfWhite))
+				{
+					// DEBUG_PIN_2_SET();
+
+					FOUND_RFID_CARD = true;		  // 找到白卡
+					Save_StatusBeforeFoundRFID(); // 保存当前状态
+					Stop();						  // 暂停运行
+					Submit_SpeedChanges();		  // 提交速度更改
+					TIM_Cmd(TIM5, ENABLE);		  // 使能RFID处理定时器
+				}
+			}
+		};
+		Stop();
 	}
 
 	// 更新当前位置信息和方向
@@ -165,7 +192,7 @@ void Stop(void)
 }
 
 // 前后移动 单位厘米 正负方向
-void Move_ByEncoder(int speed, int16_t distance)
+void Move_ByEncoder(int speed, float distance)
 {
 	Roadway_mp_syn();
 	Stop_Flag = TRACKING;
@@ -243,7 +270,6 @@ void Turn_ByEncoder(int16_t digree)
 		TurnByEncoder_Value = -digree * CountClockWiseDigreeToEncoder;
 	}
 }
-
 
 // 转到下一个循迹线（需要优化）
 void Turn_ByTrack(Driection_t dir)

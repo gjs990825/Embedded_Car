@@ -18,14 +18,6 @@
         Stop_Flag = TURNCOMPLETE;       \
     }
 
-// 使能循迹信息输出
-#define _TRACK_OUTPUT_ 0
-
-// 超过此数判定出线/遇到白卡
-#define ALL_WHITE 15
-// 低于此数判定撞线
-#define ALL_BLACK 9
-
 // 前七个循迹传感器
 int8_t Q7[7] = {0};
 // 后八个循迹传感器
@@ -172,8 +164,15 @@ void Submit_SpeedChanges(void)
 // 获取循迹信息，计算白色的数量
 void Get_Track(void)
 {
-    uint16_t tmp = Get_Host_UpTrack(TRACK_ALL);
+    if (!Get_TrackInfoReceived())
+        return;
+    else
+    {
+        Set_TrackInfoReceived(false);
+    }
 
+    uint16_t tmp = Get_Host_UpTrack(TRACK_ALL);
+    // 清空循迹灯亮起个数
     NumberOfWhite = 0;
 
     // 获取循迹灯信息和循迹灯亮灯数量
@@ -247,8 +246,8 @@ void Calculate_Speed(void)
     // 平均之后计算误差值
     float errorValue = 7.0 - (errorValue1 + errorValue2) / 2.0;
 
-    // 滤波
-    #define FILTER_ARRAY_LENGTH 3
+// 滤波
+#define FILTER_ARRAY_LENGTH 3
     static float filterArray[FILTER_ARRAY_LENGTH] = {0};
     static uint8_t currentNumber = 0;
 
@@ -264,7 +263,7 @@ void Calculate_Speed(void)
     errorValue /= (float)FILTER_ARRAY_LENGTH;
 
     Calculate_pid(errorValue);
-    
+
 #if _TRACK_OUTPUT_
 
     static uint32_t t = 0;
@@ -288,7 +287,7 @@ void TRACK_LINE(void)
 
     if (Track_Mode == TrackMode_ENCODER)
     {
-        if (temp_MP < Mp_Value)
+        if (temp_MP <= Mp_Value)
         {
             Stop();
             Stop_Flag = FORBACKCOMPLETE;
@@ -301,8 +300,6 @@ void TRACK_LINE(void)
     {
         Get_Track();
         Calculate_Speed();
-
-        Set_TrackInfoReceived(false);
     }
 
 #if _ENABLE_TURNING_BY_TRACK_
@@ -311,7 +308,7 @@ void TRACK_LINE(void)
     {
         if (TrackStatus == 0)
         {
-            if (NumberOfWhite >= ALL_WHITE)
+            if (IS_All_WHITE(NumberOfWhite))
             {
                 TrackStatus = 1;
                 outTrackStamp = Get_GlobalTimeStamp();
@@ -340,7 +337,7 @@ void TRACK_LINE(void)
 
 #endif // _ENABLE_TURNING_BY_TRACK_
 
-    if (NumberOfWhite >= ALL_WHITE) // 全白
+    if (IS_All_WHITE(NumberOfWhite)) // 全白
     {
         if ((Track_Mode == TrackMode_NORMAL) || (Track_Mode == TrackMode_ENCODER)) // 循迹状态
         {
@@ -378,18 +375,21 @@ void TRACK_LINE(void)
     }
     else
     {
-        if (RFID_RoadSection && (FOUND_RFID_CARD == false)) // 白卡路段，第一次遇到卡
+        if (RFID_RoadSection) // 白卡路段
         {
             // 判定循迹灯是否有反白的情况 // 最中间三位必须为白色，最两边至少有一个黑色，并且下一坐标为路口
             if (((H8[0] + Q7[0] + H8[7] + Q7[6]) <= 3) && (H8[3] & H8[4] & Q7[3]) && (((NextStatus.x % 2) && (NextStatus.y % 2)) != 0))
             {
-                Roadway_Flag_clean(); // 处理遇到十字线的情况
-                Update_MotorSpeed(0, 0);
-                Stop_Flag = CROSSROAD;
-                FOUND_RFID_CARD = true;       // 找到白卡
-                Save_StatusBeforeFoundRFID(); // 保存当前状态
-                Stop();                       // 暂停运行
-                TIM_Cmd(TIM5, ENABLE);        // 使能RFID处理定时器
+                if (FOUND_RFID_CARD == false) //
+                {
+                    Roadway_Flag_clean(); // 处理遇到十字线的情况
+                    Update_MotorSpeed(0, 0);
+                    Stop_Flag = CROSSROAD;
+                    FOUND_RFID_CARD = true;       // 找到白卡
+                    Save_StatusBeforeFoundRFID(); // 保存当前状态
+                    Stop();                       // 暂停运行
+                    TIM_Cmd(TIM5, ENABLE);        // 使能RFID处理定时器
+                }
             }
             else
             {
@@ -445,23 +445,26 @@ void Roadway_CheckTimInit(uint16_t arr, uint16_t psc)
     TIM_Cmd(TIM9, ENABLE);
 }
 
-
 void TIM1_BRK_TIM9_IRQHandler(void)
 {
     extern uint32_t lastStopStamp;
-    
+
     if (TIM_GetITStatus(TIM9, TIM_IT_Update) == SET)
     {
-        DEBUG_PIN_2_SET();
+        // DEBUG_PIN_2_SET();
 
         // 上一次停止时间未等待足够时间则不进行下一个动作，防止打滑
         if (IsTimeOut(lastStopStamp, 300))
         {
+            DEBUG_PIN_2_SET();
+
             Mp_Value = Roadway_mp_Get();
             Roadway_Check();
+
+            DEBUG_PIN_2_RESET();
         }
 
-        DEBUG_PIN_2_RESET();
+        // DEBUG_PIN_2_RESET();
     }
     TIM_ClearITPendingBit(TIM9, TIM_IT_Update);
 }

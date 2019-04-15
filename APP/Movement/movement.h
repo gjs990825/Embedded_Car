@@ -48,7 +48,7 @@ typedef enum
 #define MOVE(distance) ExcuteAndWait(Move_ByEncoder(Mission_Speed, distance), Stop_Flag, FORBACKCOMPLETE)
 
 // 基本运动控制
-void Move_ByEncoder(int speed, int16_t distance);
+void Move_ByEncoder(int speed, float distance);
 
 void Stop(void);
 void Go_Ahead(int speed, uint16_t mp);
