@@ -151,8 +151,8 @@ void Process_DataFromHost(uint8_t mainCmd)
         break; // 小车启动命令
 
     case FromHost_QRCodeRecognition:
-        Set_tba_WheelLED(L_LED, 1);
-        Set_tba_WheelLED(R_LED, 1);
+        // Set_tba_WheelLED(L_LED, 1);
+        // Set_tba_WheelLED(R_LED, 1);
         break; // 二维码识别
 
     case FromHost_PlateRecognition:

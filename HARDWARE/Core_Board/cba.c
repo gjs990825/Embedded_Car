@@ -31,6 +31,7 @@
 #define KEY_AGV_TEST 2
 #define KEY_RFID_TEST 3
 #define KEY_TASK_BOARD_TEST 4
+#define KEY_TEMP 5
 
 // 配置按键调试方案
 #define KEY_CONFIGURATION KEY_RFID_TEST
@@ -69,11 +70,43 @@
 
 #elif (KEY_CONFIGURATION == KEY_TASK_BOARD_TEST)
 
-// // 任务板调试配置
+// 任务板调试配置
 #define Action_S1() Infrared_Send_A(Infrared_AlarmON)
 #define Action_S2() print_info("Diatance:%d\r\n", Ultrasonic_Task(20))
 #define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10))
 #define Action_S4() Start_VoiceCommandRecognition(3)
+
+#elif (KEY_CONFIGURATION == KEY_TEMP)
+
+// 临时配置
+#define Action_S1() AGV_SendInfraredData(Infrared_AlarmON)
+#define Action_S2() AGV_SetTowards(DIR_LEFT)
+#define Action_S3() AGV_SetRoute("G4F4D4D2B2B1\0\0\0")
+#define Action_S4()                             \
+	do                                          \
+	{                                           \
+		AGV_SendInfraredData(Infrared_AlarmON); \
+		delay_ms(700);                          \
+		AGV_SendInfraredData(Infrared_AlarmON); \
+		delay_ms(700);                          \
+		AGV_SetTaskID(2, 0);                    \
+		delay_ms(700);                          \
+		AGV_SetTaskID(5, 1);                    \
+		delay_ms(700);                          \
+		AGV_SetTaskID(2, 0);                    \
+		delay_ms(700);                          \
+		AGV_SetTaskID(5, 1);                    \
+		delay_ms(700);                          \
+		AGV_SetRoute("G4F4D4D2B2B1\0\0\0");     \
+		delay_ms(700);                          \
+		AGV_SetTowards(DIR_LEFT);               \
+		delay_ms(700);                          \
+		AGV_SetTowards(DIR_LEFT);               \
+		delay_ms(700);                          \
+		AGV_Start();                            \
+		delay_ms(700);                          \
+		AGV_Start();                            \
+	} while (0)
 
 #endif
 

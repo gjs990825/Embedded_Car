@@ -7,9 +7,6 @@
 
 // RFID相关 ↓
 
-extern uint8_t FOUND_RFID_CARD;
-extern uint8_t RFID_RoadSection;
-
 typedef struct RFID_Info_Struct
 {
     uint8_t dataBlockLocation;
@@ -18,6 +15,10 @@ typedef struct RFID_Info_Struct
     uint8_t key[6];
     uint8_t data[17];
 } RFID_Info_t;
+
+extern uint8_t FOUND_RFID_CARD;
+extern uint8_t RFID_RoadSection;
+extern RFID_Info_t *CurrentRFIDCard;
 
 #define RFID_RoadSectionTrue() RFID_RoadSection = true
 #define RFID_RoadSectionFalse() RFID_RoadSection = false
