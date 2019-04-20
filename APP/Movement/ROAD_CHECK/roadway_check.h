@@ -62,10 +62,10 @@ typedef enum
 
 // 大于等于此数判定出线/遇到白卡
 #define ALL_WHITE 15
-#define IS_All_WHITE(x) (x >= ALL_WHITE)
+#define IS_All_WHITE() (NumberOfWhite >= ALL_WHITE)
 // 低于此数判定撞线
 #define ALL_BLACK 9
-#define IS_ALL_BLACK(x) (x <= ALL_BLACK)
+#define IS_ALL_BLACK() (NumberOfWhite <= ALL_BLACK)
 
 // 循迹灯信息
 extern int8_t Q7[7], H8[8];

@@ -157,7 +157,7 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 			if (RFID_RoadSection && (FOUND_RFID_CARD == false))
 			{
 				Get_Track();
-				if (IS_All_WHITE(NumberOfWhite))
+				if (IS_All_WHITE())
 				{
 					// DEBUG_PIN_2_SET();
 
@@ -271,7 +271,7 @@ void Turn_ByEncoder(int16_t digree)
 	}
 }
 
-// 转到下一个循迹线（需要优化）
+// 转到下一个循迹线
 void Turn_ByTrack(Driection_t dir)
 {
 	extern uint8_t TrackStatus;

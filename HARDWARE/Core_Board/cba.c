@@ -34,7 +34,7 @@
 #define KEY_TEMP 5
 
 // 配置按键调试方案
-#define KEY_CONFIGURATION KEY_RFID_TEST
+#define KEY_CONFIGURATION KEY_TEMP
 
 #if (KEY_CONFIGURATION == KEY_DEFAULT)
 
@@ -58,30 +58,6 @@
 #define Action_S1() AGV_SetTowards(DIR_UP)
 #define Action_S2() AGV_SetTaskID(1, 0)
 #define Action_S3() AGV_SetRoute("B7B6D6D4G4")
-#define Action_S4() AGV_SendInfraredData(Infrared_AlarmON)
-
-#elif (KEY_CONFIGURATION == KEY_RFID_TEST)
-
-// 白卡调试配置
-#define Action_S1() Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStaus);
-#define Action_S2() Test_RFID(6)
-#define Action_S3() Test_RFID(5)
-#define Action_S4() Test_RFID(4)
-
-#elif (KEY_CONFIGURATION == KEY_TASK_BOARD_TEST)
-
-// 任务板调试配置
-#define Action_S1() Infrared_Send_A(Infrared_AlarmON)
-#define Action_S2() print_info("Diatance:%d\r\n", Ultrasonic_Task(20))
-#define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10))
-#define Action_S4() Start_VoiceCommandRecognition(3)
-
-#elif (KEY_CONFIGURATION == KEY_TEMP)
-
-// 临时配置
-#define Action_S1() AGV_SendInfraredData(Infrared_AlarmON)
-#define Action_S2() AGV_SetTowards(DIR_LEFT)
-#define Action_S3() AGV_SetRoute("G4F4D4D2B2B1\0\0\0")
 #define Action_S4()                             \
 	do                                          \
 	{                                           \
@@ -107,6 +83,30 @@
 		delay_ms(700);                          \
 		AGV_Start();                            \
 	} while (0)
+
+#elif (KEY_CONFIGURATION == KEY_RFID_TEST)
+
+// 白卡调试配置
+#define Action_S1() Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStaus);
+#define Action_S2() Test_RFID(6)
+#define Action_S3() Test_RFID(5)
+#define Action_S4() Test_RFID(4)
+
+#elif (KEY_CONFIGURATION == KEY_TASK_BOARD_TEST)
+
+// 任务板调试配置
+#define Action_S1() Infrared_Send_A(Infrared_AlarmON)
+#define Action_S2() print_info("Diatance:%d\r\n", Ultrasonic_Task(20))
+#define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10))
+#define Action_S4() Start_VoiceCommandRecognition(3)
+
+#elif (KEY_CONFIGURATION == KEY_TEMP)
+
+// 临时配置
+#define Action_S1() Turn_ByTrack(DIR_RIGHT)
+#define Action_S2() Turn_ByTrack(DIR_LEFT)
+#define Action_S3() Start_Tracking(Track_Speed)
+#define Action_S4() Turn_ByEncoder(90)
 
 #endif
 

@@ -57,8 +57,9 @@ void Turn_ByEncoder(int16_t digree);
 void Track_ByEncoder(int speed, uint16_t setMP);
 void Start_Tracking(int speed);
 
-// 循迹线转弯（未做优化，不稳定）
+// 循迹线转弯
 void Turn_ByTrack(Driection_t dir);
+#define Turn_ToNextTrack(dir) Turn_ByTrack(dir)
 
 // 自动执行
 void Go_ToNextNode(RouteNode_t *current, RouteNode_t next);

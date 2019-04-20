@@ -10,6 +10,8 @@
 #include "canp_hostcom.h"
 #include "independent_task.h"
 
+#define _ENABLE_TURNING_BY_TRACK_ 1
+
 // 转向是否完成
 #define CheckTurnComplete(EncoderValue) \
     if (Mp_Value >= EncoderValue)       \
@@ -209,7 +211,7 @@ void Get_Track(void)
 }
 
 // 计算输出速度值
-void Calculate_Speed(void)
+float Get_Offset(void)
 {
     // 计算各个点与临近点的和
     int8_t all_weights[15] = {0};
@@ -262,8 +264,6 @@ void Calculate_Speed(void)
     }
     errorValue /= (float)FILTER_ARRAY_LENGTH;
 
-    Calculate_pid(errorValue);
-
 #if _TRACK_OUTPUT_
 
     static uint32_t t = 0;
@@ -275,6 +275,8 @@ void Calculate_Speed(void)
     }
 
 #endif // _TRACK_OUTPUT_
+
+    return errorValue;
 }
 
 uint8_t TrackStatus = 0;
@@ -284,6 +286,7 @@ uint32_t outTrackStamp;
 // 循迹
 void TRACK_LINE(void)
 {
+    static float offset = 0;
 
     if (Track_Mode == TrackMode_ENCODER)
     {
@@ -299,16 +302,17 @@ void TRACK_LINE(void)
     if (Get_TrackInfoReceived())
     {
         Get_Track();
-        Calculate_Speed();
+        offset = Get_Offset();
+        Calculate_pid(offset);
     }
 
 #if _ENABLE_TURNING_BY_TRACK_
 
-    if (Track_Mode == TrackMode_Turn) // 通过循迹线转向（效果不是很好，基本不用）
+    if (Track_Mode == TrackMode_Turn) // 通过循迹线转向
     {
         if (TrackStatus == 0)
         {
-            if (IS_All_WHITE(NumberOfWhite))
+            if (IS_All_WHITE())
             {
                 TrackStatus = 1;
                 outTrackStamp = Get_GlobalTimeStamp();
@@ -316,7 +320,7 @@ void TRACK_LINE(void)
         }
         else if (TrackStatus == 1)
         {
-            if ((NumberOfWhite < ALL_WHITE) && IsTimeOut(outTrackStamp, 200))
+            if (!IS_All_WHITE() && IsTimeOut(outTrackStamp, 200))
             {
                 TrackStatus = 2;
                 PidData_Clear();
@@ -324,12 +328,11 @@ void TRACK_LINE(void)
         }
         else if (TrackStatus == 2)
         {
-            if (PID_value < 20 && PID_value > -20)
+            if ((offset < 1) && (offset > -1))
             {
                 TrackStatus = 0;
                 Stop();
                 Stop_Flag = TURNCOMPLETE;
-                return;
             }
         }
         return;
@@ -337,7 +340,7 @@ void TRACK_LINE(void)
 
 #endif // _ENABLE_TURNING_BY_TRACK_
 
-    if (IS_All_WHITE(NumberOfWhite)) // 全白
+    if (IS_All_WHITE()) // 全白
     {
         if ((Track_Mode == TrackMode_NORMAL) || (Track_Mode == TrackMode_ENCODER)) // 循迹状态
         {
