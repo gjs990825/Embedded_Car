@@ -9,6 +9,8 @@
 #include "debug.h"
 #include "independent_task.h"
 
+#define _USE_TRACK_TURNNING_IN_AUTO_RUN_ 1
+
 // 全自动
 void Auto_Run(RouteSetting_t *routeTask, uint8_t taskNumber, RouteNode_t *current)
 {
@@ -80,6 +82,53 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 		return;
 	}
 
+#if defined(_USE_TRACK_TURNNING_IN_AUTO_RUN_)
+
+	if ((finalDir == DIR_RIGHT || finalDir == DIR_LEFT))
+	{
+		switch (current->dir)
+		{
+		case DIR_UP:
+			Turn_ByTrack(finalDir);
+			break;
+		case DIR_DOWN:
+			Turn_ByTrack((finalDir == DIR_RIGHT) ? (DIR_LEFT) : (DIR_RIGHT));
+			break;
+		case DIR_LEFT:
+			(finalDir == DIR_RIGHT) ? Turn_ByEncoder(180) : (void)0;
+			break;
+		case DIR_RIGHT:
+			(finalDir == DIR_RIGHT) ? (void)0 : Turn_ByEncoder(180);
+			break;
+		default:
+			print_info("CurrentDir NOT SET!\r\n");
+			break;
+		}
+	}
+	else
+	{
+		switch (current->dir)
+		{
+		case DIR_UP:
+			(finalDir == DIR_UP) ? (void)0 : Turn_ByEncoder(180);
+			break;
+		case DIR_DOWN:
+			(finalDir == DIR_UP) ? Turn_ByEncoder(180) : (void)0;
+			break;
+		case DIR_LEFT:
+			Turn_ByTrack((finalDir == DIR_UP) ? (DIR_RIGHT) : (DIR_LEFT));
+			break;
+		case DIR_RIGHT:
+			Turn_ByTrack((finalDir == DIR_UP) ? (DIR_LEFT) : (DIR_RIGHT));
+			break;
+		default:
+			print_info("CurrentDir NOT SET!\r\n");
+			break;
+		}
+	}
+
+#else
+
 	if ((finalDir == DIR_RIGHT || finalDir == DIR_LEFT))
 	{
 		switch (current->dir)
@@ -122,6 +171,8 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 			break;
 		}
 	}
+
+#endif // _USE_TRACK_TURNNING_IN_AUTO_RUN_
 
 	// 如果有转向任务，等待完成
 	if ((Moving_ByEncoder != ENCODER_NONE) || (Track_Mode == TrackMode_Turn))

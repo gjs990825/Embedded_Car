@@ -106,7 +106,7 @@
 #define Action_S1() Turn_ByTrack(DIR_RIGHT)
 #define Action_S2() Turn_ByTrack(DIR_LEFT)
 #define Action_S3() Start_Tracking(Track_Speed)
-#define Action_S4() Turn_ByEncoder(90)
+#define Action_S4() Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
 
 #endif
 
