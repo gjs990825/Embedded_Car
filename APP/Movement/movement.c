@@ -48,7 +48,7 @@ void Auto_RouteTask(RouteNode_t *current, RouteNode_t next)
 // 行驶到下一个节点
 void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 {
-	int8_t finalDir = 0;
+	Driection_t finalDir = DIR_NOTSET;
 	int8_t x = next.x - current->x;
 	int8_t y = next.y - current->y;
 
@@ -325,10 +325,9 @@ void Turn_ByEncoder(int16_t digree)
 // 转到下一个循迹线
 void Turn_ByTrack(Driection_t dir)
 {
-	extern uint8_t TrackStatus;
-
 	if ((dir != DIR_RIGHT) && (dir != DIR_LEFT))
 	{
+		print_info("Turn Dir ERROR\r\n");
 		return;
 	}
 
@@ -336,7 +335,6 @@ void Turn_ByTrack(Driection_t dir)
 	Track_Mode = TrackMode_Turn;
 	Moving_ByEncoder = ENCODER_NONE;
 
-	TrackStatus = 0; // 清空标志位
 	if (dir == DIR_RIGHT)
 	{
 		Update_MotorSpeed(Turn_Speed, -Turn_Speed);

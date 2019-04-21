@@ -279,14 +279,13 @@ float Get_Offset(void)
     return errorValue;
 }
 
-uint8_t TrackStatus = 0;
-uint8_t isOutTrack = false;
-uint32_t outTrackStamp;
-
 // 循迹
 void TRACK_LINE(void)
 {
     static float offset = 0;
+    static bool isOutTrack = false;
+    static uint8_t TrackStatus = 0;
+    static uint32_t outTrackStamp;
 
     if (Track_Mode == TrackMode_ENCODER)
     {
@@ -369,11 +368,20 @@ void TRACK_LINE(void)
             }
         }
     }
-    else if ((NumberOfWhite <= ALL_BLACK) && (Track_Mode == TrackMode_NORMAL)) // 全黑
+    else if (IS_ALL_BLACK()) // 全黑
     {
-        Roadway_Flag_clean();
-        Update_MotorSpeed(0, 0);
-        Stop_Flag = CROSSROAD;
+        if (Track_Mode == TrackMode_NORMAL)
+        {
+            Roadway_Flag_clean();
+            Update_MotorSpeed(0, 0);
+            Stop_Flag = CROSSROAD;
+        }
+        else if (Track_Mode == TrackMode_ENCODER)
+        {
+            Stop();
+            Stop_Flag = FORBACKCOMPLETE;
+            return;
+        }
         isOutTrack = false;
     }
     else
@@ -383,11 +391,11 @@ void TRACK_LINE(void)
             // 判定循迹灯是否有反白的情况 // 最中间三位必须为白色，最两边至少有一个黑色，并且下一坐标为路口
             if (((H8[0] + Q7[0] + H8[7] + Q7[6]) <= 3) && (H8[3] & H8[4] & Q7[3]) && (((NextStatus.x % 2) && (NextStatus.y % 2)) != 0))
             {
-                if (FOUND_RFID_CARD == false) //
+                if (FOUND_RFID_CARD == false)
                 {
-                    Roadway_Flag_clean(); // 处理遇到十字线的情况
-                    Update_MotorSpeed(0, 0);
-                    Stop_Flag = CROSSROAD;
+                    Roadway_Flag_clean();         // 清空标志位
+                    Update_MotorSpeed(0, 0);      // 停下
+                    Stop_Flag = CROSSROAD;        // 标记为十字路口
                     FOUND_RFID_CARD = true;       // 找到白卡
                     Save_StatusBeforeFoundRFID(); // 保存当前状态
                     Stop();                       // 暂停运行
@@ -457,7 +465,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
         // DEBUG_PIN_2_SET();
 
         // 上一次停止时间未等待足够时间则不进行下一个动作，防止打滑
-        if (IsTimeOut(lastStopStamp, 300))
+        if (IsTimeOut(lastStopStamp, _STOP_WAITING_INTERVAL_))
         {
             DEBUG_PIN_2_SET();
 
