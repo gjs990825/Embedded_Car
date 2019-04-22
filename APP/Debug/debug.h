@@ -23,5 +23,6 @@ void DebugPin_Init(void);
 void DebugTimer_Init(uint16_t arr, uint16_t psc);
 void print_info(char *str, ...);
 
+void ZigBee_Test(uint16_t count ,uint16_t interval);
 
 #endif // __DEBUG_H_

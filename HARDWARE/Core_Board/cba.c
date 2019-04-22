@@ -34,7 +34,7 @@
 #define KEY_TEMP 5
 
 // 配置按键调试方案
-#define KEY_CONFIGURATION KEY_TEMP
+#define KEY_CONFIGURATION KEY_AGV_TEST
 
 #if (KEY_CONFIGURATION == KEY_DEFAULT)
 
@@ -62,25 +62,10 @@
 	do                                          \
 	{                                           \
 		AGV_SendInfraredData(Infrared_AlarmON); \
-		delay_ms(700);                          \
-		AGV_SendInfraredData(Infrared_AlarmON); \
-		delay_ms(700);                          \
 		AGV_SetTaskID(2, 0);                    \
-		delay_ms(700);                          \
 		AGV_SetTaskID(5, 1);                    \
-		delay_ms(700);                          \
-		AGV_SetTaskID(2, 0);                    \
-		delay_ms(700);                          \
-		AGV_SetTaskID(5, 1);                    \
-		delay_ms(700);                          \
 		AGV_SetRoute("G4F4D4D2B2B1\0\0\0");     \
-		delay_ms(700);                          \
 		AGV_SetTowards(DIR_LEFT);               \
-		delay_ms(700);                          \
-		AGV_SetTowards(DIR_LEFT);               \
-		delay_ms(700);                          \
-		AGV_Start();                            \
-		delay_ms(700);                          \
 		AGV_Start();                            \
 	} while (0)
 
@@ -103,10 +88,10 @@
 #elif (KEY_CONFIGURATION == KEY_TEMP)
 
 // 临时配置
-#define Action_S1() Turn_ByTrack(DIR_RIGHT)
-#define Action_S2() Turn_ByTrack(DIR_LEFT)
-#define Action_S3() Start_Tracking(Track_Speed)
-#define Action_S4() Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
+#define Action_S1() ZigBee_Test(100, 50)
+#define Action_S2() ZigBee_Test(100, 30)
+#define Action_S3() ZigBee_Test(100, 20)
+#define Action_S4() ZigBee_Test(100, 10)
 
 #endif
 

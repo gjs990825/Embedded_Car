@@ -97,3 +97,12 @@ void TIM5_IRQHandler(void)
         TIM_ClearITPendingBit(TIM5, TIM_IT_Update);
     }
 }
+
+void ZigBee_Test(uint16_t count ,uint16_t interval)
+{
+    for (uint16_t i = 0; i < count; i++)
+    {
+        Send_ZigBeeData(ZigBee_AGVStart);
+        delay_ms(interval);
+    }
+}

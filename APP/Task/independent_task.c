@@ -323,6 +323,8 @@ void StreetLight_AdjustTo(uint8_t targetLevel)
     }
 }
 
+// 道闸部分 ↓
+
 // 道闸显示车牌
 void BarrierGate_Plate(uint8_t plate[6])
 {
@@ -334,6 +336,15 @@ void BarrierGate_Plate(uint8_t plate[6])
     delay_ms(790);
 }
 
+// 道闸打开
+void BarrierGate_OPEN(void)
+{
+    Send_ZigbeeData_To_Fifo(ZigBee_BarrierGateOPEN, 8);
+    delay_ms(790);
+    Send_ZigbeeData_To_Fifo(ZigBee_BarrierGateOPEN, 8);
+    delay_ms(790);
+}
+
 // 道闸任务
 void BarrierGate_Task(uint8_t plate[6])
 {
@@ -341,11 +352,10 @@ void BarrierGate_Task(uint8_t plate[6])
     {
         BarrierGate_Plate(plate);
     }
-    Send_ZigbeeData_To_Fifo(ZigBee_BarrierGateOPEN, 8);
-    delay_ms(790);
-    Send_ZigbeeData_To_Fifo(ZigBee_BarrierGateOPEN, 8);
-    delay_ms(790);
+    BarrierGate_OPEN();
 }
+
+// 道闸部分 ↑
 
 // 语音任务，错误重试2次
 void Voice_Task(void)

@@ -85,7 +85,14 @@ void Send_ZigBeeData(uint8_t *data)
 void Send_ZigBeeDataNTimes(uint8_t *data, uint8_t ntimes, uint16_t delay)
 {
     Check_Sum(data);
-    ExcuteNTimes(Send_ZigbeeData_To_Fifo(data, 8), ntimes, delay);
+    for (uint8_t i = 0; i < ntimes; i++)
+    {
+        Send_ZigbeeData_To_Fifo(data, 8);
+        if (delay > 0)
+        {
+            delay_ms(delay);
+        }
+    }
 }
 
 void Request_ToHost(uint8_t request)

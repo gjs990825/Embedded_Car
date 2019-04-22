@@ -4,11 +4,15 @@
 #include "route.h"
 #include "a_star.h"
 
+// 从车ZigBee发送间隔
+#define _AGV_ZIGBEE_SEND_INTERVAL_ 50
+
 // 向AGV发送的数据buffer
 uint8_t DataToAGV[] = {0x55, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
 
 #define ClearAGVCmd() memset(&DataToAGV[Pack_MainCmd], 0, 4)
 #define SendAGVCmd() Send_ZigBeeData(DataToAGV)
+#define SendCmdNTimes(n) Send_ZigBeeDataNTimes(DataToAGV, n, _AGV_ZIGBEE_SEND_INTERVAL_)
 
 // 停止
 void AGV_Stop(void)
@@ -72,13 +76,13 @@ void AGV_SendInfraredData(uint8_t irData[6])
     ClearAGVCmd();
     DataToAGV[Pack_MainCmd] = FromHost_InfraredFrontData;
     memcpy(&DataToAGV[Pack_SubCmd1], &irData[0], 3);
-    SendAGVCmd();
-    delay_ms(500);
+    SendCmdNTimes(10);
+    
     ClearAGVCmd();
     DataToAGV[Pack_MainCmd] = FromHost_InfraredBackData;
     memcpy(&DataToAGV[Pack_SubCmd1], &irData[3], 3);
-    SendAGVCmd();
-    // delay_ms(50);
+    SendCmdNTimes(10);
+    
     // ClearAGVCmd();
     // DataToAGV[Pack_MainCmd] = FromHost_InfraredSend;
     // SendAGVCmd();
@@ -146,7 +150,7 @@ void AGV_Start(void)
 {
     ClearAGVCmd();
     DataToAGV[Pack_MainCmd] = FromHost_AGVStart;
-    SendAGVCmd();
+    SendCmdNTimes(10);
 }
 
 void AGV_SetTowards(uint8_t towards)
@@ -154,7 +158,7 @@ void AGV_SetTowards(uint8_t towards)
     ClearAGVCmd();
     DataToAGV[Pack_MainCmd] = FromHost_ReceivePresetHeadTowards;
     DataToAGV[Pack_SubCmd1] = towards;
-    SendAGVCmd();
+    SendCmdNTimes(10);
 }
 
 void AGV_SendSinglePoint(uint8_t number, RouteNode_t node)
@@ -164,7 +168,7 @@ void AGV_SendSinglePoint(uint8_t number, RouteNode_t node)
     DataToAGV[Pack_SubCmd1] = number;
     DataToAGV[Pack_SubCmd2] = node.x;
     DataToAGV[Pack_SubCmd3] = node.y;
-    SendAGVCmd();
+    SendCmdNTimes(10);
 }
 
 void AGV_SetRouteFromTask(RouteNode_t task[], uint8_t length)
@@ -172,9 +176,6 @@ void AGV_SetRouteFromTask(RouteNode_t task[], uint8_t length)
     for (uint8_t i = 0; i < length; i++)
     {
         AGV_SendSinglePoint(i, task[i]);
-        delay_ms(700);
-        AGV_SendSinglePoint(i, task[i]);
-        delay_ms(700);
     }
 }
 
@@ -188,9 +189,6 @@ void AGV_SetRoute(uint8_t *str)
     {
         tempNode = Coordinate_Covent(&str[i * 2]);
         AGV_SendSinglePoint(i, tempNode);
-        delay_ms(700);
-        AGV_SendSinglePoint(i, tempNode);
-        delay_ms(700);
     }
 }
 
@@ -201,8 +199,5 @@ void AGV_SetTaskID(uint8_t routeNumber, uint8_t taskNumber)
     DataToAGV[Pack_MainCmd] = FromHost_AGVSetTask;
     DataToAGV[Pack_SubCmd1] = routeNumber;
     DataToAGV[Pack_SubCmd2] = taskNumber;
-    SendAGVCmd();
-    delay_ms(700);
-    SendAGVCmd();
-    delay_ms(700);
+    SendCmdNTimes(10);
 }
