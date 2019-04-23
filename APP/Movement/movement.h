@@ -58,7 +58,7 @@ void Track_ByEncoder(int speed, uint16_t setMP);
 void Start_Tracking(int speed);
 
 // 循迹线转弯
-void Turn_ByTrack(Driection_t dir);
+void Turn_ByTrack(Direction_t dir);
 #define Turn_ToNextTrack(dir) Turn_ByTrack(dir)
 
 // 自动执行

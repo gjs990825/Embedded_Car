@@ -26,7 +26,7 @@ typedef enum
 	DIR_LEFT,
 	DIR_DOWN,
 	DIR_RIGHT
-} Driection_t;
+} Direction_t;
 
 // 设定任务点（转换字符串生成坐标信息）
 typedef struct RouteSetting_Struct

@@ -48,7 +48,7 @@ void Auto_RouteTask(RouteNode_t *current, RouteNode_t next)
 // 行驶到下一个节点
 void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 {
-	Driection_t finalDir = DIR_NOTSET;
+	Direction_t finalDir = DIR_NOTSET;
 	int8_t x = next.x - current->x;
 	int8_t y = next.y - current->y;
 
@@ -323,7 +323,7 @@ void Turn_ByEncoder(int16_t digree)
 }
 
 // 转到下一个循迹线
-void Turn_ByTrack(Driection_t dir)
+void Turn_ByTrack(Direction_t dir)
 {
 	if ((dir != DIR_RIGHT) && (dir != DIR_LEFT))
 	{
