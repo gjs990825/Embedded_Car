@@ -10,6 +10,7 @@
 #include <string.h>
 #include "Timer.h"
 #include "agv.h"
+#include "independent_task.h"
 
 #define SetSpeed Wifi_Rx_Buf[Pack_SubCmd1]
 
@@ -138,8 +139,8 @@ void Process_DataFromHost(uint8_t mainCmd)
         break; // 从车返回
 
     case FromHost_LEDDisplaySecomdRow:
-        SaveToZigBee(ZigBee_LEDDisplayData);
-        Send_ZigbeeData_To_Fifo(ZigBee_LEDDisplayData, 8);
+        SaveToZigBee(ZigBee_LEDDisplayDataToSecondRow);
+        Send_ZigbeeData_To_Fifo(ZigBee_LEDDisplayDataToSecondRow, 8);
         break; // 数码管第二排显示是数据
 
     case FromHost_ReceivePresetHeadTowards:

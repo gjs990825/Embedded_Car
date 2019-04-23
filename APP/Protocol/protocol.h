@@ -211,6 +211,44 @@ typedef struct DataSetting_Struct
 
 extern DataSetting_t DataBuffer[DATA_REQUEST_NUMBER];
 
+// 道闸标志物
+enum
+{
+    BarrierGateMode_Control = 0x01,          // 控制开关
+    BarrierGateMode_PlateFront3Bytes = 0x10, // 车牌前三位
+    BarrierGateMode_PlateBack3Bytes = 0x11,  // 车牌后三位
+    BarrierGateMode_ReturnStatus = 0x20      // 状态返回
+};
+
+// 计时控制
+typedef enum
+{
+    TimerMode_OFF = 0x00, // 计时关
+    TimerMode_ON,         // 计时开
+    TimerMode_Clear       // 计时清零
+} TimerMode_t;
+
+// LED显示标志物
+enum
+{
+    LEDDisplayMainCmd_DataToFirstRow = 0x01, // 第一行显示数据
+    LEDDisplayMainCmd_DataToSecondRow,       // 第二行显示数据
+    LEDDisplayMainCmd_TimerMode,             // 计时模式
+    LEDDisplayMainCmd_ShowDistance           // 显示距离
+};
+
+// 立体显示标志物
+enum
+{
+    RotationLEDMode_PlateFront4BytesData = 0x20,        // 接收前四位车牌信息
+    RotationLEDMode_PlateBack2BytesAndCoordInfo = 0x10, // 接收后两位车牌和两位坐标信息并显示
+    RotationLEDMode_Distance = 0x11,                    // 显示距离
+    RotationLEDMode_Shape = 0x12,                       // 显示图形
+    RotationLEDMode_Color = 0x13,                       // 显示颜色
+    RotationLEDMode_RouteStatus = 0x14,                 // 显示路况
+    RotationLEDMode_Default = 0x15                      // 显示默认
+};
+
 // 交通灯定义
 enum
 {
@@ -220,7 +258,7 @@ enum
 };
 
 // 形状定义
-enum
+typedef enum
 {
     Shape_NotDefined = 0, // 未定义
     Shape_Rectangle,      // 矩形
@@ -232,10 +270,10 @@ enum
     Shape_Traget,         // 靶图
     Shape_Bar,            // 条形图
     Shape_Pentagram,      // 五角星
-};
+} Shape_t;
 
 // 颜色定义
-enum
+typedef enum
 {
     Color_NotDefined = 0, // 未定义
     Color_Red,            // 红
@@ -246,7 +284,14 @@ enum
     Color_Cyan,           // 青
     Color_Black,          // 黑
     Color_White,          // 白
-};
+} Color_t;
+
+// 路况
+typedef enum
+{
+    RouteStatus_TunnelAccident = 0x01, // 隧道事故
+    RouteStatus_Construction = 0x02    // 前方施工
+} RouteStatus_t;
 
 /***************************************红外指令 Infrared_XX[X]**************************************************/
 // 上位机无法直接发送
@@ -263,8 +308,6 @@ extern uint8_t Infrared_AlarmData[6];                                       // �
 // 立体显示
 extern uint8_t Infrared_PlateData1[6]; // 车牌信息1
 extern uint8_t Infrared_PlateData2[6]; // 车牌信息2
-// LED显示（数码管）
-extern uint8_t ZigBee_LEDDisplayDistanceData[8];
 
 /***************************************ZigBee 数据 ZigBee_XX[8]**************************************************/
 static uint8_t ZigBee_BarrierGateOPEN[8] = {0x55, 0x03, 0x01, 0x01, 0x00, 0x00, 0x02, 0xBB};  // 道闸开启
@@ -273,13 +316,9 @@ static uint8_t ZigBee_TFTPagePrevious[8] = {0x55, 0x0b, 0x10, 0x01, 0x00, 0x00, 
 static uint8_t ZigBee_TFTPageNext[8] = {0x55, 0x0b, 0x10, 0x02, 0x00, 0x00, 0x12, 0xbb};      // TFT向下翻页
 static uint8_t ZigBee_TFTPageAuto[8] = {0x55, 0x0b, 0x10, 0x03, 0x00, 0x00, 0x13, 0xbb};      // TFT自动翻页
 
-// 道闸显示车牌(未校验，原因暂时未知)
-static uint8_t ZigBee_PlateBarrierGate_1[8] = {0x55, 0x03, 0x10, 0x43, 0x36, 0x37, 0x00, 0xBB};
-static uint8_t ZigBee_PlateBarrierGate_2[8] = {0x55, 0x03, 0x11, 0x38, 0x47, 0x31, 0x00, 0xBB};
-
-// TFT显示车牌(未校验，原因暂时未知)
-static uint8_t ZigBee_PlateTFT_1[8] = {0x55, 0x0b, 0x20, 0x41, 0x31, 0x32, 0xC4, 0xBB}; // 手动校验
-static uint8_t ZigBee_PlateTFT_2[8] = {0x55, 0x0b, 0x21, 0x33, 0x42, 0x34, 0xCA, 0xBB}; // 手动校验
+// TFT显示车牌
+static uint8_t ZigBee_PlateTFT_1[8] = {0x55, 0x0b, 0x20, 0x41, 0x31, 0x32, 0xC4, 0xBB};
+static uint8_t ZigBee_PlateTFT_2[8] = {0x55, 0x0b, 0x21, 0x33, 0x42, 0x34, 0xCA, 0xBB};
 
 // 交通灯
 static uint8_t ZigBee_TrafficLightStartRecognition[8] = {0x55, 0x0E, 0x01, 0x00, 0x00, 0x00, 0x01, 0xBB}; //进入识别模式
@@ -288,10 +327,7 @@ static uint8_t ZigBee_TrafficLightStartRecognition[8] = {0x55, 0x0E, 0x01, 0x00,
 static uint8_t ZigBee_WirelessChargingON[8] = {0x55, 0x0a, 0x01, 0x01, 0x00, 0x00, 0x02, 0xBB}; //开启无线充电站
 
 // LED显示标志物
-extern uint8_t ZigBee_LEDDisplayData[8];                                                          // 数码管显示数据
-static uint8_t ZigBee_LEDDisplayStartTimer[8] = {0x55, 0x04, 0x03, 0x01, 0x00, 0x00, 0x04, 0xBB}; // 数码管开始计时
-static uint8_t ZigBee_LEDDisplayStopTimer[8] = {0x55, 0x04, 0x03, 0x00, 0x00, 0x00, 0x03, 0xBB};  // 数码管关闭计时
-static uint8_t ZigBee_LEDDisplayDistance[8] = {0x55, 0x04, 0x04, 0x00, 0x02, 0x00, 0x06, 0xBB};   // 数码管显示距离
+extern uint8_t ZigBee_LEDDisplayDataToSecondRow[8]; // 数码管显示数据
 
 // 语音播报指令
 static uint8_t ZigBee_VoiceRandom[8] = {0x55, 0x06, 0x20, 0x01, 0x00, 0x00, 0x00, 0xBB};         // 随机播报语音指令
@@ -311,6 +347,15 @@ static uint8_t ZigBee_GarageLayers1[8] = {0x55, 0x0D, 0x01, 0x01, 0x00, 0x00, 0x
 static uint8_t ZigBee_GarageLayers2[8] = {0x55, 0x0D, 0x01, 0x02, 0x00, 0x00, 0x00, 0xBB}; // 停到2层
 static uint8_t ZigBee_GarageLayers3[8] = {0x55, 0x0D, 0x01, 0x03, 0x00, 0x00, 0x00, 0xBB}; // 停到3层
 static uint8_t ZigBee_GarageLayers4[8] = {0x55, 0x0D, 0x01, 0x04, 0x00, 0x00, 0x00, 0xBB}; // 停到4层
+
+// 指令发送模板↓
+
+// 道闸标志物
+static uint8_t ZigBee_BarrierGateData[8] = {0x55, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
+// LED显示标志物
+static uint8_t Zigbee_LEDDisplayData[8] = {0x55, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
+// 旋转LED标志物
+static uint8_t Infrared_RotationLEDData[6] = {0xFF, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 // 当前指令状态和数据内容存放(指令不连续和标志位使用造成的空间浪费暂时未解决)
 extern uint8_t CommandFlagStatus[0xFF];

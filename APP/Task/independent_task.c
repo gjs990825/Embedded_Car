@@ -19,7 +19,15 @@
 #include "Timer.h"
 #include "data_from_host.h"
 
-// RFID相关 ↓
+#define Send_ZigBeeData5Times(data)     \
+    do                                  \
+    {                                   \
+        for (uint8_t i = 0; i < 5; i++) \
+        {                               \
+            Send_ZigBeeData(data);      \
+            delay(200);                 \
+        }                               \
+    } while (0)
 
 // 寻到白卡
 uint8_t FOUND_RFID_CARD = false;
@@ -37,6 +45,8 @@ struct StatusBeforeFoundRFID_Struct
     uint16_t remainEncoderValue;
 } StatusBeforeFoundRFID;
 
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ RFID部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
 extern uint16_t Mp_Value;
 // 保存遇到白卡时候的状态
 void Save_StatusBeforeFoundRFID(void)
@@ -51,7 +61,8 @@ void Save_StatusBeforeFoundRFID(void)
     StatusBeforeFoundRFID.remainEncoderValue = temp_MP - Mp_Value;
 }
 
-// 恢复状态 encoderChangeValue: 前后设定码盘差值
+// 恢复状态遇到白卡前储存的状态
+// encoderChangeValue: 前后设定码盘差值
 void Resume_StatusBeforeFoundRFID(uint16_t encoderChangeValue)
 {
     uint16_t Roadway_mp_Get(void);
@@ -180,7 +191,136 @@ void Test_RFID(uint8_t block)
     }
 }
 
-// RFID相关 ↑
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 道闸部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+// 道闸显示车牌
+void BarrierGate_Plate(uint8_t plate[6])
+{
+    ZigBee_BarrierGateData[Pack_MainCmd] = BarrierGateMode_PlateFront3Bytes;
+    memcpy(&ZigBee_BarrierGateData[Pack_SubCmd1], plate, 3);
+    Send_ZigBeeData5Times(ZigBee_BarrierGateData);
+
+    ZigBee_BarrierGateData[Pack_MainCmd] = BarrierGateMode_PlateBack3Bytes;
+    memcpy(&ZigBee_BarrierGateData[Pack_SubCmd1], &plate[3], 3);
+    Send_ZigBeeData5Times(ZigBee_BarrierGateData);
+}
+
+// 道闸控制
+void BarrierGate_Control(bool status)
+{
+    ZigBee_BarrierGateData[Pack_MainCmd] = BarrierGateMode_Control;
+    ZigBee_BarrierGateData[Pack_SubCmd1] = status ? 0x01 : 0x02;
+    Send_ZigBeeData5Times(ZigBee_BarrierGateData);
+}
+
+// 道闸状态回传
+void BarrierGate_ReturnStatus(void)
+{
+    ZigBee_BarrierGateData[Pack_MainCmd] = BarrierGateMode_ReturnStatus;
+    ZigBee_BarrierGateData[Pack_SubCmd1] = 0x01;
+    Send_ZigBeeData5Times(ZigBee_BarrierGateData);
+}
+
+// 道闸任务
+void BarrierGate_Task(uint8_t plate[6])
+{
+    if (plate != NULL)
+    {
+        BarrierGate_Plate(plate);
+    }
+    BarrierGate_Control(true);
+}
+
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ LED显示部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+// LED显示标志物第一行显示数据
+void LEDDisplay_DataToFistRow(uint8_t data[3])
+{
+    Zigbee_LEDDisplayData[Pack_MainCmd] = LEDDisplayMainCmd_DataToFirstRow;
+    memcpy(&Zigbee_LEDDisplayData[Pack_SubCmd1], data, 3);
+    Send_ZigBeeData5Times(Zigbee_LEDDisplayData);
+}
+
+// LED显示标志物第二行显示数据
+void LEDDisplay_DataToSecondRow(uint8_t data[3])
+{
+    Zigbee_LEDDisplayData[Pack_MainCmd] = LEDDisplayMainCmd_DataToSecondRow;
+    memcpy(&Zigbee_LEDDisplayData[Pack_SubCmd1], data, 3);
+    Send_ZigBeeData5Times(Zigbee_LEDDisplayData);
+}
+
+// LED显示标志物进更改计时模式
+void LEDDisplay_TimerMode(TimerMode_t mode)
+{
+    Zigbee_LEDDisplayData[Pack_MainCmd] = LEDDisplayMainCmd_TimerMode;
+    Zigbee_LEDDisplayData[Pack_SubCmd1] = (uint8_t)mode;
+    Send_ZigBeeData5Times(Zigbee_LEDDisplayData);
+}
+
+// LED显示标志物显示距离
+void LEDDisplay_ShowDistance(uint16_t dis)
+{
+    Zigbee_LEDDisplayData[Pack_MainCmd] = LEDDisplayMainCmd_ShowDistance;
+    Zigbee_LEDDisplayData[Pack_SubCmd2] = HEX2BCD(dis / 100);
+    Zigbee_LEDDisplayData[Pack_SubCmd3] = HEX2BCD(dis % 100);
+    Send_ZigBeeData5Times(Zigbee_LEDDisplayData);
+}
+
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 立体显示（旋转LED）部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+// 旋转LED显示车牌和坐标
+void RotationLED_PlateAndCoord(uint8_t plate[6], uint8_t coord[2])
+{
+    Infrared_RotationLEDData[1] = RotationLEDMode_PlateFront4BytesData;
+    memcpy(&Infrared_RotationLEDData[2], plate, 4);
+    Infrared_Send_A(Infrared_RotationLEDData);
+    delay_ms(600);
+
+    Infrared_RotationLEDData[1] = RotationLEDMode_PlateBack2BytesAndCoordInfo;
+    memcpy(&Infrared_RotationLEDData[2], &plate[4], 2);
+    memcpy(&Infrared_RotationLEDData[4], coord, 2); 
+    Infrared_Send_A(Infrared_RotationLEDData);
+}
+
+// 旋转LED显示距离 warnning: 只能显示两位数
+void RotationLED_Distance(uint8_t dis)
+{
+    Infrared_RotationLEDData[1] = RotationLEDMode_Distance;
+    Infrared_RotationLEDData[2] = ((dis % 100) / 10) + 0x30;
+    Infrared_RotationLEDData[3] = (dis % 10) + 0x30;
+    Infrared_Send_A(Infrared_RotationLEDData);
+}
+
+// 旋转LED显示图形
+void RotationLED_Shape(Shape_t shape)
+{
+    Infrared_RotationLEDData[1] = RotationLEDMode_Shape;
+    Infrared_RotationLEDData[2] = (uint8_t)shape;
+    Infrared_Send_A(Infrared_RotationLEDData);
+}
+
+// 旋转LED显示颜色
+void RotationLED_Color(Color_t color)
+{
+    Infrared_RotationLEDData[1] = RotationLEDMode_Color;
+    Infrared_RotationLEDData[2] = (uint8_t)color;
+    Infrared_Send_A(Infrared_RotationLEDData);
+}
+
+// 旋转LED显示路况
+void RotationLED_RouteStatus(RouteStatus_t status)
+{
+    Infrared_RotationLEDData[1] = RotationLEDMode_RouteStatus;
+    Infrared_RotationLEDData[2] = (uint8_t)status;
+    Infrared_Send_A(Infrared_RotationLEDData);
+}
+
+// 旋转LED显示默认数据
+void RotationLED_Default(void)
+{
+    Infrared_RotationLEDData[1] = RotationLEDMode_Default;
+    Infrared_Send_A(Infrared_RotationLEDData);
+}
 
 // 交通灯识别
 void TrafficLight_Task(void)
@@ -208,32 +348,6 @@ void TFT_Hex(uint8_t dat[3])
     Send_ZigBeeData(buf);
 }
 
-// 立体显示部分
-
-// 立体显示 显示车牌
-void RotationLED_Plate(uint8_t plate[6], uint8_t coord[2])
-{
-    // Infrared_PlateData1[]
-    memcpy(&Infrared_PlateData1[2], plate, 4);
-    memcpy(&Infrared_PlateData2[2], &plate[4], 2);
-    memcpy(&Infrared_PlateData2[4], coord, 2);
-    Infrared_Send_A(Infrared_PlateData1);
-    delay_ms(600);
-    Infrared_Send_A(Infrared_PlateData2);
-}
-
-// 立体显示 显示距离
-void RotationLED_Distance(uint16_t dis)
-{
-    uint8_t buf[6] = {0x00};
-
-    buf[0] = 0xFF;
-    buf[1] = 0x11;
-    buf[2] = HEX2BCD((dis % 100) / 10);
-    buf[2] = HEX2BCD(dis % 10);
-    Infrared_Send_A(buf);
-}
-
 // 二维码识别
 void QRCode_Task(uint8_t QRrequest)
 {
@@ -253,13 +367,13 @@ void Start_Task(void)
     Set_tba_WheelLED(L_LED, RESET);
     Set_tba_WheelLED(R_LED, RESET);
 
-    Send_ZigBeeDataNTimes(ZigBee_LEDDisplayStartTimer, 3, 20);
+    LEDDisplay_TimerMode(TimerMode_ON);
 }
 
 // 终止任务
 void End_Task(void)
 {
-    Send_ZigBeeDataNTimes(ZigBee_LEDDisplayStopTimer, 3, 20);
+    LEDDisplay_TimerMode(TimerMode_OFF);
     Set_tba_WheelLED(L_LED, SET);
     Set_tba_WheelLED(R_LED, SET);
     delay_ms(500);
@@ -267,14 +381,6 @@ void End_Task(void)
     delay_ms(500);
     Set_tba_WheelLED(L_LED, RESET);
     Set_tba_WheelLED(R_LED, RESET);
-}
-
-// led显示距离（输入距离）
-void LEDDispaly_ShowDistance(uint16_t dis)
-{
-    ZigBee_LEDDisplayDistanceData[4] = HEX2BCD(dis / 100);
-    ZigBee_LEDDisplayDistanceData[5] = HEX2BCD(dis % 100);
-    Send_ZigBeeData(ZigBee_LEDDisplayDistanceData);
 }
 
 // 路灯档位调节，输入目标档位自动调整
@@ -322,40 +428,6 @@ void StreetLight_AdjustTo(uint8_t targetLevel)
         }
     }
 }
-
-// 道闸部分 ↓
-
-// 道闸显示车牌
-void BarrierGate_Plate(uint8_t plate[6])
-{
-    memcpy(&ZigBee_PlateBarrierGate_1[3], plate, 3);
-    memcpy(&ZigBee_PlateBarrierGate_2[3], &plate[3], 3);
-    Send_ZigBeeData(ZigBee_PlateBarrierGate_1);
-    delay_ms(790);
-    Send_ZigBeeData(ZigBee_PlateBarrierGate_2);
-    delay_ms(790);
-}
-
-// 道闸打开
-void BarrierGate_OPEN(void)
-{
-    Send_ZigbeeData_To_Fifo(ZigBee_BarrierGateOPEN, 8);
-    delay_ms(790);
-    Send_ZigbeeData_To_Fifo(ZigBee_BarrierGateOPEN, 8);
-    delay_ms(790);
-}
-
-// 道闸任务
-void BarrierGate_Task(uint8_t plate[6])
-{
-    if (plate != NULL)
-    {
-        BarrierGate_Plate(plate);
-    }
-    BarrierGate_OPEN();
-}
-
-// 道闸部分 ↑
 
 // 语音任务，错误重试2次
 void Voice_Task(void)

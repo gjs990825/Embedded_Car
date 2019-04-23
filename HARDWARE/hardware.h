@@ -25,6 +25,7 @@
 #include "data_from_host.h"
 #include "voice.h"
 #include "malloc.h"
+#include "independent_task.h"
 
 void Hardware_Init(void);
 
