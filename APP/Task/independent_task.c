@@ -415,6 +415,22 @@ void StereoGarage_GetInfraredStatus(void)
     Send_ZigBeeData5Times(ZigBee_StereoGarageData);
 }
 
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 交通灯部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+void TrafficLight_RecognitionMode(void)
+{
+    ZigBee_TrafficLightData[Pack_MainCmd] = TrafficLight_Recognition;
+    ZigBee_TrafficLightData[Pack_SubCmd1] = 0x00;
+    Send_ZigBeeDataNTimes(ZigBee_TrafficLightData, 2, 150);
+}
+
+void TrafficLight_ConfirmColor(TrafficLightColor_t light)
+{
+    ZigBee_TrafficLightData[Pack_MainCmd] = TrafficLight_Confirm;
+    ZigBee_TrafficLightData[Pack_SubCmd1] = (uint8_t)light;
+    Send_ZigBeeData5Times(ZigBee_TrafficLightData);
+}
+
 ////////////////////////////////////////////////////////////
 
 // 交通灯识别

@@ -252,11 +252,18 @@ enum
     TFTMode_Distance = 0x50    // 距离显示（十进制）
 };
 
-// 立体车库
+// 立体车库标志物
 enum
 {
     StereoGarage_Control = 0x01, // 控制
     StereoGarage_Return = 0x02   // 返回
+};
+
+// 交通灯
+enum
+{
+    TrafficLight_Recognition = 0x01, // 进入识别模式
+    TrafficLight_Confirm = 0x02      // 确认识别结果
 };
 
 // 计时控制
@@ -268,12 +275,12 @@ typedef enum
 } TimerMode_t;
 
 // 交通灯定义
-enum
+typedef enum
 {
-    TrafficLight_Red = 0, // 红灯
-    TrafficLight_Yellow,  // 黄灯
-    TrafficLight_Green,   // 绿灯
-};
+    TrafficLightColor_Red = 0x01,   // 红灯
+    TrafficLightColor_Green = 0x02, // 绿灯
+    TrafficLightColor_Yellow = 0x03 // 黄灯
+} TrafficLightColor_t;
 
 // 形状定义
 typedef enum
@@ -304,7 +311,7 @@ typedef enum
     Color_White,          // 白
 } Color_t;
 
-// 路况
+// 路况定义
 typedef enum
 {
     RouteStatus_TunnelAccident = 0x01, // 隧道事故
@@ -368,16 +375,23 @@ static uint8_t ZigBee_GarageLayers4[8] = {0x55, 0x0D, 0x01, 0x04, 0x00, 0x00, 0x
 
 // 指令发送模板↓
 
-// 道闸标志物
+// 道闸标志物数据
 static uint8_t ZigBee_BarrierGateData[8] = {0x55, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
-// LED显示标志物
+
+// LED显示标志物数据
 static uint8_t ZigBee_LEDDisplayData[8] = {0x55, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
-// 旋转LED标志物
+
+// 旋转LED标志物数据
 static uint8_t Infrared_RotationLEDData[6] = {0xFF, 0x00, 0x00, 0x00, 0x00, 0x00};
-// TFT显示器标志物
+
+// TFT显示器标志物数据
 static uint8_t ZigBee_TFTData[8] = {0x55, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
-// 立体车库标志物
+
+// 立体车库标志物数据
 static uint8_t ZigBee_StereoGarageData[8] = {0x55, 0x0D, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
+
+// 智能路灯标志物数据
+static uint8_t ZigBee_TrafficLightData[8] = {0x55, 0x0E, 0x00, 0x00, 0x00, 0x00, 0x01, 0xBB};
 
 // 当前指令状态和数据内容存放(指令不连续和标志位使用造成的空间浪费暂时未解决)
 extern uint8_t CommandFlagStatus[0xFF];
