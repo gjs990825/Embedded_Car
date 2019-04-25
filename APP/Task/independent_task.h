@@ -106,8 +106,6 @@ void End_Task(void);
 void TrafficLight_Task(void);
 void TFT_Task(void);
 void QRCode_Task(uint8_t QRrequest);
-#define Ultrasonic_Task(times) Ultrasonic_GetAverage(times)
-
 void Voice_Task(void);
 
 #endif // _INDEPENDENT_TASK_H

@@ -1,4 +1,3 @@
-#include "stm32f4xx.h"
 #include "tba.h"
 
 // 任务板光敏电阻配置

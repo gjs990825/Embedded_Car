@@ -34,7 +34,7 @@
 #define KEY_TEMP 5
 
 // 配置按键调试方案
-#define KEY_CONFIGURATION KEY_AGV_TEST
+#define KEY_CONFIGURATION KEY_TEMP
 
 #if (KEY_CONFIGURATION == KEY_DEFAULT)
 
@@ -88,10 +88,10 @@
 #elif (KEY_CONFIGURATION == KEY_TEMP)
 
 // 临时配置
-#define Action_S1() ZigBee_Test(100, 50)
-#define Action_S2() ZigBee_Test(100, 30)
-#define Action_S3() ZigBee_Test(100, 20)
-#define Action_S4() ZigBee_Test(100, 10)
+#define Action_S1() VoiceBroadcast_Radom()
+#define Action_S2() VoiceRecognition_Return(0x03)
+#define Action_S3() Voice_Recognition()
+#define Action_S4() VoiceBroadcast_Specific(0x02)
 
 #endif
 
