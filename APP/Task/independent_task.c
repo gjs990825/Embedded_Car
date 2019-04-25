@@ -319,6 +319,9 @@ void RotationLED_Default(void)
 // TFT显示编号图片
 void TFT_ShowPicture(uint8_t picNumber)
 {
+    if (picNumber > 20 || picNumber < 1)
+        return;
+
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_Picture;
     ZigBee_TFTData[Pack_SubCmd1] = 0x00;
     ZigBee_TFTData[Pack_SubCmd2] = picNumber;
@@ -384,6 +387,32 @@ void TFT_Distance(uint16_t dis)
     ZigBee_TFTData[Pack_SubCmd2] = HEX2BCD(dis / 100);
     ZigBee_TFTData[Pack_SubCmd3] = HEX2BCD(dis % 100);
     Send_ZigBeeData5Times(ZigBee_TFTData);
+}
+
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 立体车库部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+void StereoGarage_ToLayer(uint8_t layer)
+{
+    if (layer > 4 || layer < 1)
+        return;
+
+    ZigBee_StereoGarageData[Pack_MainCmd] = StereoGarage_Control;
+    ZigBee_StereoGarageData[Pack_SubCmd1] = layer;
+    Send_ZigBeeData5Times(ZigBee_StereoGarageData);
+}
+
+void StereoGarage_GetLayer(void)
+{
+    ZigBee_StereoGarageData[Pack_MainCmd] = StereoGarage_Return;
+    ZigBee_StereoGarageData[Pack_SubCmd1] = 0x01;
+    Send_ZigBeeData5Times(ZigBee_StereoGarageData);
+}
+
+void StereoGarage_GetInfraredStatus(void)
+{
+    ZigBee_StereoGarageData[Pack_MainCmd] = StereoGarage_Return;
+    ZigBee_StereoGarageData[Pack_SubCmd1] = 0x02;
+    Send_ZigBeeData5Times(ZigBee_StereoGarageData);
 }
 
 ////////////////////////////////////////////////////////////

@@ -252,6 +252,13 @@ enum
     TFTMode_Distance = 0x50    // 距离显示（十进制）
 };
 
+// 立体车库
+enum
+{
+    StereoGarage_Control = 0x01, // 控制
+    StereoGarage_Return = 0x02   // 返回
+};
+
 // 计时控制
 typedef enum
 {
@@ -369,7 +376,8 @@ static uint8_t ZigBee_LEDDisplayData[8] = {0x55, 0x04, 0x00, 0x00, 0x00, 0x00, 0
 static uint8_t Infrared_RotationLEDData[6] = {0xFF, 0x00, 0x00, 0x00, 0x00, 0x00};
 // TFT显示器标志物
 static uint8_t ZigBee_TFTData[8] = {0x55, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
-
+// 立体车库标志物
+static uint8_t ZigBee_StereoGarageData[8] = {0x55, 0x0D, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
 
 // 当前指令状态和数据内容存放(指令不连续和标志位使用造成的空间浪费暂时未解决)
 extern uint8_t CommandFlagStatus[0xFF];

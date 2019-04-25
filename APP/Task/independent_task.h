@@ -70,6 +70,12 @@ void TFT_Timer(TimerMode_t mode);
 void TFT_HexData(uint8_t data[3]);
 void TFT_Distance(uint16_t dis);
 
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 立体车库部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+void StereoGarage_ToLayer(uint8_t layer);
+void StereoGarage_GetLayer(void);
+void StereoGarage_GetInfraredStatus(void);
+
 ///////////////////////////////////////
 
 void TFT_Task(void);
