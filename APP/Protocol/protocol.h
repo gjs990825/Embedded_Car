@@ -259,11 +259,18 @@ enum
     StereoGarage_Return = 0x02   // 返回
 };
 
-// 交通灯
+// 交通灯标志物
 enum
 {
     TrafficLight_Recognition = 0x01, // 进入识别模式
     TrafficLight_Confirm = 0x02      // 确认识别结果
+};
+
+// 语音播报标志物
+enum
+{
+    VoiceCmd_Specific = 0x10, // 特定语音
+    VoiceCmd_Random = 0x20    // 随机语音
 };
 
 // 计时控制
@@ -392,6 +399,12 @@ static uint8_t ZigBee_StereoGarageData[8] = {0x55, 0x0D, 0x00, 0x00, 0x00, 0x00,
 
 // 智能路灯标志物数据
 static uint8_t ZigBee_TrafficLightData[8] = {0x55, 0x0E, 0x00, 0x00, 0x00, 0x00, 0x01, 0xBB};
+
+// 语音播报标志物数据
+static uint8_t ZigBee_VoiceData[8] = {0x55, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
+
+// 语音返回自动评分终端数据
+static uint8_t ZigBee_VoiceReturnData[8] = {0xAF, 0x06, 0x00, 0x02, 0x00, 0x00, 0x01, 0xBB};
 
 // 当前指令状态和数据内容存放(指令不连续和标志位使用造成的空间浪费暂时未解决)
 extern uint8_t CommandFlagStatus[0xFF];

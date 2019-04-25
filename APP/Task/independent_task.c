@@ -431,6 +431,94 @@ void TrafficLight_ConfirmColor(TrafficLightColor_t light)
     Send_ZigBeeData5Times(ZigBee_TrafficLightData);
 }
 
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 语音识别部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+// 语音播报特定编号语音
+void VoiceBroadcast_Specific(uint8_t voiceID)
+{
+    if (voiceID > 6 || voiceID < 1)
+        return;
+
+    ZigBee_VoiceData[Pack_MainCmd] = VoiceCmd_Specific;
+    ZigBee_VoiceData[Pack_SubCmd1] = voiceID;
+    Send_ZigBeeDataNTimes(ZigBee_VoiceData, 2, 100);
+}
+
+// 语音随机播报语音
+void VoiceBroadcast_Radom(void)
+{
+    ZigBee_VoiceData[Pack_MainCmd] = VoiceCmd_Random;
+    ZigBee_VoiceData[Pack_SubCmd1] = 0x01;
+    Send_ZigbeeData_To_Fifo(ZigBee_VoiceData, 8);
+}
+
+// 返回语音识别结果到自动评分系统
+void VoiceRecognition_Return(uint8_t voiceID)
+{
+    ZigBee_VoiceReturnData[Pack_MainCmd] = voiceID;
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        Send_ZigbeeData_To_Fifo(ZigBee_VoiceReturnData, 8);
+        delay_ms(100);
+    }
+    // 语音返回有固定码，不能校验
+}
+
+// 语音识别任务
+void Voice_Recognition(void)
+{
+    VoiceRecognition_Return(Start_VoiceCommandRecognition(3));
+}
+
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 智能路灯部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+// 路灯档位调节，输入目标档位自动调整
+void StreetLight_AdjustTo(uint8_t targetLevel)
+{
+    uint16_t temp_val[4], CurrentLightValue;
+    int8_t errorValue;
+
+    for (int8_t i = 0; i < 4; i++)
+    {
+        temp_val[i] = BH1750_GetAverage(10);
+        Beep(2);
+        Infrared_Send_A(Infrared_LightAdd1);
+        delay(1600);
+    }
+    CurrentLightValue = temp_val[0];
+
+    // 对获得数据排序算出初始档位
+    bubble_sort(temp_val, 4);
+
+    // 算出与目标档位差值
+    for (int8_t i = 0; i < 4; i++)
+    {
+        if (CurrentLightValue == temp_val[i])
+        {
+            errorValue = (int8_t)targetLevel - (i + 1);
+            break;
+        }
+    }
+
+    // 调整到目标档位
+    if (errorValue >= 0)
+    {
+        for (int8_t i = 0; i < errorValue; i++)
+        {
+            Infrared_Send_A(Infrared_LightAdd1);
+            delay(1600);
+        }
+    }
+    else
+    {
+        for (int8_t i = 0; i > errorValue; i--)
+        {
+            Infrared_Send_A(Infrared_LightAdd3);
+            delay(1600);
+        }
+    }
+}
+
 ////////////////////////////////////////////////////////////
 
 // 交通灯识别
@@ -449,16 +537,6 @@ void TFT_Task(void)
     WaitForFlagInMs(GetCmdFlag(FromHost_TFTRecognition), SET, 37 * 1000); // 等待识别完成
 }
 
-// TFT显示部分
-// TFT显示HEX
-void TFT_Hex(uint8_t dat[3])
-{
-    uint8_t buf[8] = {0x55, 0x0b, 0x10, 0x02, 0x00, 0x00, 0x12, 0xbb};
-    buf[2] = 0x40;
-    memcpy(&buf[3], dat, 3);
-    Send_ZigBeeData(buf);
-}
-
 // 二维码识别
 void QRCode_Task(uint8_t QRrequest)
 {
@@ -472,9 +550,7 @@ void Start_Task(void)
 {
     Set_tba_WheelLED(L_LED, SET);
     Set_tba_WheelLED(R_LED, SET);
-    delay_ms(500);
-    delay_ms(500);
-    delay_ms(500);
+    delay(1500);
     Set_tba_WheelLED(L_LED, RESET);
     Set_tba_WheelLED(R_LED, RESET);
 
@@ -487,57 +563,9 @@ void End_Task(void)
     LEDDisplay_TimerMode(TimerMode_OFF);
     Set_tba_WheelLED(L_LED, SET);
     Set_tba_WheelLED(R_LED, SET);
-    delay_ms(500);
-    delay_ms(500);
-    delay_ms(500);
+    delay(1500);
     Set_tba_WheelLED(L_LED, RESET);
     Set_tba_WheelLED(R_LED, RESET);
-}
-
-// 路灯档位调节，输入目标档位自动调整
-void StreetLight_AdjustTo(uint8_t targetLevel)
-{
-    uint16_t temp_val[4], CurrentLightValue;
-    int8_t errorValue, i;
-
-    for (i = 0; i < 4; i++)
-    {
-        temp_val[i] = BH1750_GetAverage(10);
-        Beep(2);
-        Infrared_Send_A(Infrared_LightAdd1);
-        delay_ms(790);
-        delay_ms(790);
-    }
-    CurrentLightValue = temp_val[0];
-
-    bubble_sort(temp_val, 4); // 对获得数据排序算出初始档位
-    for (i = 0; i < 4; i++)
-    {
-        if (CurrentLightValue == temp_val[i])
-        {
-            errorValue = (int8_t)targetLevel - (i + 1);
-            break;
-        }
-    }
-
-    if (errorValue >= 0) // 调整到目标档位
-    {
-        for (i = 0; i < errorValue; i++)
-        {
-            Infrared_Send_A(Infrared_LightAdd1);
-            delay_ms(790);
-            delay_ms(790);
-        }
-    }
-    else
-    {
-        for (i = 0; i > errorValue; i--)
-        {
-            Infrared_Send_A(Infrared_LightAdd3);
-            delay_ms(790);
-            delay_ms(790);
-        }
-    }
 }
 
 // 语音任务，错误重试2次

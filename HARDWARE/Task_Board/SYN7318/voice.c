@@ -298,7 +298,7 @@ void SYN7318_Test(void)
 }
 
 // 开始识别语音指令并判断
-bool Start_VoiceCommandRecognition(uint8_t retryTimes)
+uint8_t Start_VoiceCommandRecognition(uint8_t retryTimes)
 {
     uint8_t buf[8] = {0};
 
@@ -312,7 +312,7 @@ bool Start_VoiceCommandRecognition(uint8_t retryTimes)
         {
             if (VoiceComand_Process(buf) == false)
             {
-                return true;
+                return buf[5]; // edited
             }
         }
         USART6_SendString(Stop_ASR, 4);                 // 停止识别

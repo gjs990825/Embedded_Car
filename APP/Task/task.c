@@ -23,10 +23,6 @@
 #include "agv.h"
 #include "data_from_host.h"
 
-
-// 下面是坐标点对应的独立任务集合，独立任务进入前需要保证位置距离朝向等准确无误
-// 任务结束和开始车身方向不一样的需要手动设置 CurrentStaus.dir = DIR_XX;
-
 void Task_5_0(void)
 {
     Start_Task();
@@ -89,9 +85,9 @@ void Task_1_5(void)
     ExcuteAndWait(Back_Off(30, Centimeter_Value * 15), Stop_Flag, FORBACKCOMPLETE);
     ExcuteAndWait(Turn_ByEncoder(40), Stop_Flag, TURNCOMPLETE);
 
-    TFT_Hex(Get_ShapeInfo());
+    TFT_HexData(Get_ShapeInfo());
     delay_ms(790);
-    TFT_Hex(Get_ShapeInfo());
+    TFT_HexData(Get_ShapeInfo());
     delay_ms(790);
 
     AGV_SendInfraredData(Infrared_AlarmON); // 发送红外信息 // 需要注掉！！！

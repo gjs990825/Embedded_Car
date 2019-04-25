@@ -32,6 +32,6 @@ bool SYN7318_Rst(void);
 void SYN_TTS(uint8_t *str);
 void SYN7318_Test(void);
 bool VoiceComand_Process(uint8_t *cmd);
-bool Start_VoiceCommandRecognition(uint8_t retryTimes);
+uint8_t Start_VoiceCommandRecognition(uint8_t retryTimes);
 	
 #endif

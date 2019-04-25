@@ -20,6 +20,10 @@ extern uint8_t FOUND_RFID_CARD;
 extern uint8_t RFID_RoadSection;
 extern RFID_Info_t *CurrentRFIDCard;
 
+///////////////////////////////////////////////////////
+// 下面是标志物的操作和控制函数
+///////////////////////////////////////////////////////
+
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ RFID部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 #define RFID_RoadSectionTrue() RFID_RoadSection = true
@@ -70,30 +74,40 @@ void TFT_Timer(TimerMode_t mode);
 void TFT_HexData(uint8_t data[3]);
 void TFT_Distance(uint16_t dis);
 
-// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 立体车库部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 立体车库部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 void StereoGarage_ToLayer(uint8_t layer);
 void StereoGarage_GetLayer(void);
 void StereoGarage_GetInfraredStatus(void);
 
-// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 交通灯部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 交通灯部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 void TrafficLight_RecognitionMode(void);
 void TrafficLight_ConfirmColor(TrafficLightColor_t light);
 
-///////////////////////////////////////
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 语音识别部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
-void TFT_Task(void);
+void VoiceBroadcast_Specific(uint8_t voiceID);
+void VoiceBroadcast_Radom(void);
+void VoiceRecognition_Return(uint8_t voiceID);
+void Voice_Recognition(void);
+
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 智能路灯部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+void StreetLight_AdjustTo(uint8_t targetLevel);
+
+///////////////////////////////////////////////////////
+// 下面是独立任务，进入前需保证位置距离朝向等准确无误
+// 任务结束和开始车身方向不一样的需要手动设置 CurrentStaus.dir = DIR_XX;
+///////////////////////////////////////////////////////
+
 void Start_Task(void);
 void End_Task(void);
 void TrafficLight_Task(void);
 void TFT_Task(void);
 void QRCode_Task(uint8_t QRrequest);
 #define Ultrasonic_Task(times) Ultrasonic_GetAverage(times)
-void StreetLight_AdjustTo(uint8_t targetLevel);
 
 void Voice_Task(void);
-
-void TFT_Hex(uint8_t dat[3]);
 
 #endif // _INDEPENDENT_TASK_H
