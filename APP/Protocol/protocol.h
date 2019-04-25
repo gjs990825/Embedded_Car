@@ -220,14 +220,6 @@ enum
     BarrierGateMode_ReturnStatus = 0x20      // 状态返回
 };
 
-// 计时控制
-typedef enum
-{
-    TimerMode_OFF = 0x00, // 计时关
-    TimerMode_ON,         // 计时开
-    TimerMode_Clear       // 计时清零
-} TimerMode_t;
-
 // LED显示标志物
 enum
 {
@@ -248,6 +240,25 @@ enum
     RotationLEDMode_RouteStatus = 0x14,                 // 显示路况
     RotationLEDMode_Default = 0x15                      // 显示默认
 };
+
+// TFT显示器标志物
+enum
+{
+    TFTMode_Picture = 0x10,    // 图片
+    TFTMode_PlateDataA = 0x20, // 车牌数据A
+    TFTMode_PlateDataB = 0x21, // 车牌数据B
+    TFTMode_Timer = 0x30,      // 计时
+    TFTMode_Hex = 0x40,        // HEX显示
+    TFTMode_Distance = 0x50    // 距离显示（十进制）
+};
+
+// 计时控制
+typedef enum
+{
+    TimerMode_OFF = 0x00, // 计时关
+    TimerMode_ON,         // 计时开
+    TimerMode_Clear       // 计时清零
+} TimerMode_t;
 
 // 交通灯定义
 enum
@@ -353,9 +364,12 @@ static uint8_t ZigBee_GarageLayers4[8] = {0x55, 0x0D, 0x01, 0x04, 0x00, 0x00, 0x
 // 道闸标志物
 static uint8_t ZigBee_BarrierGateData[8] = {0x55, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
 // LED显示标志物
-static uint8_t Zigbee_LEDDisplayData[8] = {0x55, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
+static uint8_t ZigBee_LEDDisplayData[8] = {0x55, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
 // 旋转LED标志物
 static uint8_t Infrared_RotationLEDData[6] = {0xFF, 0x00, 0x00, 0x00, 0x00, 0x00};
+// TFT显示器标志物
+static uint8_t ZigBee_TFTData[8] = {0x55, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
+
 
 // 当前指令状态和数据内容存放(指令不连续和标志位使用造成的空间浪费暂时未解决)
 extern uint8_t CommandFlagStatus[0xFF];

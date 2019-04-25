@@ -36,14 +36,14 @@ void Task_RFIDTestStart(void);
 void Task_RFIDTestEnd(void);
 void Test_RFID(uint8_t block);
 
-// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 道闸部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 道闸部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 void BarrierGate_Plate(uint8_t plate[6]);
 void BarrierGate_Control(bool status);
 void BarrierGate_ReturnStatus(void);
 void BarrierGate_Task(uint8_t plate[6]);
 
-// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ LED显示部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ LED显示部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 void LEDDisplay_DataToFistRow(uint8_t data[3]);
 void LEDDisplay_DataToSecondRow(uint8_t data[3]);
@@ -58,6 +58,17 @@ void RotationLED_Shape(Shape_t shape);
 void RotationLED_Color(Color_t color);
 void RotationLED_RouteStatus(RouteStatus_t status);
 void RotationLED_Default(void);
+
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ TFT显示器部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+void TFT_ShowPicture(uint8_t picNumber);
+void TFT_PicturePrevious(void);
+void TFT_PictureNext(void);
+void TFT_PictureAuto(void);
+void TFT_Plate(uint8_t plate[6]);
+void TFT_Timer(TimerMode_t mode);
+void TFT_HexData(uint8_t data[3]);
+void TFT_Distance(uint16_t dis);
 
 ///////////////////////////////////////
 

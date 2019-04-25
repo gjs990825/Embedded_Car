@@ -19,15 +19,7 @@
 #include "Timer.h"
 #include "data_from_host.h"
 
-#define Send_ZigBeeData5Times(data)     \
-    do                                  \
-    {                                   \
-        for (uint8_t i = 0; i < 5; i++) \
-        {                               \
-            Send_ZigBeeData(data);      \
-            delay(200);                 \
-        }                               \
-    } while (0)
+#define Send_ZigBeeData5Times(data) Send_ZigBeeDataNTimes(data, 5, 200)
 
 // 寻到白卡
 uint8_t FOUND_RFID_CARD = false;
@@ -236,34 +228,34 @@ void BarrierGate_Task(uint8_t plate[6])
 // LED显示标志物第一行显示数据
 void LEDDisplay_DataToFistRow(uint8_t data[3])
 {
-    Zigbee_LEDDisplayData[Pack_MainCmd] = LEDDisplayMainCmd_DataToFirstRow;
-    memcpy(&Zigbee_LEDDisplayData[Pack_SubCmd1], data, 3);
-    Send_ZigBeeData5Times(Zigbee_LEDDisplayData);
+    ZigBee_LEDDisplayData[Pack_MainCmd] = LEDDisplayMainCmd_DataToFirstRow;
+    memcpy(&ZigBee_LEDDisplayData[Pack_SubCmd1], data, 3);
+    Send_ZigBeeData5Times(ZigBee_LEDDisplayData);
 }
 
 // LED显示标志物第二行显示数据
 void LEDDisplay_DataToSecondRow(uint8_t data[3])
 {
-    Zigbee_LEDDisplayData[Pack_MainCmd] = LEDDisplayMainCmd_DataToSecondRow;
-    memcpy(&Zigbee_LEDDisplayData[Pack_SubCmd1], data, 3);
-    Send_ZigBeeData5Times(Zigbee_LEDDisplayData);
+    ZigBee_LEDDisplayData[Pack_MainCmd] = LEDDisplayMainCmd_DataToSecondRow;
+    memcpy(&ZigBee_LEDDisplayData[Pack_SubCmd1], data, 3);
+    Send_ZigBeeData5Times(ZigBee_LEDDisplayData);
 }
 
 // LED显示标志物进更改计时模式
 void LEDDisplay_TimerMode(TimerMode_t mode)
 {
-    Zigbee_LEDDisplayData[Pack_MainCmd] = LEDDisplayMainCmd_TimerMode;
-    Zigbee_LEDDisplayData[Pack_SubCmd1] = (uint8_t)mode;
-    Send_ZigBeeData5Times(Zigbee_LEDDisplayData);
+    ZigBee_LEDDisplayData[Pack_MainCmd] = LEDDisplayMainCmd_TimerMode;
+    ZigBee_LEDDisplayData[Pack_SubCmd1] = (uint8_t)mode;
+    Send_ZigBeeData5Times(ZigBee_LEDDisplayData);
 }
 
 // LED显示标志物显示距离
 void LEDDisplay_ShowDistance(uint16_t dis)
 {
-    Zigbee_LEDDisplayData[Pack_MainCmd] = LEDDisplayMainCmd_ShowDistance;
-    Zigbee_LEDDisplayData[Pack_SubCmd2] = HEX2BCD(dis / 100);
-    Zigbee_LEDDisplayData[Pack_SubCmd3] = HEX2BCD(dis % 100);
-    Send_ZigBeeData5Times(Zigbee_LEDDisplayData);
+    ZigBee_LEDDisplayData[Pack_MainCmd] = LEDDisplayMainCmd_ShowDistance;
+    ZigBee_LEDDisplayData[Pack_SubCmd2] = HEX2BCD(dis / 100);
+    ZigBee_LEDDisplayData[Pack_SubCmd3] = HEX2BCD(dis % 100);
+    Send_ZigBeeData5Times(ZigBee_LEDDisplayData);
 }
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 立体显示（旋转LED）部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
@@ -278,7 +270,7 @@ void RotationLED_PlateAndCoord(uint8_t plate[6], uint8_t coord[2])
 
     Infrared_RotationLEDData[1] = RotationLEDMode_PlateBack2BytesAndCoordInfo;
     memcpy(&Infrared_RotationLEDData[2], &plate[4], 2);
-    memcpy(&Infrared_RotationLEDData[4], coord, 2); 
+    memcpy(&Infrared_RotationLEDData[4], coord, 2);
     Infrared_Send_A(Infrared_RotationLEDData);
 }
 
@@ -321,6 +313,80 @@ void RotationLED_Default(void)
     Infrared_RotationLEDData[1] = RotationLEDMode_Default;
     Infrared_Send_A(Infrared_RotationLEDData);
 }
+
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ TFT显示屏部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+// TFT显示编号图片
+void TFT_ShowPicture(uint8_t picNumber)
+{
+    ZigBee_TFTData[Pack_MainCmd] = TFTMode_Picture;
+    ZigBee_TFTData[Pack_SubCmd1] = 0x00;
+    ZigBee_TFTData[Pack_SubCmd2] = picNumber;
+    Send_ZigBeeData5Times(ZigBee_TFTData);
+}
+
+// TFT上一张图片
+void TFT_PicturePrevious(void)
+{
+    ZigBee_TFTData[Pack_MainCmd] = TFTMode_Picture;
+    ZigBee_TFTData[Pack_SubCmd1] = 0x01;
+    Send_ZigBeeDataNTimes(ZigBee_TFTData, 2, 200);
+}
+
+// TFT下一张图片
+void TFT_PictureNext(void)
+{
+    ZigBee_TFTData[Pack_MainCmd] = TFTMode_Picture;
+    ZigBee_TFTData[Pack_SubCmd1] = 0x02;
+    Send_ZigBeeDataNTimes(ZigBee_TFTData, 2, 200);
+}
+
+// TFT图片自动翻页
+void TFT_PictureAuto(void)
+{
+    ZigBee_TFTData[Pack_MainCmd] = TFTMode_Picture;
+    ZigBee_TFTData[Pack_SubCmd1] = 0x03;
+    Send_ZigBeeData5Times(ZigBee_TFTData);
+}
+
+// TFT显示车牌
+void TFT_Plate(uint8_t plate[6])
+{
+    ZigBee_TFTData[Pack_MainCmd] = TFTMode_PlateDataA;
+    memcpy(&ZigBee_TFTData[Pack_SubCmd1], plate, 3);
+    Send_ZigBeeData5Times(ZigBee_TFTData);
+
+    ZigBee_TFTData[Pack_MainCmd] = TFTMode_PlateDataB;
+    memcpy(&ZigBee_TFTData[Pack_SubCmd1], &plate[3], 3);
+    Send_ZigBeeData5Times(ZigBee_TFTData);
+}
+
+// TFT计时模式控制
+void TFT_Timer(TimerMode_t mode)
+{
+    ZigBee_TFTData[Pack_MainCmd] = TFTMode_Timer;
+    ZigBee_TFTData[Pack_SubCmd1] = (uint8_t)mode;
+    Send_ZigBeeData5Times(ZigBee_TFTData);
+}
+
+// TFT六位数据显示模式（HEX）
+void TFT_HexData(uint8_t data[3])
+{
+    ZigBee_TFTData[Pack_MainCmd] = TFTMode_Hex;
+    memcpy(&ZigBee_TFTData[Pack_SubCmd1], data, 3);
+    Send_ZigBeeData5Times(ZigBee_TFTData);
+}
+
+// TFT显示距离
+void TFT_Distance(uint16_t dis)
+{
+    ZigBee_TFTData[Pack_MainCmd] = TFTMode_Distance;
+    ZigBee_TFTData[Pack_SubCmd2] = HEX2BCD(dis / 100);
+    ZigBee_TFTData[Pack_SubCmd3] = HEX2BCD(dis % 100);
+    Send_ZigBeeData5Times(ZigBee_TFTData);
+}
+
+////////////////////////////////////////////////////////////
 
 // 交通灯识别
 void TrafficLight_Task(void)
