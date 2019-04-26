@@ -102,7 +102,7 @@ void ZigBee_Test(uint16_t count ,uint16_t interval)
 {
     for (uint16_t i = 0; i < count; i++)
     {
-        Send_ZigBeeData(ZigBee_AGVStart);
+        // Send_ZigBeeData(ZigBee_AGVStart);
         delay_ms(interval);
     }
 }

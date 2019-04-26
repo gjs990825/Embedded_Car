@@ -6,9 +6,6 @@
 #include "uart_a72.h"
 #include "delay.h"
 
-// // 使用宏定义的函数（程序可能会增大）
-// #define USE_MACRO_FUNCTIONS false
-
 // 定义连接模式
 #define WIRED_CONNECTION 0    // 有线连接（串口）
 #define WIRELESS_CONNECTION 1 // 无线连接（WIFI）
@@ -137,20 +134,11 @@ void Request_Data(uint8_t dataRequest[2]);
 // 包头为 0x55, 0x03 ，包尾为 0xBB 的指令(请求上位机任务), Request_ToHostArray[Pack_MainCmd]替换为请求编号
 enum
 {
-    RequestCmd_QRCode1 = 0x01,           // 二维码1
-    RequestCmd_QRCode2 = 0x02,           // 二维码2
-    RequestCmd_TrafficLight = 0x81,      // 交通灯
-    RequestCmd_TFTRecognition = 0x66,    // TFT识别
+    RequestCmd_QRCode1 = 0x01,        // 二维码1
+    RequestCmd_QRCode2 = 0x02,        // 二维码2
+    RequestCmd_TrafficLight = 0x81,   // 交通灯
+    RequestCmd_TFTRecognition = 0x66, // TFT识别
 };
-
-extern uint8_t RequestCmd_ToHostArray[];
-
-// 包头为 0x55, 0x0D ，包尾为 0xBB 的指令(获取信息) 获取的信息在Can_WifiRx_Check中根据返回编号进行储存
-static uint8_t RequestData_GarageFloor[2] = {0x02, 0x01}; // 请求车库位于第几层
-static uint8_t RequestData_Infrared[2] = {0x02, 0x02};    // 请求红外
-
-// 加一因为 0x00 未使用
-#define DATA_REQUEST_NUMBER (12 + 1)
 
 // 数据请求的包结构
 enum
@@ -195,14 +183,16 @@ enum
     DataLength_Preset3 = 16,         // 预设3
 };
 
+// 数据请求储存格式
 typedef struct DataSetting_Struct
 {
-    uint8_t *buffer;
-    uint8_t Data_Length;
-    uint8_t isSet;
+    uint8_t *buffer;     // 数据buffer
+    uint8_t Data_Length; // 数据长度信息
+    uint8_t isSet;       // 接收标志位
 } DataSetting_t;
 
-extern DataSetting_t DataBuffer[DATA_REQUEST_NUMBER];
+extern uint8_t DATA_REQUEST_NUMBER;
+extern DataSetting_t DataBuffer[];
 
 // 道闸标志物
 enum
@@ -320,39 +310,17 @@ typedef enum
 
 /***************************************红外指令 Infrared_XX[X]**************************************************/
 // 上位机无法直接发送
-extern uint8_t Infrared_Data[6];
-static uint8_t Infrared_PhotoPrevious[4] = {0x80, 0x7F, 0x05, ~(0x05)};     // 照片上翻
-static uint8_t Infrared_PhotoNext[4] = {0x80, 0x7F, 0x1B, ~(0x1B)};         // 照片下翻
 static uint8_t Infrared_LightAdd1[4] = {0x00, 0xFF, 0x0C, ~(0x0C)};         // 光源档位加1
 static uint8_t Infrared_LightAdd2[4] = {0x00, 0xFF, 0x18, ~(0x18)};         // 光源档位加2
 static uint8_t Infrared_LightAdd3[4] = {0x00, 0xFF, 0x5E, ~(0x5E)};         // 光源档位加3
-static uint8_t Infrared_TunnelFanOn[4] = {0x00, 0xFF, 0x45, ~(0x45)};       // 隧道风扇系统打开
 static uint8_t Infrared_AlarmON[6] = {0x03, 0x05, 0x14, 0x45, 0xDE, 0x92};  // 报警器打开
 static uint8_t Infrared_AlarmOFF[6] = {0x67, 0x34, 0x78, 0xA2, 0xFD, 0x27}; // 报警器关闭
-extern uint8_t Infrared_AlarmData[6];                                       // 报警器信息
-// 立体显示
-extern uint8_t Infrared_PlateData1[6]; // 车牌信息1
-extern uint8_t Infrared_PlateData2[6]; // 车牌信息2
-
-/***************************************ZigBee 数据 ZigBee_XX[8]**************************************************/
-static uint8_t ZigBee_BarrierGateOPEN[8] = {0x55, 0x03, 0x01, 0x01, 0x00, 0x00, 0x02, 0xBB};  // 道闸开启
-static uint8_t ZigBee_BarrierGateCLOSE[8] = {0x55, 0x03, 0x01, 0x02, 0x00, 0x00, 0x03, 0xBB}; // 道闸关闭
-static uint8_t ZigBee_TFTPagePrevious[8] = {0x55, 0x0b, 0x10, 0x01, 0x00, 0x00, 0x11, 0xbb};  // TFT向上翻页
-static uint8_t ZigBee_TFTPageNext[8] = {0x55, 0x0b, 0x10, 0x02, 0x00, 0x00, 0x12, 0xbb};      // TFT向下翻页
-static uint8_t ZigBee_TFTPageAuto[8] = {0x55, 0x0b, 0x10, 0x03, 0x00, 0x00, 0x13, 0xbb};      // TFT自动翻页
-
-// TFT显示车牌
-static uint8_t ZigBee_PlateTFT_1[8] = {0x55, 0x0b, 0x20, 0x41, 0x31, 0x32, 0xC4, 0xBB};
-static uint8_t ZigBee_PlateTFT_2[8] = {0x55, 0x0b, 0x21, 0x33, 0x42, 0x34, 0xCA, 0xBB};
 
 // 交通灯
 static uint8_t ZigBee_TrafficLightStartRecognition[8] = {0x55, 0x0E, 0x01, 0x00, 0x00, 0x00, 0x01, 0xBB}; //进入识别模式
 
 // 无线充电
 static uint8_t ZigBee_WirelessChargingON[8] = {0x55, 0x0a, 0x01, 0x01, 0x00, 0x00, 0x02, 0xBB}; //开启无线充电站
-
-// LED显示标志物
-extern uint8_t ZigBee_LEDDisplayDataToSecondRow[8]; // 数码管显示数据
 
 // 语音播报指令
 static uint8_t ZigBee_VoiceRandom[8] = {0x55, 0x06, 0x20, 0x01, 0x00, 0x00, 0x00, 0xBB};         // 随机播报语音指令
@@ -364,14 +332,8 @@ static uint8_t ZigBee_VoiceTurnAround[8] = {0x55, 0x06, 0x10, 0x06, 0x00, 0x00, 
 static uint8_t ZigBee_VoiceDriveAssistant[8] = {0x55, 0x06, 0x10, 0x01, 0x00, 0x00, 0x11, 0xBB}; // 驾驶助手
 
 // 从车指令
-extern uint8_t ZigBee_AGVStart[8];                                                         // 从车启动命令
-extern uint8_t ZigBee_AGVPreset[8];                                                        // 从车预案
 static uint8_t ZigBee_AGVOpenMV[8] = {0x55, 0x02, 0x92, 0x01, 0x00, 0x00, 0x00, 0xBB};     // 启动从车二维码识别
 static uint8_t ZigBee_AGVTurnLED[8] = {0x55, 0x02, 0x20, 0x01, 0x01, 0x00, 0x00, 0xBB};    // 从车转向灯
-static uint8_t ZigBee_GarageLayers1[8] = {0x55, 0x0D, 0x01, 0x01, 0x00, 0x00, 0x00, 0xBB}; // 停到1层
-static uint8_t ZigBee_GarageLayers2[8] = {0x55, 0x0D, 0x01, 0x02, 0x00, 0x00, 0x00, 0xBB}; // 停到2层
-static uint8_t ZigBee_GarageLayers3[8] = {0x55, 0x0D, 0x01, 0x03, 0x00, 0x00, 0x00, 0xBB}; // 停到3层
-static uint8_t ZigBee_GarageLayers4[8] = {0x55, 0x0D, 0x01, 0x04, 0x00, 0x00, 0x00, 0xBB}; // 停到4层
 
 // 指令发送模板↓
 
