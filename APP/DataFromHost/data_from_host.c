@@ -12,197 +12,23 @@
 #include "agv.h"
 #include "independent_task.h"
 
-#define SetSpeed Wifi_Rx_Buf[Pack_SubCmd1]
-
-void SaveDataFromHost(uint8_t buf[6], uint8_t commandID, bool isFrontData)
-{
-    if (isFrontData)
-    {
-        buf[0] = Wifi_Rx_Buf[Pack_SubCmd1];
-        buf[1] = Wifi_Rx_Buf[Pack_SubCmd2];
-        buf[2] = Wifi_Rx_Buf[Pack_SubCmd3];
-    }
-    else
-    {
-        buf[3] = Wifi_Rx_Buf[Pack_SubCmd1];
-        buf[4] = Wifi_Rx_Buf[Pack_SubCmd2];
-        buf[5] = Wifi_Rx_Buf[Pack_SubCmd3];
-    }
-}
-
-uint16_t GetEncoderSetting(void)
-{
-    uint16_t tmp = 0;
-    tmp = Wifi_Rx_Buf[5];
-    tmp <<= 8;
-    tmp |= Wifi_Rx_Buf[4];
-    return tmp;
-}
-
-void SaveToZigBee(uint8_t buf[8])
-{
-    buf[3] = Wifi_Rx_Buf[3];
-    buf[4] = Wifi_Rx_Buf[4];
-    buf[5] = Wifi_Rx_Buf[5];
-}
-
 // 处理上位机发送的数据
 void Process_DataFromHost(uint8_t mainCmd)
 {
     switch (mainCmd)
     {
-    case FromHost_Stop:
-        Update_MotorSpeed(0, 0);
-        Roadway_Flag_clean();
-        break; // 停止
-
-    case FromHost_Go:
-        Go_Ahead(SetSpeed, GetEncoderSetting());
-        break; // 前进
-
-    case FromHost_Back:
-        Back_Off(SetSpeed, GetEncoderSetting());
-        break; // 后退
-
-    case FromHost_TurnLeft:
-        Turn_ByEncoder(-90);
-        break; // 左转
-
-    case FromHost_TurnRight:
-        Turn_ByEncoder(90);
-        break; // 右转
-
-    case FromHost_TrackLine:
-        Start_Tracking(SetSpeed);
-        break; // 循迹
-
-    case FromHost_EncoderClear:
-
-        break; // 码盘清零
-
-    case FromHost_TurnCountClockWiseToDigree:
-        Turn_ByEncoder(-(int16_t)GetEncoderSetting());
-        Update_MotorSpeed(-SetSpeed, SetSpeed);
-        break; // 左转弯--角度
-
-    case FromHost_TurnClockWiseToDigree:
-        Turn_ByEncoder((int16_t)GetEncoderSetting());
-        Update_MotorSpeed(SetSpeed, -SetSpeed);
-        break; // 右转弯--角度
-
-    case FromHost_InfraredFrontData:
-        SaveDataFromHost(Infrared_Data, mainCmd, true);
-        break; // 红外前三位数据
-
-    case FromHost_InfraredBackData:
-        SaveDataFromHost(Infrared_Data, mainCmd, false);
-        break; // 红外后三位数据
-
-    case FromHost_InfraredSend:
-        Infrared_Send_A(Infrared_Data);
-        break; // 通知小车单片机发送红外线
-
-    case FromHost_TurnningLightControl:
-        // Set_tba_WheelLED(L_LED, Wifi_Rx_Buf[Pack_SubCmd1]);
-        // Set_tba_WheelLED(R_LED, Wifi_Rx_Buf[Pack_SubCmd2]);
-        break; // 转向灯控制
-
-    case FromHost_Beep:
-        Set_tba_Beep(Wifi_Rx_Buf[Pack_SubCmd1]);
-        break; // 蜂鸣器
-
-    case FromHost_NotUsed:
-        break; // 暂未使用
-
-    case FromHost_InfraredPhotoPrevious:
-        Infrared_Send_A(Infrared_PhotoNext);
-        break; // 红外发射控制相片上翻
-
-    case FromHost_InfraredPhotoNext:
-        Infrared_Send_A(Infrared_PhotoPrevious);
-        break; // 红外发射控制相片下翻
-
-    case FromHost_InfraredLightAdd1:
-        Infrared_Send_A(Infrared_LightAdd1);
-        break; // 红外发射控制光源强度档位加1
-
-    case FromHost_InfraredLightAdd2:
-        Infrared_Send_A(Infrared_LightAdd2);
-        break; // 红外发射控制光源强度档位加2
-
-    case FromHost_InfraredLightAdd3:
-        Infrared_Send_A(Infrared_LightAdd3);
-        break; // 红外发射控制光源强度档位加3
-
-    case FromHost_AGVReturnData:
-        Host_AGV_Return_Flag = Wifi_Rx_Buf[Pack_SubCmd1];
-        break; // 从车返回
-
-    case FromHost_LEDDisplaySecomdRow:
-        SaveToZigBee(ZigBee_LEDDisplayDataToSecondRow);
-        Send_ZigbeeData_To_Fifo(ZigBee_LEDDisplayDataToSecondRow, 8);
-        break; // 数码管第二排显示是数据
-
-    case FromHost_ReceivePresetHeadTowards:
-        SaveToZigBee(ZigBee_AGVPreset);
-        Send_ZigbeeData_To_Fifo(ZigBee_AGVPreset, 8);
-        break; // 接收预案车头设置
-
     case FromHost_Start:
         break; // 小车启动命令
 
-    case FromHost_QRCodeRecognition:
-        // Set_tba_WheelLED(L_LED, 1);
-        // Set_tba_WheelLED(R_LED, 1);
-        break; // 二维码识别
-
-    case FromHost_PlateRecognition:
-        break; // 车牌识别
-
-    case FromHost_ShapeRecongnition:
-        break; // 图像识别
+    case FromHost_TFTRecognition:
+        break; // TFT识别完成
 
     case FromHost_TrafficLight:
-        break; // 交通灯
+        break; // 交通灯识别完成
 
-    case FromHost_StreetLight:
-        break; // 路灯
-
-    case FromHost_PlateData1:
-        Infrared_PlateData1[2] = Wifi_Rx_Buf[3];
-        Infrared_PlateData1[3] = Wifi_Rx_Buf[4];
-        Infrared_PlateData1[4] = Wifi_Rx_Buf[5];
-        break; // 车牌信息1
-
-    case FromHost_PlateData2:
-        Infrared_PlateData1[5] = Wifi_Rx_Buf[3];
-        Infrared_PlateData2[2] = Wifi_Rx_Buf[4];
-        Infrared_PlateData2[3] = Wifi_Rx_Buf[5];
-        break; // 车牌信息2
-
-    case FromHost_AlarmON:
-        Infrared_AlarmData[0] = Wifi_Rx_Buf[3];
-        Infrared_AlarmData[1] = Wifi_Rx_Buf[4];
-        Infrared_AlarmData[2] = Wifi_Rx_Buf[5];
-        break; // 报警器开
-
-    case FromHost_AlarmOFF:
-        Infrared_AlarmData[3] = Wifi_Rx_Buf[3];
-        Infrared_AlarmData[4] = Wifi_Rx_Buf[4];
-        Infrared_AlarmData[5] = Wifi_Rx_Buf[5];
-        break; // 报警器关
-
-    case FromHost_Garage:
-        Set_tba_WheelLED(L_LED, 1);
-        Set_tba_WheelLED(R_LED, 1);
-        break; // 立体车库
-
-    case FromHost_TFTRecognition:
-        break; // TFT识别
-
-    case FromHost_AGVStart:
-        AGV_Start();
-        break; // AGV启动
+    case FromHost_QRCodeRecognition:
+        break; // 二维码识别完成
+        
     default:
         break;
     }

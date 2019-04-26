@@ -92,9 +92,13 @@ enum
 // ZigBee 返回数据头
 enum
 {
-    Return_BarrierGate = 0x03, // 道闸的返回数据
-    Return_ETC = 0x0C,         // ETC的返回数据
-    Return_AGVComplete = 0x66, // 从车入库完成
+    Return_BarrierGate = 0x03,   // 道闸
+    Return_ETC = 0x0C,           // ETC
+    Return_AGVComplete = 0x66,   // 从车
+    Return_TrafficLight = 0x0E,  // 交通灯
+    Return_StereoGarage = 0x0D,  // 立体车库
+    Return_AGV = 0x02,           // 从车
+    Return_VoiceBroadcast = 0x06 // 语音
 };
 
 // ZigBee回传的数据状态和时间戳
@@ -135,18 +139,7 @@ enum
 {
     RequestCmd_QRCode1 = 0x01,           // 二维码1
     RequestCmd_QRCode2 = 0x02,           // 二维码2
-    RequestCmd_StreetLight = 0x31,       // 智能路灯
-    RequestCmd_Garage = 0x05,            // 立体车库
-    RequestCmd_TFTShow = 0x06,           // TFT显示
-    RequestCmd_BarrierGate = 0x03,       // 道闸显示
-    RequestCmd_LEDShow = 0x08,           // LED标志物显示
-    RequestCmd_PlateRecognition = 0x11,  // 车牌识别
-    RequestCmd_ShapeRecongnition = 0x21, // 图形识别
-    RequestCmd_AGV = 0x07,               // AGV
-    RequestCmd_Ultrasonic = 0x41,        // 超声波
-    RequestCmd_Alarm = 0x51,             // 报警台
     RequestCmd_TrafficLight = 0x81,      // 交通灯
-    RequestCmd_RotatingLED = 0x91,       // 旋转LED(立体显示)
     RequestCmd_TFTRecognition = 0x66,    // TFT识别
 };
 
