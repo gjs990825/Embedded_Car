@@ -521,6 +521,29 @@ void StreetLight_AdjustTo(uint8_t targetLevel)
 
 ////////////////////////////////////////////////////////////
 
+// 起始任务
+void Start_Task(void)
+{
+    Set_tba_WheelLED(L_LED, SET);
+    Set_tba_WheelLED(R_LED, SET);
+    delay(1500);
+    Set_tba_WheelLED(L_LED, RESET);
+    Set_tba_WheelLED(R_LED, RESET);
+
+    LEDDisplay_TimerMode(TimerMode_ON);
+}
+
+// 终止任务
+void End_Task(void)
+{
+    LEDDisplay_TimerMode(TimerMode_OFF);
+    Set_tba_WheelLED(L_LED, SET);
+    Set_tba_WheelLED(R_LED, SET);
+    delay(1500);
+    Set_tba_WheelLED(L_LED, RESET);
+    Set_tba_WheelLED(R_LED, RESET);
+}
+
 // 交通灯识别
 void TrafficLight_Task(void)
 {
@@ -545,33 +568,10 @@ void QRCode_Task(uint8_t QRrequest)
     WaitForFlagInMs(GetCmdFlag(FromHost_QRCodeRecognition), SET, 5 * 1000);
 }
 
-// 起始任务
-void Start_Task(void)
-{
-    Set_tba_WheelLED(L_LED, SET);
-    Set_tba_WheelLED(R_LED, SET);
-    delay(1500);
-    Set_tba_WheelLED(L_LED, RESET);
-    Set_tba_WheelLED(R_LED, RESET);
-
-    LEDDisplay_TimerMode(TimerMode_ON);
-}
-
-// 终止任务
-void End_Task(void)
-{
-    LEDDisplay_TimerMode(TimerMode_OFF);
-    Set_tba_WheelLED(L_LED, SET);
-    Set_tba_WheelLED(R_LED, SET);
-    delay(1500);
-    Set_tba_WheelLED(L_LED, RESET);
-    Set_tba_WheelLED(R_LED, RESET);
-}
-
-// 语音任务，错误重试2次
+// 语音任务
 void Voice_Task(void)
 {
-    Start_VoiceCommandRecognition(3);
+    Voice_Recognition();
 }
 
 // ETC任务

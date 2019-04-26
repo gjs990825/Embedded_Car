@@ -27,7 +27,7 @@ void Hardware_Init(void)
 	// my_mem_init(SRAMEX);
 	// 外部内存池未配置接口，暂不可用
 
-	CanTimer_Init(16799, 199);	// CAN 数据检查
+	CanTimer_Init(167, 1999);	 // CAN 数据检查
 	DebugTimer_Init(16799, 1999); // 调试（白卡检测）
 	DebugPin_Init();			  // 初始化调试用引脚
 	Update_MotorSpeed(0, 0);	  // 电机速度置零
