@@ -34,7 +34,7 @@ static const int ShortTrack_Value = (30.0f * Centimeter_Value);
 // 到十字路口中心码盘值
 static const int ToCrossroadCenter = (16.5f * Centimeter_Value);
 
-#define _STOP_WAITING_INTERVAL_ 150
+#define _STOP_WAITING_INTERVAL_ 250
 
 // 每秒行进距离（速度50）
 static const float _CentermetersPerSecondAtSpeed50 = 36.0;
