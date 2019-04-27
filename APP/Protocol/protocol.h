@@ -118,33 +118,11 @@ typedef struct ZigBee_DataStatus_Sturuct
     uint32_t timeStamp;
 } ZigBee_DataStatus_t;
 
-#define GetCmdFlag(id) CommandFlagStatus[id]
-#define SetCmdFlag(id) CommandFlagStatus[id] = SET
-#define ResetCmdFlag(id) CommandFlagStatus[id] = RESET
-
-// 执行N次，带延迟
-#define ExcuteNTimes(Task, N, delay)    \
-    do                                  \
-    {                                   \
-        for (uint8_t i = 0; i < N; i++) \
-        {                               \
-            Task;                       \
-            delay_ms(delay);            \
-        }                               \
-    } while (0)
-
-// 自动判断数据长度（传入参数不可为指针！）
-#define Infrared_Send_A(infraredData) Infrared_Send(infraredData, sizeof(infraredData))
-
-void Send_ZigBeeData(uint8_t *data);
-void Send_ZigBeeDataNTimes(uint8_t *data, uint8_t ntimes, uint16_t delay);
-void Request_ToHost(uint8_t request);
-void Request_Data(uint8_t dataRequest[2]);
-
 /***************************************请求命令 Request_XX**************************************************/
 // 上位机没有进行数据校验，校验和(Request_ToHostArray[Pack_CheckSum])无视
-
 // 包头为 0x55, 0x03 ，包尾为 0xBB 的指令(请求上位机任务), Request_ToHostArray[Pack_MainCmd]替换为请求编号
+
+// 任务请求ID
 enum
 {
     RequestCmd_QRCode1 = 0x01,        // 二维码1
@@ -203,9 +181,6 @@ typedef struct DataSetting_Struct
     uint8_t Data_Length; // 数据长度信息
     uint8_t isSet;       // 接收标志位
 } DataSetting_t;
-
-extern uint8_t DATA_REQUEST_NUMBER;
-extern DataSetting_t DataBuffer[];
 
 // 道闸标志物
 enum
@@ -321,8 +296,9 @@ typedef enum
     RouteStatus_Construction = 0x02    // 前方施工
 } RouteStatus_t;
 
-/***************************************红外指令 Infrared_XX[X]**************************************************/
-// 上位机无法直接发送
+// 下面的数据是基本不需要操作的固定数据，可直接发送
+
+// 红外指令
 static uint8_t Infrared_LightAdd1[4] = {0x00, 0xFF, 0x0C, ~(0x0C)};         // 光源档位加1
 static uint8_t Infrared_LightAdd2[4] = {0x00, 0xFF, 0x18, ~(0x18)};         // 光源档位加2
 static uint8_t Infrared_LightAdd3[4] = {0x00, 0xFF, 0x5E, ~(0x5E)};         // 光源档位加3
@@ -348,34 +324,48 @@ static uint8_t ZigBee_VoiceDriveAssistant[8] = {0x55, 0x06, 0x10, 0x01, 0x00, 0x
 static uint8_t ZigBee_AGVOpenMV[8] = {0x55, 0x02, 0x92, 0x01, 0x00, 0x00, 0x00, 0xBB};  // 启动从车二维码识别
 static uint8_t ZigBee_AGVTurnLED[8] = {0x55, 0x02, 0x20, 0x01, 0x01, 0x00, 0x00, 0xBB}; // 从车转向灯
 
-// 指令发送模板↓
+// 各个标志物的指令根据下面的模板填充后发送
+// 标志物ZigBee包头为0xAA(固定)和0xXX(ZigBee编号)，包尾为0xBB
+// 除自动评分终端外，其它ZigBee数据都需要校验后发送
 
-// 道闸标志物数据
-static uint8_t ZigBee_BarrierGateData[8] = {0x55, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
-
-// LED显示标志物数据
-static uint8_t ZigBee_LEDDisplayData[8] = {0x55, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
-
-// 旋转LED标志物数据
-static uint8_t Infrared_RotationLEDData[6] = {0xFF, 0x00, 0x00, 0x00, 0x00, 0x00};
-
-// TFT显示器标志物数据
-static uint8_t ZigBee_TFTData[8] = {0x55, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
-
-// 立体车库标志物数据
-static uint8_t ZigBee_StereoGarageData[8] = {0x55, 0x0D, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
-
-// 智能路灯标志物数据
-static uint8_t ZigBee_TrafficLightData[8] = {0x55, 0x0E, 0x00, 0x00, 0x00, 0x00, 0x01, 0xBB};
-
-// 语音播报标志物数据
-static uint8_t ZigBee_VoiceData[8] = {0x55, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
-
-// 语音返回自动评分终端数据
-static uint8_t ZigBee_VoiceReturnData[8] = {0xAF, 0x06, 0x00, 0x02, 0x00, 0x00, 0x01, 0xBB};
+static uint8_t ZigBee_BarrierGateData[8] = {0x55, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};  // 道闸
+static uint8_t ZigBee_LEDDisplayData[8] = {0x55, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};   // LED显示
+static uint8_t Infrared_RotationLEDData[6] = {0xFF, 0x00, 0x00, 0x00, 0x00, 0x00};            // 旋转LED
+static uint8_t ZigBee_TFTData[8] = {0x55, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};          // TFT显示器
+static uint8_t ZigBee_StereoGarageData[8] = {0x55, 0x0D, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB}; // 立体车库
+static uint8_t ZigBee_TrafficLightData[8] = {0x55, 0x0E, 0x00, 0x00, 0x00, 0x00, 0x01, 0xBB}; // 智能路灯
+static uint8_t ZigBee_VoiceData[8] = {0x55, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};        // 语音播报
+static uint8_t ZigBee_VoiceReturnData[8] = {0xAF, 0x06, 0x00, 0x02, 0x00, 0x00, 0x01, 0xBB};  // 语音返回自动评分终端
 
 // 当前指令状态和数据内容存放(指令不连续和标志位使用造成的空间浪费暂时未解决)
 extern uint8_t CommandFlagStatus[0xFF];
+
+// 数据请求编号数量
+extern uint8_t DATA_REQUEST_NUMBER;
+extern DataSetting_t DataBuffer[];
+
+#define GetCmdFlag(id) CommandFlagStatus[id]
+#define SetCmdFlag(id) CommandFlagStatus[id] = SET
+#define ResetCmdFlag(id) CommandFlagStatus[id] = RESET
+
+// 执行N次，带延迟
+#define ExcuteNTimes(Task, N, delay)    \
+    do                                  \
+    {                                   \
+        for (uint8_t i = 0; i < N; i++) \
+        {                               \
+            Task;                       \
+            delay_ms(delay);            \
+        }                               \
+    } while (0)
+
+// 自动判断数据长度 warnning: 传入参数不可为指针！
+#define Infrared_Send_A(infraredData) Infrared_Send(infraredData, sizeof(infraredData))
+
+void Send_ZigBeeData(uint8_t *data);
+void Send_ZigBeeDataNTimes(uint8_t *data, uint8_t ntimes, uint16_t delay);
+void Request_ToHost(uint8_t request);
+void Request_Data(uint8_t dataRequest[2]);
 
 void Send_DataToUsart(uint8_t *buf, uint32_t length);
 void Check_Sum(uint8_t *cmd);

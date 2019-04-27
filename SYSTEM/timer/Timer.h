@@ -8,6 +8,16 @@
 // 获取当前时间戳
 #define Get_GlobalTimeStamp() (global_times)
 
+// 等待某个标志位，超时则忽略
+#define WaitForFlagInMs(flag, status, timeout)                        \
+	do                                                                \
+	{                                                                 \
+		uint32_t startStamp = Get_GlobalTimeStamp();                  \
+		while ((!IsTimeOut(startStamp, timeout)) && (flag != status)) \
+		{                                                             \
+		};                                                            \
+	} while (0)
+
 extern volatile uint32_t global_times;
 
 void Timer_Init(uint16_t arr, uint16_t psc);

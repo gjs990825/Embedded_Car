@@ -210,7 +210,7 @@ void BarrierGate_ReturnStatus(void)
 {
     ZigBee_BarrierGateData[Pack_MainCmd] = BarrierGateMode_ReturnStatus;
     ZigBee_BarrierGateData[Pack_SubCmd1] = 0x01;
-    Send_ZigBeeData5Times(ZigBee_BarrierGateData);
+    Send_ZigBeeData(ZigBee_BarrierGateData);
 }
 
 // 道闸任务
@@ -391,6 +391,7 @@ void TFT_Distance(uint16_t dis)
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 立体车库部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
+// 立体车库到达第X层
 void StereoGarage_ToLayer(uint8_t layer)
 {
     if (layer > 4 || layer < 1)
@@ -401,22 +402,25 @@ void StereoGarage_ToLayer(uint8_t layer)
     Send_ZigBeeData5Times(ZigBee_StereoGarageData);
 }
 
-void StereoGarage_GetLayer(void)
+// 立体车库返回位于第几层
+void StereoGarage_ReturnLayer(void)
 {
     ZigBee_StereoGarageData[Pack_MainCmd] = StereoGarage_Return;
     ZigBee_StereoGarageData[Pack_SubCmd1] = 0x01;
-    Send_ZigBeeData5Times(ZigBee_StereoGarageData);
+    Send_ZigBeeData(ZigBee_StereoGarageData);
 }
 
-void StereoGarage_GetInfraredStatus(void)
+// 立体车库返回前后红外信息
+void StereoGarage_ReturnInfraredStatus(void)
 {
     ZigBee_StereoGarageData[Pack_MainCmd] = StereoGarage_Return;
     ZigBee_StereoGarageData[Pack_SubCmd1] = 0x02;
-    Send_ZigBeeData5Times(ZigBee_StereoGarageData);
+    Send_ZigBeeData(ZigBee_StereoGarageData);
 }
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 交通灯部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
+// 交通灯进入识别状态
 void TrafficLight_RecognitionMode(void)
 {
     ZigBee_TrafficLightData[Pack_MainCmd] = TrafficLight_Recognition;
@@ -424,6 +428,7 @@ void TrafficLight_RecognitionMode(void)
     Send_ZigBeeDataNTimes(ZigBee_TrafficLightData, 2, 150);
 }
 
+// 交通灯确认识别结果
 void TrafficLight_ConfirmColor(TrafficLightColor_t light)
 {
     ZigBee_TrafficLightData[Pack_MainCmd] = TrafficLight_Confirm;

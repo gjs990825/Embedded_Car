@@ -24,16 +24,6 @@ typedef enum
 		};                        \
 	} while (0)
 
-// 等待某个标志位，超时则忽略
-#define WaitForFlagInMs(flag, status, timeout)                        \
-	do                                                                \
-	{                                                                 \
-		uint32_t startStamp = Get_GlobalTimeStamp();                  \
-		while ((!IsTimeOut(startStamp, timeout)) && (flag != status)) \
-		{                                                             \
-		};                                                            \
-	} while (0)
-
 // 等待动作完成，用于转向循迹等不会超时的任务
 #define ExcuteAndWait(action, Flag, waitStatus) \
 	do                                          \

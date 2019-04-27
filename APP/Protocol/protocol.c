@@ -85,14 +85,14 @@ void Send_ZigBeeDataNTimes(uint8_t *data, uint8_t ntimes, uint16_t delay)
     }
 }
 
-// 请求操作
+// 向上位机请求任务
 void Request_ToHost(uint8_t request)
 {
     Request_ToHostArray[Pack_MainCmd] = request;
     Send_ToHost(Request_ToHostArray, 8);
 }
 
-// 请求数据
+// 向上位机请求数据
 void Request_Data(uint8_t dataRequest[2])
 {
     Request_ToHostArray[Pack_MainCmd] = dataRequest[0];

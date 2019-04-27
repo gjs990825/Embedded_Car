@@ -77,8 +77,8 @@ void TFT_Distance(uint16_t dis);
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 立体车库部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 void StereoGarage_ToLayer(uint8_t layer);
-void StereoGarage_GetLayer(void);
-void StereoGarage_GetInfraredStatus(void);
+void StereoGarage_ReturnLayer(void);
+void StereoGarage_ReturnInfraredStatus(void);
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 交通灯部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
