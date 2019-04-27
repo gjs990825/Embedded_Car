@@ -13,13 +13,9 @@
 #include <string.h>
 #include "Timer.h"
 
-///////////
+// Gao added
 #include "protocol.h"
-#include "data_from_host.h"
-
-////////////临时
-
-////////////
+#include "data_interaction.h"
 
 uint8_t Wifi_Rx_Buf[WIFI_MAX_NUM];
 uint8_t Zigb_Rx_Buf[ZIGB_RX_MAX];
@@ -188,7 +184,7 @@ void Can_ZigBeeRx_Check(void)
     {
         if (gt_get_sub(canu_zibe_rxtime) == 0)
         {
-            ZigBee_CmdHandler(Zigb_Rx_Buf[1]); // 对收到的ZigBee指令或数据进行处理 // edited
+            ZigBee_CmdHandler(Zigb_Rx_Buf); // 对收到的ZigBee指令或数据进行处理 // edited
 
             // if (Zigb_Rx_Buf[1] == 0x03) // 道闸
             // {
@@ -263,7 +259,7 @@ void Can_ZigBeeRx_Check(void)
             //         Stop_Flag = Zigb_Rx_Buf[3]; // 语音芯片状态返回
             //     }
             // }
-            
+
             Zigbee_Rx_flag = 0;
         }
     }

@@ -86,6 +86,18 @@ enum
     FromHost_AGVSetTask = 0xAA, // AGV 接收任务设置
 };
 
+// ZigBee返回名称(没有使用到数据，只借用了名称)
+enum
+{
+    BarrierGate,    // 道闸
+    ETC,            // ETC系统
+    AGVComplete,    // 从车入库完成
+    TrafficLight,   // 交通灯
+    StereoGarage,   // 立体车库
+    AGV,            // 从车返回
+    VoiceBroadcast, // 语音播报
+};
+
 // ZigBee 返回数据头
 enum
 {
@@ -102,6 +114,7 @@ enum
 typedef struct ZigBee_DataStatus_Sturuct
 {
     uint8_t isSet;
+    uint8_t cmd[8];
     uint32_t timeStamp;
 } ZigBee_DataStatus_t;
 
@@ -332,8 +345,8 @@ static uint8_t ZigBee_VoiceTurnAround[8] = {0x55, 0x06, 0x10, 0x06, 0x00, 0x00, 
 static uint8_t ZigBee_VoiceDriveAssistant[8] = {0x55, 0x06, 0x10, 0x01, 0x00, 0x00, 0x11, 0xBB}; // 驾驶助手
 
 // 从车指令
-static uint8_t ZigBee_AGVOpenMV[8] = {0x55, 0x02, 0x92, 0x01, 0x00, 0x00, 0x00, 0xBB};     // 启动从车二维码识别
-static uint8_t ZigBee_AGVTurnLED[8] = {0x55, 0x02, 0x20, 0x01, 0x01, 0x00, 0x00, 0xBB};    // 从车转向灯
+static uint8_t ZigBee_AGVOpenMV[8] = {0x55, 0x02, 0x92, 0x01, 0x00, 0x00, 0x00, 0xBB};  // 启动从车二维码识别
+static uint8_t ZigBee_AGVTurnLED[8] = {0x55, 0x02, 0x20, 0x01, 0x01, 0x00, 0x00, 0xBB}; // 从车转向灯
 
 // 指令发送模板↓
 

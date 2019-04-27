@@ -19,7 +19,7 @@
 #include "ultrasonic.h"
 #include "agv.h"
 #include "voice.h"
-#include "data_from_host.h"
+#include "data_interaction.h"
 #include "debug.h"
 #include "bh1750.h"
 
@@ -34,7 +34,7 @@
 #define KEY_TEMP 5
 
 // 配置按键调试方案
-#define KEY_CONFIGURATION KEY_DEFAULT
+#define KEY_CONFIGURATION KEY_TEMP
 
 #if (KEY_CONFIGURATION == KEY_DEFAULT)
 
@@ -88,7 +88,7 @@
 #elif (KEY_CONFIGURATION == KEY_TEMP)
 
 // 临时配置
-#define Action_S1() VoiceBroadcast_Radom()
+#define Action_S1() print_info("ETC:%d\r\n", Get_ZigBeeReturnStatus(ETC))
 #define Action_S2() VoiceRecognition_Return(0x03)
 #define Action_S3() Voice_Recognition()
 #define Action_S4() VoiceBroadcast_Specific(0x02)

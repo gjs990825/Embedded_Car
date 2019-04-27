@@ -17,7 +17,7 @@
 #include "route.h"
 #include "my_lib.h"
 #include "Timer.h"
-#include "data_from_host.h"
+#include "data_interaction.h"
 
 #define Send_ZigBeeData5Times(data) Send_ZigBeeDataNTimes(data, 5, 200)
 
@@ -580,7 +580,7 @@ void ETC_Task(void)
     for (uint8_t i = 0; i < 10; i++) // 调整10次，不开直接走
     {
         // 六秒前的数据作废
-        if ((ETC_Status.isSet == SET) && (!IsTimeOut(ETC_Status.timeStamp, 6 * 1000)))
+        if ((ETC_Status.isSet == SET) && (!IsTimeOut(Get_ZigBeeReturnStamp(ETC), 6 * 1000)))
             break;
         MOVE(7);  // 跟着节拍
         MOVE(-7); // 一起摇摆

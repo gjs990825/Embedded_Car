@@ -1,4 +1,4 @@
-#include "data_from_host.h"
+#include "data_interaction.h"
 #include "canP_HostCom.h"
 #include "delay.h"
 #include "roadway_check.h"
@@ -28,33 +28,44 @@ void Process_DataFromHost(uint8_t mainCmd)
 
     case FromHost_QRCodeRecognition:
         break; // 二维码识别完成
-        
+
     default:
         break;
     }
     SetCmdFlag(mainCmd);
 }
 
-ZigBee_DataStatus_t ETC_Status = {0, 0};
-ZigBee_DataStatus_t BarrierGate_Status = {0, 0};
-ZigBee_DataStatus_t AGVComplete_Status = {0, 0};
+#define DefineDataStatus(name) ZigBee_DataStatus_t name##_Status = {0, {0}, 0}
+#define ProcessZigBeeReturnData(X)                \
+    X##_Status.isSet = SET;                       \
+    X##_Status.timeStamp = Get_GlobalTimeStamp(); \
+    memcpy(X##_Status.cmd, cmd, 8)
 
-#define SetAndAddStamp(X) \
-    X.isSet = SET;        \
-    X.timeStamp = Get_GlobalTimeStamp()
+#define CaseProcess(name)                \
+    case Return_##name:                  \
+        ProcessZigBeeReturnData(##name); \
+        break;
+
+DefineDataStatus(BarrierGate);
+DefineDataStatus(ETC);
+DefineDataStatus(AGVComplete);
+DefineDataStatus(TrafficLight);
+DefineDataStatus(StereoGarage);
+DefineDataStatus(AGV);
+DefineDataStatus(VoiceBroadcast);
 
 // ZigBee指令处理
-void ZigBee_CmdHandler(uint8_t cmd)
+void ZigBee_CmdHandler(uint8_t *cmd)
 {
-    switch (cmd)
+    switch (cmd[1])
     {
-    case Return_ETC:
-        SetAndAddStamp(ETC_Status);
-        break;
-    case Return_BarrierGate:
-        SetAndAddStamp(BarrierGate_Status);
-    case Return_AGVComplete:
-        SetAndAddStamp(AGVComplete_Status);
+        CaseProcess(BarrierGate);
+        CaseProcess(ETC);
+        CaseProcess(AGVComplete);
+        CaseProcess(TrafficLight);
+        CaseProcess(StereoGarage);
+        CaseProcess(AGV);
+        CaseProcess(VoiceBroadcast);
     default:
         break;
     }

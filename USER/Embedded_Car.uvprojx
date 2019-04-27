@@ -338,7 +338,7 @@
               <MiscControls>--no_multibyte_chars</MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F40_41xxx</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CMSIS;..\FWLIB\inc;..\USER;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\timer;..\my_lib;..\MALLOC;..\HARDWARE;..\HARDWARE\Task_Board;..\HARDWARE\Core_Board;..\HARDWARE\CAN;..\HARDWARE\Full;..\HARDWARE\Movement;..\HARDWARE\Task_Board\BH1705;..\HARDWARE\Task_Board\INFARED;..\HARDWARE\Task_Board\SYN7318;..\HARDWARE\Task_Board\ULTRASONIC;..\HARDWARE\Core_Board\POWER_CHECK;..\HARDWARE\Core_Board\UART;..\HARDWARE\Core_Board\UART_A72;..\HARDWARE\Core_Board\UART\UART_A72;..\APP\Movement;..\APP\Movement\A_Star;..\APP\Movement\PID;..\APP\Movement\ROAD_CHECK;..\APP\Debug;..\APP\Task;..\APP\CAN_TIMER;..\APP\Protocol;..\APP\Movement\Route;..\APP\DataFromHost;..\APP\AGV;..\HARDWARE\Core_Board\RC522</IncludePath>
+              <IncludePath>..\CMSIS;..\FWLIB\inc;..\USER;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\timer;..\my_lib;..\MALLOC;..\HARDWARE;..\HARDWARE\Task_Board;..\HARDWARE\Core_Board;..\HARDWARE\CAN;..\HARDWARE\Movement;..\HARDWARE\Task_Board\BH1705;..\HARDWARE\Task_Board\INFARED;..\HARDWARE\Task_Board\SYN7318;..\HARDWARE\Task_Board\ULTRASONIC;..\HARDWARE\Core_Board\POWER_CHECK;..\HARDWARE\Core_Board\UART;..\HARDWARE\Core_Board\UART\UART_A72;..\APP\Movement;..\APP\Movement\A_Star;..\APP\Movement\PID;..\APP\Movement\ROAD_CHECK;..\APP\Debug;..\APP\Task;..\APP\CAN_TIMER;..\APP\Protocol;..\APP\Movement\Route;..\APP\AGV;..\HARDWARE\Core_Board\RC522;..\APP\Data_Interaction</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -438,11 +438,6 @@
               <FilePath>..\APP\Movement\ROAD_CHECK\roadway_check.c</FilePath>
             </File>
             <File>
-              <FileName>data_from_host.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\APP\DataFromHost\data_from_host.c</FilePath>
-            </File>
-            <File>
               <FileName>agv.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\APP\AGV\agv.c</FilePath>
@@ -451,6 +446,11 @@
               <FileName>independent_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\APP\Task\independent_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>data_interaction.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\Data_Interaction\data_interaction.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -486,11 +486,6 @@
               <FileName>uart_a72.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\Core_Board\UART\UART_A72\uart_a72.c</FilePath>
-            </File>
-            <File>
-              <FileName>usart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\Core_Board\USART\usart.c</FilePath>
             </File>
             <File>
               <FileName>bh1750.c</FileName>
