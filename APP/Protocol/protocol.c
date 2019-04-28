@@ -43,13 +43,18 @@ DataSetting_t DataBuffer[] = {
     DataAndLength(Preset2),
     DataAndLength(Preset3),
 };
-
+// 数据请求命令个数
 uint8_t DATA_REQUEST_NUMBER = GET_ARRAY_LENGEH(DataBuffer);
 
 // 请求指令使用的buffer
 uint8_t Request_ToHostArray[] = {0x55, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
-
+// 上位机指令接收状态
 uint8_t CommandFlagStatus[0xFF] = {0};
+
+// 主车上传Buffer
+uint8_t Principal_Tab[Principal_Length];
+// 从车上传Buffer
+uint8_t Follower_Tab[Follower_Length];
 
 #if 0
 // C中没有泛型，有些函数不容易实现，所以这里宏定义实现

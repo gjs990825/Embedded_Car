@@ -2,13 +2,10 @@
 #include "delay.h"
 #include <string.h>
 #include "cba.h"
-#include "infrared.h"
-#include "data_base.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include "debug.h"
 #include "timer.h"
-#include "movement.h"
 #include "protocol.h"
 
 #define _ENABLE_USART6_INFO_OUTPUT_ 1

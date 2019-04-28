@@ -338,7 +338,7 @@
               <MiscControls>--no_multibyte_chars</MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F40_41xxx</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CMSIS;..\FWLIB\inc;..\USER;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\timer;..\my_lib;..\MALLOC;..\HARDWARE;..\HARDWARE\Task_Board;..\HARDWARE\Core_Board;..\HARDWARE\CAN;..\HARDWARE\Movement;..\HARDWARE\Task_Board\BH1705;..\HARDWARE\Task_Board\INFARED;..\HARDWARE\Task_Board\SYN7318;..\HARDWARE\Task_Board\ULTRASONIC;..\HARDWARE\Core_Board\POWER_CHECK;..\HARDWARE\Core_Board\UART;..\HARDWARE\Core_Board\UART\UART_A72;..\APP\Movement;..\APP\Movement\A_Star;..\APP\Movement\PID;..\APP\Movement\ROAD_CHECK;..\APP\Debug;..\APP\Task;..\APP\CAN_TIMER;..\APP\Protocol;..\APP\Movement\Route;..\APP\AGV;..\HARDWARE\Core_Board\RC522;..\APP\Data_Interaction</IncludePath>
+              <IncludePath>..\CMSIS;..\FWLIB\inc;..\Main;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\timer;..\HARDWARE\Core_Board\MALLOC;..\HARDWARE;..\HARDWARE\Task_Board;..\HARDWARE\Core_Board;..\HARDWARE\CAN;..\HARDWARE\Movement;..\HARDWARE\Task_Board\BH1705;..\HARDWARE\Task_Board\INFARED;..\HARDWARE\Task_Board\SYN7318;..\HARDWARE\Task_Board\ULTRASONIC;..\HARDWARE\Core_Board\POWER_CHECK;..\HARDWARE\Core_Board\UART;..\HARDWARE\Core_Board\UART\UART_A72;..\HARDWARE\Core_Board\RC522;..\APP\Movement;..\APP\Movement\A_Star;..\APP\Movement\PID;..\APP\Movement\ROAD_CHECK;..\APP\Debug;..\APP\Task;..\APP\CAN_TIMER;..\APP\Protocol;..\APP\Movement\Route;..\APP\AGV;..\APP\Data_Interaction;..\APP\my_lib</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -380,12 +380,12 @@
       </TargetOption>
       <Groups>
         <Group>
-          <GroupName>USER</GroupName>
+          <GroupName>Main</GroupName>
           <Files>
             <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\main.c</FilePath>
+              <FilePath>..\Main\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -511,6 +511,11 @@
               <FileName>RC522.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\Core_Board\RC522\RC522.C</FilePath>
+            </File>
+            <File>
+              <FileName>malloc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\Core_Board\MALLOC\malloc.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -765,26 +770,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>my_lib</GroupName>
-          <Files>
-            <File>
-              <FileName>my_lib.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\my_lib\my_lib.c</FilePath>
-            </File>
-            <File>
-              <FileName>data_base.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\my_lib\data_base.c</FilePath>
-            </File>
-            <File>
-              <FileName>data_filtering.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\my_lib\data_filtering.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>CAN</GroupName>
           <Files>
             <File>
@@ -820,12 +805,17 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>MALLOC</GroupName>
+          <GroupName>My_lib</GroupName>
           <Files>
             <File>
-              <FileName>malloc.c</FileName>
+              <FileName>data_filtering.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\MALLOC\malloc.c</FilePath>
+              <FilePath>..\APP\my_lib\data_filtering.c</FilePath>
+            </File>
+            <File>
+              <FileName>my_lib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\my_lib\my_lib.c</FilePath>
             </File>
           </Files>
         </Group>

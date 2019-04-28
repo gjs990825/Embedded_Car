@@ -153,6 +153,7 @@ void AGV_Start(void)
     SendCmdNTimes(10);
 }
 
+// 设定从车车头朝向
 void AGV_SetTowards(uint8_t towards)
 {
     ClearAGVCmd();
@@ -161,6 +162,7 @@ void AGV_SetTowards(uint8_t towards)
     SendCmdNTimes(10);
 }
 
+// 设定单个路径点
 void AGV_SendSinglePoint(uint8_t number, RouteNode_t node)
 {
     ClearAGVCmd();
@@ -171,6 +173,7 @@ void AGV_SendSinglePoint(uint8_t number, RouteNode_t node)
     SendCmdNTimes(10);
 }
 
+// 从任务集合中设定从车任务
 void AGV_SetRouteFromTask(RouteNode_t task[], uint8_t length)
 {
     for (uint8_t i = 0; i < length; i++)
@@ -179,7 +182,7 @@ void AGV_SetRouteFromTask(RouteNode_t task[], uint8_t length)
     }
 }
 
-// 发送规划的路径到从车
+// 发送字符串格式路径到从车
 void AGV_SetRoute(uint8_t *str)
 {
     uint8_t length = strlen((char *)str) / 2;
@@ -192,7 +195,7 @@ void AGV_SetRoute(uint8_t *str)
     }
 }
 
-// 设定从车的任务
+// 设定从车预设任务的执行点
 void AGV_SetTaskID(uint8_t routeNumber, uint8_t taskNumber)
 {
     ClearAGVCmd();

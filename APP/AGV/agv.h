@@ -6,6 +6,8 @@
 
 void Send_AGVCmd(uint8_t *cmd);
 
+// 官方指令的实现↓
+
 void AGV_Stop(void);
 void AGV_Go(uint8_t speed, uint16_t encoder);
 void AGV_Back(uint8_t speed, uint16_t encoder);
@@ -19,6 +21,9 @@ void AGV_PhotoChange(bool dir);
 void AGV_LightAdd(uint8_t level);
 void AGV_UploadData(bool sta);
 void AGV_VoiceRecognition(bool sta);
+
+// 从车实现了自动路径规划并可设定预设任务执行，官方指令基本弃用
+// 实际在用的控制函数↓
 
 void AGV_Start(void);
 void AGV_SetTowards(uint8_t towards);

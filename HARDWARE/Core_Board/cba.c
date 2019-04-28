@@ -6,14 +6,12 @@
 // 按键设置启动程序
 
 #include "infrared.h"
-#include "data_base.h"
 #include "Rc522.h"
 #include "a_star.h"
 #include "movement.h"
 #include "task.h"
 #include "can_user.h"
 #include "canp_hostcom.h"
-#include "data_base.h"
 #include "protocol.h"
 #include "roadway_check.h"
 #include "ultrasonic.h"
@@ -88,10 +86,10 @@
 #elif (KEY_CONFIGURATION == KEY_TEMP)
 
 // 临时配置
-#define Action_S1() print_info("ETC:%d\r\n", Get_ZigBeeReturnStatus(ETC))
-#define Action_S2() VoiceRecognition_Return(0x03)
-#define Action_S3() Voice_Recognition()
-#define Action_S4() VoiceBroadcast_Specific(0x02)
+#define Action_S1() StereoGarage_ToLayer(2)
+#define Action_S2() print_info("Layer:%d\r\n", Get_StereoGrageLayer())
+#define Action_S3() print_info("IR0:%d\r\n", Get_StereoGrageInfraredStatus()[0])
+#define Action_S4() print_info("IR1:%d\r\n", Get_StereoGrageInfraredStatus()[1])
 
 #endif
 

@@ -344,6 +344,13 @@ extern uint8_t CommandFlagStatus[0xFF];
 extern uint8_t DATA_REQUEST_NUMBER;
 extern DataSetting_t DataBuffer[];
 
+#define Principal_Length 12
+#define Follower_Length  50
+
+// 上传到上位机的数据buffer（官方用法已弃用）
+extern uint8_t Principal_Tab[Principal_Length]; 
+extern uint8_t Follower_Tab[Follower_Length];
+
 #define GetCmdFlag(id) CommandFlagStatus[id]
 #define SetCmdFlag(id) CommandFlagStatus[id] = SET
 #define ResetCmdFlag(id) CommandFlagStatus[id] = RESET
