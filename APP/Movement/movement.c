@@ -249,6 +249,7 @@ void Turn_ByTrack(Direction_t dir)
 	}
 }
 
+#define TURN_ONCE(dir) ExcuteAndWait(Turn_ToNextTrack(dir), Stop_Flag, TURNCOMPLETE)
 #define TURN_TWICE(dir)                                            \
 	ExcuteAndWait(Turn_ToNextTrack(dir), Stop_Flag, TURNCOMPLETE); \
 	ExcuteAndWait(Turn_ToNextTrack(dir), Stop_Flag, TURNCOMPLETE)
@@ -267,10 +268,10 @@ void Turn_ToDirection(int8_t *current, Direction_t target)
 			TURN_TWICE(DIR_RIGHT);
 			break;
 		case DIR_LEFT:
-			TURN_TO(DIR_LEFT);
+			TURN_ONCE(DIR_LEFT);
 			break;
 		case DIR_RIGHT:
-			TURN_TO(DIR_RIGHT);
+			TURN_ONCE(DIR_RIGHT);
 			break;
 		default:
 			break;
@@ -286,10 +287,10 @@ void Turn_ToDirection(int8_t *current, Direction_t target)
 		case DIR_DOWN:
 			break;
 		case DIR_LEFT:
-			TURN_TO(DIR_RIGHT);
+			TURN_ONCE(DIR_RIGHT);
 			break;
 		case DIR_RIGHT:
-			TURN_TO(DIR_LEFT);
+			TURN_ONCE(DIR_LEFT);
 			break;
 		default:
 			break;
@@ -300,10 +301,10 @@ void Turn_ToDirection(int8_t *current, Direction_t target)
 		switch (target)
 		{
 		case DIR_UP:
-			TURN_TO(DIR_RIGHT);
+			TURN_ONCE(DIR_RIGHT);
 			break;
 		case DIR_DOWN:
-			TURN_TO(DIR_LEFT);
+			TURN_ONCE(DIR_LEFT);
 			break;
 		case DIR_LEFT:
 			break;
@@ -319,10 +320,10 @@ void Turn_ToDirection(int8_t *current, Direction_t target)
 		switch (target)
 		{
 		case DIR_UP:
-			TURN_TO(DIR_LEFT);
+			TURN_ONCE(DIR_LEFT);
 			break;
 		case DIR_DOWN:
-			TURN_TO(DIR_RIGHT);
+			TURN_ONCE(DIR_RIGHT);
 			break;
 		case DIR_LEFT:
 			TURN_TWICE(DIR_RIGHT);
