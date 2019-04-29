@@ -36,6 +36,7 @@ typedef enum
 // 快速动作宏定义
 #define TURN(digree) ExcuteAndWait(Turn_ByEncoder(digree), Stop_Flag, TURNCOMPLETE)
 #define MOVE(distance) ExcuteAndWait(Move_ByEncoder(Mission_Speed, distance), Stop_Flag, FORBACKCOMPLETE)
+#define TURN_TO(dir) ExcuteAndWait(Turn_ToNextTrack(dir), Stop_Flag, TURNCOMPLETE)
 
 // 基本运动控制
 void Move_ByEncoder(int speed, float distance);
@@ -46,6 +47,8 @@ void Back_Off(int speed, uint16_t mp);
 void Turn_ByEncoder(int16_t digree);
 void Track_ByEncoder(int speed, uint16_t setMP);
 void Start_Tracking(int speed);
+
+void Turn_ToDirection(int8_t *current, Direction_t target);
 
 // 循迹线转弯
 void Turn_ByTrack(Direction_t dir);

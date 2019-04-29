@@ -82,103 +82,7 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 		return;
 	}
 
-#if defined(_USE_TRACK_TURNNING_IN_AUTO_RUN_)
-
-	if ((finalDir == DIR_RIGHT || finalDir == DIR_LEFT))
-	{
-		switch (current->dir)
-		{
-		case DIR_UP:
-			Turn_ByTrack(finalDir);
-			break;
-		case DIR_DOWN:
-			Turn_ByTrack((finalDir == DIR_RIGHT) ? (DIR_LEFT) : (DIR_RIGHT));
-			break;
-		case DIR_LEFT:
-			(finalDir == DIR_RIGHT) ? Turn_ByEncoder(180) : (void)0;
-			break;
-		case DIR_RIGHT:
-			(finalDir == DIR_RIGHT) ? (void)0 : Turn_ByEncoder(180);
-			break;
-		default:
-			print_info("CurrentDir NOT SET!\r\n");
-			break;
-		}
-	}
-	else
-	{
-		switch (current->dir)
-		{
-		case DIR_UP:
-			(finalDir == DIR_UP) ? (void)0 : Turn_ByEncoder(180);
-			break;
-		case DIR_DOWN:
-			(finalDir == DIR_UP) ? Turn_ByEncoder(180) : (void)0;
-			break;
-		case DIR_LEFT:
-			Turn_ByTrack((finalDir == DIR_UP) ? (DIR_RIGHT) : (DIR_LEFT));
-			break;
-		case DIR_RIGHT:
-			Turn_ByTrack((finalDir == DIR_UP) ? (DIR_LEFT) : (DIR_RIGHT));
-			break;
-		default:
-			print_info("CurrentDir NOT SET!\r\n");
-			break;
-		}
-	}
-
-#else
-
-	if ((finalDir == DIR_RIGHT || finalDir == DIR_LEFT))
-	{
-		switch (current->dir)
-		{
-		case DIR_UP:
-			Turn_ByEncoder((finalDir == DIR_RIGHT) ? (90) : (-90));
-			break;
-		case DIR_DOWN:
-			Turn_ByEncoder((finalDir == DIR_RIGHT) ? (-90) : (90));
-			break;
-		case DIR_LEFT:
-			(finalDir == DIR_RIGHT) ? Turn_ByEncoder(180) : (void)0;
-			break;
-		case DIR_RIGHT:
-			(finalDir == DIR_RIGHT) ? (void)0 : Turn_ByEncoder(180);
-			break;
-		default:
-			print_info("CurrentDir NOT SET!\r\n");
-			break;
-		}
-	}
-	else
-	{
-		switch (current->dir)
-		{
-		case DIR_UP:
-			(finalDir == DIR_UP) ? (void)0 : Turn_ByEncoder(180);
-			break;
-		case DIR_DOWN:
-			(finalDir == DIR_UP) ? Turn_ByEncoder(180) : (void)0;
-			break;
-		case DIR_LEFT:
-			Turn_ByEncoder((finalDir == DIR_UP) ? (90) : (-90));
-			break;
-		case DIR_RIGHT:
-			Turn_ByEncoder((finalDir == DIR_UP) ? (-90) : (90));
-			break;
-		default:
-			print_info("CurrentDir NOT SET!\r\n");
-			break;
-		}
-	}
-
-#endif // _USE_TRACK_TURNNING_IN_AUTO_RUN_
-
-	// 如果有转向任务，等待完成
-	if ((Moving_ByEncoder != ENCODER_NONE) || (Track_Mode == TrackMode_Turn))
-	{
-		WaitForFlag(Stop_Flag, TURNCOMPLETE);
-	}
+	Turn_ToDirection(&current->dir, finalDir);
 
 	if (next.x % 2 == 0) // X轴为偶数的坐标
 	{
@@ -343,4 +247,95 @@ void Turn_ByTrack(Direction_t dir)
 	{
 		Update_MotorSpeed(-Turn_Speed, Turn_Speed);
 	}
+}
+
+#define TURN_TWICE(dir)                                            \
+	ExcuteAndWait(Turn_ToNextTrack(dir), Stop_Flag, TURNCOMPLETE); \
+	ExcuteAndWait(Turn_ToNextTrack(dir), Stop_Flag, TURNCOMPLETE)
+
+// 转到特定方向并更新当前方向
+void Turn_ToDirection(int8_t *current, Direction_t target)
+{
+	switch (*current)
+	{
+	case DIR_UP:
+		switch (target)
+		{
+		case DIR_UP:
+			break;
+		case DIR_DOWN:
+			TURN_TWICE(DIR_RIGHT);
+			break;
+		case DIR_LEFT:
+			TURN_TO(DIR_LEFT);
+			break;
+		case DIR_RIGHT:
+			TURN_TO(DIR_RIGHT);
+			break;
+		default:
+			break;
+		}
+		break;
+
+	case DIR_DOWN:
+		switch (target)
+		{
+		case DIR_UP:
+			TURN_TWICE(DIR_RIGHT);
+			break;
+		case DIR_DOWN:
+			break;
+		case DIR_LEFT:
+			TURN_TO(DIR_RIGHT);
+			break;
+		case DIR_RIGHT:
+			TURN_TO(DIR_LEFT);
+			break;
+		default:
+			break;
+		}
+		break;
+
+	case DIR_LEFT:
+		switch (target)
+		{
+		case DIR_UP:
+			TURN_TO(DIR_RIGHT);
+			break;
+		case DIR_DOWN:
+			TURN_TO(DIR_LEFT);
+			break;
+		case DIR_LEFT:
+			break;
+		case DIR_RIGHT:
+			TURN_TWICE(DIR_RIGHT);
+			break;
+		default:
+			break;
+		}
+		break;
+
+	case DIR_RIGHT:
+		switch (target)
+		{
+		case DIR_UP:
+			TURN_TO(DIR_LEFT);
+			break;
+		case DIR_DOWN:
+			TURN_TO(DIR_RIGHT);
+			break;
+		case DIR_LEFT:
+			TURN_TWICE(DIR_RIGHT);
+			break;
+		case DIR_RIGHT:
+			break;
+		default:
+			break;
+		}
+		break;
+
+	default:
+		break;
+	}
+	*current = target;
 }
