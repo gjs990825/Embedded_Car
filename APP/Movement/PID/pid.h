@@ -10,7 +10,7 @@ extern float PID_value;
 void Calculate_pid(float inputError);
 // 清空PID数据
 void PidData_Clear(void);
-
-
+// 设定上一次误差值
+void PidData_Set(float error, float value);
 
 #endif // __PID_H_

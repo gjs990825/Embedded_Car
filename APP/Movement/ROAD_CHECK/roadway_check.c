@@ -291,7 +291,7 @@ void TRACK_LINE(void)
     {
         if (temp_MP <= Mp_Value)
         {
-            Stop();
+            Stop_WithoutPIDClear();
             Stop_Flag = FORBACKCOMPLETE;
             return;
         }
@@ -309,7 +309,9 @@ void TRACK_LINE(void)
 
     if (Track_Mode == TrackMode_Turn) // 通过循迹线转向
     {
-        if (TrackStatus == 0)
+        extern uint8_t turnLeftOrRightt;
+
+        if (TrackStatus == 0) // 未出线
         {
             if (IS_All_WHITE())
             {
@@ -317,21 +319,37 @@ void TRACK_LINE(void)
                 outTrackStamp = Get_GlobalTimeStamp();
             }
         }
-        else if (TrackStatus == 1)
+        else if (TrackStatus == 1) // 出线缓冲+未寻到黑线
         {
-            if (!IS_All_WHITE() && IsTimeOut(outTrackStamp, 200))
+            if (!IS_All_WHITE() && IsTimeOut(outTrackStamp, 150))
             {
                 TrackStatus = 2;
                 PidData_Clear();
+                PidData_Set(offset, (turnLeftOrRightt == DIR_RIGHT) ? 85 : -85);
             }
         }
-        else if (TrackStatus == 2)
+        else if (TrackStatus == 2) // 转到循迹线
         {
-            if ((offset < 1) && (offset > -1))
+            // 使用PID循迹
+            Update_MotorSpeed(PID_value, -PID_value);
+
+            if (turnLeftOrRightt == DIR_RIGHT) //右转
             {
-                TrackStatus = 0;
-                Stop();
-                Stop_Flag = TURNCOMPLETE;
+                if (offset < 1.0f)
+                {
+                    TrackStatus = 0;
+                    Stop();
+                    Stop_Flag = TURNCOMPLETE;
+                }
+            }
+            else // 左转
+            {
+                if (offset > -1.0f)
+                {
+                    TrackStatus = 0;
+                    Stop();
+                    Stop_Flag = TURNCOMPLETE;
+                }
             }
         }
         return;
@@ -373,6 +391,7 @@ void TRACK_LINE(void)
         if (Track_Mode == TrackMode_NORMAL)
         {
             Roadway_Flag_clean();
+            PidData_Clear(); // 遇黑线清空PID数据
             Update_MotorSpeed(0, 0);
             Stop_Flag = CROSSROAD;
         }

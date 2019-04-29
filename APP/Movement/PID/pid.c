@@ -5,12 +5,22 @@
 
 float Kp = 35, Ki = 0.10, Kd = 16;
 float error = 0, P = 0, I = 0, D = 0, PID_value = 0;
-float previous_error = 0, previous_I = 0;
+float previous_error = 0;
 
 void PidData_Clear(void)
 {
-    error = 0, P = 0, I = 0, D = 0, PID_value = 0;
-    previous_error = 0, previous_I = 0;
+    I = 0;
+    D = 0;
+    PID_value = 0;
+    previous_error = 0;
+}
+
+void PidData_Set(float error, float value)
+{
+    I = 0;
+    D = 0;
+    PID_value = value;
+    previous_error = error;
 }
 
 void Calculate_pid(float inputError)

@@ -146,6 +146,14 @@ void Stop(void)
 	lastStopStamp = Get_GlobalTimeStamp(); // warning
 }
 
+// 停止但不清空PID数据
+void Stop_WithoutPIDClear(void)
+{
+	Roadway_Flag_clean(); //清除标志位状态
+	Update_MotorSpeed(0, 0);
+	lastStopStamp = Get_GlobalTimeStamp();
+}
+
 // 前后移动 单位厘米 正负方向
 void Move_ByEncoder(int speed, float distance)
 {
@@ -227,6 +235,7 @@ void Turn_ByEncoder(int16_t digree)
 }
 
 // 转到下一个循迹线
+uint8_t turnLeftOrRightt = DIR_NOTSET;
 void Turn_ByTrack(Direction_t dir)
 {
 	if ((dir != DIR_RIGHT) && (dir != DIR_LEFT))
@@ -234,6 +243,7 @@ void Turn_ByTrack(Direction_t dir)
 		print_info("Turn Dir ERROR\r\n");
 		return;
 	}
+	turnLeftOrRightt = dir;
 
 	Stop_Flag = TRACKING;
 	Track_Mode = TrackMode_Turn;
