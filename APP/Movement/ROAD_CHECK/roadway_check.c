@@ -321,7 +321,7 @@ void TRACK_LINE(void)
         }
         else if (TrackStatus == 1) // 出线缓冲+未寻到黑线
         {
-            if (!IS_All_WHITE() && IsTimeOut(outTrackStamp, 150))
+            if (!IS_All_WHITE() && IsTimeOut(outTrackStamp, 70))
             {
                 TrackStatus = 2;
                 PidData_Clear();
