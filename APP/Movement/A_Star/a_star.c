@@ -1,6 +1,5 @@
 #include "a_star.h"
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include "delay.h"
 #include "route.h"
@@ -52,6 +51,12 @@ int8_t open_node_count;					   // open表中节点数量
 int8_t close_node_count;				   // close表中结点数量
 AStarNode *start_node = NULL;			   // 起始点
 AStarNode *end_node = NULL;				   // 结束点
+
+// 绝对值
+int _abs(int x)
+{
+	return (x > 0) ? x : -x;
+}
 
 // 交换两个元素
 void swap(int idx1, int idx2)
@@ -146,7 +151,7 @@ void insert_to_opentable(int x, int y, pAStarNode curr_node, pAStarNode end_node
 			else // 不在open中
 			{
 				map_maze[x][y].s_g = curr_node->s_g + w;
-				map_maze[x][y].s_h = abs(end_node->s_x - x) + abs(end_node->s_y - y);
+				map_maze[x][y].s_h = _abs(end_node->s_x - x) + _abs(end_node->s_y - y);
 				map_maze[x][y].s_parent = curr_node;
 				map_maze[x][y].s_is_in_opentable = 1;
 				open_table[open_node_count++] = &(map_maze[x][y]);
@@ -228,7 +233,7 @@ bool A_Star_CalaculateRoute(void)
 
 	start_node->s_is_in_opentable = 1; // 加入open表
 	start_node->s_g = 0;
-	start_node->s_h = abs(end_node->s_x - start_node->s_x) + abs(end_node->s_y - start_node->s_y);
+	start_node->s_h = _abs(end_node->s_x - start_node->s_x) + _abs(end_node->s_y - start_node->s_y);
 	start_node->s_parent = NULL;
 
 	if (start_node->s_x == end_node->s_x && start_node->s_y == end_node->s_y)

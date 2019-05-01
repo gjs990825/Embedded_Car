@@ -141,7 +141,7 @@ uint8_t _testRFIDAuthMode = PICC_AUTHENT1A;
 // RFID测试任务开始
 void Task_RFIDTestStart(void)
 {
-    RFID_Info_t *rfid = mymalloc(SRAMIN, sizeof(RFID_Info_t));
+    RFID_Info_t *rfid = malloc(sizeof(RFID_Info_t));
 
     // 清空
     memset(rfid, 0, sizeof(RFID_Info_t));
@@ -158,7 +158,7 @@ void Task_RFIDTestStart(void)
 // RFID测试任务结束
 void Task_RFIDTestEnd(void)
 {
-    myfree(SRAMIN, CurrentRFIDCard);
+    free(CurrentRFIDCard);
     CurrentRFIDCard = NULL;
     RFID_RoadSection = false;
 }
@@ -250,7 +250,7 @@ void LEDDisplay_TimerMode(TimerMode_t mode)
 }
 
 // LED显示标志物显示距离
-void LEDDisplay_ShowDistance(uint16_t dis)
+void LEDDisplay_Distance(uint16_t dis)
 {
     ZigBee_LEDDisplayData[Pack_MainCmd] = LEDDisplayMainCmd_ShowDistance;
     ZigBee_LEDDisplayData[Pack_SubCmd2] = HEX2BCD(dis / 100);
@@ -526,27 +526,31 @@ void StreetLight_AdjustTo(uint8_t targetLevel)
 
 ////////////////////////////////////////////////////////////
 
-// 起始任务
-void Start_Task(void)
+// 双闪灯闪烁
+void Emergency_Flasher(uint16_t time)
 {
     Set_tba_WheelLED(L_LED, SET);
     Set_tba_WheelLED(R_LED, SET);
-    delay(1500);
+
+    if (time > 0)
+        delay(time);
+
     Set_tba_WheelLED(L_LED, RESET);
     Set_tba_WheelLED(R_LED, RESET);
+}
 
+// 通用起始任务
+void Start_Task(void)
+{
+    Emergency_Flasher(1500);
     LEDDisplay_TimerMode(TimerMode_ON);
 }
 
-// 终止任务
+// 通用终止任务
 void End_Task(void)
 {
     LEDDisplay_TimerMode(TimerMode_OFF);
-    Set_tba_WheelLED(L_LED, SET);
-    Set_tba_WheelLED(R_LED, SET);
-    delay(1500);
-    Set_tba_WheelLED(L_LED, RESET);
-    Set_tba_WheelLED(R_LED, RESET);
+    Emergency_Flasher(1500);
 }
 
 // 交通灯识别

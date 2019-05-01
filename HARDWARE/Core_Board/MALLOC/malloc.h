@@ -39,23 +39,28 @@
 //内存管理控制器
 struct _m_mallco_dev
 {
-	void (*init)(u8);	  //初始化
-	u8 (*perused)(u8);	 //内存使用率
-	u8 *membase[SRAMBANK]; //内存池 管理SRAMBANK个区域的内存
-	u16 *memmap[SRAMBANK]; //内存管理状态表
-	u8 memrdy[SRAMBANK];   //内存管理是否就绪
+	void (*init)(uint8_t);		 //初始化
+	uint8_t (*perused)(uint8_t); //内存使用率
+	uint8_t *membase[SRAMBANK];  //内存池 管理SRAMBANK个区域的内存
+	uint16_t *memmap[SRAMBANK];  //内存管理状态表
+	uint8_t memrdy[SRAMBANK];	//内存管理是否就绪
 };
 extern struct _m_mallco_dev mallco_dev; //在mallco.c里面定义
 
-void mymemset(void *s, u8 c, u32 count);	//设置内存
-void mymemcpy(void *des, void *src, u32 n); //复制内存
-void my_mem_init(u8 memx);					//内存管理初始化函数(外/内部调用)
-u32 my_mem_malloc(u8 memx, u32 size);		//内存分配(内部调用)
-u8 my_mem_free(u8 memx, u32 offset);		//内存释放(内部调用)
-u8 my_mem_perused(u8 memx);					//获得内存使用率(外/内部调用)
-////////////////////////////////////////////////////////////////////////////////
+void mymemset(void *s, uint8_t c, uint32_t count);   //设置内存
+void mymemcpy(void *des, void *src, uint32_t n);	 //复制内存
+void my_mem_init(uint8_t memx);						 //内存管理初始化函数(外/内部调用)
+uint32_t my_mem_malloc(uint8_t memx, uint32_t size); //内存分配(内部调用)
+uint8_t my_mem_free(uint8_t memx, uint32_t offset);  //内存释放(内部调用)
+uint8_t my_mem_perused(uint8_t memx);				 //获得内存使用率(外/内部调用)
+
 //用户调用函数
-void myfree(u8 memx, void *ptr);			   //内存释放(外部调用)
-void *mymalloc(u8 memx, u32 size);			   //内存分配(外部调用)
-void *myrealloc(u8 memx, void *ptr, u32 size); //重新分配内存(外部调用)
+void myfree(uint8_t memx, void *ptr);					 //内存释放(外部调用)
+void *mymalloc(uint8_t memx, uint32_t size);			 //内存分配(外部调用)
+void *myrealloc(uint8_t memx, void *ptr, uint32_t size); //重新分配内存(外部调用)
+
+#define malloc(size) mymalloc(SRAMIN, size)
+#define free(block) myfree(SRAMIN, block)
+#define realloc(block, size) myrealloc(SRAMIN, block, size)
+
 #endif

@@ -3,6 +3,8 @@
 
 #include "sys.h"
 
+// 调试引脚定义
+
 #define DEBUG_PIN_1 PFout(8)
 #define DEBUG_PIN_2 PHout(9)
 #define DEBUG_PIN_3 PFout(9)
@@ -22,6 +24,13 @@
 void DebugPin_Init(void);
 void DebugTimer_Init(uint16_t arr, uint16_t psc);
 void print_info(char *str, ...);
+void Dump_Array(uint8_t *name, uint8_t *array, uint8_t length);
+
+// 显示数据
+
+#define dump_array(array, length) Dump_Array(#array, array, length)
+#define print_var(var) print_info("%s = %d\r\n", #var, var)
+#define print_str(str) print_info("%s:%s\r\n", #str, str)
 
 void ZigBee_Test(uint16_t count ,uint16_t interval);
 

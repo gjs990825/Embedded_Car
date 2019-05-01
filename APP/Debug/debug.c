@@ -1,7 +1,6 @@
 #include "debug.h"
 #include "stdarg.h"
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include "independent_task.h"
 
@@ -22,6 +21,17 @@ void print_info(char *str, ...)
     va_end(ap);
     len = strlen((char *)buf);
     Send_InfoData_To_Fifo(buf, len);
+}
+
+void Dump_Array(uint8_t *name, uint8_t *array, uint8_t length)
+{
+    print_info("%s:", name);
+    for (uint8_t i = 0; i < length; i++)
+    {
+        print_info("0x%02X ", array[i]);
+        delay_ms(10);
+    }
+    print_info("\r\n");
 }
 
 void DebugTimer_Init(uint16_t arr, uint16_t psc)

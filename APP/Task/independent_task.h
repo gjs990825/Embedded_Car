@@ -20,6 +20,8 @@ extern uint8_t FOUND_RFID_CARD;
 extern uint8_t RFID_RoadSection;
 extern RFID_Info_t *CurrentRFIDCard;
 
+void Emergency_Flasher(uint16_t time);
+
 ///////////////////////////////////////////////////////
 // 下面是标志物的操作和控制函数
 ///////////////////////////////////////////////////////
@@ -52,7 +54,7 @@ void BarrierGate_Task(uint8_t plate[6]);
 void LEDDisplay_DataToFistRow(uint8_t data[3]);
 void LEDDisplay_DataToSecondRow(uint8_t data[3]);
 void LEDDisplay_TimerMode(TimerMode_t mode);
-void LEDDisplay_ShowDistance(uint16_t dis);
+void LEDDisplay_Distance(uint16_t dis);
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 立体显示（旋转LED）部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
@@ -95,6 +97,11 @@ void Voice_Recognition(void);
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 智能路灯部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 void StreetLight_AdjustTo(uint8_t targetLevel);
+
+/////////////////////// 宏定义操作 /////////////////////
+
+#define WirelessCharging_ON() Send_ZigBeeDataNTimes(ZigBee_WirelessChargingON, 5, 100)
+#define LEDDisplay_Timer(status) LEDDisplay_TimerMode(TimerMode_##status);
 
 ///////////////////////////////////////////////////////
 // 下面是独立任务，进入前需保证位置距离朝向等准确无误

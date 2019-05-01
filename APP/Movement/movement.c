@@ -4,7 +4,6 @@
 #include "a_star.h"
 #include "pid.h"
 #include "route.h"
-#include "stdlib.h"
 #include "malloc.h"
 #include "debug.h"
 #include "independent_task.h"
@@ -30,11 +29,13 @@ void Auto_Run(RouteSetting_t *routeTask, uint8_t taskNumber, RouteNode_t *curren
 // 从当前任务点行驶到下一个任务点
 void Auto_RouteTask(RouteNode_t *current, RouteNode_t next)
 {
-	RouteNode_t *route = mymalloc(SRAMIN, sizeof(RouteNode_t) * 12); // 两点间最多12途径点
+	RouteNode_t *route = malloc(sizeof(RouteNode_t) * 12); // 两点间最多12途径点
 	uint8_t routeCount = 0;
 
 	A_Star_GetTestRoute(*current, next, route, &routeCount);
-	print_info("routeCount = %d\r\n", routeCount);
+
+	// 输出途经点个数
+	// print_info("routeCount = %d\r\n", routeCount);
 
 	// 跳过第一个点，因为当前就在第一个点。
 	for (uint8_t i = 1; i < routeCount; i++)
@@ -42,7 +43,7 @@ void Auto_RouteTask(RouteNode_t *current, RouteNode_t next)
 		NextStatus = route[i];
 		Go_ToNextNode(current, route[i]);
 	}
-	myfree(SRAMIN, route);
+	free(route);
 }
 
 // 行驶到下一个节点
@@ -159,18 +160,19 @@ void Move_ByEncoder(int speed, float distance)
 {
 	Roadway_mp_syn();
 	Stop_Flag = TRACKING;
-	temp_MP = abs(distance * Centimeter_Value);
 	Track_Mode = TrackMode_NONE;
 
 	if (distance > 0)
 	{
-		Update_MotorSpeed(speed, speed);
+		temp_MP = distance * Centimeter_Value;
 		Moving_ByEncoder = ENCODER_GO;
+		Update_MotorSpeed(speed, speed);
 	}
 	else
 	{
-		Update_MotorSpeed(-speed, -speed);
+		temp_MP = -distance * Centimeter_Value;
 		Moving_ByEncoder = ENCODER_BACK;
+		Update_MotorSpeed(-speed, -speed);
 	}
 }
 

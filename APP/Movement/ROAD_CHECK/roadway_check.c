@@ -6,7 +6,6 @@
 #include "debug.h"
 #include "pid.h"
 #include "my_lib.h"
-#include "stdlib.h"
 #include "canp_hostcom.h"
 #include "independent_task.h"
 
