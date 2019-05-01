@@ -47,24 +47,6 @@ uint8_t ROUTE_TASK_NUMBER = GET_ARRAY_LENGEH(Route_Task);
 //     {.coordinate = "F7", .Task = NULL},
 // };
 
-// // 任务点设定
-// RouteSetting_t Route_Task[] = {
-//     {.coordinate = "F7", .Task = Start_Task, .node.dir = DIR_UP},
-//     {.coordinate = "F6", .Task = Task_F6},
-//     {.coordinate = "D6", .Task = Task_3_1},
-//     {.coordinate = "B6", .Task = NULL},
-//     {.coordinate = "B4", .Task = Task_1_3},
-//     {.coordinate = "B2", .Task = Task_1_5},
-//     {.coordinate = "D2", .Task = Task_3_5},
-//     {.coordinate = "F2", .Task = Task_5_5},
-//     {.coordinate = "F4", .Task = NULL},
-//     {.coordinate = "D4", .Task = NULL},
-//     {.coordinate = "D6", .Task = Task_3_1_2},
-//     {.coordinate = "F6", .Task = Task_F6_2},
-//     // {.coordinate = "F7", .Task = NULL}, // 入库点
-// };
-
-
 // RFID 寻卡测试用路径
 RouteSetting_t RFID_TestRoute[] = {
     {.coordinate = "B7", .Task = NULL, .node.dir = DIR_UP},
@@ -168,6 +150,51 @@ bool Generate_Routetask(RouteSetting_t routeSetting[], uint8_t count)
     }
 
     print_info("\r\n");
+
+    return true;
+}
+
+// 处理含有路径信息的字符串，去除无效信息
+bool RouteString_Process(uint8_t *prefix, uint8_t *route, uint8_t *buffer)
+{
+    if (route == NULL)
+        return false;
+
+    uint16_t routeLen = strlen((char *)route);
+    uint16_t prefixLen = 0;
+
+    if (prefix != NULL)
+        prefixLen = strlen((char *)prefix);
+
+    uint8_t *tempbuffer = (uint8_t *)malloc(sizeof(uint8_t) * (routeLen + prefixLen));
+    if (tempbuffer == NULL)
+        return false;
+
+    // 拷贝前缀和原始信息
+    memcpy(tempbuffer, prefix, prefixLen);
+    memcpy(tempbuffer + prefixLen, route, routeLen);
+
+    uint8_t *pstr = buffer;
+
+    // 查找符合条件的字符串并拷贝到buffer中
+    for (uint16_t i = 0; i < (routeLen + prefixLen); i++)
+    {
+        if ((tempbuffer[i] >= 'A') && (tempbuffer[i] <= 'G'))
+        {
+            if ((tempbuffer[i + 1] >= '1') && (tempbuffer[i + 1] <= '7'))
+            {
+                pstr[0] = tempbuffer[i];
+                pstr[1] = tempbuffer[i + 1];
+                pstr += 2;
+
+                // 匹配则跳过下一个字符
+                i++;
+            }
+        }
+    }
+    pstr[0] = '\0';
+
+    free(tempbuffer);
 
     return true;
 }
