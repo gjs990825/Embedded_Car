@@ -12,16 +12,6 @@ extern uint16_t USART6_RX_STA;
 #define USART6_RxFlag ((USART6_RX_STA & 0xF000) == 0xF000)
 #define USART6_RxLenth (USART6_RX_STA & 0x0FFF)
 
-enum
-{
-    VoiceCmd_NotUsed = 0x01,         // 未使用
-    VoiceCmd_TurnRignt = 0x02,       // 向右转弯
-    VoiceCmd_NOTurnRight = 0x03,     // 禁止右转
-    VoiceCmd_DrvingToLeft = 0x04,    // 左侧行驶
-    VoiceCmd_NODrivingToLeft = 0x05, // 左行被禁
-    VoiceCmd_TurnAround = 0x06       // 原地掉头
-};
-
 void USART6_Init(uint32_t baudrate);
 void SYN7318_Init(void);
 void USART6_SendChar(uint8_t ch);

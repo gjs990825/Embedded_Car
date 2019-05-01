@@ -319,6 +319,20 @@ uint8_t Start_VoiceCommandRecognition(uint8_t retryTimes)
     return false;
 }
 
+// 定义ID对应的语音
+// #define STRING_ID "语音内容"
+
+#define STRING_101 "向右转弯"
+#define STRING_102 "禁止右转"
+#define STRING_103 "左侧行驶"
+#define STRING_104 "左行被禁"
+#define STRING_105 "原地掉头"
+
+#define CaseProcess(ID)       \
+    case (##ID):              \
+        SYN_TTS(STRING_##ID); \
+        break;
+
 // 语音指令处理 返回是否需要再次识别
 bool VoiceComand_Process(uint8_t *cmd)
 {
@@ -328,30 +342,17 @@ bool VoiceComand_Process(uint8_t *cmd)
     {
         switch (cmd[5])
         {
-        case VoiceCmd_TurnRignt:
-            SYN_TTS("向右转弯");
-            break;
-        case VoiceCmd_NOTurnRight:
-            SYN_TTS("禁止右转");
-            break;
-
-        case VoiceCmd_DrvingToLeft:
-            SYN_TTS("左侧行驶");
-            break;
-
-        case VoiceCmd_NODrivingToLeft:
-            SYN_TTS("左行被禁");
-            break;
-
-        case VoiceCmd_TurnAround:
-            SYN_TTS("原地掉头");
-            break;
+            CaseProcess(101);
+            CaseProcess(102);
+            CaseProcess(103);
+            CaseProcess(104);
+            CaseProcess(105);
         default:
             break;
         }
         return false; // 识别完成，不需要再次识别
     }
-	
+
     case 0x02: //识别成功（无命令ID号）
     {
         SYN_TTS("没有相应的ID");

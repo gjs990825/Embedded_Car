@@ -8,7 +8,7 @@
 #include "malloc.h"
 
 // 使能路径输出
-#define _A_STAR_ENABLE_OUTPUT_ 1
+#define _A_STAR_ENABLE_OUTPUT_ 0
 
 #define X_LENTH 7
 #define Y_LENTH 7
