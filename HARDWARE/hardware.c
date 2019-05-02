@@ -1,6 +1,6 @@
 #include "hardware.h"
 
-// 初始化硬件
+// 初始化时钟、外设、定时器...
 void Hardware_Init(void)
 {
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); // 中断优先级分组

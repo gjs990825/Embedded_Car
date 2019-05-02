@@ -4,13 +4,12 @@
 #include "malloc.h"
 #include "debug.h"
 #include "my_lib.h"
+#include "a_star.h"
 
 // 当前位置状态
 RouteNode_t CurrentStaus;
 // 下一个位置和状态
 RouteNode_t NextStatus;
-// 任务完成情况
-// int8_t RouteTask_Finished[ROUTE_TASK_NUMBER] = {0};
 
 // 任务和路径设定
 RouteSetting_t Route_Task[] = {
@@ -58,8 +57,12 @@ RouteSetting_t RFID_TestRoute[] = {
 };
 uint8_t RFID_TESTROUTE_NUMBER = GET_ARRAY_LENGEH(RFID_TestRoute);
 
+//////////////////////
+// 坐标数据处理函数↓ //
+//////////////////////
+
 // 转换字符串到坐标点
-RouteNode_t Coordinate_Covent(uint8_t coordinate[2])
+RouteNode_t Coordinate_Covent(uint8_t coordinate[3])
 {
     static const RouteNode_t badNode = {.x = -1, .y = -1, .dir = DIR_NOTSET};
     RouteNode_t outNode;
@@ -85,8 +88,8 @@ RouteNode_t Coordinate_Covent(uint8_t coordinate[2])
 // 转换坐标点到字符串
 uint8_t *ReCoordinate_Covent(int8_t x, int8_t y)
 {
-    static const char *badCoordinate = "\0\0";
-    static uint8_t tempCoordinate[2];
+    static const char *badCoordinate = "\0\0\0";
+    static uint8_t tempCoordinate[3];
 
     if (x >= 0 && x <= 6)
     {
@@ -106,20 +109,16 @@ uint8_t *ReCoordinate_Covent(int8_t x, int8_t y)
 }
 
 // 获取任务点在路径中出现第n次的位置，返回-1为错误
-int8_t Get_TaskNumber(uint8_t coordinate[2], uint8_t *route, uint8_t nTimes)
+int8_t Get_TaskNumber(uint8_t coordinate[3], uint8_t *route, uint8_t nTimes)
 {
     uint8_t count = 0;
-    char tempCoordinate[3];
-
-    memcpy(tempCoordinate, coordinate, 2);
-    tempCoordinate[2] = '\0';
 
     char *location = NULL;
     char *tempRoute = (char *)route;
 
     for (;;)
     {
-        location = strstr(tempRoute, tempCoordinate);
+        location = strstr(tempRoute, (char *)coordinate);
         if (location == NULL)
             return -1;
         else
@@ -197,4 +196,53 @@ bool RouteString_Process(uint8_t *prefix, uint8_t *route, uint8_t *buffer)
     free(tempbuffer);
 
     return true;
+}
+
+// 判断坐标是否在路径
+// 若则返回步数，否则返回-1
+int8_t Is_ContainCoordinate(uint8_t *stringRoute, uint8_t coord[3])
+{
+    uint8_t length = strlen((char *)stringRoute) / 2;
+
+    RouteNode_t *route = malloc(sizeof(RouteNode_t) * length);
+    if (route == NULL)
+        return -1;
+
+    for (uint8_t i = 0; i < length; i++)
+    {
+        route[i] = Coordinate_Covent(&stringRoute[i * 2]);
+    }
+
+    RouteNode_t *tempRoute = malloc(sizeof(RouteNode_t) * 12); // 两点间最多12途径点
+    if (tempRoute == NULL)
+    {
+        free(route);
+        return -1;
+    }
+
+    uint8_t routeCount;
+    uint8_t allRouteCount = 0;
+    RouteNode_t coordinate = Coordinate_Covent(coord);
+
+    for (uint8_t i = 0; i < length - 1; i++)
+    {
+        A_Star_GetRouteBetweenNodes(route[i], route[i + 1], tempRoute, &routeCount);
+
+        for (uint8_t j = 0; j < routeCount; j++)
+        {
+            if ((tempRoute[j].x == coordinate.x) && (tempRoute[j].y == coordinate.y))
+            {
+                free(tempRoute);
+                free(route);
+                return allRouteCount + j;
+            }
+        }
+        // 记录路径个数，去掉一个起始点
+        allRouteCount += (routeCount - 1);
+    }
+
+    free(tempRoute);
+    free(route);
+
+    return -1;
 }

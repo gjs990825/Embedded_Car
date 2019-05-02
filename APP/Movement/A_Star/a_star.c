@@ -290,7 +290,7 @@ int A_Star_GetStepCount(void)
 }
 
 // 生成两点间的路线
-bool A_Star_GetTestRoute(RouteNode_t current, RouteNode_t next, RouteNode_t *finalRoute, uint8_t *routeCount)
+bool A_Star_GetRouteBetweenNodes(RouteNode_t current, RouteNode_t next, RouteNode_t *finalRoute, uint8_t *routeCount)
 {
 	A_Star_SetStartEnd(current.x, current.y, next.x, next.y);
 	if (A_Star_CalaculateRoute() == false)

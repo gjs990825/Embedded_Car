@@ -5,7 +5,7 @@ int main(void)
 	uint32_t PowerCheckStamp = 0;
 	uint32_t RFIDCheckStamp = 0;
 
-	Hardware_Init(); // 硬件初始化
+	Hardware_Init();
 
 	while (1)
 	{

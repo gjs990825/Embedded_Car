@@ -559,7 +559,7 @@ void TrafficLight_Task(void)
     Send_ZigBeeDataNTimes(ZigBee_TrafficLightStartRecognition, 2, 200); // 开始识别交通灯
     delay_ms(700);
     Request_ToHost(RequestCmd_TrafficLight);
-    WaitForFlagInMs(GetCmdFlag(FromHost_TrafficLight), SET, 13 * 1000); // 等待识别完成
+    WaitForFlagInMs(GetCmdFlag(FromHost_TrafficLight), SET, 9 * 1000); // 等待识别完成
 }
 
 // TFT图形图像识别

@@ -24,7 +24,7 @@ typedef enum
 // 设定任务点（转换字符串生成坐标信息）
 typedef struct RouteSetting_Struct
 {
-	uint8_t coordinate[2]; // 字符串坐标
+	uint8_t coordinate[3]; // 字符串坐标
 	RouteNode_t node;	  // 坐标点数据
 	void (*Task)(void);	// 任务函数指针
 } RouteSetting_t;
@@ -42,7 +42,7 @@ extern RouteNode_t NextStatus;
 
 // 坐标字符串转换
 
-RouteNode_t Coordinate_Covent(uint8_t str[2]);
+RouteNode_t Coordinate_Covent(uint8_t str[3]);
 uint8_t *ReCoordinate_Covent(int8_t x, int8_t y);
 
 // 坐标生成
@@ -51,7 +51,8 @@ bool Generate_Routetask(RouteSetting_t routeSetting[], uint8_t count);
 
 // 坐标信息提取和处理
 
-int8_t Get_TaskNumber(uint8_t coordinate[2], uint8_t *route, uint8_t nTimes);
+int8_t Get_TaskNumber(uint8_t coordinate[3], uint8_t *route, uint8_t nTimes);
 bool RouteString_Process(uint8_t *prefix, uint8_t *route, uint8_t *buffer);
+int8_t Is_ContainCoordinate(uint8_t *stringRoute, uint8_t coord[3]);
 
 #endif // _ROUTE_H_

@@ -5,7 +5,7 @@
 #include "a_star.h"
 
 // 从车ZigBee发送间隔
-#define _AGV_ZIGBEE_SEND_INTERVAL_ 50
+#define _AGV_ZIGBEE_SEND_INTERVAL_ 80
 
 // 向AGV发送的数据buffer
 uint8_t DataToAGV[] = {0x55, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
@@ -82,10 +82,6 @@ void AGV_SendInfraredData(uint8_t irData[6])
     DataToAGV[Pack_MainCmd] = FromHost_InfraredBackData;
     memcpy(&DataToAGV[Pack_SubCmd1], &irData[3], 3);
     SendCmdNTimes(10);
-    
-    // ClearAGVCmd();
-    // DataToAGV[Pack_MainCmd] = FromHost_InfraredSend;
-    // SendAGVCmd();
 }
 
 // 转向灯

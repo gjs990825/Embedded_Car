@@ -32,10 +32,7 @@ void Auto_RouteTask(RouteNode_t *current, RouteNode_t next)
 	RouteNode_t *route = malloc(sizeof(RouteNode_t) * 12); // 两点间最多12途径点
 	uint8_t routeCount = 0;
 
-	A_Star_GetTestRoute(*current, next, route, &routeCount);
-
-	// 输出途经点个数
-	// print_info("routeCount = %d\r\n", routeCount);
+	A_Star_GetRouteBetweenNodes(*current, next, route, &routeCount);
 
 	// 跳过第一个点，因为当前就在第一个点。
 	for (uint8_t i = 1; i < routeCount; i++)
