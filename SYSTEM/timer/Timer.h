@@ -26,7 +26,7 @@ void Timer_Init(uint16_t arr, uint16_t psc);
 // warning : 目前没有进行数据接收操作，后续需要验证此改动对接收的影响
 
 // 通过时间戳延时（精度1ms）
-static inline void delay(uint16_t ms)
+static inline void delay(uint32_t ms)
 {
     uint32_t startStamp = Get_GlobalTimeStamp();
     for (;;)

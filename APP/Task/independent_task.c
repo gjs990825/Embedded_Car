@@ -18,6 +18,7 @@
 #include "my_lib.h"
 #include "Timer.h"
 #include "data_interaction.h"
+#include "agv.h"
 
 #define Send_ZigBeeData5Times(data) Send_ZigBeeDataNTimes(data, 5, 200)
 
@@ -202,7 +203,7 @@ void BarrierGate_Control(bool status)
 {
     ZigBee_BarrierGateData[Pack_MainCmd] = BarrierGateMode_Control;
     ZigBee_BarrierGateData[Pack_SubCmd1] = status ? 0x01 : 0x02;
-    Send_ZigBeeData5Times(ZigBee_BarrierGateData);
+    Send_ZigBeeData(ZigBee_BarrierGateData);
 }
 
 // 道闸状态回传
@@ -211,16 +212,6 @@ void BarrierGate_ReturnStatus(void)
     ZigBee_BarrierGateData[Pack_MainCmd] = BarrierGateMode_ReturnStatus;
     ZigBee_BarrierGateData[Pack_SubCmd1] = 0x01;
     Send_ZigBeeData(ZigBee_BarrierGateData);
-}
-
-// 道闸任务
-void BarrierGate_Task(uint8_t plate[6])
-{
-    if (plate != NULL)
-    {
-        BarrierGate_Plate(plate);
-    }
-    BarrierGate_Control(true);
 }
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ LED显示部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
@@ -553,6 +544,23 @@ void End_Task(void)
     Emergency_Flasher(1500);
 }
 
+// 道闸任务
+void BarrierGate_Task(uint8_t plate[6])
+{
+    if (plate != NULL)
+    {
+        BarrierGate_Plate(plate);
+    }
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        delay(100);
+        BarrierGate_Control(true);
+        delay(100);
+        if (Get_BarrierGateStatus())
+            break;
+    }
+}
+
 // 交通灯识别
 void TrafficLight_Task(void)
 {
@@ -593,5 +601,36 @@ void ETC_Task(void)
             break;
         MOVE(7);  // 跟着节拍
         MOVE(-7); // 一起摇摆
+    }
+}
+
+// AGV任务
+void AGV_Task(AGV_Data_t agvData)
+{
+    uint8_t agvRoute[20];
+
+    RouteString_Process(agvData.currentCoord, agvData.routeInfo, agvRoute);
+    print_info("AGV_Route:%s\r\n", agvRoute);
+    AGV_SetRoute(agvRoute);
+
+    Dump_Array("AGV_Alarm:\r\n", agvData.alarmData, 6);
+    AGV_SendInfraredData(agvData.alarmData);
+
+    print_info("AGV_Dir:%d\r\n", agvData.direction);
+    AGV_SetTowards(agvData.direction);
+
+    uint8_t taskNumber = Get_TaskNumber(agvData.taskCoord, agvRoute, 1);
+    print_info("TaskNumber:%d\r\n", taskNumber);
+    AGV_SetTaskID(taskNumber, 0);
+
+    AGV_Start();
+
+    // 判断是否经过道闸，经过则等待开启
+    int8_t steps = Is_ContainCoordinate(agvRoute, agvData.barrierGateCoord);
+    print_info("AGV_Steps:%d\r\n", steps);
+    if (steps != -1)
+    {
+        delay(steps * 2000);
+        BarrierGate_Task(NULL);
     }
 }
