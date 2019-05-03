@@ -252,8 +252,10 @@ void LEDDisplay_Distance(uint16_t dis)
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 立体显示（旋转LED）部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 // 旋转LED显示车牌和坐标
-void RotationLED_PlateAndCoord(uint8_t plate[6], uint8_t coord[2])
+void RotationLED_PlateAndCoord(uint8_t plate[6], RouteNode_t coord)
 {
+    uint8_t *stringCoord = ReCoordinate_Covent(coord.x, coord.y);
+
     Infrared_RotationLEDData[1] = RotationLEDMode_PlateFront4BytesData;
     memcpy(&Infrared_RotationLEDData[2], plate, 4);
     Infrared_Send_A(Infrared_RotationLEDData);
@@ -261,7 +263,7 @@ void RotationLED_PlateAndCoord(uint8_t plate[6], uint8_t coord[2])
 
     Infrared_RotationLEDData[1] = RotationLEDMode_PlateBack2BytesAndCoordInfo;
     memcpy(&Infrared_RotationLEDData[2], &plate[4], 2);
-    memcpy(&Infrared_RotationLEDData[4], coord, 2);
+    memcpy(&Infrared_RotationLEDData[4], stringCoord, 2);
     Infrared_Send_A(Infrared_RotationLEDData);
 }
 

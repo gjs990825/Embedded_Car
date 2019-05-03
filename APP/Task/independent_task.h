@@ -68,7 +68,7 @@ void LEDDisplay_Distance(uint16_t dis);
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 立体显示（旋转LED）部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
-void RotationLED_PlateAndCoord(uint8_t plate[6], uint8_t coord[2]);
+void RotationLED_PlateAndCoord(uint8_t plate[6], RouteNode_t coord);
 void RotationLED_Distance(uint8_t dis);
 void RotationLED_Shape(Shape_t shape);
 void RotationLED_Color(Color_t color);

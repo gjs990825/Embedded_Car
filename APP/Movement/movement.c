@@ -84,7 +84,10 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 
 	if (next.x % 2 == 0) // X轴为偶数的坐标
 	{
-		ExcuteAndWait(Track_ByEncoder(Track_Speed, LongTrack_Value), Stop_Flag, FORBACKCOMPLETE);
+		// 横坐标0和6的为两侧车库，码盘值需要变小
+		uint16_t encoderValue = ((next.x == 0) || (next.x == 6)) ? SidePark_Value : LongTrack_Value;
+
+		ExcuteAndWait(Track_ByEncoder(Track_Speed, encoderValue), Stop_Flag, FORBACKCOMPLETE);
 	}
 	else if (next.y % 2 == 0) // Y轴为偶数的坐标
 	{
@@ -98,6 +101,7 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 
 		// 行驶到十字路口中心
 		// ExcuteAndWait(Go_Ahead(Track_Speed, ToCrossroadCenter), Stop_Flag, FORBACKCOMPLETE);
+
 		// 应对放在十字线后面的白卡
 		Go_Ahead(Track_Speed, ToCrossroadCenter);
 		Submit_SpeedChanges(); // 提交速度更改

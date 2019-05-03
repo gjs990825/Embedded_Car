@@ -33,6 +33,8 @@ static const int LongTrack_Value = (37.5f * Centimeter_Value);
 static const int ShortTrack_Value = (30.0f * Centimeter_Value);
 // 到十字路口中心码盘值
 static const int ToCrossroadCenter = (15.5f * Centimeter_Value); // 16.5f
+// 两侧车库最大前进值
+static const int SidePark_Value = (27.5f * Centimeter_Value);
 
 #define _STOP_WAITING_INTERVAL_ 250
 
