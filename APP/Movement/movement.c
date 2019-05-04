@@ -8,8 +8,6 @@
 #include "debug.h"
 #include "independent_task.h"
 
-#define _USE_TRACK_TURNNING_IN_AUTO_RUN_ 1
-
 // 全自动
 void Auto_Run(RouteSetting_t *routeTask, uint8_t taskNumber, RouteNode_t *current)
 {

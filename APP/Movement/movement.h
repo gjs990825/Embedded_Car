@@ -15,6 +15,7 @@ typedef enum
 	OUTTRACK = 0x04			// 出线
 } StopFlag_t;
 
+// 定义转向模式
 typedef enum TurnMethod_Struct
 {
 	TurnMethod_Track = 0,
