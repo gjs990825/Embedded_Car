@@ -15,6 +15,12 @@ typedef enum
 	OUTTRACK = 0x04			// 出线
 } StopFlag_t;
 
+typedef enum TurnMethod_Struct
+{
+	TurnMethod_Track = 0,
+	TurnMethod_Encoder = 1
+} TurnMethod_t;
+
 // 等待某个标志位。注意：此操作没有超时处理机制
 #define WaitForFlag(flag, status) \
 	do                            \
@@ -34,9 +40,13 @@ typedef enum
 	} while (0)
 
 // 快速动作宏定义
+
+// 通过码盘转向，不自动记录
 #define TURN(digree) ExcuteAndWait(Turn_ByEncoder(digree), Stop_Flag, TURNCOMPLETE)
+// 前后移动
 #define MOVE(distance) ExcuteAndWait(Move_ByEncoder(Mission_Speed, distance), Stop_Flag, FORBACKCOMPLETE)
-#define TURN_TO(target) Turn_ToDirection(&CurrentStaus.dir, target)
+// 根据循迹线转到某个方向，自动记录方向变化
+#define TURN_TO(target) Turn_ToDirection(&CurrentStaus.dir, target, TurnMethod_Track)
 
 // 基本运动控制
 void Move_ByEncoder(int speed, float distance);
@@ -53,7 +63,7 @@ void Stop_WithoutPIDClear(void);
 // 循迹线转弯
 void Turn_ByTrack(Direction_t dir);
 #define Turn_ToNextTrack(dir) Turn_ByTrack(dir)
-void Turn_ToDirection(int8_t *current, Direction_t target);
+void Turn_ToDirection(int8_t *current, Direction_t target, TurnMethod_t turnMethod);
 
 // 自动执行
 void Go_ToNextNode(RouteNode_t *current, RouteNode_t next);

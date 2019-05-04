@@ -80,7 +80,15 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 		return;
 	}
 
-	Turn_ToDirection(&current->dir, finalDir);
+	// 当前点非十字线时转向使用码盘转向
+	if ((current->x % 2 == 0) || (current->y % 2 == 0))
+	{
+		Turn_ToDirection(&current->dir, finalDir, TurnMethod_Encoder);
+	}
+	else
+	{
+		Turn_ToDirection(&current->dir, finalDir, TurnMethod_Track);
+	}
 
 	if (next.x % 2 == 0) // X轴为偶数的坐标
 	{
@@ -262,14 +270,26 @@ void Turn_ByTrack(Direction_t dir)
 	}
 }
 
-#define TURN_ONCE(dir) ExcuteAndWait(Turn_ToNextTrack(dir), Stop_Flag, TURNCOMPLETE)
-#define TURN_TWICE(dir)                                            \
-	ExcuteAndWait(Turn_ToNextTrack(dir), Stop_Flag, TURNCOMPLETE); \
-	ExcuteAndWait(Turn_ToNextTrack(dir), Stop_Flag, TURNCOMPLETE)
+#define TURN_ONCE(dir) Turn_Once(dir)
+#define TURN_TWICE(dir) \
+	Turn_Once(dir);     \
+	Turn_Once(dir)
+
+void TurnOnce_TrackMethod(Direction_t dir)
+{
+	ExcuteAndWait(Turn_ToNextTrack(dir), Stop_Flag, TURNCOMPLETE);
+}
+
+void TurnOnce_EncoderMethod(Direction_t dir)
+{
+	TURN((dir == DIR_LEFT) ? -90 : 90);
+}
 
 // 转到特定方向并更新当前方向
-void Turn_ToDirection(int8_t *current, Direction_t target)
+void Turn_ToDirection(int8_t *current, Direction_t target, TurnMethod_t turnMethod)
 {
+	void (*Turn_Once)(Direction_t) = (turnMethod == TurnMethod_Track) ? TurnOnce_TrackMethod : TurnOnce_EncoderMethod;
+
 	switch (*current)
 	{
 	case DIR_UP:
