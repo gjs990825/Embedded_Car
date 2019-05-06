@@ -5,7 +5,7 @@
 #include "protocol.h"
 #include "route.h"
 
-typedef struct AGV_Data_Strusct
+typedef struct DataToAGV_Strusct
 {
     uint8_t *currentCoord;
     uint8_t direction;
@@ -13,7 +13,7 @@ typedef struct AGV_Data_Strusct
     uint8_t *alarmData;
     uint8_t *taskCoord;
     uint8_t *barrierGateCoord;
-} AGV_Data_t;
+} DataToAGV_t;
 
 // RFID相关 ↓
 
@@ -125,6 +125,6 @@ void TFT_Task(void);
 void QRCode_Task(uint8_t QRrequest);
 void Voice_Task(void);
 
-void AGV_Task(AGV_Data_t agvData);
+void AGV_Task(DataToAGV_t agvData);
 
 #endif // _INDEPENDENT_TASK_H

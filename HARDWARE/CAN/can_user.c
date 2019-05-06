@@ -23,9 +23,6 @@ uint8_t Wifi_Rx_flag; //接收完成标志位
 uint8_t Zigbee_Rx_num;
 uint8_t Zigbee_Rx_flag; //接收完成标志位
 
-uint8_t Host_AGV_Return_Flag = RESET;
-uint8_t AGV_data_Falg = RESET;
-
 uint32_t canu_wifi_rxtime = 0;
 uint32_t canu_zibe_rxtime = 0;
 

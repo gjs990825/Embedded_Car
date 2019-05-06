@@ -22,25 +22,30 @@
 
 DeclareExternDataStatus(BarrierGate);
 DeclareExternDataStatus(ETC);
-DeclareExternDataStatus(AGVComplete);
 DeclareExternDataStatus(TrafficLight);
 DeclareExternDataStatus(StereoGarage);
 DeclareExternDataStatus(AGV);
 DeclareExternDataStatus(VoiceBroadcast);
 
-// 数据处理↓
+// 指令、数据处理
 
 void Process_DataFromHost(uint8_t mainCmd);
 void ZigBee_CmdHandler(uint8_t *cmd);
 void HostData_Handler(uint8_t *buf);
 
-// 状态获取↓
+// 标志物状态获取
+
 bool Get_BarrierGateStatus(void);
 uint8_t Get_StereoGrageLayer(void);
 uint8_t *Get_StereoGrageInfraredStatus(void);
 
+// 向从车获取数据
 
-// 数据请求↓
+int8_t Get_AGVQRCode(uint8_t **data);
+uint16_t Get_AGVUltrasonic(void);
+uint16_t Get_AGVBrightness(void);
+
+// 向上位机请求数据
 
 uint8_t *Get_PlateNumber(void);
 uint8_t *Get_QRCode(uint8_t QRID, uint8_t use);

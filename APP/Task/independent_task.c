@@ -607,7 +607,7 @@ void ETC_Task(void)
 }
 
 // AGV任务
-void AGV_Task(AGV_Data_t agvData)
+void AGV_Task(DataToAGV_t agvData)
 {
     uint8_t agvRoute[20];
 

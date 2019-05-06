@@ -13,12 +13,34 @@
 
 // 与ZigBee设备的数据交互↓
 
+// 除从车之外其它设备的消息长度都是8位，使用ZigBee_DataStatus_t数据类型
+
+typedef struct AGVUploadData_Struct
+{
+    uint8_t isSet;
+    uint16_t data;
+} AGVUploadData_t;
+
+// AGV数据定义
+AGVUploadData_t AGV_Ultrasonic = {.isSet = RESET, .data = 0};
+AGVUploadData_t AGV_Brightness = {.isSet = RESET, .data = 0};
+uint8_t AGV_QRCodeData[32];
+uint8_t AGV_QRCodeLength = 0;
+uint8_t AGV_QRCodeIsReceived = false;
+bool AGV_MissonComplete = false;
+
+// 标志物数据声明、定义和处理操作的结构一样所以使用宏定义简化操作
+
+// 定义变量
 #define DefineDataStatus(name) ZigBee_DataStatus_t name##_Status = {0, {0}, 0}
+
+// 处理ZigBee返回数据
 #define ProcessZigBeeReturnData(X)                \
     X##_Status.isSet = SET;                       \
     X##_Status.timeStamp = Get_GlobalTimeStamp(); \
     memcpy(X##_Status.cmd, cmd, 8)
 
+// 标志物ZigBee数据处理
 #define CaseProcess(name)                \
     case Return_##name:                  \
         ProcessZigBeeReturnData(##name); \
@@ -26,27 +48,97 @@
 
 DefineDataStatus(BarrierGate);
 DefineDataStatus(ETC);
-DefineDataStatus(AGVComplete);
 DefineDataStatus(TrafficLight);
 DefineDataStatus(StereoGarage);
 DefineDataStatus(AGV);
 DefineDataStatus(VoiceBroadcast);
 
-// ZigBee指令处理
+// ZigBee指令、数据处理
 void ZigBee_CmdHandler(uint8_t *cmd)
 {
     switch (cmd[1])
     {
         CaseProcess(BarrierGate);
         CaseProcess(ETC);
-        CaseProcess(AGVComplete);
         CaseProcess(TrafficLight);
         CaseProcess(StereoGarage);
-        CaseProcess(AGV);
         CaseProcess(VoiceBroadcast);
+
+    // 从车的ZigBee数据不是八位，单独处理
+    case Return_AGV:
+
+        AGV_Status.isSet = SET;
+        AGV_Status.timeStamp = Get_GlobalTimeStamp();
+
+        switch (cmd[AGVUploadData_DataType])
+        {
+        case AGVUploadType_Ultrasonic: // 从车超声波
+            AGV_Ultrasonic.isSet = SET;
+            AGV_Ultrasonic.data = (uint16_t)(cmd[5] << 8) & 0xFF00;
+            AGV_Ultrasonic.data += cmd[4] & 0x00FF;
+            break;
+
+        case AGVUploadType_Brightness: // 从车光照度
+            AGV_Brightness.isSet = SET;
+            AGV_Brightness.data = (uint16_t)(cmd[5] << 8) & 0xFF00;
+            AGV_Brightness.data += cmd[4] & 0x00FF;
+            break;
+
+        case AGVUploadType_MisonComplete: // 从车任务完成
+            AGV_MissonComplete = true;
+            break;
+
+        // 从车上传的二维码机制较为特殊
+        // ID为 AGVUploadType_QRCodeData = 0x92
+
+        case AGVUploadType_QRCodeData: // 从车二维码数据
+            if (cmd[3] == 0x01)        // 记录识别成功的数据
+            {
+                AGV_QRCodeIsReceived = true;
+                AGV_QRCodeLength = cmd[4];
+                memcpy(AGV_QRCodeData, &cmd[5], AGV_QRCodeLength);
+            }
+            break;
+
+        default:
+            break;
+        }
+        break;
+
     default:
         break;
     }
+}
+
+// 获取从车二维码是否上传 **data为传入指针的地址
+// 返回-1为未接收到，其它为数据长度
+// 若数据为字符串可直接输出，结束符已添加
+int8_t Get_AGVQRCode(uint8_t **data)
+{
+    if (AGV_QRCodeIsReceived)
+    {
+        *data = &AGV_QRCodeData[0];
+        // 方便字符串打印
+        AGV_QRCodeData[AGV_QRCodeLength] = '\0';
+        return AGV_QRCodeLength;
+    }
+    else
+    {
+        *data = NULL;
+        return -1;
+    }
+}
+
+// 获取从车超声波测量值
+uint16_t Get_AGVUltrasonic(void)
+{
+    return (AGV_Ultrasonic.isSet == SET) ? AGV_Ultrasonic.data : 0;
+}
+
+// 获取从车光照度测量值
+uint16_t Get_AGVBrightness(void)
+{
+    return (AGV_Brightness.isSet == SET) ? AGV_Brightness.data : 0;
 }
 
 // 获取道闸状态
@@ -86,7 +178,7 @@ uint8_t Get_StereoGrageLayer(void)
     return 0;
 }
 
-// 获取立体车库前后红外状态 
+// 获取立体车库前后红外状态
 // [0] 前侧 [1] 后侧，0未触发 1触发（无障碍时触发）
 uint8_t *Get_StereoGrageInfraredStatus(void)
 {
@@ -143,11 +235,13 @@ void Process_DataFromHost(uint8_t mainCmd)
 // 处理上位机返回的数据
 void HostData_Handler(uint8_t *buf)
 {
-    if (buf[Data_RequestID] > 0 && buf[Data_RequestID] <= DATA_REQUEST_NUMBER) // 确认命令是否在设定范围
+    uint8_t requestID = buf[Data_RequestID];
+
+    if (requestID > 0 && requestID <= DATA_REQUEST_NUMBER) // 确认命令是否在设定范围
     {
         // 结构体数组 DataBuffer 中取出ID对应的指针，从ID号之后开始，拷贝相应的ID字节数
-        memcpy(DataBuffer[buf[Data_RequestID]].buffer, &buf[Data_RequestID + 1], DataBuffer[buf[Data_RequestID]].Data_Length);
-        DataBuffer[buf[Data_RequestID]].isSet = SET;
+        memcpy(DataBuffer[requestID].buffer, &buf[Data_RequestID + 1], DataBuffer[requestID].Data_Length);
+        DataBuffer[requestID].isSet = SET;
     }
 }
 

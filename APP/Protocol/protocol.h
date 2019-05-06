@@ -91,7 +91,7 @@ enum
 {
     BarrierGate,    // 道闸
     ETC,            // ETC系统
-    AGVComplete,    // 从车入库完成
+    // AGVComplete,    // 从车入库完成
     TrafficLight,   // 交通灯
     StereoGarage,   // 立体车库
     AGV,            // 从车返回
@@ -103,20 +103,36 @@ enum
 {
     Return_BarrierGate = 0x03,   // 道闸
     Return_ETC = 0x0C,           // ETC
-    Return_AGVComplete = 0x66,   // 从车
     Return_TrafficLight = 0x0E,  // 交通灯
     Return_StereoGarage = 0x0D,  // 立体车库
     Return_AGV = 0x02,           // 从车
     Return_VoiceBroadcast = 0x06 // 语音
 };
 
-// ZigBee回传的数据状态和时间戳
+// 通用ZigBee回传的数据状态和时间戳
 typedef struct ZigBee_DataStatus_Sturuct
 {
     uint8_t isSet;
     uint8_t cmd[8];
     uint32_t timeStamp;
 } ZigBee_DataStatus_t;
+
+// 从车上传数据结构
+enum
+{
+    AGVUploadData_Header1 = 0,    // 包头1
+    AGVUploadData_Header2 = 1,    // 包头2
+    AGVUploadData_DataType = 2,   // 数据类型
+};
+
+// 从车上传数据类型
+enum
+{
+    AGVUploadType_Ultrasonic = 0,       // 超声波
+    AGVUploadType_Brightness = 1,       // 光照度
+    AGVUploadType_QRCodeData = 0x92,       // 二维码数据
+    AGVUploadType_MisonComplete = 0xFF, // 任务完成
+};
 
 /***************************************请求命令 Request_XX**************************************************/
 // 上位机没有进行数据校验，校验和(Request_ToHostArray[Pack_CheckSum])无视
