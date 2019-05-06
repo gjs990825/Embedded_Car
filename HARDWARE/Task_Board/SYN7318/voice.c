@@ -207,7 +207,7 @@ void SYN_TTS(uint8_t *str)
     uint8_t Frame[5]; //保存发送命令的数组
     uint8_t buf[4] = {0};
 
-    Length = strlen((char *)str); // GAO edited 2019年3月7日
+    Length = strlen((char *)str);
     Frame[0] = 0xFD;              //帧头
     Frame[1] = 0x00;
     Frame[2] = Length + 2;
@@ -309,7 +309,7 @@ uint8_t Start_VoiceCommandRecognition(uint8_t retryTimes)
         {
             if (VoiceComand_Process(buf) == false)
             {
-                return buf[5]; // edited
+                return buf[5];
             }
         }
         USART6_SendString(Stop_ASR, 4);                 // 停止识别

@@ -338,7 +338,7 @@
               <MiscControls>--no_multibyte_chars</MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F40_41xxx</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CMSIS;..\FWLIB\inc;..\Main;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\timer;..\HARDWARE\Core_Board\MALLOC;..\HARDWARE;..\HARDWARE\Task_Board;..\HARDWARE\Core_Board;..\HARDWARE\CAN;..\HARDWARE\Movement;..\HARDWARE\Task_Board\BH1705;..\HARDWARE\Task_Board\INFARED;..\HARDWARE\Task_Board\SYN7318;..\HARDWARE\Task_Board\ULTRASONIC;..\HARDWARE\Core_Board\POWER_CHECK;..\HARDWARE\Core_Board\UART;..\HARDWARE\Core_Board\UART\UART_A72;..\HARDWARE\Core_Board\RC522;..\APP\Movement;..\APP\Movement\A_Star;..\APP\Movement\PID;..\APP\Movement\ROAD_CHECK;..\APP\Debug;..\APP\Task;..\APP\CAN_TIMER;..\APP\Protocol;..\APP\Movement\Route;..\APP\AGV;..\APP\Data_Interaction;..\APP\my_lib</IncludePath>
+              <IncludePath>..\CMSIS;..\FWLIB\inc;..\Main;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\timer;..\HARDWARE\Core_Board\MALLOC;..\HARDWARE;..\HARDWARE\Task_Board;..\HARDWARE\Core_Board;..\HARDWARE\CAN;..\HARDWARE\Task_Board\BH1705;..\HARDWARE\Task_Board\INFARED;..\HARDWARE\Task_Board\SYN7318;..\HARDWARE\Task_Board\ULTRASONIC;..\HARDWARE\Core_Board\POWER_CHECK;..\HARDWARE\Core_Board\UART;..\HARDWARE\Core_Board\UART\UART_A72;..\HARDWARE\Core_Board\RC522;..\APP\Movement;..\APP\Movement\A_Star;..\APP\Movement\PID;..\APP\Movement\ROAD_CHECK;..\APP\Debug;..\APP\Task;..\APP\CAN_TIMER;..\APP\Protocol;..\APP\Route;..\APP\AGV;..\APP\Data_Interaction;..\APP\my_lib</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -393,49 +393,9 @@
           <GroupName>APP</GroupName>
           <Files>
             <File>
-              <FileName>debug.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\APP\Debug\debug.c</FilePath>
-            </File>
-            <File>
-              <FileName>route.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\APP\Movement\Route\route.c</FilePath>
-            </File>
-            <File>
-              <FileName>protocol.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\APP\Protocol\protocol.c</FilePath>
-            </File>
-            <File>
-              <FileName>task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\APP\Task\task.c</FilePath>
-            </File>
-            <File>
-              <FileName>movement.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\APP\Movement\movement.c</FilePath>
-            </File>
-            <File>
-              <FileName>can_timer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\APP\CAN_TIMER\can_timer.c</FilePath>
-            </File>
-            <File>
-              <FileName>a_star.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\APP\Movement\A_Star\a_star.c</FilePath>
-            </File>
-            <File>
               <FileName>pid.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\APP\Movement\PID\pid.c</FilePath>
-            </File>
-            <File>
-              <FileName>roadway_check.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\APP\Movement\ROAD_CHECK\roadway_check.c</FilePath>
             </File>
             <File>
               <FileName>agv.c</FileName>
@@ -443,25 +403,60 @@
               <FilePath>..\APP\AGV\agv.c</FilePath>
             </File>
             <File>
-              <FileName>independent_task.c</FileName>
+              <FileName>task.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\APP\Task\independent_task.c</FilePath>
+              <FilePath>..\APP\Task\task.c</FilePath>
+            </File>
+            <File>
+              <FileName>route.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\Route\route.c</FilePath>
+            </File>
+            <File>
+              <FileName>a_star.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\Movement\A_Star\a_star.c</FilePath>
+            </File>
+            <File>
+              <FileName>debug.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\Debug\debug.c</FilePath>
+            </File>
+            <File>
+              <FileName>protocol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\Protocol\protocol.c</FilePath>
+            </File>
+            <File>
+              <FileName>can_timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\CAN_TIMER\can_timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>movement.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\Movement\movement.c</FilePath>
+            </File>
+            <File>
+              <FileName>roadway_check.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\Movement\ROAD_CHECK\roadway_check.c</FilePath>
             </File>
             <File>
               <FileName>data_interaction.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\APP\Data_Interaction\data_interaction.c</FilePath>
             </File>
+            <File>
+              <FileName>independent_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\Task\independent_task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>HARDWARE</GroupName>
           <Files>
-            <File>
-              <FileName>hardware.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\hardware.c</FilePath>
-            </File>
             <File>
               <FileName>tba.c</FileName>
               <FileType>1</FileType>
@@ -471,36 +466,6 @@
               <FileName>cba.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\Core_Board\cba.c</FilePath>
-            </File>
-            <File>
-              <FileName>power_check.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\Core_Board\POWER_CHECK\power_check.c</FilePath>
-            </File>
-            <File>
-              <FileName>uart_drv.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\Core_Board\UART\uart_drv.c</FilePath>
-            </File>
-            <File>
-              <FileName>uart_a72.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\Core_Board\UART\UART_A72\uart_a72.c</FilePath>
-            </File>
-            <File>
-              <FileName>bh1750.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\Task_Board\BH1705\bh1750.c</FilePath>
-            </File>
-            <File>
-              <FileName>infrared.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\Task_Board\INFARED\infrared.c</FilePath>
-            </File>
-            <File>
-              <FileName>ultrasonic.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\Task_Board\ULTRASONIC\ultrasonic.c</FilePath>
             </File>
             <File>
               <FileName>voice.c</FileName>
@@ -516,6 +481,41 @@
               <FileName>malloc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\Core_Board\MALLOC\malloc.c</FilePath>
+            </File>
+            <File>
+              <FileName>infrared.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\Task_Board\INFARED\infrared.c</FilePath>
+            </File>
+            <File>
+              <FileName>bh1750.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\Task_Board\BH1705\bh1750.c</FilePath>
+            </File>
+            <File>
+              <FileName>uart_drv.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\Core_Board\UART\uart_drv.c</FilePath>
+            </File>
+            <File>
+              <FileName>uart_a72.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\Core_Board\UART\UART_A72\uart_a72.c</FilePath>
+            </File>
+            <File>
+              <FileName>hardware.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\hardware.c</FilePath>
+            </File>
+            <File>
+              <FileName>ultrasonic.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\Task_Board\ULTRASONIC\ultrasonic.c</FilePath>
+            </File>
+            <File>
+              <FileName>power_check.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\Core_Board\POWER_CHECK\power_check.c</FilePath>
             </File>
           </Files>
         </Group>

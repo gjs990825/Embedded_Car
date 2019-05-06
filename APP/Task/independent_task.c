@@ -267,7 +267,7 @@ void RotationLED_PlateAndCoord(uint8_t plate[6], RouteNode_t coord)
     Infrared_Send_A(Infrared_RotationLEDData);
 }
 
-// 旋转LED显示距离 warnning: 只能显示两位数
+// 旋转LED显示距离 warning: 只能显示两位数
 void RotationLED_Distance(uint8_t dis)
 {
     Infrared_RotationLEDData[1] = RotationLEDMode_Distance;

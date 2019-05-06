@@ -180,82 +180,8 @@ void Can_ZigBeeRx_Check(void)
     {
         if (gt_get_sub(canu_zibe_rxtime) == 0)
         {
-            ZigBee_CmdHandler(Zigb_Rx_Buf); // 对收到的ZigBee指令或数据进行处理 // edited
-
-            // if (Zigb_Rx_Buf[1] == 0x03) // 道闸
-            // {
-            //     if (Zigb_Rx_Buf[2] == 0x01)
-            //     {
-            //         Stop_Flag = Zigb_Rx_Buf[4];
-            //     }
-            // }
-            // else if (Zigb_Rx_Buf[1] == 0x0c) // ETC
-            // {
-            //     if (Zigb_Rx_Buf[2] == 0x01)
-            //     {
-            //         if (Zigb_Rx_Buf[3] == 0x01)
-            //         {
-            //             Stop_Flag = Zigb_Rx_Buf[4];
-            //         }
-            //     }
-            // }
-            // else if ((Zigb_Rx_Buf[1] == 0x0E) && (Zigb_Rx_Buf[2] == 0x01)) //交通灯标志物
-            // {
-            //     Stop_Flag = Zigb_Rx_Buf[4]; // 0x07进入识别模式 0x08 未进入识别模式
-            // }
-            // else if ((Zigb_Rx_Buf[1] == 0x0D) && (Zigb_Rx_Buf[2] == 0x03)) //立体车库标志物
-            // {
-            //     if (Zigb_Rx_Buf[3] == 0x01) //获取立体车库当前层数
-            //     {
-            //         switch (Zigb_Rx_Buf[4])
-            //         {
-            //         case 1:
-            //             Stop_Flag = 0x09; //第一层
-            //             break;
-            //         case 2:
-            //             Stop_Flag = 0x0A; //第二层
-            //             break;
-            //         case 3:
-            //             Stop_Flag = 0x0B; //第三层
-            //             break;
-            //         case 4:
-            //             Stop_Flag = 0x0C; //第四层
-            //             break;
-            //         }
-            //     }
-            //     else if (Zigb_Rx_Buf[3] == 0x02) //获取立体车库当前红外状态
-            //     {
-            //         if ((Zigb_Rx_Buf[4] == 0x01) && (Zigb_Rx_Buf[5] == 0x01))
-            //         {
-            //             Stop_Flag = 0x11; //前侧红外触发、后侧红外触发
-            //         }
-            //         else if ((Zigb_Rx_Buf[4] == 0x02) && (Zigb_Rx_Buf[5] == 0x02))
-            //         {
-            //             Stop_Flag = 0x22; //前侧红外未触发、后侧红外未触发
-            //         }
-            //         else if ((Zigb_Rx_Buf[4] == 0x01) && (Zigb_Rx_Buf[5] == 0x02))
-            //         {
-            //             Stop_Flag = 0x12; //前侧红外触发、后侧红外未触发
-            //         }
-            //         else if ((Zigb_Rx_Buf[4] == 0x02) && (Zigb_Rx_Buf[5] == 0x01))
-            //         {
-            //             Stop_Flag = 0x21; //前侧红外未触发、后侧红外触发
-            //         }
-            //     }
-            // }
-            // else if ((Zigb_Rx_Buf[0] == 0x55) && (Zigb_Rx_Buf[1] == 0x02)) //返回从车数据
-            // {
-            //     memcpy(Follower_Tab, Zigb_Rx_Buf, 50);
-            //     AGV_data_Falg = SET;
-            // }
-            // else if (Zigb_Rx_Buf[1] == 0x06) //语音播报返回
-            // {
-            //     if (Zigb_Rx_Buf[2] == 0x01)
-            //     {
-            //         Stop_Flag = Zigb_Rx_Buf[3]; // 语音芯片状态返回
-            //     }
-            // }
-
+            // 对收到的ZigBee指令或数据进行处理
+            ZigBee_CmdHandler(Zigb_Rx_Buf); 
             Zigbee_Rx_flag = 0;
         }
     }
@@ -278,8 +204,6 @@ void Canuser_upTrackTime(void)
         Host_Set_UpTrack(50);
     }
 }
-
-#define UART_or_CAN 0 //  0---UART  1---CAN
 
 /**
 函数功能：CAN查询、发送接收检测

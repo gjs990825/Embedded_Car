@@ -148,10 +148,9 @@ uint32_t lastStopStamp = 0;
 void Stop(void)
 {
 	Roadway_Flag_clean(); //清除标志位状态
-	// Mp_Value = 0;
 	Update_MotorSpeed(0, 0);
 	PidData_Clear();
-	lastStopStamp = Get_GlobalTimeStamp(); // warning
+	lastStopStamp = Get_GlobalTimeStamp();
 }
 
 // 停止但不清空PID数据

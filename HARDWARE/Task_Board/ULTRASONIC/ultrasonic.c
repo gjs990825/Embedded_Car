@@ -44,14 +44,14 @@ void Ultrasonic_TIM(uint16_t arr, uint16_t psc)
 	TIM_InitStructure.TIM_Period = arr;
 	TIM_InitStructure.TIM_Prescaler = psc;
 	TIM_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	
+
 	TIM_InitStructure.TIM_ClockDivision = TIM_CKD_DIV1; // 有毒！！！
 	TIM_InitStructure.TIM_RepetitionCounter = 0;
 
 	TIM_TimeBaseInit(TIM6, &TIM_InitStructure);
 
 	NVIC_InitStructure.NVIC_IRQChannel = TIM6_DAC_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2; // warnning:优先级可能太低
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2; // warning:优先级可能太低
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
@@ -65,7 +65,7 @@ void Ultrasonic_EXTI(void)
 	EXTI_InitTypeDef EXTI_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
 
-	// NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1); // 有毒！！！ // edited
+	// NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1); // 有毒！！！
 
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
 
@@ -125,7 +125,9 @@ void EXTI4_IRQHandler(void)
 		if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_4) == RESET)
 		{
 			TIM_Cmd(TIM6, DISABLE);
-			tempDistance = (uint16_t)((float)Ultrasonic_Num * 1.72f); // 计算距离定时10us，S=Vt/2 // edited
+
+			// 计算距离定时10us，S = v * t / 2;
+			tempDistance = (uint16_t)((float)Ultrasonic_Num * 1.72f); 
 		}
 		EXTI_ClearITPendingBit(EXTI_Line4);
 	}

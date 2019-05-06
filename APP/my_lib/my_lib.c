@@ -145,8 +145,6 @@ int8_t MLib_memcmp(void *b1, void *b2, uint32_t lb)
 	return Rt;
 }
 
-// edited
-
 int constrain_int(int x, int a, int b)
 {
 	if ((x >= a) && (x <= b))

@@ -36,6 +36,8 @@ static inline void delay(uint32_t ms)
     }
 }
 
+// 兼容官方的代码↓
+
 static inline uint32_t gt_get_sub(uint32_t c)
 {
     (c > global_times) ? (c -= global_times) : (c = 0);

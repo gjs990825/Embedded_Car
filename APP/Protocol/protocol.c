@@ -51,11 +51,6 @@ uint8_t Request_ToHostArray[] = {0x55, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB}
 // 上位机指令接收状态
 uint8_t CommandFlagStatus[0xFF] = {0};
 
-// 主车上传Buffer
-uint8_t Principal_Tab[Principal_Length];
-// 从车上传Buffer
-uint8_t Follower_Tab[Follower_Length];
-
 #if 0
 // C中没有泛型，有些函数不容易实现，所以这里宏定义实现
 void ExcuteNTimes(void(Task *)(void), N, delay)
@@ -67,7 +62,6 @@ void ExcuteNTimes(void(Task *)(void), N, delay)
     }
 }
 #endif
-
 
 // 单次发送，带校验
 void Send_ZigBeeData(uint8_t *data)

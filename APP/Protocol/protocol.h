@@ -91,7 +91,6 @@ enum
 {
     BarrierGate,    // 道闸
     ETC,            // ETC系统
-    // AGVComplete,    // 从车入库完成
     TrafficLight,   // 交通灯
     StereoGarage,   // 立体车库
     AGV,            // 从车返回
@@ -120,9 +119,9 @@ typedef struct ZigBee_DataStatus_Sturuct
 // 从车上传数据结构
 enum
 {
-    AGVUploadData_Header1 = 0,    // 包头1
-    AGVUploadData_Header2 = 1,    // 包头2
-    AGVUploadData_DataType = 2,   // 数据类型
+    AGVUploadData_Header1 = 0,  // 包头1
+    AGVUploadData_Header2 = 1,  // 包头2
+    AGVUploadData_DataType = 2, // 数据类型
 };
 
 // 从车上传数据类型
@@ -130,7 +129,7 @@ enum
 {
     AGVUploadType_Ultrasonic = 0,       // 超声波
     AGVUploadType_Brightness = 1,       // 光照度
-    AGVUploadType_QRCodeData = 0x92,       // 二维码数据
+    AGVUploadType_QRCodeData = 0x92,    // 二维码数据
     AGVUploadType_MisonComplete = 0xFF, // 任务完成
 };
 
@@ -328,17 +327,14 @@ static uint8_t ZigBee_TrafficLightStartRecognition[8] = {0x55, 0x0E, 0x01, 0x00,
 static uint8_t ZigBee_WirelessChargingON[8] = {0x55, 0x0a, 0x01, 0x01, 0x00, 0x00, 0x02, 0xBB}; //开启无线充电站
 
 // 语音播报指令
-static uint8_t ZigBee_VoiceRandom[8] = {0x55, 0x06, 0x20, 0x01, 0x00, 0x00, 0x00, 0xBB};         // 随机播报语音指令
+static uint8_t ZigBee_VoiceRandom[8] = {0x55, 0x06, 0x20, 0x01, 0x00, 0x00, 0x00, 0xBB}; // 随机播报语音指令
+// 下面时标志物默认指令，基本不用
 static uint8_t ZigBee_VoiceTurnRight[8] = {0x55, 0x06, 0x10, 0x02, 0x00, 0x00, 0x12, 0xBB};      // 向右转弯
 static uint8_t ZigBee_VoiceNOTurnRight[8] = {0x55, 0x06, 0x10, 0x03, 0x00, 0x00, 0x13, 0xBB};    // 禁止右转
 static uint8_t ZigBee_VoiceDriveLeft[8] = {0x55, 0x06, 0x10, 0x04, 0x00, 0x00, 0x14, 0xBB};      // 左侧行驶
 static uint8_t ZigBee_VoiceNODriveLeft[8] = {0x55, 0x06, 0x10, 0x05, 0x00, 0x00, 0x15, 0xBB};    // 左行被禁
 static uint8_t ZigBee_VoiceTurnAround[8] = {0x55, 0x06, 0x10, 0x06, 0x00, 0x00, 0x16, 0xBB};     // 原地掉头
 static uint8_t ZigBee_VoiceDriveAssistant[8] = {0x55, 0x06, 0x10, 0x01, 0x00, 0x00, 0x11, 0xBB}; // 驾驶助手
-
-// 从车指令
-static uint8_t ZigBee_AGVOpenMV[8] = {0x55, 0x02, 0x92, 0x01, 0x00, 0x00, 0x00, 0xBB};  // 启动从车二维码识别
-static uint8_t ZigBee_AGVTurnLED[8] = {0x55, 0x02, 0x20, 0x01, 0x01, 0x00, 0x00, 0xBB}; // 从车转向灯
 
 // 各个标志物的指令根据下面的模板填充后发送
 // 标志物ZigBee包头为0xAA(固定)和0xXX(ZigBee编号)，包尾为0xBB
@@ -360,13 +356,6 @@ extern uint8_t CommandFlagStatus[0xFF];
 extern uint8_t DATA_REQUEST_NUMBER;
 extern DataSetting_t DataBuffer[];
 
-#define Principal_Length 12
-#define Follower_Length  50
-
-// 上传到上位机的数据buffer（官方用法已弃用）
-extern uint8_t Principal_Tab[Principal_Length]; 
-extern uint8_t Follower_Tab[Follower_Length];
-
 #define GetCmdFlag(id) CommandFlagStatus[id]
 #define SetCmdFlag(id) CommandFlagStatus[id] = SET
 #define ResetCmdFlag(id) CommandFlagStatus[id] = RESET
@@ -382,7 +371,8 @@ extern uint8_t Follower_Tab[Follower_Length];
         }                               \
     } while (0)
 
-// 自动判断数据长度 warnning: 传入参数不可为指针！
+// 自动判断数据长度
+// warning: 传入参数不可为指针！
 #define Infrared_Send_A(infraredData) Infrared_Send(infraredData, sizeof(infraredData))
 
 void Send_ZigBeeData(uint8_t *data);
