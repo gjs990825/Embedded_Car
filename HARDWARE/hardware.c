@@ -32,5 +32,16 @@ void Hardware_Init(void)
 	DebugPin_Init();			  // 初始化调试用引脚
 	Update_MotorSpeed(0, 0);	  // 电机速度置零
 
-	print_info("\r\nSystem running...\r\n");
+	// 通过按键1的状态选择连接模式
+	// 按下为有线，默认为无线
+	SetConnectionMode(S1);
+
+	// 防止直接触发按键功能
+	while (!S1)
+	{
+		delay_ms(1);
+	}
+	delay_ms(50);
+
+	print_info("System running...\r\n");
 }

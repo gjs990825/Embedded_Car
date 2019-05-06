@@ -6,23 +6,16 @@
 #include "uart_a72.h"
 #include "delay.h"
 
+// 与上位机通信的发送函数指针
+extern void (*Send_ToHost)(uint8_t *, uint8_t);
+
 // 定义连接模式
 #define WIRED_CONNECTION 0    // 有线连接（串口）
 #define WIRELESS_CONNECTION 1 // 无线连接（WIFI）
 
-// 选择与上位机的连接方式
-#define CONNECTION_MODE WIRELESS_CONNECTION
-
-// 自适应选择发送函数
-#if CONNECTION_MODE == WIRED_CONNECTION
-
-#define Send_ToHost Send_DataToUsart
-
-#elif CONNECTION_MODE == WIRELESS_CONNECTION
-
-#define Send_ToHost Send_WifiData_To_Fifo
-
-#endif
+// 设定连接模式
+// true无线，false有线
+void SetConnectionMode(bool mode);
 
 // 上传数据包的结构
 enum
@@ -380,7 +373,7 @@ void Send_ZigBeeDataNTimes(uint8_t *data, uint8_t ntimes, uint16_t delay);
 void Request_ToHost(uint8_t request);
 void Request_Data(uint8_t dataRequest[2]);
 
-void Send_DataToUsart(uint8_t *buf, uint32_t length);
+void Send_DataToUsart(uint8_t *buf, uint8_t length);
 void Check_Sum(uint8_t *cmd);
 
 #endif // __PROTOCOL_H_

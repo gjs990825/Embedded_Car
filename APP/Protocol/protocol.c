@@ -1,5 +1,9 @@
 #include "protocol.h"
 #include "my_lib.h"
+#include "debug.h"
+
+// 与上位机通信的发送函数指针
+void (*Send_ToHost)(uint8_t *, uint8_t) = NULL;
 
 // 请求ID和数据长度在一块的版本，暂未使用
 #define GetRequestID(request) (DataRequest_##request >> 4)
@@ -100,7 +104,7 @@ void Request_Data(uint8_t dataRequest[2])
 }
 
 // 发送数据到串口(A72开发板)
-void Send_DataToUsart(uint8_t *buf, uint32_t length)
+void Send_DataToUsart(uint8_t *buf, uint8_t length)
 {
     UartA72_TxClear();
     UartA72_TxAddStr(buf, length);
@@ -112,4 +116,11 @@ void Check_Sum(uint8_t *cmd)
 {
     uint16_t temp = cmd[2] + cmd[3] + cmd[4] + cmd[5];
     cmd[Pack_CheckSum] = (uint8_t)(temp % 256);
+}
+
+// 设定连接模式
+void SetConnectionMode(bool mode)
+{
+    Send_ToHost = mode ? Send_WifiData_To_Fifo : Send_DataToUsart;
+    print_info("\r\n%s\r\n", mode ? "WIRELESS" : "WIRED");
 }
