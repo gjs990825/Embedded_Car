@@ -53,19 +53,18 @@
 #elif (KEY_CONFIGURATION == KEY_AGV_TEST)
 
 // 从车测试配置
-#define Action_S1() AGV_SetTowards(DIR_UP)
+#define Action_S1() Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
 #define Action_S2() AGV_SetTaskID(1, 0)
 #define Action_S3() AGV_SetRoute("B7B6D6D4G4")
-#define Action_S4()                             \
-	do                                          \
-	{                                           \
-		AGV_SendInfraredData(Infrared_AlarmON); \
-		AGV_SetTaskID(2, 0);                    \
-		AGV_SetTaskID(5, 1);                    \
-		AGV_SetRoute("G4F4D4D2B2B1\0\0\0");     \
-		AGV_SetTowards(DIR_LEFT);               \
-		AGV_Start();                            \
-	} while (0)
+#define Action_S4()                                      \
+	DataToAGV_t agvData;                                 \
+	agvData.alarmData = Infrared_AlarmON;                \
+	agvData.barrierGateCoord = "F3";                     \
+	agvData.currentCoord = "G2";                         \
+	agvData.direction = DIR_LEFT;                        \
+	agvData.routeInfo = "!G2@#F2$[D2]{D4}^F4&*(F2)_A2+"; \
+	agvData.taskCoord = "D4";                            \
+	AGV_Task(agvData);
 
 #elif (KEY_CONFIGURATION == KEY_RFID_TEST)
 
@@ -86,10 +85,22 @@
 #elif (KEY_CONFIGURATION == KEY_TEMP)
 
 // 临时配置
-#define Action_S1() StereoGarage_ToLayer(2)
-#define Action_S2() print_info("Layer:%d\r\n", Get_StereoGrageLayer())
-#define Action_S3() print_info("IR0:%d\r\n", Get_StereoGrageInfraredStatus()[0])
-#define Action_S4() print_info("IR1:%d\r\n", Get_StereoGrageInfraredStatus()[1])
+#define Action_S1() Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
+#define Action_S2() print_info("Ultra:%d\r\n", Get_AGVUltrasonic())
+#define Action_S3() print_info("Brightness:%d\r\n", Get_AGVBrightness())
+#define Action_S4()                          \
+	uint8_t *data;                           \
+	int8_t length = Get_AGVQRCode(&data);    \
+	if (length != -1)                        \
+	{                                        \
+		print_info("length:%d\r\n", length); \
+		data[length] = '\0';                 \
+		print_info("Data:%s\r\n", data);     \
+	}                                        \
+	else                                     \
+	{                                        \
+		print_info("NoData\r\n");            \
+	}
 
 #endif
 

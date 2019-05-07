@@ -25,6 +25,13 @@ RouteSetting_t Route_Task[] = {
     {.coordinate = "B2", .Task = Task_B2},
     // {.coordinate = "A2", .Task = Task_A2},
 };
+// RouteSetting_t Route_Task[] = {
+//     {.coordinate = "F7", .Task = NULL, .node.dir = DIR_UP},
+//     {.coordinate = "E6", .Task = NULL},
+//     {.coordinate = "F5", .Task = NULL},
+//     {.coordinate = "G6", .Task = NULL},
+//     {.coordinate = "F7", .Task = NULL},
+// };
 
 // 任务点个数
 uint8_t ROUTE_TASK_NUMBER = GET_ARRAY_LENGEH(Route_Task);
