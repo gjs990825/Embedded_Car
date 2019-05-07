@@ -126,28 +126,39 @@ enum
     AGVUploadType_MisonComplete = 0xFF, // 任务完成
 };
 
-/***************************************请求命令 Request_XX**************************************************/
-// 上位机没有进行数据校验，校验和(Request_ToHostArray[Pack_CheckSum])无视
-// 包头为 0x55, 0x03 ，包尾为 0xBB 的指令(请求上位机任务), Request_ToHostArray[Pack_MainCmd]替换为请求编号
+// 任务请求的结构 [0][1] 包头（0x55, 0x03）[2] 任务ID
 
 // 任务请求ID
 enum
 {
-    RequestCmd_QRCode1 = 0x01,        // 二维码1
-    RequestCmd_QRCode2 = 0x02,        // 二维码2
-    RequestCmd_TrafficLight = 0x81,   // 交通灯
-    RequestCmd_TFTRecognition = 0x66, // TFT识别
+    RequestTask_QRCode1 = 0x01,        // 二维码1
+    RequestTask_QRCode2 = 0x02,        // 二维码2
+    RequestTask_TrafficLight = 0x81,   // 交通灯
+    RequestTask_TFTRecognition = 0x66, // TFT识别
 };
 
-// 数据请求的包结构
+// 数据请求的结构 [0][1] 包头（0x56, 0x66） [2] 请求ID *[3] 功能
+// 数据发送的结构 [0][1] 包头（0x56, 0x76） [2] 发送ID [3] 数据长度 [4+] 数据区域
+
+// 数据请求/发送的包结构
 enum
 {
-    Data_Header1 = 0, // 0x56
-    Data_Header2,     // 0x66
-    Data_RequestID,   // 请求ID
+    Data_Header1 = 0, // 头1
+    Data_Header2 = 1, // 头2
+    Data_ID = 2,      // ID
+    Data_Use = 3,     // 数据用途（请求）
+    Data_Length = 3,  // 长度（发送）
+    Data_Content = 4, // 数据发送区（发送）
 };
 
-// 数据请求和返回
+// 数据发送ID
+enum
+{
+    DataSend_QRCode = 0, // 二维码
+    DataSend_RFID = 1,   // RFID
+};
+
+// 数据请求和返回ID
 enum
 {
     DataRequest_NotUsed = 0x00,   // 未使用
@@ -370,9 +381,6 @@ extern DataSetting_t DataBuffer[];
 
 void Send_ZigBeeData(uint8_t *data);
 void Send_ZigBeeDataNTimes(uint8_t *data, uint8_t ntimes, uint16_t delay);
-void Request_ToHost(uint8_t request);
-void Request_Data(uint8_t dataRequest[2]);
-
 void Send_DataToUsart(uint8_t *buf, uint8_t length);
 void Check_Sum(uint8_t *cmd);
 

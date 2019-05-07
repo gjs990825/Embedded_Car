@@ -48,7 +48,7 @@ void Task_F6(void)
 
 void Task_D6(void)
 {
-    QRCode_Task(RequestCmd_QRCode1);
+    QRCode_Task(RequestTask_QRCode1);
 
     uint8_t *key = Get_QRCode(DataRequest_QRCode1, 1);
     dump_array(key, 6);
@@ -69,7 +69,7 @@ void Task_B4(void)
 
     MOVE(-15);
 
-    QRCode_Task(RequestCmd_QRCode2);
+    QRCode_Task(RequestTask_QRCode2);
 
     distanceMeasured = Ultrasonic_GetAverage(10);
     RFID_1.dataBlockLocation = (distanceMeasured / 100) % 3 + 4;

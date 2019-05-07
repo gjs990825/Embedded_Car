@@ -50,8 +50,6 @@ DataSetting_t DataBuffer[] = {
 // 数据请求命令个数
 uint8_t DATA_REQUEST_NUMBER = GET_ARRAY_LENGEH(DataBuffer);
 
-// 请求指令使用的buffer
-uint8_t Request_ToHostArray[] = {0x55, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
 // 上位机指令接收状态
 uint8_t CommandFlagStatus[0xFF] = {0};
 
@@ -67,14 +65,14 @@ void ExcuteNTimes(void(Task *)(void), N, delay)
 }
 #endif
 
-// 单次发送，带校验
+// 单次发送，带校验（八位）
 void Send_ZigBeeData(uint8_t *data)
 {
     Check_Sum(data);
     Send_ZigbeeData_To_Fifo(data, 8);
 }
 
-// 多次发送，带校验
+// 多次发送，带校验（八位）
 void Send_ZigBeeDataNTimes(uint8_t *data, uint8_t ntimes, uint16_t delay)
 {
     Check_Sum(data);
@@ -86,21 +84,6 @@ void Send_ZigBeeDataNTimes(uint8_t *data, uint8_t ntimes, uint16_t delay)
             delay_ms(delay);
         }
     }
-}
-
-// 向上位机请求任务
-void Request_ToHost(uint8_t request)
-{
-    Request_ToHostArray[Pack_MainCmd] = request;
-    Send_ToHost(Request_ToHostArray, 8);
-}
-
-// 向上位机请求数据
-void Request_Data(uint8_t dataRequest[2])
-{
-    Request_ToHostArray[Pack_MainCmd] = dataRequest[0];
-    Request_ToHostArray[Pack_SubCmd1] = dataRequest[1];
-    Send_ToHost(Request_ToHostArray, 8);
 }
 
 // 发送数据到串口(A72开发板)

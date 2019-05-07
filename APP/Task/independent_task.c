@@ -568,14 +568,14 @@ void TrafficLight_Task(void)
 {
     Send_ZigBeeDataNTimes(ZigBee_TrafficLightStartRecognition, 2, 200); // 开始识别交通灯
     delay_ms(700);
-    Request_ToHost(RequestCmd_TrafficLight);
+    RequestToHost_Task(RequestTask_TrafficLight);
     WaitForFlagInMs(GetCmdFlag(FromHost_TrafficLight), SET, 9 * 1000); // 等待识别完成
 }
 
 // TFT图形图像识别
 void TFT_Task(void)
 {
-    Request_ToHost(RequestCmd_TFTRecognition);                            // 请求识别TFT内容
+    RequestToHost_Task(RequestTask_TFTRecognition);                            // 请求识别TFT内容
     WaitForFlagInMs(GetCmdFlag(FromHost_TFTRecognition), SET, 37 * 1000); // 等待识别完成
 }
 
@@ -583,7 +583,7 @@ void TFT_Task(void)
 void QRCode_Task(uint8_t QRrequest)
 {
     GetCmdFlag(FromHost_QRCodeRecognition) = RESET;
-    Request_ToHost(QRrequest);
+    RequestToHost_Task(QRrequest);
     WaitForFlagInMs(GetCmdFlag(FromHost_QRCodeRecognition), SET, 5 * 1000);
 }
 

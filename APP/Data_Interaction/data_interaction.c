@@ -88,8 +88,8 @@ void ZigBee_CmdHandler(uint8_t *cmd)
             AGV_MissonComplete = true;
             break;
 
-        // 从车上传的二维码机制较为特殊
-        // ID为 AGVUploadType_QRCodeData = 0x92
+            // 从车上传的二维码机制较为特殊
+            // ID为 AGVUploadType_QRCodeData = 0x92
 
         case AGVUploadType_QRCodeData: // 从车二维码数据
             if (cmd[3] == 0x01)        // 记录识别成功的数据
@@ -209,6 +209,36 @@ uint8_t *Get_StereoGrageInfraredStatus(void)
 ///////////////////////////
 // 与上位机的数据交互↓
 
+// 向上位机请求任务
+void RequestToHost_Task(uint8_t request)
+{
+    uint8_t requestTaskArray[] = {0x55, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};
+    requestTaskArray[Pack_MainCmd] = request;
+    Send_ToHost(requestTaskArray, 8);
+}
+
+///////////////////////
+/// 向上位机发送数据 ///
+
+// 数据发送头
+uint8_t dataSendHeader[] = {0x56, 0x76, 0x00, 0x00};
+
+void Send_QRCodeData(uint8_t *QRData, uint8_t length)
+{
+    dataSendHeader[Data_ID] = DataSend_QRCode;
+    dataSendHeader[Data_Length] = length;
+    Send_ToHost(dataSendHeader, 4);
+    Send_ToHost(QRData, length);
+}
+
+void Send_RFIDData(uint8_t *RFIDData, uint8_t length)
+{
+    dataSendHeader[Data_ID] = DataSend_RFID;
+    dataSendHeader[Data_Length] = length;
+    Send_ToHost(dataSendHeader, 4);
+    Send_ToHost(RFIDData, length);
+}
+
 // 处理上位机发送的数据
 void Process_DataFromHost(uint8_t mainCmd)
 {
@@ -235,31 +265,34 @@ void Process_DataFromHost(uint8_t mainCmd)
 // 处理上位机返回的数据
 void HostData_Handler(uint8_t *buf)
 {
-    uint8_t requestID = buf[Data_RequestID];
+    uint8_t requestID = buf[Data_ID];
 
     if (requestID > 0 && requestID <= DATA_REQUEST_NUMBER) // 确认命令是否在设定范围
     {
         // 结构体数组 DataBuffer 中取出ID对应的指针，从ID号之后开始，拷贝相应的ID字节数
-        memcpy(DataBuffer[requestID].buffer, &buf[Data_RequestID + 1], DataBuffer[requestID].Data_Length);
+        memcpy(DataBuffer[requestID].buffer, &buf[Data_ID + 1], DataBuffer[requestID].Data_Length);
         DataBuffer[requestID].isSet = SET;
     }
 }
 
+///////////////////
+// 向上位机请求数据
+
 // 数据请求头
-uint8_t HostDataRequestHeader[3] = {0x56, 0x66, 0x00};
+uint8_t dataRequestHeader[3] = {0x56, 0x66, 0x00};
 
 // 单个指令请求
 void HostData_RequestSingle(uint8_t requestID)
 {
-    HostDataRequestHeader[Data_RequestID] = requestID;
-    Send_ToHost(HostDataRequestHeader, 3);
+    dataRequestHeader[Data_ID] = requestID;
+    Send_ToHost(dataRequestHeader, 3);
 }
 
 // 多指令请求
 void HostData_RequestMulti(uint8_t requestID, uint8_t *param, uint8_t paramLen)
 {
-    HostDataRequestHeader[Data_RequestID] = requestID;
-    Send_ToHost(HostDataRequestHeader, 3);
+    dataRequestHeader[Data_ID] = requestID;
+    Send_ToHost(dataRequestHeader, 3);
     Send_ToHost(param, paramLen);
 }
 

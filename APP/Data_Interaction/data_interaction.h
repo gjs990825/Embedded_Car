@@ -45,6 +45,15 @@ int8_t Get_AGVQRCode(uint8_t **data);
 uint16_t Get_AGVUltrasonic(void);
 uint16_t Get_AGVBrightness(void);
 
+// 向上位机请求任务
+
+void RequestToHost_Task(uint8_t request);
+
+// 向上位机发送数据
+
+void Send_QRCodeData(uint8_t *QRData, uint8_t length);
+void Send_RFIDData(uint8_t *RFIDData, uint8_t length);
+
 // 向上位机请求数据
 
 uint8_t *Get_PlateNumber(void);
