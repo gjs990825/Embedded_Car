@@ -470,11 +470,10 @@ void Voice_Recognition(void)
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 智能路灯部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
-// 路灯档位调节，输入目标档位自动调整
-void StreetLight_AdjustTo(uint8_t targetLevel)
+// 路灯档位调节，输入目标档位自动调整，返回当前档位
+uint8_t StreetLight_AdjustTo(uint8_t targetLevel)
 {
-    uint16_t temp_val[4], CurrentLightValue;
-    int8_t errorValue;
+    uint16_t temp_val[4];
 
     for (int8_t i = 0; i < 4; i++)
     {
@@ -483,38 +482,45 @@ void StreetLight_AdjustTo(uint8_t targetLevel)
         Infrared_Send_A(Infrared_LightAdd1);
         delay(1600);
     }
-    CurrentLightValue = temp_val[0];
 
-    // 对获得数据排序算出初始档位
+    uint16_t currentBrightness = temp_val[0];
+    uint8_t currentLevel;
+
+    // 对获得数据排序可算出当前档位
     bubble_sort(temp_val, 4);
 
-    // 算出与目标档位差值
     for (int8_t i = 0; i < 4; i++)
     {
-        if (CurrentLightValue == temp_val[i])
+        if (currentBrightness == temp_val[i])
         {
-            errorValue = (int8_t)targetLevel - (i + 1);
+            currentLevel = i + 1;
             break;
         }
     }
 
-    // 调整到目标档位
-    if (errorValue >= 0)
+    // 目标档位为0时不调整
+    if (targetLevel != 0)
     {
-        for (int8_t i = 0; i < errorValue; i++)
+        int8_t errorValue = (int8_t)targetLevel - currentLevel;
+        // 调整到目标档位
+        if (errorValue >= 0)
         {
-            Infrared_Send_A(Infrared_LightAdd1);
-            delay(1600);
+            for (int8_t i = 0; i < errorValue; i++)
+            {
+                Infrared_Send_A(Infrared_LightAdd1);
+                delay(1600);
+            }
+        }
+        else
+        {
+            for (int8_t i = 0; i > errorValue; i--)
+            {
+                Infrared_Send_A(Infrared_LightAdd3);
+                delay(1600);
+            }
         }
     }
-    else
-    {
-        for (int8_t i = 0; i > errorValue; i--)
-        {
-            Infrared_Send_A(Infrared_LightAdd3);
-            delay(1600);
-        }
-    }
+    return currentLevel;
 }
 
 ////////////////////////////////////////////////////////////
@@ -575,7 +581,7 @@ void TrafficLight_Task(void)
 // TFT图形图像识别
 void TFT_Task(void)
 {
-    RequestToHost_Task(RequestTask_TFTRecognition);                            // 请求识别TFT内容
+    RequestToHost_Task(RequestTask_TFTRecognition);                       // 请求识别TFT内容
     WaitForFlagInMs(GetCmdFlag(FromHost_TFTRecognition), SET, 37 * 1000); // 等待识别完成
 }
 
@@ -632,7 +638,7 @@ void AGV_Task(DataToAGV_t agvData)
     print_info("AGV_Steps:%d\r\n", steps);
     if (steps != -1)
     {
-        delay(steps * 2000);
+        delay(steps * 1700);
         BarrierGate_Task(NULL);
     }
 }

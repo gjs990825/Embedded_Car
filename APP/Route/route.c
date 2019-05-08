@@ -12,26 +12,34 @@ RouteNode_t CurrentStaus;
 RouteNode_t NextStatus;
 
 // 任务和路径设定
-RouteSetting_t Route_Task[] = {
-    {.coordinate = "F7", .Task = Task_F7, .node.dir = DIR_UP},
-    {.coordinate = "F6", .Task = Task_F6},
-    {.coordinate = "D6", .Task = Task_D6},
-    {.coordinate = "B6", .Task = Task_B6},
-    {.coordinate = "B4", .Task = Task_B4},
-    {.coordinate = "D4", .Task = Task_D4},
-    {.coordinate = "F4", .Task = Task_F4},
-    {.coordinate = "F2", .Task = Task_F2},
-    {.coordinate = "D2", .Task = Task_D2},
-    {.coordinate = "B2", .Task = Task_B2},
-    // {.coordinate = "A2", .Task = Task_A2},
-};
 // RouteSetting_t Route_Task[] = {
-//     {.coordinate = "F7", .Task = NULL, .node.dir = DIR_UP},
-//     {.coordinate = "E6", .Task = NULL},
-//     {.coordinate = "F5", .Task = NULL},
-//     {.coordinate = "G6", .Task = NULL},
-//     {.coordinate = "F7", .Task = NULL},
+//     {.coordinate = "A2", .Task = Task_A2, .node.dir = DIR_RIGHT},
+//     {.coordinate = "B2", .Task = Task_B2},
+//     {.coordinate = "B3", .Task = Task_B3},
+//     {.coordinate = "B4", .Task = Task_B4},
+//     {.coordinate = "D4", .Task = Task_D4},
+//     {.coordinate = "F4", .Task = Task_F4},
+//     {.coordinate = "F6", .Task = Task_F6},
+//     {.coordinate = "D6", .Task = Task_D6},
+//     {.coordinate = "\0\0", .Task = Task_Final},
 // };
+// RouteSetting_t Route_Task[] = {
+//     {.coordinate = "F7", .Task = Task_F7, .node.dir = DIR_UP},
+//     {.coordinate = "F6", .Task = Task_F6},
+//     {.coordinate = "D6", .Task = Task_D6},
+//     {.coordinate = "B6", .Task = Task_B6},
+//     {.coordinate = "B4", .Task = Task_B4},
+//     {.coordinate = "D4", .Task = Task_D4},
+//     {.coordinate = "F4", .Task = Task_F4},
+//     {.coordinate = "F2", .Task = Task_F2},
+//     {.coordinate = "D2", .Task = Task_D2},
+//     {.coordinate = "B2", .Task = Task_B2},
+//     // {.coordinate = "A2", .Task = Task_A2},
+// };
+RouteSetting_t Route_Task[] = {
+    {.coordinate = "B7", .Task = NULL, .node.dir = DIR_UP},
+    {.coordinate = "D7", .Task = NULL},
+};
 
 // 任务点个数
 uint8_t ROUTE_TASK_NUMBER = GET_ARRAY_LENGEH(Route_Task);
@@ -252,4 +260,122 @@ int8_t Is_ContainCoordinate(uint8_t *stringRoute, uint8_t coord[3])
     free(route);
 
     return -1;
+}
+
+// 根据当前坐标和朝向坐标获取车头朝向
+// 不检查参数，请确保输入正确坐标
+Direction_t Get_Towards(uint8_t current[3], uint8_t towards[3])
+{
+    RouteNode_t currentNode = Coordinate_Covent(current);
+    RouteNode_t towardsNode = Coordinate_Covent(towards);
+
+    int8_t dx = towardsNode.x - currentNode.x;
+    int8_t dy = towardsNode.y - currentNode.y;
+
+    if (dx > 0)
+        return DIR_RIGHT;
+
+    else if (dx < 0)
+        return DIR_LEFT;
+
+    else if (dy > 0)
+        return DIR_UP;
+
+    else if (dy < 0)
+        return DIR_DOWN;
+
+    else
+        return DIR_NOTSET;
+}
+
+// 使用传入函数转到特定方向并更新当前方向
+// void (*Turn_Once)(Direction_t) 为左/右转向90度使用的函数
+void Turn_ToDirection(int8_t *current, Direction_t target, void (*Turn_Once)(Direction_t))
+{
+	switch (*current)
+	{
+	case DIR_UP:
+		switch (target)
+		{
+		case DIR_UP:
+			break;
+		case DIR_DOWN:
+			Turn_Once(DIR_RIGHT);
+            Turn_Once(DIR_RIGHT);
+			break;
+		case DIR_LEFT:
+			Turn_Once(DIR_LEFT);
+			break;
+		case DIR_RIGHT:
+			Turn_Once(DIR_RIGHT);
+			break;
+		default:
+			break;
+		}
+		break;
+
+	case DIR_DOWN:
+		switch (target)
+		{
+		case DIR_UP:
+			Turn_Once(DIR_RIGHT);
+            Turn_Once(DIR_RIGHT);
+			break;
+		case DIR_DOWN:
+			break;
+		case DIR_LEFT:
+			Turn_Once(DIR_RIGHT);
+			break;
+		case DIR_RIGHT:
+			Turn_Once(DIR_LEFT);
+			break;
+		default:
+			break;
+		}
+		break;
+
+	case DIR_LEFT:
+		switch (target)
+		{
+		case DIR_UP:
+			Turn_Once(DIR_RIGHT);
+			break;
+		case DIR_DOWN:
+			Turn_Once(DIR_LEFT);
+			break;
+		case DIR_LEFT:
+			break;
+		case DIR_RIGHT:
+			Turn_Once(DIR_RIGHT);
+            Turn_Once(DIR_RIGHT);
+			break;
+		default:
+			break;
+		}
+		break;
+
+	case DIR_RIGHT:
+		switch (target)
+		{
+		case DIR_UP:
+			Turn_Once(DIR_LEFT);
+			break;
+		case DIR_DOWN:
+			Turn_Once(DIR_RIGHT);
+			break;
+		case DIR_LEFT:
+			Turn_Once(DIR_RIGHT);
+            Turn_Once(DIR_RIGHT);
+			break;
+		case DIR_RIGHT:
+			break;
+		default:
+			break;
+		}
+		break;
+
+	default:
+		break;
+	}
+	*current = target;
 }

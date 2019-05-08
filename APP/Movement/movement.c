@@ -81,11 +81,11 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 	// 当前点非十字线时转向使用码盘转向
 	if ((current->x % 2 == 0) || (current->y % 2 == 0))
 	{
-		Turn_ToDirection(&current->dir, finalDir, TurnMethod_Encoder);
+		Turn_ToDirection(&current->dir, finalDir, TurnOnce_EncoderMethod);
 	}
 	else
 	{
-		Turn_ToDirection(&current->dir, finalDir, TurnMethod_Track);
+		Turn_ToDirection(&current->dir, finalDir, TurnOnce_TrackMethod);
 	}
 
 	if (next.x % 2 == 0) // X轴为偶数的坐标
@@ -267,106 +267,46 @@ void Turn_ByTrack(Direction_t dir)
 	}
 }
 
-#define TURN_ONCE(dir) Turn_Once(dir)
-#define TURN_TWICE(dir) \
-	Turn_Once(dir);     \
-	Turn_Once(dir)
-
+// 左右转，循迹线模式
 void TurnOnce_TrackMethod(Direction_t dir)
 {
-	ExcuteAndWait(Turn_ToNextTrack(dir), Stop_Flag, TURNCOMPLETE);
+	ExcuteAndWait(Turn_ByTrack(dir), Stop_Flag, TURNCOMPLETE);
 }
 
+// 左右转，码盘值模式
 void TurnOnce_EncoderMethod(Direction_t dir)
 {
 	TURN((dir == DIR_LEFT) ? -90 : 90);
 }
 
-// 转到特定方向并更新当前方向
-void Turn_ToDirection(int8_t *current, Direction_t target, TurnMethod_t turnMethod)
+// 全自动倒车入库
+void Auto_ReverseParcking(RouteNode_t *current, uint8_t targetGarage[3], void(*taskAfterParcking)(void))
 {
-	void (*Turn_Once)(Direction_t) = (turnMethod == TurnMethod_Track) ? TurnOnce_TrackMethod : TurnOnce_EncoderMethod;
+	RouteNode_t target = Coordinate_Covent(targetGarage);
+	RouteNode_t *route = malloc(sizeof(RouteNode_t) * 12);
+	uint8_t routeCount;
 
-	switch (*current)
+	A_Star_GetRouteBetweenNodes(*current, target, route, &routeCount);
+
+	// 跳过第一个起始点和最后一个车库点
+	for (uint8_t i = 1; i < routeCount - 1; i++)
 	{
-	case DIR_UP:
-		switch (target)
-		{
-		case DIR_UP:
-			break;
-		case DIR_DOWN:
-			TURN_TWICE(DIR_RIGHT);
-			break;
-		case DIR_LEFT:
-			TURN_ONCE(DIR_LEFT);
-			break;
-		case DIR_RIGHT:
-			TURN_ONCE(DIR_RIGHT);
-			break;
-		default:
-			break;
-		}
-		break;
-
-	case DIR_DOWN:
-		switch (target)
-		{
-		case DIR_UP:
-			TURN_TWICE(DIR_RIGHT);
-			break;
-		case DIR_DOWN:
-			break;
-		case DIR_LEFT:
-			TURN_ONCE(DIR_RIGHT);
-			break;
-		case DIR_RIGHT:
-			TURN_ONCE(DIR_LEFT);
-			break;
-		default:
-			break;
-		}
-		break;
-
-	case DIR_LEFT:
-		switch (target)
-		{
-		case DIR_UP:
-			TURN_ONCE(DIR_RIGHT);
-			break;
-		case DIR_DOWN:
-			TURN_ONCE(DIR_LEFT);
-			break;
-		case DIR_LEFT:
-			break;
-		case DIR_RIGHT:
-			TURN_TWICE(DIR_RIGHT);
-			break;
-		default:
-			break;
-		}
-		break;
-
-	case DIR_RIGHT:
-		switch (target)
-		{
-		case DIR_UP:
-			TURN_ONCE(DIR_LEFT);
-			break;
-		case DIR_DOWN:
-			TURN_ONCE(DIR_RIGHT);
-			break;
-		case DIR_LEFT:
-			TURN_TWICE(DIR_RIGHT);
-			break;
-		case DIR_RIGHT:
-			break;
-		default:
-			break;
-		}
-		break;
-
-	default:
-		break;
+		NextStatus = route[i];
+		Go_ToNextNode(current, route[i]);
 	}
-	*current = target;
+
+	// 计算方向，倒车入库
+	uint8_t *currentStr = ReCoordinate_Covent(current->x, current->y);
+	Direction_t dir = Get_Towards(targetGarage, currentStr);
+
+	Turn_ToDirection(&current->dir, dir, TurnOnce_TrackMethod);
+	MOVE(-30);
+
+	free(route);
+
+	// 入库完成后任务
+	if (taskAfterParcking != NULL)
+	{
+		taskAfterParcking();
+	}
 }

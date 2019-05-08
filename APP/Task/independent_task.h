@@ -106,7 +106,7 @@ void Voice_Recognition(void);
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 智能路灯部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
-void StreetLight_AdjustTo(uint8_t targetLevel);
+uint8_t StreetLight_AdjustTo(uint8_t targetLevel);
 
 /////////////////////// 宏定义操作 /////////////////////
 
@@ -124,7 +124,7 @@ void TrafficLight_Task(void);
 void TFT_Task(void);
 void QRCode_Task(uint8_t QRrequest);
 void Voice_Task(void);
-
+void ETC_Task(void);
 void AGV_Task(DataToAGV_t agvData);
 
 #endif // _INDEPENDENT_TASK_H

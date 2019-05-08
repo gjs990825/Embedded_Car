@@ -4,6 +4,7 @@
 #include "sys.h"
 #include "a_star.h"
 #include "Timer.h"
+#include "route.h"
 
 // Stop_Flag的枚举
 typedef enum
@@ -47,7 +48,7 @@ typedef enum TurnMethod_Struct
 // 前后移动
 #define MOVE(distance) ExcuteAndWait(Move_ByEncoder(Mission_Speed, distance), Stop_Flag, FORBACKCOMPLETE)
 // 根据循迹线转到某个方向，自动记录方向变化
-#define TURN_TO(target) Turn_ToDirection(&CurrentStaus.dir, target, TurnMethod_Track)
+#define TURN_TO(target) Turn_ToDirection(&CurrentStaus.dir, target, TurnOnce_TrackMethod)
 
 // 基本运动控制
 void Move_ByEncoder(int speed, float distance);
@@ -58,17 +59,19 @@ void Back_Off(int speed, uint16_t mp);
 void Turn_ByEncoder(int16_t digree);
 void Track_ByEncoder(int speed, uint16_t setMP);
 void Start_Tracking(int speed);
-
 void Stop_WithoutPIDClear(void);
+
+void TurnOnce_TrackMethod(Direction_t dir);
+void TurnOnce_EncoderMethod(Direction_t dir);
 
 // 循迹线转弯
 void Turn_ByTrack(Direction_t dir);
-#define Turn_ToNextTrack(dir) Turn_ByTrack(dir)
-void Turn_ToDirection(int8_t *current, Direction_t target, TurnMethod_t turnMethod);
 
 // 自动执行
 void Go_ToNextNode(RouteNode_t *current, RouteNode_t next);
 void Auto_RouteTask(RouteNode_t *current, RouteNode_t next);
 void Auto_Run(RouteSetting_t *routeTask, uint8_t taskNumber, RouteNode_t *current);
+
+void Auto_ReverseParcking(RouteNode_t *current, uint8_t targetGarage[3], void(*taskAfterParcking)(void));
 
 #endif // _MOVEMENT_H_
