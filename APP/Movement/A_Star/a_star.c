@@ -26,16 +26,24 @@ typedef struct AStarNode
 
 // 生成路径
 int8_t path_array[X_LENTH * Y_LENTH][2];
-// // 步数
-// int8_t step_count = -1;
 
 // 定义点类型
 #define STARTNODE 1 // 起点
 #define ENDNODE 2   // 终点
 #define BARRIER 3   // 障碍
 
+// 默认地图设置
+const int8_t defalult_maze[X_LENTH][Y_LENTH] = {
+	{3, 0, 3, 0, 3, 0, 3},
+	{0, 0, 0, 0, 0, 0, 0},
+	{3, 0, 3, 0, 3, 0, 3},
+	{0, 0, 0, 0, 0, 0, 0},
+	{3, 0, 3, 0, 3, 0, 3},
+	{0, 0, 0, 0, 0, 0, 0},
+	{3, 0, 3, 0, 3, 0, 3}};
+
 // 地图设置
-const int8_t maze[X_LENTH][Y_LENTH] = {
+int8_t maze[X_LENTH][Y_LENTH] = {
 	{3, 0, 3, 0, 3, 0, 3},
 	{0, 0, 0, 0, 0, 0, 0},
 	{3, 0, 3, 0, 3, 0, 3},
@@ -212,9 +220,6 @@ void A_Star_SetStartEnd(int start_x, int start_y, int end_x, int end_y)
 {
 	A_Star_InitMap();
 
-	// memset(open_table, 0, sizeof(open_table));
-	// memset(close_table, 0, sizeof(close_table));
-
 	open_node_count = 0;
 	close_node_count = 0;
 
@@ -324,4 +329,26 @@ bool A_Star_GetRouteBetweenNodes(RouteNode_t current, RouteNode_t next, RouteNod
 #endif // _A_STAR_ENABLE_OUTPUT_
 
 	return true;
+}
+
+// 调整障碍点设置
+// 设置新的障碍点防止自动寻路走到不希望出现的地方
+void A_Star_AdjustBarrier(uint8_t *barrierNodes)
+{
+	uint8_t count = strlen((char *)barrierNodes) / 2;
+	RouteNode_t newBarrier;
+
+	for (uint8_t i = 0; i < count; i++)
+	{
+		newBarrier = Coordinate_Covent(&barrierNodes[i * 2]);
+		maze[newBarrier.x][newBarrier.y] = BARRIER;
+		print_info("B(%d, %d)\r\n", newBarrier.x, newBarrier.y);
+		delay_ms(10);
+	}
+}
+
+// 重置障碍点为默认
+void A_Star_ResetBarrier(void)
+{
+	memcpy(maze, defalult_maze, X_LENTH * Y_LENTH);
 }
