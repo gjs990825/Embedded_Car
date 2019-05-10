@@ -75,8 +75,15 @@ enum
     FromHost_TFTRecognition = 0xAC,           // TFT识别
 
     // 从车专有的指令
-    FromHost_AGVRouting = 0xA9, // AGV 接收路径设置
-    FromHost_AGVSetTask = 0xAA, // AGV 接收任务设置
+    FromHost_AGVRouting = 0xE1, // AGV 接收路径设置
+    FromHost_AGVSetTask = 0xE2, // AGV 接收任务设置
+    // AGV预留数据接口
+    FromHost_AGVData1 = 0xEA,   // AGV 数据接口1
+    FromHost_AGVData2 = 0xEB,   // AGV 数据接口2
+    FromHost_AGVData3 = 0xEC,   // AGV 数据接口3
+    FromHost_AGVData4 = 0xED,   // AGV 数据接口4
+    FromHost_AGVData5 = 0xEE,   // AGV 数据接口5
+    FromHost_AGVData6 = 0xEF,   // AGV 数据接口6
 };
 
 // ZigBee返回名称(没有使用到数据，只借用了名称)
@@ -108,6 +115,20 @@ typedef struct ZigBee_DataStatus_Sturuct
     uint8_t cmd[8];
     uint32_t timeStamp;
 } ZigBee_DataStatus_t;
+
+// AGV预设任务
+enum
+{
+    AGVPresetTask_AdjustBarrier = 9,  // 障碍点设置
+    AGVPresetTask_QRCodeDistance = 8, // 扫描二维码并上传
+    AGVPresetTask_Streetlight = 7,    // 调整路灯档位
+};
+
+// AGV预设数据
+enum
+{
+    AGVPresetData_StreetLight = 0xEF, // 路灯档位
+};
 
 // 从车上传数据结构
 enum
@@ -302,7 +323,7 @@ typedef enum
     Color_Green,          // 绿
     Color_Blue,           // 蓝
     Color_Yellow,         // 黄
-    Color_Purple,         // 紫
+    Color_PurpleMagenta,  // 紫（品）
     Color_Cyan,           // 青
     Color_Black,          // 黑
     Color_White,          // 白

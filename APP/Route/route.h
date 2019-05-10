@@ -43,7 +43,7 @@ extern RouteNode_t NextStatus;
 // 坐标字符串转换
 
 RouteNode_t Coordinate_Covent(uint8_t str[3]);
-uint8_t *ReCoordinate_Covent(int8_t x, int8_t y);
+uint8_t *ReCoordinate_Covent(RouteNode_t coordinate);
 
 // 坐标生成
 

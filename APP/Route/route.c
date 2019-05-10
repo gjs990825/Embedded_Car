@@ -101,21 +101,21 @@ RouteNode_t Coordinate_Covent(uint8_t coordinate[3])
 }
 
 // 转换坐标点到字符串
-uint8_t *ReCoordinate_Covent(int8_t x, int8_t y)
+uint8_t *ReCoordinate_Covent(RouteNode_t coordinate)
 {
     static const char *badCoordinate = "\0\0\0";
     static uint8_t tempCoordinate[3];
 
-    if (x >= 0 && x <= 6)
+    if (coordinate.x >= 0 && coordinate.x <= 6)
     {
-        tempCoordinate[0] = 'A' + x;
+        tempCoordinate[0] = 'A' + coordinate.x;
     }
     else // 不合法的x坐标
         return (uint8_t *)badCoordinate;
 
-    if (y >= 0 && y <= 6)
+    if (coordinate.y >= 0 && coordinate.y <= 6)
     {
-        tempCoordinate[1] = '7' - y;
+        tempCoordinate[1] = '7' - coordinate.y;
     }
     else // 不合法的y坐标
         return (uint8_t *)badCoordinate;

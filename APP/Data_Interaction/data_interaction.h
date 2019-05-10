@@ -5,6 +5,7 @@
 #include "protocol.h"
 
 #define autoRunEnable CommandFlagStatus[FromHost_Start]
+extern bool AGV_MissonComplete;
 
 // 获取ZigBee返回状态
 #define Get_ZigBeeReturnStatus(name) (name##_Status.isSet == SET)

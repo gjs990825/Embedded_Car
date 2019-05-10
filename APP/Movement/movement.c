@@ -296,7 +296,7 @@ void Auto_ReverseParcking(RouteNode_t *current, uint8_t targetGarage[3], void(*t
 	}
 
 	// 计算方向，倒车入库
-	uint8_t *currentStr = ReCoordinate_Covent(current->x, current->y);
+	uint8_t *currentStr = ReCoordinate_Covent(*current);
 	Direction_t dir = Get_Towards(targetGarage, currentStr);
 
 	Turn_ToDirection(&current->dir, dir, TurnOnce_TrackMethod);

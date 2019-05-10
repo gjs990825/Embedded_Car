@@ -200,3 +200,12 @@ void AGV_SetTaskID(uint8_t routeNumber, uint8_t taskNumber)
     DataToAGV[Pack_SubCmd2] = taskNumber;
     SendCmdNTimes(10);
 }
+
+// 预留数据接口
+void AGV_SendData(uint8_t dataID,uint8_t *data, uint8_t length)
+{
+    ClearAGVCmd();
+    DataToAGV[Pack_MainCmd] = dataID;
+    memcpy(&DataToAGV[Pack_SubCmd1], data, length);
+    SendCmdNTimes(10);
+}

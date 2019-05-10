@@ -31,4 +31,8 @@ void AGV_SetRouteFromTask(RouteNode_t task[], uint8_t length);
 void AGV_SetRoute(uint8_t *str);
 void AGV_SetTaskID(uint8_t routeNumber, uint8_t taskNumber);
 
+// 数据接口
+
+void AGV_SendData(uint8_t dataID,uint8_t *data, uint8_t length);
+
 #endif // _AGV_H_
