@@ -56,15 +56,26 @@
 #define Action_S1() Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
 #define Action_S2() AGV_SetTaskID(1, 0)
 #define Action_S3() AGV_SetRoute("B7B6D6D4G4")
-#define Action_S4()                                      \
-	DataToAGV_t agvData;                                 \
-	agvData.alarmData = Infrared_AlarmON;                \
-	agvData.barrierGateCoord = "F3";                     \
-	agvData.currentCoord = "G2";                         \
-	agvData.direction = DIR_LEFT;                        \
-	agvData.routeInfo = "!G2@#F2$[D2]{D4}^F4&*(F2)_A2+"; \
-	agvData.taskCoord = "D4";                            \
-	AGV_Task(agvData);
+#define Action_S4()                                  \
+	CurrentStaus.x = 5;                              \
+	CurrentStaus.y = 5;                              \
+	CurrentStaus.dir = DIR_UP;                       \
+	DataToAGV_t AGVData;                             \
+	taskCoord_t taskCoord[2];                        \
+	taskCoord[0].coord = "B2";                       \
+	taskCoord[0].taskID = AGVPresetTask_Streetlight; \
+	taskCoord[1].coord = "D6";                       \
+	taskCoord[1].taskID = 0;                         \
+	AGVData.alarmData = Infrared_AlarmON;            \
+	AGVData.avoidGarage = "G2";                      \
+	AGVData.barrierGateCoord = "F3";                 \
+	AGVData.currentCoord = "F5";                     \
+	AGVData.direction = DIR_RIGHT;                   \
+	AGVData.routeInfo = "F2B2B6D6";                  \
+	AGVData.streetLightLevel = 3;                    \
+	AGVData.taskCoord = taskCoord;                   \
+	AGVData.tasknumber = 2;                          \
+	AGV_Task(AGVData);
 
 #elif (KEY_CONFIGURATION == KEY_RFID_TEST)
 
@@ -86,21 +97,28 @@
 
 // 临时配置
 #define Action_S1() Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
-#define Action_S2() print_info("Ultra:%d\r\n", Get_AGVUltrasonic())
-#define Action_S3() print_info("Brightness:%d\r\n", Get_AGVBrightness())
-#define Action_S4()                          \
-	uint8_t *data;                           \
-	int8_t length = Get_AGVQRCode(&data);    \
-	if (length != -1)                        \
-	{                                        \
-		print_info("length:%d\r\n", length); \
-		data[length] = '\0';                 \
-		print_info("Data:%s\r\n", data);     \
-	}                                        \
-	else                                     \
-	{                                        \
-		print_info("NoData\r\n");            \
-	}
+#define Action_S2() A_Star_AdjustBarrier("C6")
+#define Action_S3() A_Star_AdjustBarrier("C6D5")
+#define Action_S4()                                  \
+	CurrentStaus.x = 5;                              \
+	CurrentStaus.y = 5;                              \
+	CurrentStaus.dir = DIR_UP;                       \
+	DataToAGV_t AGVData;                             \
+	taskCoord_t taskCoord[2];                        \
+	taskCoord[0].coord = "B2";                       \
+	taskCoord[0].taskID = AGVPresetTask_Streetlight; \
+	taskCoord[1].coord = "D6";                       \
+	taskCoord[1].taskID = 0;                         \
+	AGVData.alarmData = Infrared_AlarmON;            \
+	AGVData.avoidGarage = "G2";                      \
+	AGVData.barrierGateCoord = "F3";                 \
+	AGVData.currentCoord = "F5";                     \
+	AGVData.direction = DIR_RIGHT;                   \
+	AGVData.routeInfo = "F2B2B6D6";                  \
+	AGVData.streetLightLevel = 3;                    \
+	AGVData.taskCoord = taskCoord;                   \
+	AGVData.tasknumber = 2;                          \
+	AGV_Task(AGVData);
 
 #endif
 

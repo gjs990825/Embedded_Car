@@ -211,3 +211,11 @@ void bubble_sort(uint16_t arr[], uint16_t len)
 				arr[j + 1] = temp;
 			}
 }
+
+// 无限循环
+void infinity_loop(void)
+{
+	for (;;)
+	{
+	}
+}

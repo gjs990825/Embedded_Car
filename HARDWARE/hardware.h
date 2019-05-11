@@ -26,6 +26,7 @@
 #include "voice.h"
 #include "malloc.h"
 #include "independent_task.h"
+#include "my_lib.h"
 
 void Hardware_Init(void);
 

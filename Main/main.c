@@ -15,6 +15,9 @@ int main(void)
 		{
 			Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
 			autoRunEnable = 0;
+			
+			// 执行任务后进入死循环
+			infinity_loop();
 		}
 
 		if (IsTimeOut(PowerCheckStamp, 200))
@@ -45,7 +48,5 @@ int main(void)
 void assert_failed(uint8_t *file, uint32_t line)
 {
 	print_info("ERR: %s, %d\r\n", file, line);
-	for (;;)
-	{
-	}
+	infinity_loop();
 }
