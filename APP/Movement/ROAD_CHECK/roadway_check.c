@@ -404,12 +404,14 @@ void TRACK_LINE(void)
     }
     else
     {
-        if (RFID_RoadSection) // 白卡路段
+        // 判定循迹灯是否有反白的情况，反白为十字路口的白卡时情况
+        // 中间三个传感器必须检测到白色，两边两个至少有一个黑色，且下一坐标为十字路口
+        if (((H8[0] + Q7[0] + H8[7] + Q7[6]) <= 3) && (H8[3] & H8[4] & Q7[3]) && (((NextStatus.x % 2) && (NextStatus.y % 2)) != 0))
         {
-            // 判定循迹灯是否有反白的情况 // 最中间三位必须为白色，最两边至少有一个黑色，并且下一坐标为路口
-            if (((H8[0] + Q7[0] + H8[7] + Q7[6]) <= 3) && (H8[3] & H8[4] & Q7[3]) && (((NextStatus.x % 2) && (NextStatus.y % 2)) != 0))
+            if (RFID_RoadSection)
             {
-                if (FOUND_RFID_CARD == false)
+                // 白卡路段，处理白卡
+                if ((FOUND_RFID_CARD == false))
                 {
                     Roadway_Flag_clean();         // 清空标志位
                     Update_MotorSpeed(0, 0);      // 停下
@@ -419,18 +421,26 @@ void TRACK_LINE(void)
                     Stop();                       // 暂停运行
                     TIM_Cmd(TIM5, ENABLE);        // 使能RFID处理定时器
                 }
+                else
+                {
+                    // 已处理，等待定时器溢出中断
+                }
             }
-            else
+            else 
             {
-                Update_MotorSpeed(Car_Speed + PID_value, Car_Speed - PID_value);
+                // 非白卡路段，标记十字路口并停车
+                Roadway_Flag_clean();
+                PidData_Clear();
+                Update_MotorSpeed(0, 0);
+                Stop_Flag = CROSSROAD;
             }
         }
         else
         {
             Update_MotorSpeed(Car_Speed + PID_value, Car_Speed - PID_value);
-            isOutTrack = false;
-            // 因CAN发送出现过没有送达的现象，速度控制在定时器中断内实现
         }
+        isOutTrack = false;
+        // CAN发送出现过没有送达的现象，速度控制在定时器中断内实现
     }
 }
 
