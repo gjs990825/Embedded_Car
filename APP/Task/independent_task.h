@@ -5,14 +5,24 @@
 #include "protocol.h"
 #include "route.h"
 
+typedef struct taskCoordinate
+{
+    uint8_t taskID;
+    uint8_t *coord;
+} taskCoord_t;
+
 typedef struct DataToAGV_Strusct
 {
-    uint8_t *currentCoord;
-    uint8_t direction;
-    uint8_t *routeInfo;
-    uint8_t *alarmData;
-    uint8_t *taskCoord;
-    uint8_t *barrierGateCoord;
+    uint8_t *currentCoord;     // 当前坐标点
+    uint8_t direction;         // 当前车头朝向
+    uint8_t *routeInfo;        // 路径信息
+    uint8_t *alarmData;        // 报警码
+    taskCoord_t *taskCoord;    // 任务点和ID
+    uint8_t tasknumber;        // 任务数量
+    uint8_t *barrierGateCoord; // 道闸位置
+    uint8_t *avoidGarage;      // 避让车库
+    uint8_t streetLightLevel;  // 路灯档位
+    // uint8_t isBarrierChanged;  // 障碍点是否变更
 } DataToAGV_t;
 
 // RFID相关 ↓
@@ -24,6 +34,7 @@ typedef struct RFID_Info_Struct
     RouteNode_t coordinate;
     uint8_t key[6];
     uint8_t data[17];
+    uint8_t data2[17];
 } RFID_Info_t;
 
 extern uint8_t FOUND_RFID_CARD;

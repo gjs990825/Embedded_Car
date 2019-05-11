@@ -4,7 +4,9 @@
 #include "sys.h"
 #include "protocol.h"
 
+// 自动运行开
 #define autoRunEnable CommandFlagStatus[FromHost_Start]
+// AGV任务完成
 extern bool AGV_MissonComplete;
 
 // 获取ZigBee返回状态

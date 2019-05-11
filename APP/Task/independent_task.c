@@ -82,22 +82,25 @@ void Set_CurrentCardInfo(RFID_Info_t *RFIDx)
 // 读卡
 ErrorStatus Read_RFID(RFID_Info_t *RFIDx)
 {
-    ErrorStatus status = PICC_ReadBlock(RFIDx->dataBlockLocation, RFIDx->authMode, RFIDx->key, RFIDx->data);
+    ErrorStatus status1 = PICC_ReadBlock(RFIDx->dataBlockLocation, RFIDx->authMode, RFIDx->key, RFIDx->data);
+    ErrorStatus status2 = PICC_ReadBlock(RFIDx->dataBlockLocation + 1, RFIDx->authMode, RFIDx->key, RFIDx->data2);
 
-    if (status == SUCCESS)
+    if (status1 == SUCCESS && status2 == SUCCESS)
     {
-        for (uint8_t i = 0; i < 16; i++)
-        {
-            print_info("%02X ", RFIDx->data[i]);
-            delay_ms(5);
-        }
-        print_info("\r\n");
+        print_info("Data1:%s\r\n", RFIDx->data);
+        print_info("Data2:%s\r\n", RFIDx->data2);
+        // for (uint8_t i = 0; i < 16; i++)
+        // {
+        //     print_info("%02X ", RFIDx->data[i]);
+        //     delay_ms(5);
+        // }
+        // print_info("\r\n");
     }
     else
     {
         print_info("READ CARD FAIL\r\n");
     }
-    return status;
+    return (ErrorStatus)(status1 == SUCCESS && status2 == SUCCESS);
 }
 
 // RFID读卡任务，检测到白卡时执行
@@ -254,7 +257,7 @@ void LEDDisplay_Distance(uint16_t dis)
 // 旋转LED显示车牌和坐标
 void RotationLED_PlateAndCoord(uint8_t plate[6], RouteNode_t coord)
 {
-    uint8_t *stringCoord = ReCoordinate_Covent(coord.x, coord.y);
+    uint8_t *stringCoord = ReCoordinate_Covent(coord);
 
     Infrared_RotationLEDData[1] = RotationLEDMode_PlateFront4BytesData;
     memcpy(&Infrared_RotationLEDData[2], plate, 4);
@@ -617,28 +620,81 @@ void AGV_Task(DataToAGV_t agvData)
 {
     uint8_t agvRoute[20];
 
+    // 坐标、起始点、坐标处理
     RouteString_Process(agvData.currentCoord, agvData.routeInfo, agvRoute);
     print_info("AGV_Route:%s\r\n", agvRoute);
     AGV_SetRoute(agvRoute);
 
-    Dump_Array("AGV_Alarm:\r\n", agvData.alarmData, 6);
-    AGV_SendInfraredData(agvData.alarmData);
+    // 方向设定
+    if (agvData.direction != DIR_NOTSET)
+    {
+        print_info("AGV_Dir:%d\r\n", agvData.direction);
+        AGV_SetTowards(agvData.direction);
+    }
 
-    print_info("AGV_Dir:%d\r\n", agvData.direction);
-    AGV_SetTowards(agvData.direction);
+    // 报警码
+    if (agvData.alarmData != NULL)
+    {
+        Dump_Array("AGV_Alarm:\r\n", agvData.alarmData, 6);
+        AGV_SendInfraredData(agvData.alarmData);
+    }
 
-    uint8_t taskNumber = Get_TaskNumber(agvData.taskCoord, agvRoute, 1);
-    print_info("TaskNumber:%d\r\n", taskNumber);
-    AGV_SetTaskID(taskNumber, 0);
+    // 路灯档位
+    if (agvData.streetLightLevel > 0 && agvData.streetLightLevel <= 4)
+    {
+        print_info("LightLevel:%d\r\n", agvData.streetLightLevel);
+        AGV_SendData(AGVPresetData_StreetLight, &agvData.streetLightLevel, 1);
+    }
 
+    // 任务组
+    if (agvData.tasknumber != 0)
+    {
+        for (uint8_t i = 0; i < agvData.tasknumber; i++)
+        {
+            uint8_t taskOrder = Get_TaskNumber(agvData.taskCoord[i].coord, agvRoute, 1);
+            print_info("Task%d: %d\r\n", i, taskOrder);
+            AGV_SetTaskID(taskOrder, agvData.taskCoord[i].taskID);
+        }
+    }
+
+    // 是否需要避让
+    bool needToAvoid = false;
+    if (agvData.avoidGarage != NULL)
+    {
+        if (Is_ContainCoordinate(agvRoute, ReCoordinate_Covent(CurrentStaus)))
+        {
+            needToAvoid = true;
+        }
+    }
+
+    // 处理避让临时入库
+    if (needToAvoid)
+    {
+        Auto_ReverseParcking(&CurrentStaus, agvData.avoidGarage, NULL);
+    }
+
+    // 启动
     AGV_Start();
 
-    // 判断是否经过道闸，经过则等待开启
-    int8_t steps = Is_ContainCoordinate(agvRoute, agvData.barrierGateCoord);
-    print_info("AGV_Steps:%d\r\n", steps);
-    if (steps != -1)
+    // 经过道闸处理
+    if (agvData.barrierGateCoord != NULL)
     {
-        delay(steps * 1700);
-        BarrierGate_Task(NULL);
+        // 判断是否经过道闸，经过则等待开启
+        int8_t steps = Is_ContainCoordinate(agvRoute, agvData.barrierGateCoord);
+        print_info("AGV_Steps:%d\r\n", steps);
+        if (steps != -1)
+        {
+            delay(steps * 1700);
+            BarrierGate_Task(NULL);
+        }
+    }
+
+    // 等待任务执行完成
+    WaitForFlagInMs(AGV_MissonComplete, SET, 20 * 1000);
+
+    // 避让完成后出库
+    if (needToAvoid)
+    {
+        MOVE(35);
     }
 }
