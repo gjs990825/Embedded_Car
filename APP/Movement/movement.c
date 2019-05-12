@@ -88,25 +88,49 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 		Turn_ToDirection(&current->dir, finalDir, TurnOnce_TrackMethod);
 	}
 
+	// 记录执行前是否为特殊地形
+	uint8_t status = Special_RoadSection;
+
 	if (next.x % 2 == 0) // X轴为偶数的坐标
 	{
 		// 横坐标0和6的为两侧车库，码盘值需要变小
 		uint16_t encoderValue = ((next.x == 0) || (next.x == 6)) ? SidePark_Value : LongTrack_Value;
 
-		ExcuteAndWait(Track_ByEncoder(Track_Speed, encoderValue), Stop_Flag, FORBACKCOMPLETE);
+		Track_ByEncoder(Track_Speed, encoderValue);
+
+		for (;;)
+		{
+			if (Stop_Flag == FORBACKCOMPLETE)
+				break;
+
+			// 若特殊地形路段且已通过，跳过当前未行驶的路程
+			if (status && Special_Road_Processed)
+				break;
+		}
+		Stop();
+		Submit_SpeedChanges();
 	}
 	else if (next.y % 2 == 0) // Y轴为偶数的坐标
 	{
-		ExcuteAndWait(Track_ByEncoder(Track_Speed, ShortTrack_Value), Stop_Flag, FORBACKCOMPLETE);
+		Track_ByEncoder(Track_Speed, ShortTrack_Value);
+
+		for (;;)
+		{
+			if (Stop_Flag == FORBACKCOMPLETE)
+				break;
+
+			// 若特殊地形路段且已通过，跳过当前未行驶的路程
+			if (status && Special_Road_Processed)
+				break;
+		}
+		Stop();
+		Submit_SpeedChanges();
 	}
 	else // 前方十字路口
 	{
 		// 循迹到十字路口
 		Start_Tracking(Track_Speed);
 		WaitForFlag(Stop_Flag, CROSSROAD);
-
-		// 行驶到十字路口中心
-		// ExcuteAndWait(Go_Ahead(Track_Speed, ToCrossroadCenter), Stop_Flag, FORBACKCOMPLETE);
 
 		// 应对放在十字线后面的白卡
 		Go_Ahead(Track_Speed, ToCrossroadCenter);
@@ -124,15 +148,16 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 				{
 					// DEBUG_PIN_2_SET();
 
-					FOUND_RFID_CARD = true;		  // 找到白卡
-					Save_StatusBeforeFoundRFID(); // 保存当前状态
-					Stop();						  // 暂停运行
-					Submit_SpeedChanges();		  // 提交速度更改
-					TIM_Cmd(TIM5, ENABLE);		  // 使能RFID处理定时器
+					FOUND_RFID_CARD = true; // 找到白卡
+					Save_RunningStatus();   // 保存当前状态
+					Stop();					// 暂停运行
+					Submit_SpeedChanges();  // 提交速度更改
+					TIM_Cmd(TIM5, ENABLE);  // 使能处理定时器
 				}
 			}
 		};
 		Stop();
+		Submit_SpeedChanges();
 	}
 
 	// 更新当前位置信息和方向
@@ -243,7 +268,7 @@ void Turn_ByEncoder(int16_t digree)
 }
 
 // 转到下一个循迹线
-uint8_t turnLeftOrRightt = DIR_NOTSET;
+uint8_t turnLeftOrRight = DIR_NOTSET;
 void Turn_ByTrack(Direction_t dir)
 {
 	if ((dir != DIR_RIGHT) && (dir != DIR_LEFT))
@@ -251,7 +276,7 @@ void Turn_ByTrack(Direction_t dir)
 		print_info("Turn Dir ERROR\r\n");
 		return;
 	}
-	turnLeftOrRightt = dir;
+	turnLeftOrRight = dir;
 
 	Stop_Flag = TRACKING;
 	Track_Mode = TrackMode_Turn;

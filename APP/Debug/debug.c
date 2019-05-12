@@ -4,13 +4,8 @@
 #include <string.h>
 #include "independent_task.h"
 
-// #define varNumber 2
-// #define var1 Go_Flag
-// #define var2 Stop_Flag
-
-// uint8_t *watch[5] = {&var1, &var2};
-// uint8_t var_tmp[5] = {0};
-
+// 与printf的用法一样
+// 输出格式化字符串到通讯显示屏幕上
 void print_info(char *str, ...)
 {
     uint16_t len;
@@ -59,6 +54,8 @@ void DebugTimer_Init(uint16_t arr, uint16_t psc)
 }
 
 // 初始化调试用引脚
+// 操作引脚电平高低即可通过示波器或者LED观察到运行状态、中断进入情况、
+// 中断或者任务处理时间等，请善用此工具
 void DebugPin_Init(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
@@ -81,34 +78,32 @@ void DebugPin_Init(void)
     DEBUG_PIN_3_RESET();
 }
 
-// void Debug_CheckVar(void)
-// {
-//     for (uint8_t i = 0; i < varNumber; i++)
-//     {
-//         if (*(int *)watch[i] != var_tmp[i])
-//         {
-//             print_info("V%d>%d->%d\r\n", i, var_tmp[i], *watch[i]);
-//             var_tmp[i] = *watch[i];
-//         }
-//     }
-// }
-
-
+// 调试定时器中断
+// 目前用作白卡和特殊地形的处理中断
 void TIM5_IRQHandler(void)
-{    
+{
     if (TIM_GetITStatus(TIM5, TIM_IT_Update) == SET)
     {
+        // 白卡处理
         if (FOUND_RFID_CARD && RFID_RoadSection)
         {
-            TIM_Cmd(TIM5, DISABLE);
             RFID_Task();
-            Resume_StatusBeforeFoundRFID(0); // 前后距离差值更正，恢复运动状态
+            // 前后距离差值更正，恢复运动状态
+            Resume_RunningStatus(0);
         }
+        // 特殊地形处理
+        if (ENTER_SPECIAL_ROAD && Special_RoadSection)
+        {
+            SpecialRoad_Task();
+            Resume_RunningStatus(0);
+        }
+        TIM_Cmd(TIM5, DISABLE);
         TIM_ClearITPendingBit(TIM5, TIM_IT_Update);
     }
 }
 
-void ZigBee_Test(uint16_t count ,uint16_t interval)
+// ZigBee测试丢包率
+void ZigBee_Test(uint16_t count, uint16_t interval)
 {
     for (uint16_t i = 0; i < count; i++)
     {

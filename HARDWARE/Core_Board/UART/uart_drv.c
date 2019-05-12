@@ -63,7 +63,7 @@ void Uart_Irq(Uart_Buf_Struct *p)
 		else
 			USART_ITConfig(uart_prot_buf[p->uart_port], USART_IT_TXE, DISABLE);
 
-		// USART_ClearITPendingBit(uart_prot_buf[p->uart_port], USART_IT_TXE); // warning: USART_IT_TXE不能被轻触中断标志位
+		// USART_ClearITPendingBit(uart_prot_buf[p->uart_port], USART_IT_TXE); // warning: USART_IT_TXE不能被清除中断标志位
 	}
 
 	if (USART_GetITStatus(uart_prot_buf[p->uart_port], USART_IT_RXNE) != RESET)
@@ -89,7 +89,7 @@ void UartTx_Clear(Uart_Buf_Struct *p)
 	p->tx_leng = 0;
 	p->tx_curr = 0;
 	p->tx_overs = 0;
-	// USART_ClearITPendingBit(uart_prot_buf[p->uart_port], USART_IT_TXE); // warning: USART_IT_TXE不能被轻触中断标志位
+	// USART_ClearITPendingBit(uart_prot_buf[p->uart_port], USART_IT_TXE); // warning: USART_IT_TXE不能被清除中断标志位
 }
 
 void UartTx_AddStr(uint8_t *b, uint8_t ml, Uart_Buf_Struct *p)

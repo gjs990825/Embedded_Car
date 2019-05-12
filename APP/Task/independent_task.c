@@ -29,49 +29,58 @@ uint8_t RFID_RoadSection = false;
 // 当前卡信息指针
 RFID_Info_t *CurrentRFIDCard = NULL;
 // 遇到白卡时的状态数据
-struct StatusBeforeFoundRFID_Struct
+struct RunningStatus_Struct
 {
     uint8_t stopFlag;
     uint8_t trackMode;
     int8_t currentSpeed;
     Moving_ByEncoder_t movingByencoder;
     uint16_t remainEncoderValue;
-} StatusBeforeFoundRFID;
+} RunningStatus;
 
-// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ RFID部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+// 特殊地形路段
+uint8_t Special_RoadSection = false;
+// 进入特殊地形
+uint8_t ENTER_SPECIAL_ROAD = false;
+// 特殊地形是否处理
+uint8_t Special_Road_Processed = false;
 
-extern uint16_t Mp_Value;
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 通用运行中断和恢复 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
 // 保存遇到白卡时候的状态
-void Save_StatusBeforeFoundRFID(void)
+void Save_RunningStatus(void)
 {
     extern uint16_t Mp_Value;
     extern int LSpeed, RSpeed;
 
-    StatusBeforeFoundRFID.movingByencoder = Moving_ByEncoder;
-    StatusBeforeFoundRFID.stopFlag = Stop_Flag;
-    StatusBeforeFoundRFID.trackMode = Track_Mode;
-    StatusBeforeFoundRFID.currentSpeed = (LSpeed + RSpeed) / 2;
-    StatusBeforeFoundRFID.remainEncoderValue = temp_MP - Mp_Value;
+    RunningStatus.movingByencoder = Moving_ByEncoder;
+    RunningStatus.stopFlag = Stop_Flag;
+    RunningStatus.trackMode = Track_Mode;
+    RunningStatus.currentSpeed = (LSpeed + RSpeed) / 2;
+    RunningStatus.remainEncoderValue = temp_MP - Mp_Value;
 }
 
 // 恢复状态遇到白卡前储存的状态
 // encoderChangeValue: 前后设定码盘差值
-void Resume_StatusBeforeFoundRFID(uint16_t encoderChangeValue)
+void Resume_RunningStatus(uint16_t encoderChangeValue)
 {
+    extern uint16_t Mp_Value;
     uint16_t Roadway_mp_Get(void);
 
     Roadway_mp_syn(); // 同步码盘
     Mp_Value = Roadway_mp_Get();
 
-    Moving_ByEncoder = StatusBeforeFoundRFID.movingByencoder;
-    Stop_Flag = StatusBeforeFoundRFID.stopFlag;
-    Track_Mode = StatusBeforeFoundRFID.trackMode;
+    Moving_ByEncoder = RunningStatus.movingByencoder;
+    Stop_Flag = RunningStatus.stopFlag;
+    Track_Mode = RunningStatus.trackMode;
     // 循迹信息已清空，需要重新计算并减去执行中的行进值
-    temp_MP = Mp_Value + StatusBeforeFoundRFID.remainEncoderValue;
-    int8_t currentSpeed = StatusBeforeFoundRFID.currentSpeed;
+    temp_MP = Mp_Value + RunningStatus.remainEncoderValue;
+    int8_t currentSpeed = RunningStatus.currentSpeed;
     Update_MotorSpeed(currentSpeed, currentSpeed);
     Submit_SpeedChanges();
 }
+
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ RFID部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 // 设定当前卡信息
 void Set_CurrentCardInfo(RFID_Info_t *RFIDx)
@@ -89,12 +98,6 @@ ErrorStatus Read_RFID(RFID_Info_t *RFIDx)
     {
         print_info("Data1:%s\r\n", RFIDx->data);
         print_info("Data2:%s\r\n", RFIDx->data2);
-        // for (uint8_t i = 0; i < 16; i++)
-        // {
-        //     print_info("%02X ", RFIDx->data[i]);
-        //     delay_ms(5);
-        // }
-        // print_info("\r\n");
     }
     else
     {
@@ -127,7 +130,6 @@ void RFID_Task(void)
 
     RFID_RoadSection = false; // 结束寻卡
     FOUND_RFID_CARD = false;  // 清空标志位
-    TIM_Cmd(TIM5, DISABLE);   // 停止定时器
     MOVE(-(8 + i));           // 返回读卡前位置
 
     // 十字路口需要多退后一点，因为响应时间变长会多走一点
@@ -185,6 +187,44 @@ void Test_RFID(uint8_t block)
     {
         print_info("ERROR\r\n");
     }
+}
+
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 特殊地形部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+// 特殊地形处理
+void SpecialRoad_Task(void)
+{
+    Move_ByEncoder(30, 50);
+    Submit_SpeedChanges();
+
+    for (uint8_t i = 0; i < 5; i++)
+    {
+        delay(100);
+        Get_Track();
+    }
+
+    // -2增加容错
+    while (NumberOfWhite < (ALL_WHITE - 2))
+    {
+        Get_Track();
+    }
+
+    Special_RoadSection = false;
+    ENTER_SPECIAL_ROAD = false;
+    Special_Road_Processed = true;
+}
+
+// 特殊地形测试
+// 标记下一个节点为特殊地形
+void SpecialRoad_Test(void)
+{
+    Special_RoadSection = true;
+}
+
+// 蜂鸣两次
+void BEEP_Test(void)
+{
+    Beep(2);
 }
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 道闸部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓

@@ -41,7 +41,14 @@ extern uint8_t FOUND_RFID_CARD;
 extern uint8_t RFID_RoadSection;
 extern RFID_Info_t *CurrentRFIDCard;
 
+// 特殊地形相关 ↓
+
+extern uint8_t Special_RoadSection;
+extern uint8_t ENTER_SPECIAL_ROAD;
+extern uint8_t Special_Road_Processed;
+
 void Emergency_Flasher(uint16_t time);
+void BEEP_Test(void);
 
 ///////////////////////////////////////////////////////
 // 下面是标志物的操作和控制函数
@@ -51,8 +58,8 @@ void Emergency_Flasher(uint16_t time);
 
 #define RFID_RoadSectionTrue() RFID_RoadSection = true
 #define RFID_RoadSectionFalse() RFID_RoadSection = false
-void Save_StatusBeforeFoundRFID(void);
-void Resume_StatusBeforeFoundRFID(uint16_t encoderChangeValue);
+void Save_RunningStatus(void);
+void Resume_RunningStatus(uint16_t encoderChangeValue);
 void Set_CurrentCardInfo(RFID_Info_t *RFIDx);
 ErrorStatus Read_RFID(RFID_Info_t *RFIDx);
 void RFID_Task(void);
@@ -62,6 +69,11 @@ void RFID_Task(void);
 void Task_RFIDTestStart(void);
 void Task_RFIDTestEnd(void);
 void Test_RFID(uint8_t block);
+
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 特殊地形部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+void SpecialRoad_Task(void);
+void SpecialRoad_Test(void);
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 道闸部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
