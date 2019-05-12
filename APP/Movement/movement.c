@@ -44,6 +44,19 @@ void Auto_RouteTask(RouteNode_t *current, RouteNode_t next)
 // 行驶到下一个节点
 void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 {
+	// 跳节点操作，请注意前后状态对应
+	static int8_t skipNodes = 0;
+
+	if (skipNodes > 0)
+	{
+		skipNodes--;
+
+		// 跳节点一般不改变方向
+		current->x = next.x;
+		current->y = next.y;
+		return;
+	}
+
 	Direction_t finalDir = DIR_NOTSET;
 	int8_t x = next.x - current->x;
 	int8_t y = next.y - current->y;
@@ -91,6 +104,9 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 	// 记录执行前是否为特殊地形
 	uint8_t status = Special_RoadSection;
 
+	// 若当前为特殊地形路段且已通过，跳过未行驶的路程
+	// (status && Special_Road_Processed)
+
 	if (next.x % 2 == 0) // X轴为偶数的坐标
 	{
 		// 横坐标0和6的为两侧车库，码盘值需要变小
@@ -98,14 +114,14 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 
 		Track_ByEncoder(Track_Speed, encoderValue);
 
-		for (;;)
+		while (Stop_Flag != FORBACKCOMPLETE)
 		{
-			if (Stop_Flag == FORBACKCOMPLETE)
-				break;
-
-			// 若特殊地形路段且已通过，跳过当前未行驶的路程
+			// 长边，未到路中寻到特殊地形则判断在路中
 			if (status && Special_Road_Processed)
+			{
+				MOVE(8);
 				break;
+			}
 		}
 		Stop();
 		Submit_SpeedChanges();
@@ -114,14 +130,16 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 	{
 		Track_ByEncoder(Track_Speed, ShortTrack_Value);
 
-		for (;;)
+		while (Stop_Flag != FORBACKCOMPLETE)
 		{
-			if (Stop_Flag == FORBACKCOMPLETE)
-				break;
-
-			// 若特殊地形路段且已通过，跳过当前未行驶的路程
+			// 短边，短边路中的特殊地形在上一节点到黑线之后出现
+			// 这里是下一十字路口上的特殊地形，需要跳节点
 			if (status && Special_Road_Processed)
+			{
+				MOVE(8);
+				skipNodes = 1;
 				break;
+			}
 		}
 		Stop();
 		Submit_SpeedChanges();
@@ -130,32 +148,47 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 	{
 		// 循迹到十字路口
 		Start_Tracking(Track_Speed);
-		WaitForFlag(Stop_Flag, CROSSROAD);
+		// WaitForFlag(Stop_Flag, CROSSROAD);
 
-		// 应对放在十字线后面的白卡
-		Go_Ahead(Track_Speed, ToCrossroadCenter);
-		Submit_SpeedChanges(); // 提交速度更改
-
-		while (Stop_Flag != FORBACKCOMPLETE)
+		while (Stop_Flag != CROSSROAD)
 		{
-			extern uint8_t RFID_RoadSection;
-			extern uint8_t FOUND_RFID_CARD;
-
-			if (RFID_RoadSection && (FOUND_RFID_CARD == false))
+			// 特殊地形检测
+			// 十字路口前检测到特殊地形，位置在十字路口，直接跳出
+			if (status && Special_Road_Processed)
 			{
-				Get_Track();
-				if (IS_All_WHITE())
-				{
-					// DEBUG_PIN_2_SET();
+				MOVE(8);
+				break;
+			}
+		}
 
-					FOUND_RFID_CARD = true; // 找到白卡
-					Save_RunningStatus();   // 保存当前状态
-					Stop();					// 暂停运行
-					Submit_SpeedChanges();  // 提交速度更改
-					TIM_Cmd(TIM5, ENABLE);  // 使能处理定时器
+		// 若未经过特殊地形，处理十字线过线部分路程
+		if (!(status && Special_Road_Processed))
+		{
+			// 应对放在十字线后面的白卡
+			Go_Ahead(Track_Speed, ToCrossroadCenter);
+			Submit_SpeedChanges(); // 提交速度更改
+
+			while (Stop_Flag != FORBACKCOMPLETE)
+			{
+				extern uint8_t RFID_RoadSection;
+				extern uint8_t FOUND_RFID_CARD;
+
+				if (RFID_RoadSection && (FOUND_RFID_CARD == false))
+				{
+					Get_Track();
+					if (IS_All_WHITE())
+					{
+						// DEBUG_PIN_2_SET();
+
+						FOUND_RFID_CARD = true; // 找到白卡
+						Save_RunningStatus();   // 保存当前状态
+						Stop();					// 暂停运行
+						Submit_SpeedChanges();  // 提交速度更改
+						TIM_Cmd(TIM5, ENABLE);  // 使能处理定时器
+					}
 				}
 			}
-		};
+		}
 		Stop();
 		Submit_SpeedChanges();
 	}
@@ -305,6 +338,7 @@ void TurnOnce_EncoderMethod(Direction_t dir)
 }
 
 // 全自动倒车入库
+// 可做临时避让用
 void Auto_ReverseParcking(RouteNode_t *current, uint8_t targetGarage[3], void (*taskAfterParcking)(void))
 {
 	RouteNode_t target = Coordinate_Covent(targetGarage);
