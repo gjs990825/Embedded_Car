@@ -54,6 +54,7 @@ bool Generate_Routetask(RouteSetting_t routeSetting[], uint8_t count);
 int8_t Get_TaskNumber(uint8_t coordinate[3], uint8_t *route, uint8_t nTimes);
 bool RouteString_Process(uint8_t *prefix, uint8_t *route, uint8_t *buffer);
 int8_t Is_ContainCoordinate(uint8_t *stringRoute, uint8_t coord[3]);
+Direction_t Get_TowardsByNode(RouteNode_t currentNode, RouteNode_t towardsNode);
 Direction_t Get_Towards(uint8_t current[3], uint8_t towards[3]);
 
 // 根据当前方向转到指定方向

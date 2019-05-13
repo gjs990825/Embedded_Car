@@ -37,9 +37,14 @@ RouteNode_t NextStatus;
 //     // {.coordinate = "A2", .Task = Task_A2},
 // };
 RouteSetting_t Route_Task[] = {
-    {.coordinate = "B7", .Task = NULL, .node.dir = DIR_UP},
-    {.coordinate = "D7", .Task = NULL},
+    {.coordinate = "F7", .Task = BEEP_Test, .node.dir = DIR_UP},
+    {.coordinate = "F6", .Task = SpecialRoad_Test},
+    {.coordinate = "E6", .Task = BEEP_Test},
+    {.coordinate = "D6", .Task = BEEP_Test},
+    {.coordinate = "C6", .Task = BEEP_Test},
+    {.coordinate = "B6", .Task = BEEP_Test},
 };
+
 
 // 任务点个数
 uint8_t ROUTE_TASK_NUMBER = GET_ARRAY_LENGEH(Route_Task);
@@ -213,8 +218,8 @@ bool RouteString_Process(uint8_t *prefix, uint8_t *route, uint8_t *buffer)
     return true;
 }
 
-// 判断坐标是否在路径
-// 若则返回步数，否则返回-1
+// 判断坐标是否在路径上
+// 若在返回步数，否则返回-1
 int8_t Is_ContainCoordinate(uint8_t *stringRoute, uint8_t coord[3])
 {
     uint8_t length = strlen((char *)stringRoute) / 2;
@@ -262,13 +267,9 @@ int8_t Is_ContainCoordinate(uint8_t *stringRoute, uint8_t coord[3])
     return -1;
 }
 
-// 根据当前坐标和朝向坐标获取车头朝向
-// 不检查参数，请确保输入正确坐标
-Direction_t Get_Towards(uint8_t current[3], uint8_t towards[3])
+// 根据当前坐标和朝向的坐标获取车头朝向（节点参数）
+Direction_t Get_TowardsByNode(RouteNode_t currentNode, RouteNode_t towardsNode)
 {
-    RouteNode_t currentNode = Coordinate_Covent(current);
-    RouteNode_t towardsNode = Coordinate_Covent(towards);
-
     int8_t dx = towardsNode.x - currentNode.x;
     int8_t dy = towardsNode.y - currentNode.y;
 
@@ -288,94 +289,104 @@ Direction_t Get_Towards(uint8_t current[3], uint8_t towards[3])
         return DIR_NOTSET;
 }
 
+// 根据当前坐标和朝向的坐标获取车头朝向
+// 不检查字符串中信息正确性，请确保输入正确坐标
+Direction_t Get_Towards(uint8_t current[3], uint8_t towards[3])
+{
+    RouteNode_t currentNode = Coordinate_Covent(current);
+    RouteNode_t towardsNode = Coordinate_Covent(towards);
+
+    return Get_TowardsByNode(currentNode, towardsNode);
+}
+
 // 使用传入函数转到特定方向并更新当前方向
 // void (*Turn_Once)(Direction_t) 为左/右转向90度使用的函数
 void Turn_ToDirection(int8_t *current, Direction_t target, void (*Turn_Once)(Direction_t))
 {
-	switch (*current)
-	{
-	case DIR_UP:
-		switch (target)
-		{
-		case DIR_UP:
-			break;
-		case DIR_DOWN:
-			Turn_Once(DIR_RIGHT);
+    switch (*current)
+    {
+    case DIR_UP:
+        switch (target)
+        {
+        case DIR_UP:
+            break;
+        case DIR_DOWN:
             Turn_Once(DIR_RIGHT);
-			break;
-		case DIR_LEFT:
-			Turn_Once(DIR_LEFT);
-			break;
-		case DIR_RIGHT:
-			Turn_Once(DIR_RIGHT);
-			break;
-		default:
-			break;
-		}
-		break;
-
-	case DIR_DOWN:
-		switch (target)
-		{
-		case DIR_UP:
-			Turn_Once(DIR_RIGHT);
             Turn_Once(DIR_RIGHT);
-			break;
-		case DIR_DOWN:
-			break;
-		case DIR_LEFT:
-			Turn_Once(DIR_RIGHT);
-			break;
-		case DIR_RIGHT:
-			Turn_Once(DIR_LEFT);
-			break;
-		default:
-			break;
-		}
-		break;
-
-	case DIR_LEFT:
-		switch (target)
-		{
-		case DIR_UP:
-			Turn_Once(DIR_RIGHT);
-			break;
-		case DIR_DOWN:
-			Turn_Once(DIR_LEFT);
-			break;
-		case DIR_LEFT:
-			break;
-		case DIR_RIGHT:
-			Turn_Once(DIR_RIGHT);
+            break;
+        case DIR_LEFT:
+            Turn_Once(DIR_LEFT);
+            break;
+        case DIR_RIGHT:
             Turn_Once(DIR_RIGHT);
-			break;
-		default:
-			break;
-		}
-		break;
+            break;
+        default:
+            break;
+        }
+        break;
 
-	case DIR_RIGHT:
-		switch (target)
-		{
-		case DIR_UP:
-			Turn_Once(DIR_LEFT);
-			break;
-		case DIR_DOWN:
-			Turn_Once(DIR_RIGHT);
-			break;
-		case DIR_LEFT:
-			Turn_Once(DIR_RIGHT);
+    case DIR_DOWN:
+        switch (target)
+        {
+        case DIR_UP:
             Turn_Once(DIR_RIGHT);
-			break;
-		case DIR_RIGHT:
-			break;
-		default:
-			break;
-		}
-		break;
+            Turn_Once(DIR_RIGHT);
+            break;
+        case DIR_DOWN:
+            break;
+        case DIR_LEFT:
+            Turn_Once(DIR_RIGHT);
+            break;
+        case DIR_RIGHT:
+            Turn_Once(DIR_LEFT);
+            break;
+        default:
+            break;
+        }
+        break;
 
-	default:
-		break;
-	}
-	*current = target;
+    case DIR_LEFT:
+        switch (target)
+        {
+        case DIR_UP:
+            Turn_Once(DIR_RIGHT);
+            break;
+        case DIR_DOWN:
+            Turn_Once(DIR_LEFT);
+            break;
+        case DIR_LEFT:
+            break;
+        case DIR_RIGHT:
+            Turn_Once(DIR_RIGHT);
+            Turn_Once(DIR_RIGHT);
+            break;
+        default:
+            break;
+        }
+        break;
+
+    case DIR_RIGHT:
+        switch (target)
+        {
+        case DIR_UP:
+            Turn_Once(DIR_LEFT);
+            break;
+        case DIR_DOWN:
+            Turn_Once(DIR_RIGHT);
+            break;
+        case DIR_LEFT:
+            Turn_Once(DIR_RIGHT);
+            Turn_Once(DIR_RIGHT);
+            break;
+        case DIR_RIGHT:
+            break;
+        default:
+            break;
+        }
+        break;
+
+    default:
+        break;
+    }
+    *current = target;
 }

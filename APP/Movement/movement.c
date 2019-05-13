@@ -44,7 +44,7 @@ void Auto_RouteTask(RouteNode_t *current, RouteNode_t next)
 // 行驶到下一个节点
 void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 {
-	// 跳节点操作，请注意前后状态对应
+	// 节点跳过操作，请注意前后状态对应
 	static int8_t skipNodes = 0;
 
 	if (skipNodes > 0)
@@ -52,10 +52,14 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 		skipNodes--;
 
 		// 跳节点一般不改变方向
+		// 更新坐标状态信息
+		NextStatus = next;
 		current->x = next.x;
 		current->y = next.y;
 		return;
 	}
+
+	// 检查计算参数
 
 	Direction_t finalDir = DIR_NOTSET;
 	int8_t x = next.x - current->x;
@@ -69,25 +73,11 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 		return;
 	}
 
-	if (x > 0)
+	// 获取需要转向
+	finalDir = Get_TowardsByNode(*current, next);
+	if (finalDir == DIR_NOTSET)
 	{
-		finalDir = DIR_RIGHT;
-	}
-	else if (x < 0)
-	{
-		finalDir = DIR_LEFT;
-	}
-	else if (y > 0)
-	{
-		finalDir = DIR_UP;
-	}
-	else if (y < 0)
-	{
-		finalDir = DIR_DOWN;
-	}
-	else
-	{
-		print_info("Same Node\r\n"); // 同一点
+		print_info("Same Node\r\n");
 		return;
 	}
 
@@ -107,7 +97,8 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 	// 若当前为特殊地形路段且已通过，跳过未行驶的路程
 	// (status && Special_Road_Processed)
 
-	if (next.x % 2 == 0) // X轴为偶数的坐标
+	// X轴为偶数的坐标
+	if (next.x % 2 == 0)
 	{
 		// 横坐标0和6的为两侧车库，码盘值需要变小
 		uint16_t encoderValue = ((next.x == 0) || (next.x == 6)) ? SidePark_Value : LongTrack_Value;
@@ -116,7 +107,8 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 
 		while (Stop_Flag != FORBACKCOMPLETE)
 		{
-			// 长边，未到路中寻到特殊地形则判断在路中
+			// 长边，未到路中
+			// 特殊地形在路中
 			if (status && Special_Road_Processed)
 			{
 				MOVE(8);
@@ -126,14 +118,16 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 		Stop();
 		Submit_SpeedChanges();
 	}
-	else if (next.y % 2 == 0) // Y轴为偶数的坐标
+	// Y轴为偶数的坐标
+	else if (next.y % 2 == 0)
 	{
 		Track_ByEncoder(Track_Speed, ShortTrack_Value);
 
 		while (Stop_Flag != FORBACKCOMPLETE)
 		{
-			// 短边，短边路中的特殊地形在上一节点到黑线之后出现
-			// 这里是下一十字路口上的特殊地形，需要跳节点
+			// 短边，未到路中
+			// 特殊地形在下一十字路口上，需要跳节点
+			// 注意：短边路中的特殊地形在上一节点到黑线之后出现
 			if (status && Special_Road_Processed)
 			{
 				MOVE(8);
@@ -144,16 +138,16 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 		Stop();
 		Submit_SpeedChanges();
 	}
-	else // 前方十字路口
+	// 前方十字路口
+	else
 	{
 		// 循迹到十字路口
 		Start_Tracking(Track_Speed);
-		// WaitForFlag(Stop_Flag, CROSSROAD);
 
 		while (Stop_Flag != CROSSROAD)
 		{
-			// 特殊地形检测
-			// 十字路口前检测到特殊地形，位置在十字路口，直接跳出
+			// 十字路口前
+			// 特殊地形地形在当前十字路口，直接跳出
 			if (status && Special_Road_Processed)
 			{
 				MOVE(8);
@@ -161,7 +155,7 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 			}
 		}
 
-		// 若未经过特殊地形，处理十字线过线部分路程
+		// 若未经过特殊地形，继续处理十字线过线部分路程
 		if (!(status && Special_Road_Processed))
 		{
 			// 应对放在十字线后面的白卡
@@ -170,22 +164,37 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 
 			while (Stop_Flag != FORBACKCOMPLETE)
 			{
-				extern uint8_t RFID_RoadSection;
-				extern uint8_t FOUND_RFID_CARD;
-
+				// RFID路段且未处理过
 				if (RFID_RoadSection && (FOUND_RFID_CARD == false))
 				{
 					Get_Track();
 					if (IS_All_WHITE())
 					{
-						// DEBUG_PIN_2_SET();
-
 						FOUND_RFID_CARD = true; // 找到白卡
 						Save_RunningStatus();   // 保存当前状态
 						Stop();					// 暂停运行
 						Submit_SpeedChanges();  // 提交速度更改
 						TIM_Cmd(TIM5, ENABLE);  // 使能处理定时器
 					}
+				}
+				// 特殊地形路段且未处理
+				else if (status && (ENTER_SPECIAL_ROAD == false))
+				{
+					Get_Track();
+					if (IS_All_WHITE())
+					{
+						ENTER_SPECIAL_ROAD = true;
+						Save_RunningStatus();  // 保存当前状态
+						Stop();				   // 暂停运行
+						Submit_SpeedChanges(); // 提交速度更改
+						TIM_Cmd(TIM5, ENABLE); // 使能处理定时器
+					}
+				}
+				// 特殊路段已处理完毕
+				if (status && Special_Road_Processed)
+				{
+					MOVE(8);
+					break;
 				}
 			}
 		}
