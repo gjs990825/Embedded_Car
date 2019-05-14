@@ -353,8 +353,10 @@ void RotationLED_Default(void)
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ TFT显示屏部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 // TFT显示编号图片
-void TFT_ShowPicture(uint8_t picNumber)
+void TFT_ShowPicture(uint8_t TFTx, uint8_t picNumber)
 {
+    ZigBee_TFTData = TFTx ? ZigBee_TFTDataA : ZigBee_TFTDataB;
+
     if (picNumber > 20 || picNumber < 1)
         return;
 
@@ -365,32 +367,40 @@ void TFT_ShowPicture(uint8_t picNumber)
 }
 
 // TFT上一张图片
-void TFT_PicturePrevious(void)
+void TFT_PicturePrevious(uint8_t TFTx)
 {
+    ZigBee_TFTData = TFTx ? ZigBee_TFTDataA : ZigBee_TFTDataB;
+
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_Picture;
     ZigBee_TFTData[Pack_SubCmd1] = 0x01;
     Send_ZigBeeDataNTimes(ZigBee_TFTData, 2, 200);
 }
 
 // TFT下一张图片
-void TFT_PictureNext(void)
+void TFT_PictureNext(uint8_t TFTx)
 {
+    ZigBee_TFTData = TFTx ? ZigBee_TFTDataA : ZigBee_TFTDataB;
+
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_Picture;
     ZigBee_TFTData[Pack_SubCmd1] = 0x02;
     Send_ZigBeeDataNTimes(ZigBee_TFTData, 2, 200);
 }
 
 // TFT图片自动翻页
-void TFT_PictureAuto(void)
+void TFT_PictureAuto(uint8_t TFTx)
 {
+    ZigBee_TFTData = TFTx ? ZigBee_TFTDataA : ZigBee_TFTDataB;
+
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_Picture;
     ZigBee_TFTData[Pack_SubCmd1] = 0x03;
     Send_ZigBeeData5Times(ZigBee_TFTData);
 }
 
 // TFT显示车牌
-void TFT_Plate(uint8_t plate[6])
+void TFT_Plate(uint8_t TFTx, uint8_t plate[6])
 {
+    ZigBee_TFTData = TFTx ? ZigBee_TFTDataA : ZigBee_TFTDataB;
+
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_PlateDataA;
     memcpy(&ZigBee_TFTData[Pack_SubCmd1], plate, 3);
     Send_ZigBeeData5Times(ZigBee_TFTData);
@@ -401,24 +411,30 @@ void TFT_Plate(uint8_t plate[6])
 }
 
 // TFT计时模式控制
-void TFT_Timer(TimerMode_t mode)
+void TFT_Timer(uint8_t TFTx, TimerMode_t mode)
 {
+    ZigBee_TFTData = TFTx ? ZigBee_TFTDataA : ZigBee_TFTDataB;
+
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_Timer;
     ZigBee_TFTData[Pack_SubCmd1] = (uint8_t)mode;
     Send_ZigBeeData5Times(ZigBee_TFTData);
 }
 
 // TFT六位数据显示模式（HEX）
-void TFT_HexData(uint8_t data[3])
+void TFT_HexData(uint8_t TFTx, uint8_t data[3])
 {
+    ZigBee_TFTData = TFTx ? ZigBee_TFTDataA : ZigBee_TFTDataB;
+
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_Hex;
     memcpy(&ZigBee_TFTData[Pack_SubCmd1], data, 3);
     Send_ZigBeeData5Times(ZigBee_TFTData);
 }
 
 // TFT显示距离
-void TFT_Distance(uint16_t dis)
+void TFT_Distance(uint8_t TFTx, uint16_t dis)
 {
+    ZigBee_TFTData = TFTx ? ZigBee_TFTDataA : ZigBee_TFTDataB;
+
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_Distance;
     ZigBee_TFTData[Pack_SubCmd2] = HEX2BCD(dis / 100);
     ZigBee_TFTData[Pack_SubCmd3] = HEX2BCD(dis % 100);

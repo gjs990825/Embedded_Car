@@ -5,6 +5,24 @@
 #include "protocol.h"
 #include "route.h"
 
+enum
+{
+    TFT_A = 1,
+    TFT_B = 0,
+};
+
+enum
+{
+    TrafficLight_A = 1,
+    TrafficLight_B = 0,
+};
+
+enum
+{
+    SteroGarage_A = 1,
+    SteroGarage_B = 0,
+};
+
 typedef struct taskCoordinate
 {
     uint8_t taskID;
@@ -100,14 +118,14 @@ void RotationLED_Default(void);
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ TFT显示器部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
-void TFT_ShowPicture(uint8_t picNumber);
-void TFT_PicturePrevious(void);
-void TFT_PictureNext(void);
-void TFT_PictureAuto(void);
-void TFT_Plate(uint8_t plate[6]);
-void TFT_Timer(TimerMode_t mode);
-void TFT_HexData(uint8_t data[3]);
-void TFT_Distance(uint16_t dis);
+void TFT_ShowPicture(uint8_t TFTx, uint8_t picNumber);
+void TFT_PicturePrevious(uint8_t TFTx);
+void TFT_PictureNext(uint8_t TFTx);
+void TFT_PictureAuto(uint8_t TFTx);
+void TFT_Plate(uint8_t TFTx, uint8_t plate[6]);
+void TFT_Timer(uint8_t TFTx, TimerMode_t mode);
+void TFT_HexData(uint8_t TFTx, uint8_t data[3]);
+void TFT_Distance(uint8_t TFTx, uint16_t dis);
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 立体车库部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
