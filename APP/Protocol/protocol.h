@@ -78,35 +78,59 @@ enum
     FromHost_AGVRouting = 0xE1, // AGV 接收路径设置
     FromHost_AGVSetTask = 0xE2, // AGV 接收任务设置
     // AGV预留数据接口
-    FromHost_AGVData1 = 0xEA,   // AGV 数据接口1
-    FromHost_AGVData2 = 0xEB,   // AGV 数据接口2
-    FromHost_AGVData3 = 0xEC,   // AGV 数据接口3
-    FromHost_AGVData4 = 0xED,   // AGV 数据接口4
-    FromHost_AGVData5 = 0xEE,   // AGV 数据接口5
-    FromHost_AGVData6 = 0xEF,   // AGV 数据接口6
+    FromHost_AGVData1 = 0xEA, // AGV 数据接口1
+    FromHost_AGVData2 = 0xEB, // AGV 数据接口2
+    FromHost_AGVData3 = 0xEC, // AGV 数据接口3
+    FromHost_AGVData4 = 0xED, // AGV 数据接口4
+    FromHost_AGVData5 = 0xEE, // AGV 数据接口5
+    FromHost_AGVData6 = 0xEF, // AGV 数据接口6
 };
 
-// ZigBee返回名称(没有使用到数据，只借用了名称)
+// ZigBee设备ID
 enum
 {
-    BarrierGate,    // 道闸
-    ETC,            // ETC系统
-    TrafficLight,   // 交通灯
-    StereoGarage,   // 立体车库
-    AGV,            // 从车返回
-    VoiceBroadcast, // 语音播报
+    ZigBeeID_MainCar = 1,           // 主车
+    ZigBeeID_AGV = 2,               // AGV运输车
+    ZigBeeID_BarrierGate = 3,       // 道闸
+    ZigBeeID_LEDDisplay = 4,        // LED显示
+    ZigBeeID_StereoGarage_B = 5,    // 立体车库B
+    ZigBeeID_VoiceBroadcast = 6,    // 语音播报
+    ZigBeeID_Alarm = 7,             // 红外报警器
+    ZigBeeID_TFTB = 8,              // TFT显示B
+    ZigBeeID_StreetLight = 9,       // 自动调光
+    ZigBeeID_WirelessCharging = 10, // (A) 无线充电
+    ZigBeeID_TFTA = 11,             // (B) TFT显示A
+    ZigBeeID_ETC = 12,              // (C) ETC系统
+    ZigBeeID_StereoGarage_A = 13,   // (D) 立体车库A
+    ZigBeeID_TrafficLight_A = 14,   // (E) 交通灯A
+    ZigBeeID_TrafficLight_B = 15,   // (F) 交通灯B
+    ZigBeeID_AutoJudgement = 175,   // (AF) 自动评分系统
 };
 
-// ZigBee 返回数据头
+// ZigBee返回名称
+// 路灯和立体车库数值用作区分AB，其它只借用了名称
 enum
 {
-    Return_BarrierGate = 0x03,   // 道闸
-    Return_ETC = 0x0C,           // ETC
-    Return_TrafficLight = 0x0E,  // 交通灯
-    Return_StereoGarage = 0x0D,  // 立体车库
-    Return_AGV = 0x02,           // 从车
-    Return_VoiceBroadcast = 0x06 // 语音
+    BarrierGate,        // 道闸
+    ETC,                // ETC系统
+    TrafficLight_A = 1, // 交通灯A
+    TrafficLight_B = 0, // 交通灯B
+    StereoGarage_A = 1, // 立体车库A
+    StereoGarage_B = 0, // 立体车库B
+    AGV,                // 从车返回
+    VoiceBroadcast,     // 语音播报
 };
+
+// // ZigBee 返回数据头
+// enum
+// {
+//     Return_BarrierGate = ZigBeeID_BarrierGate,   // 道闸
+//     Return_ETC = 0x0C,           // ETC
+//     Return_TrafficLight = 0x0E,  // 交通灯
+//     Return_StereoGarage = 0x0D,  // 立体车库
+//     Return_AGV = 0x02,           // 从车
+//     Return_VoiceBroadcast = 0x06 // 语音
+// };
 
 // 通用ZigBee回传的数据状态和时间戳
 typedef struct ZigBee_DataStatus_Sturuct
@@ -221,6 +245,13 @@ typedef struct DataSetting_Struct
     uint8_t Data_Length; // 数据长度信息
     uint8_t isSet;       // 接收标志位
 } DataSetting_t;
+
+// 报警灯标志物
+enum
+{
+    Alarm_CodeFront3Bytes = 0x10, // 报警码前三位
+    Alarm_CodeBack3Bytes = 0x11   // 报警码后三位
+};
 
 // 道闸标志物
 enum
@@ -365,12 +396,16 @@ static uint8_t ZigBee_VoiceDriveAssistant[8] = {0x55, 0x06, 0x10, 0x01, 0x00, 0x
 // 标志物ZigBee包头为0xAA(固定)和0xXX(ZigBee编号)，包尾为0xBB
 // 除自动评分终端外，其它ZigBee数据都需要校验后发送
 
+// 基本格式：8字节，除自动评分不校验之外其它均遵循此规则
+// [0] 0x55 包头 [1] ZigBee设备ID [2] 主指令 [3-5] 副指令 [6] 校验和 [7] 0xBB 包尾
+
+static uint8_t ZigBee_AlarmData[8] = {0x55, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};        // 报警灯
 static uint8_t ZigBee_BarrierGateData[8] = {0x55, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};  // 道闸
 static uint8_t ZigBee_LEDDisplayData[8] = {0x55, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};   // LED显示
 static uint8_t Infrared_RotationLEDData[6] = {0xFF, 0x00, 0x00, 0x00, 0x00, 0x00};            // 旋转LED
-static uint8_t ZigBee_TFTData[8] = {0x55, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};          // TFT显示器
-static uint8_t ZigBee_StereoGarageData[8] = {0x55, 0x0D, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB}; // 立体车库
-static uint8_t ZigBee_TrafficLightData[8] = {0x55, 0x0E, 0x00, 0x00, 0x00, 0x00, 0x01, 0xBB}; // 智能路灯
+static uint8_t ZigBee_TFTData[8] = {0x55, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};          // TFT显示器（A/B）
+static uint8_t ZigBee_StereoGarageData[8] = {0x55, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB}; // 立体车库（A/B）
+static uint8_t ZigBee_TrafficLightData[8] = {0x55, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB}; // 智能交通灯（A/B）
 static uint8_t ZigBee_VoiceData[8] = {0x55, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0xBB};        // 语音播报
 static uint8_t ZigBee_VoiceReturnData[8] = {0xAF, 0x06, 0x00, 0x02, 0x00, 0x00, 0x01, 0xBB};  // 语音返回自动评分终端
 

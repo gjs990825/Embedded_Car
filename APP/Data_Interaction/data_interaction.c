@@ -42,14 +42,16 @@ bool AGV_MissonComplete = false;
 
 // 标志物ZigBee数据处理
 #define CaseProcess(name)                \
-    case Return_##name:                  \
+    case ZigBeeID_##name:                \
         ProcessZigBeeReturnData(##name); \
         break;
 
 DefineDataStatus(BarrierGate);
 DefineDataStatus(ETC);
-DefineDataStatus(TrafficLight);
-DefineDataStatus(StereoGarage);
+DefineDataStatus(TrafficLight_A);
+DefineDataStatus(TrafficLight_B);
+DefineDataStatus(StereoGarage_A);
+DefineDataStatus(StereoGarage_B);
 DefineDataStatus(AGV);
 DefineDataStatus(VoiceBroadcast);
 
@@ -60,12 +62,14 @@ void ZigBee_CmdHandler(uint8_t *cmd)
     {
         CaseProcess(BarrierGate);
         CaseProcess(ETC);
-        CaseProcess(TrafficLight);
-        CaseProcess(StereoGarage);
+        CaseProcess(TrafficLight_A);
+        CaseProcess(TrafficLight_B);
+        CaseProcess(StereoGarage_A);
+        CaseProcess(StereoGarage_B);
         CaseProcess(VoiceBroadcast);
 
     // 从车的ZigBee数据不是八位，单独处理
-    case Return_AGV:
+    case ZigBeeID_AGV:
 
         AGV_Status.isSet = SET;
         AGV_Status.timeStamp = Get_GlobalTimeStamp();
@@ -160,17 +164,22 @@ bool Get_BarrierGateStatus(void)
 }
 
 // 获取立体车库当前层数 0为错误
-uint8_t Get_StereoGrageLayer(void)
+uint8_t Get_StereoGrageLayer(uint8_t garage_x)
 {
-    Reset_ZigBeeReturnStatus(StereoGarage);
+    ZigBee_DataStatus_t *StereoGarage_Status;
+    StereoGarage_Status = garage_x ? (&StereoGarage_A_Status) : (&StereoGarage_B_Status);
+
+    StereoGarage_Status->isSet = RESET;
+
     for (uint8_t i = 0; i < 3; i++)
     {
-        StereoGarage_ReturnLayer();
-        WaitZigBeeFlag(StereoGarage, 300);
-        if (Get_ZigBeeReturnStatus(StereoGarage))
+        StereoGarage_ReturnLayer(garage_x);
+        WaitForFlagInMs(StereoGarage_Status->isSet, SET, 300);
+
+        if (StereoGarage_Status->isSet == SET)
         {
-            if (Get_ZigBeeReturnData(StereoGarage)[Pack_SubCmd1] == 0x01)
-                return Get_ZigBeeReturnData(StereoGarage)[Pack_SubCmd2];
+            if (StereoGarage_Status->cmd[Pack_SubCmd1] == 0x01)
+                return StereoGarage_Status->cmd[Pack_SubCmd2];
             else
                 return 0;
         }
@@ -180,19 +189,24 @@ uint8_t Get_StereoGrageLayer(void)
 
 // 获取立体车库前后红外状态
 // [0] 前侧 [1] 后侧，0未触发 1触发（无障碍时触发）
-uint8_t *Get_StereoGrageInfraredStatus(void)
+uint8_t *Get_StereoGrageInfraredStatus(uint8_t garage_x)
 {
     static uint8_t IRStatus[2];
 
-    Reset_ZigBeeReturnStatus(StereoGarage);
+    ZigBee_DataStatus_t *StereoGarage_Status;
+    StereoGarage_Status = garage_x ? (&StereoGarage_A_Status) : (&StereoGarage_B_Status);
+
+    StereoGarage_Status->isSet = RESET;
+
     for (uint8_t i = 0; i < 3; i++)
     {
-        StereoGarage_ReturnInfraredStatus();
-        WaitZigBeeFlag(StereoGarage, 300);
-        if (Get_ZigBeeReturnStatus(StereoGarage))
+        StereoGarage_ReturnInfraredStatus(garage_x);
+        WaitForFlagInMs(StereoGarage_Status->isSet, SET, 300);
+
+        if (StereoGarage_Status->isSet == SET)
         {
-            if (Get_ZigBeeReturnData(StereoGarage)[Pack_SubCmd1] == 0x02)
-                memcpy(IRStatus, &Get_ZigBeeReturnData(StereoGarage)[Pack_SubCmd2], 2);
+            if (StereoGarage_Status->cmd[Pack_SubCmd1] == 0x02)
+                memcpy(IRStatus, &StereoGarage_Status->cmd[Pack_SubCmd2], 2);
             else
                 memset(IRStatus, 0, sizeof(IRStatus));
             break;

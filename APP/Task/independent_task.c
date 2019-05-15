@@ -227,6 +227,28 @@ void BEEP_Test(void)
     Beep(2);
 }
 
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 烽火台（报警台）部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+// 点亮报警台
+void Alarm_ON(uint8_t code[6])
+{
+    Infrared_Send(code, 6);
+}
+
+// 报警台更改报警码
+void Alarm_ChangeCode(uint8_t code[6])
+{
+    ZigBee_AlarmData[Pack_MainCmd] = Alarm_CodeFront3Bytes;
+    memcpy(&ZigBee_AlarmData[Pack_SubCmd1], code, 3);
+    Send_ZigBeeData5Times(ZigBee_AlarmData);
+
+    ZigBee_AlarmData[Pack_MainCmd] = Alarm_CodeBack3Bytes;
+    memcpy(&ZigBee_AlarmData[Pack_SubCmd1], &code[3], 3);
+    Send_ZigBeeData(ZigBee_AlarmData);
+    // warning：上面为了防止报警灯响起多次只发送一次，需要的话可发送多次 
+    // Send_ZigBeeDataNTimes(ZigBee_AlarmData, 2, 100);
+}
+
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 道闸部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 // 道闸显示车牌
@@ -355,7 +377,7 @@ void RotationLED_Default(void)
 // TFT显示编号图片
 void TFT_ShowPicture(uint8_t TFTx, uint8_t picNumber)
 {
-    ZigBee_TFTData = TFTx ? ZigBee_TFTDataA : ZigBee_TFTDataB;
+    ZigBee_TFTData[Pack_Header2] = TFTx ? ZigBeeID_TFTA : ZigBeeID_TFTB;
 
     if (picNumber > 20 || picNumber < 1)
         return;
@@ -369,7 +391,7 @@ void TFT_ShowPicture(uint8_t TFTx, uint8_t picNumber)
 // TFT上一张图片
 void TFT_PicturePrevious(uint8_t TFTx)
 {
-    ZigBee_TFTData = TFTx ? ZigBee_TFTDataA : ZigBee_TFTDataB;
+    ZigBee_TFTData[Pack_Header2] = TFTx ? ZigBeeID_TFTA : ZigBeeID_TFTB;
 
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_Picture;
     ZigBee_TFTData[Pack_SubCmd1] = 0x01;
@@ -379,7 +401,7 @@ void TFT_PicturePrevious(uint8_t TFTx)
 // TFT下一张图片
 void TFT_PictureNext(uint8_t TFTx)
 {
-    ZigBee_TFTData = TFTx ? ZigBee_TFTDataA : ZigBee_TFTDataB;
+    ZigBee_TFTData[Pack_Header2] = TFTx ? ZigBeeID_TFTA : ZigBeeID_TFTB;
 
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_Picture;
     ZigBee_TFTData[Pack_SubCmd1] = 0x02;
@@ -389,7 +411,7 @@ void TFT_PictureNext(uint8_t TFTx)
 // TFT图片自动翻页
 void TFT_PictureAuto(uint8_t TFTx)
 {
-    ZigBee_TFTData = TFTx ? ZigBee_TFTDataA : ZigBee_TFTDataB;
+    ZigBee_TFTData[Pack_Header2] = TFTx ? ZigBeeID_TFTA : ZigBeeID_TFTB;
 
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_Picture;
     ZigBee_TFTData[Pack_SubCmd1] = 0x03;
@@ -399,7 +421,7 @@ void TFT_PictureAuto(uint8_t TFTx)
 // TFT显示车牌
 void TFT_Plate(uint8_t TFTx, uint8_t plate[6])
 {
-    ZigBee_TFTData = TFTx ? ZigBee_TFTDataA : ZigBee_TFTDataB;
+    ZigBee_TFTData[Pack_Header2] = TFTx ? ZigBeeID_TFTA : ZigBeeID_TFTB;
 
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_PlateDataA;
     memcpy(&ZigBee_TFTData[Pack_SubCmd1], plate, 3);
@@ -413,7 +435,7 @@ void TFT_Plate(uint8_t TFTx, uint8_t plate[6])
 // TFT计时模式控制
 void TFT_Timer(uint8_t TFTx, TimerMode_t mode)
 {
-    ZigBee_TFTData = TFTx ? ZigBee_TFTDataA : ZigBee_TFTDataB;
+    ZigBee_TFTData[Pack_Header2] = TFTx ? ZigBeeID_TFTA : ZigBeeID_TFTB;
 
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_Timer;
     ZigBee_TFTData[Pack_SubCmd1] = (uint8_t)mode;
@@ -423,7 +445,7 @@ void TFT_Timer(uint8_t TFTx, TimerMode_t mode)
 // TFT六位数据显示模式（HEX）
 void TFT_HexData(uint8_t TFTx, uint8_t data[3])
 {
-    ZigBee_TFTData = TFTx ? ZigBee_TFTDataA : ZigBee_TFTDataB;
+    ZigBee_TFTData[Pack_Header2] = TFTx ? ZigBeeID_TFTA : ZigBeeID_TFTB;
 
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_Hex;
     memcpy(&ZigBee_TFTData[Pack_SubCmd1], data, 3);
@@ -433,7 +455,7 @@ void TFT_HexData(uint8_t TFTx, uint8_t data[3])
 // TFT显示距离
 void TFT_Distance(uint8_t TFTx, uint16_t dis)
 {
-    ZigBee_TFTData = TFTx ? ZigBee_TFTDataA : ZigBee_TFTDataB;
+    ZigBee_TFTData[Pack_Header2] = TFTx ? ZigBeeID_TFTA : ZigBeeID_TFTB;
 
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_Distance;
     ZigBee_TFTData[Pack_SubCmd2] = HEX2BCD(dis / 100);
@@ -444,8 +466,10 @@ void TFT_Distance(uint8_t TFTx, uint16_t dis)
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 立体车库部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 // 立体车库到达第X层
-void StereoGarage_ToLayer(uint8_t layer)
+void StereoGarage_ToLayer(uint8_t garage_x, uint8_t layer)
 {
+    ZigBee_StereoGarageData[Pack_Header2] = garage_x ? ZigBeeID_StereoGarage_A : ZigBeeID_StereoGarage_B;
+
     if (layer > 4 || layer < 1)
         return;
 
@@ -455,16 +479,20 @@ void StereoGarage_ToLayer(uint8_t layer)
 }
 
 // 立体车库返回位于第几层
-void StereoGarage_ReturnLayer(void)
+void StereoGarage_ReturnLayer(uint8_t garage_x)
 {
+    ZigBee_StereoGarageData[Pack_Header2] = garage_x ? ZigBeeID_StereoGarage_A : ZigBeeID_StereoGarage_B;
+
     ZigBee_StereoGarageData[Pack_MainCmd] = StereoGarage_Return;
     ZigBee_StereoGarageData[Pack_SubCmd1] = 0x01;
     Send_ZigBeeData(ZigBee_StereoGarageData);
 }
 
 // 立体车库返回前后红外信息
-void StereoGarage_ReturnInfraredStatus(void)
+void StereoGarage_ReturnInfraredStatus(uint8_t garage_x)
 {
+    ZigBee_StereoGarageData[Pack_Header2] = garage_x ? ZigBeeID_StereoGarage_A : ZigBeeID_StereoGarage_B;
+
     ZigBee_StereoGarageData[Pack_MainCmd] = StereoGarage_Return;
     ZigBee_StereoGarageData[Pack_SubCmd1] = 0x02;
     Send_ZigBeeData(ZigBee_StereoGarageData);
@@ -473,16 +501,20 @@ void StereoGarage_ReturnInfraredStatus(void)
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 交通灯部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 // 交通灯进入识别状态
-void TrafficLight_RecognitionMode(void)
+void TrafficLight_RecognitionMode(uint8_t light_x)
 {
+    ZigBee_TrafficLightData[Pack_Header2] = light_x ? ZigBeeID_TrafficLight_A : ZigBeeID_TrafficLight_B;
+
     ZigBee_TrafficLightData[Pack_MainCmd] = TrafficLight_Recognition;
     ZigBee_TrafficLightData[Pack_SubCmd1] = 0x00;
     Send_ZigBeeDataNTimes(ZigBee_TrafficLightData, 2, 150);
 }
 
 // 交通灯确认识别结果
-void TrafficLight_ConfirmColor(TrafficLightColor_t light)
+void TrafficLight_ConfirmColor(uint8_t light_x, TrafficLightColor_t light)
 {
+    ZigBee_TrafficLightData[Pack_Header2] = light_x ? ZigBeeID_TrafficLight_A : ZigBeeID_TrafficLight_B;
+
     ZigBee_TrafficLightData[Pack_MainCmd] = TrafficLight_Confirm;
     ZigBee_TrafficLightData[Pack_SubCmd1] = (uint8_t)light;
     Send_ZigBeeData5Times(ZigBee_TrafficLightData);

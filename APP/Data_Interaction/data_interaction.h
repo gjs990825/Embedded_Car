@@ -25,8 +25,10 @@ extern bool AGV_MissonComplete;
 
 DeclareExternDataStatus(BarrierGate);
 DeclareExternDataStatus(ETC);
-DeclareExternDataStatus(TrafficLight);
-DeclareExternDataStatus(StereoGarage);
+DeclareExternDataStatus(TrafficLight_A);
+DeclareExternDataStatus(TrafficLight_B);
+DeclareExternDataStatus(StereoGarage_A);
+DeclareExternDataStatus(StereoGarage_B);
 DeclareExternDataStatus(AGV);
 DeclareExternDataStatus(VoiceBroadcast);
 
@@ -39,8 +41,8 @@ void HostData_Handler(uint8_t *buf);
 // 标志物状态获取
 
 bool Get_BarrierGateStatus(void);
-uint8_t Get_StereoGrageLayer(void);
-uint8_t *Get_StereoGrageInfraredStatus(void);
+uint8_t Get_StereoGrageLayer(uint8_t garage_x);
+uint8_t *Get_StereoGrageInfraredStatus(uint8_t garage_x);
 
 // 向从车获取数据
 

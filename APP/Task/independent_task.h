@@ -11,18 +11,6 @@ enum
     TFT_B = 0,
 };
 
-enum
-{
-    TrafficLight_A = 1,
-    TrafficLight_B = 0,
-};
-
-enum
-{
-    SteroGarage_A = 1,
-    SteroGarage_B = 0,
-};
-
 typedef struct taskCoordinate
 {
     uint8_t taskID;
@@ -88,12 +76,17 @@ void Task_RFIDTestStart(void);
 void Task_RFIDTestEnd(void);
 void Test_RFID(uint8_t block);
 
-// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 特殊地形部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 特殊地形部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 void SpecialRoad_Task(void);
 void SpecialRoad_Test(void);
 
-// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 道闸部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 烽火台（报警台）部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+void Alarm_ON(uint8_t code[6]);
+void Alarm_ChangeCode(uint8_t code[6]);
+
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 道闸部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 void BarrierGate_Plate(uint8_t plate[6]);
 void BarrierGate_Control(bool status);
@@ -107,7 +100,7 @@ void LEDDisplay_DataToSecondRow(uint8_t data[3]);
 void LEDDisplay_TimerMode(TimerMode_t mode);
 void LEDDisplay_Distance(uint16_t dis);
 
-// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 立体显示（旋转LED）部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓ 立体显示（旋转LED）部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 void RotationLED_PlateAndCoord(uint8_t plate[6], RouteNode_t coord);
 void RotationLED_Distance(uint8_t dis);
@@ -116,7 +109,7 @@ void RotationLED_Color(Color_t color);
 void RotationLED_RouteStatus(RouteStatus_t status);
 void RotationLED_Default(void);
 
-// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ TFT显示器部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ TFT显示器部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 void TFT_ShowPicture(uint8_t TFTx, uint8_t picNumber);
 void TFT_PicturePrevious(uint8_t TFTx);
@@ -127,29 +120,29 @@ void TFT_Timer(uint8_t TFTx, TimerMode_t mode);
 void TFT_HexData(uint8_t TFTx, uint8_t data[3]);
 void TFT_Distance(uint8_t TFTx, uint16_t dis);
 
-// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 立体车库部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 立体车库部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
-void StereoGarage_ToLayer(uint8_t layer);
-void StereoGarage_ReturnLayer(void);
-void StereoGarage_ReturnInfraredStatus(void);
+void StereoGarage_ToLayer(uint8_t garage_x, uint8_t layer);
+void StereoGarage_ReturnLayer(uint8_t garage_x);
+void StereoGarage_ReturnInfraredStatus(uint8_t garage_x);
 
-// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 交通灯部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 交通灯部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
-void TrafficLight_RecognitionMode(void);
-void TrafficLight_ConfirmColor(TrafficLightColor_t light);
+void TrafficLight_RecognitionMode(uint8_t light_x);
+void TrafficLight_ConfirmColor(uint8_t light_x, TrafficLightColor_t light);
 
-// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 语音识别部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 语音识别部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 void VoiceBroadcast_Specific(uint8_t voiceID);
 void VoiceBroadcast_Radom(void);
 void VoiceRecognition_Return(uint8_t voiceID);
 void Voice_Recognition(void);
 
-// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 智能路灯部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 智能路灯部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 uint8_t StreetLight_AdjustTo(uint8_t targetLevel);
 
-/////////////////////// 宏定义操作 /////////////////////
+///////////////////// 宏定义操作 /////////////////////
 
 #define WirelessCharging_ON() Send_ZigBeeDataNTimes(ZigBee_WirelessChargingON, 5, 100)
 #define LEDDisplay_Timer(status) LEDDisplay_TimerMode(TimerMode_##status);
