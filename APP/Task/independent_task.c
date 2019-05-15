@@ -245,7 +245,7 @@ void Alarm_ChangeCode(uint8_t code[6])
     ZigBee_AlarmData[Pack_MainCmd] = Alarm_CodeBack3Bytes;
     memcpy(&ZigBee_AlarmData[Pack_SubCmd1], &code[3], 3);
     Send_ZigBeeData(ZigBee_AlarmData);
-    // warning：上面为了防止报警灯响起多次只发送一次，需要的话可发送多次 
+    // warning：上面为了防止报警灯响起多次只发送一次，需要的话可发送多次
     // Send_ZigBeeDataNTimes(ZigBee_AlarmData, 2, 100);
 }
 
@@ -271,7 +271,7 @@ void BarrierGate_Control(bool status)
     Send_ZigBeeData(ZigBee_BarrierGateData);
 }
 
-// 道闸状态回传
+// 道闸回传状态
 void BarrierGate_ReturnStatus(void)
 {
     ZigBee_BarrierGateData[Pack_MainCmd] = BarrierGateMode_ReturnStatus;
@@ -644,19 +644,25 @@ void End_Task(void)
 }
 
 // 道闸任务
+// 显示车牌并打开道闸
 void BarrierGate_Task(uint8_t plate[6])
 {
-    if (plate != NULL)
-    {
-        BarrierGate_Plate(plate);
-    }
     for (uint8_t i = 0; i < 3; i++)
     {
+        if (plate != NULL)
+        {
+            BarrierGate_Plate(plate);
+        }
+        else
+        {
+            BarrierGate_Control(true);
+        }
         delay(100);
-        BarrierGate_Control(true);
-        delay(100);
+
         if (Get_BarrierGateStatus())
             break;
+        else
+            delay(100);
     }
 }
 
