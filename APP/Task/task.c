@@ -89,8 +89,8 @@ uint8_t Calculate_M(uint8_t *str)
     color2 = color_table[color2];
     shape2 = shape_table[shape2];
 
-    M += Get_ShapeColorNumber(shape1, color1);
-    M += Get_ShapeColorNumber(shape2, color2);
+    M += Get_ShapeColorNumber(TFT_A, shape1, color1);
+    M += Get_ShapeColorNumber(TFT_A, shape2, color2);
 
     return M;
 }
@@ -110,7 +110,7 @@ void Task_A2(void)
 
 void Task_B2(void)
 {
-    Auto_ReverseParcking(&CurrentStaus, "A4", TaskAfterParcking);
+    // Auto_ReverseParcking(&CurrentStaus, "A4", TaskAfterParcking);
     // TURN_TO(DIR_UP);
 
     // currentLightLevel = StreetLight_AdjustTo(1);
@@ -141,7 +141,7 @@ void Task_B4(void)
 {
     TURN_TO(DIR_RIGHT);
 
-    TrafficLight_Task();
+    TrafficLight_Task(TrafficLight_A);
 }
 
 void Task_D4(void)
@@ -218,22 +218,9 @@ void Task_D6(void)
     Route_Task[8].node.y = 1;
 }
 
-void Task_Final(void)
+void Task_Test(void)
 {
-    if (CurrentStaus.x == 1)
-    {
-        TURN_TO(DIR_RIGHT);
-    }
-    else if (CurrentStaus.x == 3)
-    {
-        TURN_TO(DIR_UP);
-    }
-    else
-    {
-        TURN_TO(DIR_LEFT);
-    }
-
-    MOVE(-20);
+    Auto_ReverseParcking(&CurrentStaus, "F7", infinity_loop);
 }
 
 // uint16_t distanceMeasured = 0;

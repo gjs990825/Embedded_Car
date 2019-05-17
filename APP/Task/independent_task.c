@@ -667,18 +667,22 @@ void BarrierGate_Task(uint8_t plate[6])
 }
 
 // 交通灯识别
-void TrafficLight_Task(void)
+void TrafficLight_Task(uint8_t light_x)
 {
-    Send_ZigBeeDataNTimes(ZigBee_TrafficLightStartRecognition, 2, 200); // 开始识别交通灯
+    uint8_t requestID = light_x ? RequestTask_TrafficLightA : RequestTask_TrafficLightB;
+
+    TrafficLight_RecognitionMode(light_x); // 开始识别交通灯
     delay_ms(700);
-    RequestToHost_Task(RequestTask_TrafficLight);
+    RequestToHost_Task(requestID);
     WaitForFlagInMs(GetCmdFlag(FromHost_TrafficLight), SET, 9 * 1000); // 等待识别完成
 }
 
 // TFT图形图像识别
-void TFT_Task(void)
+void TFT_Task(uint8_t TFTx)
 {
-    RequestToHost_Task(RequestTask_TFTRecognition);                       // 请求识别TFT内容
+    uint8_t requestID = TFTx ? RequestTask_TFTRecognitionA : RequestTask_TFTRecognitionB;
+
+    RequestToHost_Task(requestID);                                        // 请求识别TFT内容
     WaitForFlagInMs(GetCmdFlag(FromHost_TFTRecognition), SET, 37 * 1000); // 等待识别完成
 }
 

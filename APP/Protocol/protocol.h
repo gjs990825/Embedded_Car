@@ -87,6 +87,7 @@ enum
 };
 
 // ZigBee设备ID
+// 返回数据第[Pack_Header2]字节数据
 enum
 {
     ZigBeeID_MainCar = 1,           // 主车
@@ -120,17 +121,6 @@ enum
     AGV,                // 从车返回
     VoiceBroadcast,     // 语音播报
 };
-
-// // ZigBee 返回数据头
-// enum
-// {
-//     Return_BarrierGate = ZigBeeID_BarrierGate,   // 道闸
-//     Return_ETC = 0x0C,           // ETC
-//     Return_TrafficLight = 0x0E,  // 交通灯
-//     Return_StereoGarage = 0x0D,  // 立体车库
-//     Return_AGV = 0x02,           // 从车
-//     Return_VoiceBroadcast = 0x06 // 语音
-// };
 
 // 通用ZigBee回传的数据状态和时间戳
 typedef struct ZigBee_DataStatus_Sturuct
@@ -176,10 +166,12 @@ enum
 // 任务请求ID
 enum
 {
-    RequestTask_QRCode1 = 0x01,        // 二维码1
-    RequestTask_QRCode2 = 0x02,        // 二维码2
-    RequestTask_TrafficLight = 0x81,   // 交通灯
-    RequestTask_TFTRecognition = 0x66, // TFT识别
+    RequestTask_QRCode1 = 0x01,         // 二维码1
+    RequestTask_QRCode2 = 0x02,         // 二维码2
+    RequestTask_TrafficLightA = 0x81,   // 交通灯A
+    RequestTask_TrafficLightB = 0x82,   // 交通灯B
+    RequestTask_TFTRecognitionA = 0x66, // TFT识别A
+    RequestTask_TFTRecognitionB = 0x67, // TFT识别B
 };
 
 // 数据请求的结构 [0][1] 包头（0x56, 0x66） [2] 请求ID *[3] 功能
@@ -200,7 +192,9 @@ enum
 enum
 {
     DataSend_QRCode = 0, // 二维码
-    DataSend_RFID = 1,   // RFID
+    DataSend_RFID = 1,   // RFID1
+    DataSend_RFID2 = 2,  // RFID2
+    DataSend_RFID3 = 3,  // RFID3
 };
 
 // 数据请求和返回ID

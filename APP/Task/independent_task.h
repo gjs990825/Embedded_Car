@@ -9,6 +9,7 @@ enum
 {
     TFT_A = 1,
     TFT_B = 0,
+    TFT_ALL = 3,
 };
 
 typedef struct taskCoordinate
@@ -138,13 +139,17 @@ void VoiceBroadcast_Radom(void);
 void VoiceRecognition_Return(uint8_t voiceID);
 void Voice_Recognition(void);
 
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 无线充电部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+#define WirelessCharging_ON() Send_ZigBeeDataNTimes(ZigBee_WirelessChargingON, 5, 100)
+#define WirelessCharging_CodeON() Send_ZigBeeData(code)
+
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 智能路灯部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 uint8_t StreetLight_AdjustTo(uint8_t targetLevel);
 
 ///////////////////// 宏定义操作 /////////////////////
 
-#define WirelessCharging_ON() Send_ZigBeeDataNTimes(ZigBee_WirelessChargingON, 5, 100)
 #define LEDDisplay_Timer(status) LEDDisplay_TimerMode(TimerMode_##status);
 
 ///////////////////////////////////////////////////////
@@ -154,8 +159,8 @@ uint8_t StreetLight_AdjustTo(uint8_t targetLevel);
 
 void Start_Task(void);
 void End_Task(void);
-void TrafficLight_Task(void);
-void TFT_Task(void);
+void TrafficLight_Task(uint8_t light_x);
+void TFT_Task(uint8_t TFTx);
 void QRCode_Task(uint8_t QRrequest);
 void Voice_Task(void);
 void ETC_Task(void);

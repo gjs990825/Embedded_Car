@@ -235,7 +235,7 @@ void RequestToHost_Task(uint8_t request)
 /// 向上位机发送数据 ///
 
 // 数据发送头
-uint8_t dataSendHeader[] = {0x56, 0x76, 0x00, 0x00};
+uint8_t dataSendHeader[6] = {0x56, 0x76, 0x00, 0x00};
 
 void Send_QRCodeData(uint8_t *QRData, uint8_t length)
 {
@@ -245,9 +245,14 @@ void Send_QRCodeData(uint8_t *QRData, uint8_t length)
     Send_ToHost(QRData, length);
 }
 
-void Send_RFIDData(uint8_t *RFIDData, uint8_t length)
+// 这个跟其它不同，多了个位区分RFIDx
+// 发送RFID数据
+void Send_RFIDData(uint8_t RFIDx, uint8_t *RFIDData, uint8_t length)
 {
-    dataSendHeader[Data_ID] = DataSend_RFID;
+    if (RFIDx > 3 || RFIDx < 1)
+        return;
+
+    dataSendHeader[Data_ID] = RFIDx + DataSend_RFID - 1;
     dataSendHeader[Data_Length] = length;
     Send_ToHost(dataSendHeader, 4);
     Send_ToHost(RFIDData, length);
@@ -349,23 +354,25 @@ void HostData_RequestMulti(uint8_t requestID, uint8_t *param, uint8_t paramLen)
 #define ReturnBuffer(requestID) return DataBuffer[requestID].buffer
 
 // 获取车牌号（字符串）
-uint8_t *Get_PlateNumber(void)
+uint8_t *Get_PlateNumber(uint8_t TFTx)
 {
-    ResetAndRquest(DataRequest_PlateNumber, 300, 3);
+    uint8_t buf[1] = {TFTx};
+
+    ResetAndRquestMulti(DataRequest_PlateNumber, buf, 1, 300, 3);
     ReturnBuffer(DataRequest_PlateNumber);
 }
 
 // 获取二维码（字符串）
 uint8_t *Get_QRCode(uint8_t QRID, uint8_t use)
 {
-    uint8_t buf[1] = {QRID};
+    uint8_t buf[2] = {QRID, use};
 
     do
     {
         ResetDataIsSet(QRID);
         for (uint8_t i = 0; i < 3; i++)
         {
-            HostData_RequestMulti(QRID, buf, 1);
+            HostData_RequestMulti(QRID, buf, 2);
             WaitForFlagInMs(DataBuffer[QRID].isSet, SET, 300);
             if (DataBuffer[QRID].isSet == SET)
             {
@@ -378,53 +385,61 @@ uint8_t *Get_QRCode(uint8_t QRID, uint8_t use)
 }
 
 // 获取交通灯状态
-uint8_t Get_TrafficLight(void)
+uint8_t Get_TrafficLight(uint8_t light_x)
 {
-    ResetAndRquest(DataRequest_TrafficLight, 300, 3);
+    uint8_t buf[1] = {light_x};
+
+    ResetAndRquestMulti(DataRequest_TrafficLight, buf, 1, 300, 3);
     ReturnBuffer(DataRequest_TrafficLight)[0];
 }
 
 // 获取某个形状的图形个数
-uint8_t Get_ShapeNumber(uint8_t Shape)
+uint8_t Get_ShapeNumber(uint8_t TFTx, uint8_t Shape)
 {
-    uint8_t buf[1] = {Shape};
-    ResetAndRquestMulti(DataRequest_ShapeNumber, buf, 1, 300, 3);
+    uint8_t buf[2] = {Shape, TFTx};
+    ResetAndRquestMulti(DataRequest_ShapeNumber, buf, 2, 300, 3);
     ReturnBuffer(DataRequest_ShapeNumber)[0];
 }
 
 // 获取某个颜色的图形个数
-uint8_t Get_ColorNumber(uint8_t Color)
+uint8_t Get_ColorNumber(uint8_t TFTx, uint8_t Color)
 {
-    uint8_t buf[1] = {Color};
-    ResetAndRquestMulti(DataRequest_ColorNumber, buf, 1, 300, 3);
+    uint8_t buf[2] = {Color, TFTx};
+    ResetAndRquestMulti(DataRequest_ColorNumber, buf, 2, 300, 3);
     ReturnBuffer(DataRequest_ColorNumber)[0];
 }
 
 // 获取某个特定形状颜色的图形个数
-uint8_t Get_ShapeColorNumber(uint8_t Shape, uint8_t Color)
+uint8_t Get_ShapeColorNumber(uint8_t TFTx, uint8_t Shape, uint8_t Color)
 {
-    uint8_t buf[2] = {Shape, Color};
-    ResetAndRquestMulti(DataRequest_ShapeColorNumber, buf, 2, 300, 3);
+    uint8_t buf[3] = {Shape, Color, TFTx};
+    ResetAndRquestMulti(DataRequest_ShapeColorNumber, buf, 3, 300, 3);
     ReturnBuffer(DataRequest_ShapeColorNumber)[0];
 }
 
 // 获取RFID处理结果
-uint8_t *Get_RFIDInfo(uint8_t *data)
+uint8_t *Get_RFIDInfo(uint8_t RFIDx)
 {
-    ResetAndRquestMulti(DataRequest_RFID, data, 16, 300, 3);
+    uint8_t buf[1] = {RFIDx};
+
+    ResetAndRquestMulti(DataRequest_RFID, buf, 1, 300, 3);
     ReturnBuffer(DataRequest_RFID);
 }
 
 // 获取图形信息（字符串）
-uint8_t *Get_ShapeInfo(void)
+uint8_t *Get_ShapeInfo(uint8_t TFTx)
 {
-    ResetAndRquest(DataRequest_Preset1, 300, 3);
+    uint8_t buf[1] = {TFTx};
+
+    ResetAndRquestMulti(DataRequest_Preset1, buf, 1, 300, 3);
     ReturnBuffer(DataRequest_Preset1);
 }
 
 // 获取所有出线的颜色数量
-uint8_t Get_AllColorCount(void)
+uint8_t Get_AllColorCount(uint8_t TFTx)
 {
-    ResetAndRquest(DataRequest_Preset2, 300, 3);
+    uint8_t buf[1] = {TFTx};
+
+    ResetAndRquestMulti(DataRequest_Preset2, buf, 1, 300, 3);
     ReturnBuffer(DataRequest_Preset2)[0];
 }

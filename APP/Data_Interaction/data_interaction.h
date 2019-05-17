@@ -57,18 +57,18 @@ void RequestToHost_Task(uint8_t request);
 // 向上位机发送数据
 
 void Send_QRCodeData(uint8_t *QRData, uint8_t length);
-void Send_RFIDData(uint8_t *RFIDData, uint8_t length);
+void Send_RFIDData(uint8_t RFIDx, uint8_t *RFIDData, uint8_t length);
 
 // 向上位机请求数据
 
-uint8_t *Get_PlateNumber(void);
+uint8_t *Get_PlateNumber(uint8_t TFTx);
 uint8_t *Get_QRCode(uint8_t QRID, uint8_t use);
-uint8_t Get_TrafficLight(void);
-uint8_t Get_ShapeNumber(uint8_t Shape);
-uint8_t Get_ColorNumber(uint8_t Color);
-uint8_t Get_ShapeColorNumber(uint8_t Shape, uint8_t Color);
-uint8_t *Get_RFIDInfo(uint8_t *data);
-uint8_t *Get_ShapeInfo(void);
-uint8_t Get_AllColorCount(void);
+uint8_t Get_TrafficLight(uint8_t light_x);
+uint8_t Get_ShapeNumber(uint8_t TFTx, uint8_t Shape);
+uint8_t Get_ColorNumber(uint8_t TFTx, uint8_t Color);
+uint8_t Get_ShapeColorNumber(uint8_t TFTx, uint8_t Shape, uint8_t Color);
+uint8_t *Get_RFIDInfo(uint8_t RFIDx);
+uint8_t *Get_ShapeInfo(uint8_t TFTx);
+uint8_t Get_AllColorCount(uint8_t TFTx);
 
 #endif // _DATA_FROM_HOST_H_
