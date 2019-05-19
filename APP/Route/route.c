@@ -37,12 +37,8 @@ RouteNode_t NextStatus;
 //     // {.coordinate = "A2", .Task = Task_A2},
 // };
 RouteSetting_t Route_Task[] = {
-    {.coordinate = "F7", .Task = BEEP_Test, .node.dir = DIR_UP},
-    {.coordinate = "F6", .Task = SpecialRoad_Test},
-    {.coordinate = "E6", .Task = BEEP_Test},
-    {.coordinate = "D6", .Task = BEEP_Test},
-    {.coordinate = "C6", .Task = BEEP_Test},
-    {.coordinate = "B6", .Task = BEEP_Test},
+    {.coordinate = "F7", .Task = NULL, .node.dir = DIR_UP},
+    {.coordinate = "F4", .Task = Task_Test},
 };
 
 

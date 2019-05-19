@@ -96,29 +96,10 @@
 #elif (KEY_CONFIGURATION == KEY_TEMP)
 
 // 临时配置
-#define Action_S1() Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
-#define Action_S2() A_Star_AdjustBarrier("C6")
-#define Action_S3() A_Star_AdjustBarrier("C6D5")
-#define Action_S4()                                  \
-	CurrentStaus.x = 5;                              \
-	CurrentStaus.y = 5;                              \
-	CurrentStaus.dir = DIR_UP;                       \
-	DataToAGV_t AGVData;                             \
-	taskCoord_t taskCoord[2];                        \
-	taskCoord[0].coord = "B2";                       \
-	taskCoord[0].taskID = AGVPresetTask_Streetlight; \
-	taskCoord[1].coord = "D6";                       \
-	taskCoord[1].taskID = 0;                         \
-	AGVData.alarmData = Infrared_AlarmON;            \
-	AGVData.avoidGarage = "G2";                      \
-	AGVData.barrierGateCoord = "F3";                 \
-	AGVData.currentCoord = "F5";                     \
-	AGVData.direction = DIR_RIGHT;                   \
-	AGVData.routeInfo = "F2B2B6D6";                  \
-	AGVData.streetLightLevel = 3;                    \
-	AGVData.taskCoord = taskCoord;                   \
-	AGVData.tasknumber = 2;                          \
-	AGV_Task(AGVData);
+#define Action_S1() print_info("AGV:%d\r\n", AGV_MissionComplete)
+#define Action_S2() BarrierGate_Task("DEF456")
+#define Action_S3() BarrierGate_Task(NULL)
+#define Action_S4() BarrierGate_Control(false)
 
 #endif
 

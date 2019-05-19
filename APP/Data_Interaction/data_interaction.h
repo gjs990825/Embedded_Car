@@ -7,7 +7,7 @@
 // 自动运行开
 #define autoRunEnable CommandFlagStatus[FromHost_Start]
 // AGV任务完成
-extern bool AGV_MissonComplete;
+extern bool AGV_MissionComplete;
 
 // 获取ZigBee返回状态
 #define Get_ZigBeeReturnStatus(name) (name##_Status.isSet == SET)

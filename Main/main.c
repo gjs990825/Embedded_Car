@@ -22,13 +22,13 @@ int main(void)
 
 		if (IsTimeOut(PowerCheckStamp, 200))
 		{
-			PowerCheckStamp = Get_GlobalTimeStamp();
+			PowerCheckStamp = millis();
 			Power_Check();
 		}
 
 		if (IsTimeOut(RFIDCheckStamp, 300))
 		{
-			RFIDCheckStamp = Get_GlobalTimeStamp();
+			RFIDCheckStamp = millis();
 			if (Rc522_GetLinkFlag() == 0)
 			{
 				Readcard_Device_Init();

@@ -27,7 +27,7 @@ AGVUploadData_t AGV_Brightness = {.isSet = RESET, .data = 0};
 uint8_t AGV_QRCodeData[32];
 uint8_t AGV_QRCodeLength = 0;
 uint8_t AGV_QRCodeIsReceived = false;
-bool AGV_MissonComplete = false;
+bool AGV_MissionComplete = false;
 
 // 标志物数据声明、定义和处理操作的结构一样所以使用宏定义简化操作
 
@@ -37,7 +37,7 @@ bool AGV_MissonComplete = false;
 // 处理ZigBee返回数据
 #define ProcessZigBeeReturnData(X)                \
     X##_Status.isSet = SET;                       \
-    X##_Status.timeStamp = Get_GlobalTimeStamp(); \
+    X##_Status.timeStamp = millis(); \
     memcpy(X##_Status.cmd, cmd, 8)
 
 // 标志物ZigBee数据处理
@@ -72,7 +72,7 @@ void ZigBee_CmdHandler(uint8_t *cmd)
     case ZigBeeID_AGV:
 
         AGV_Status.isSet = SET;
-        AGV_Status.timeStamp = Get_GlobalTimeStamp();
+        AGV_Status.timeStamp = millis();
 
         switch (cmd[AGVUploadData_DataType])
         {
@@ -89,7 +89,7 @@ void ZigBee_CmdHandler(uint8_t *cmd)
             break;
 
         case AGVUploadType_MisonComplete: // 从车任务完成
-            AGV_MissonComplete = true;
+            AGV_MissionComplete = true;
             break;
 
             // 从车上传的二维码机制较为特殊

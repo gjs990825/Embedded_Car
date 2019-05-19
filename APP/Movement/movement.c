@@ -217,7 +217,7 @@ void Stop(void)
 	Roadway_Flag_clean(); //清除标志位状态
 	Update_MotorSpeed(0, 0);
 	PidData_Clear();
-	lastStopStamp = Get_GlobalTimeStamp();
+	lastStopStamp = millis();
 }
 
 // 停止但不清空PID数据
@@ -225,7 +225,7 @@ void Stop_WithoutPIDClear(void)
 {
 	Roadway_Flag_clean(); //清除标志位状态
 	Update_MotorSpeed(0, 0);
-	lastStopStamp = Get_GlobalTimeStamp();
+	lastStopStamp = millis();
 }
 
 // 前后移动 单位厘米 正负方向

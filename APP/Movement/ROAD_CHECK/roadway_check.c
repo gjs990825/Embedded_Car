@@ -149,15 +149,16 @@ void Submit_SpeedChanges(void)
         preLSpeed = LSpeed;
         preRSpeed = RSpeed;
         Send_UpMotor(LSpeed, RSpeed);
-        preSpeedChanging = Get_GlobalTimeStamp(); // 更新时间戳
+        preSpeedChanging = millis(); // 更新时间戳
     }
     else
     {
-        // 间隔一定时间后发送一次速度信息，防止can丢包造成匀速行驶时的严重错误
+        // 间隔一定时间后发送一次速度信息
+        // 防止数据丢失造成匀速行驶时的严重错误
         if (IsTimeOut(preSpeedChanging, 150))
         {
             Send_UpMotor(LSpeed, RSpeed);
-            preSpeedChanging = Get_GlobalTimeStamp();
+            preSpeedChanging = millis();
         }
     }
 }
@@ -209,7 +210,7 @@ void Get_Track(void)
 #endif // _TRACK_OUTPUT_
 }
 
-// 计算输出速度值
+// 计算偏差值
 float Get_Offset(void)
 {
     // 计算各个点与临近点的和
@@ -315,7 +316,7 @@ void TRACK_LINE(void)
             if (IS_All_WHITE())
             {
                 TrackStatus = 1;
-                outTrackStamp = Get_GlobalTimeStamp();
+                outTrackStamp = millis();
             }
         }
         else if (TrackStatus == 1) // 出线缓冲+未寻到黑线
@@ -355,8 +356,10 @@ void TRACK_LINE(void)
     }
 
 #endif // _ENABLE_TURNING_BY_TRACK_
-
-    if (IS_All_WHITE()) // 全白
+    
+    // 判断循迹灯并分类处理
+    // 循迹灯全白
+    if (IS_All_WHITE()) 
     {
         if ((Track_Mode == TrackMode_NORMAL) || (Track_Mode == TrackMode_ENCODER)) // 循迹状态
         {
@@ -385,7 +388,8 @@ void TRACK_LINE(void)
             }
         }
     }
-    else if (IS_ALL_BLACK()) // 全黑
+    // 全黑
+    else if (IS_ALL_BLACK()) 
     {
         if (Track_Mode == TrackMode_NORMAL)
         {
@@ -400,15 +404,17 @@ void TRACK_LINE(void)
             Stop_Flag = FORBACKCOMPLETE;
         }
     }
+    // 其它
     else
     {
         // 判定循迹灯是否有反白的情况，反白为十字路口的白卡时情况
         // 中间三个传感器必须检测到白色，两边两个至少有一个黑色，且下一坐标为十字路口
         if (((H8[0] + Q7[0] + H8[7] + Q7[6]) <= 3) && (H8[3] & H8[4] & Q7[3]) && (((NextStatus.x % 2) && (NextStatus.y % 2)) != 0))
         {
+            // 白卡路段
             if (RFID_RoadSection)
             {
-                // 白卡路段，处理白卡
+                // 处理白卡
                 if ((FOUND_RFID_CARD == false))
                 {
                     Roadway_Flag_clean();    // 清空标志位
@@ -424,21 +430,24 @@ void TRACK_LINE(void)
                     // 已处理，等待定时器溢出中断
                 }
             }
+            // 非白卡路段
             else
             {
-                // 非白卡路段，标记十字路口并停车
+                // 标记十字路口并停车
                 Roadway_Flag_clean();
                 PidData_Clear();
                 Update_MotorSpeed(0, 0);
                 Stop_Flag = CROSSROAD;
             }
         }
+        // 非反白，常规循迹状态
         else
         {
+            // 结合PID计算结果控制速度
             Update_MotorSpeed(Car_Speed + PID_value, Car_Speed - PID_value);
         }
-        // CAN发送出现过没有送达的现象，速度控制在定时器中断内实现
     }
+    // CAN发送出现过没有送达的现象，速度控制在定时器中断内实现
 }
 
 // 运动控制

@@ -3,6 +3,7 @@
 #include "stdbool.h"
 #include "debug.h"
 
+// 毫秒时间戳
 volatile uint32_t global_times = 0;
 
 // 全局时间（TIM10）

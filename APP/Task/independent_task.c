@@ -788,7 +788,7 @@ void AGV_Task(DataToAGV_t agvData)
     }
 
     // 等待任务执行完成
-    WaitForFlagInMs(AGV_MissonComplete, SET, 20 * 1000);
+    WaitForFlagInMs(AGV_MissionComplete, SET, 20 * 1000);
 
     // 避让完成后出库
     if (needToAvoid)

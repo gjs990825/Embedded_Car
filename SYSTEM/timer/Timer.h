@@ -3,22 +3,22 @@
 
 #include "sys.h"
 
-// 返回是否超时（单位ms）
-#define IsTimeOut(setTimeStamp, timeOutLimit) (global_times > (setTimeStamp + timeOutLimit))
+extern volatile uint32_t global_times;
+
 // 获取当前时间戳
-#define Get_GlobalTimeStamp() (global_times)
+#define millis() (global_times)
+// 返回是否超时（单位ms）
+#define IsTimeOut(setTimeStamp, timeOutLimit) (millis() > (setTimeStamp + timeOutLimit))
 
 // 等待某个标志位，超时则忽略
 #define WaitForFlagInMs(flag, status, timeout)                        \
-	do                                                                \
-	{                                                                 \
-		uint32_t startStamp = Get_GlobalTimeStamp();                  \
-		while ((!IsTimeOut(startStamp, timeout)) && (flag != status)) \
-		{                                                             \
-		};                                                            \
-	} while (0)
-
-extern volatile uint32_t global_times;
+    do                                                                \
+    {                                                                 \
+        uint32_t startStamp = millis();                               \
+        while ((!IsTimeOut(startStamp, timeout)) && (flag != status)) \
+        {                                                             \
+        };                                                            \
+    } while (0)
 
 void Timer_Init(uint16_t arr, uint16_t psc);
 
@@ -29,7 +29,7 @@ void Timer_Init(uint16_t arr, uint16_t psc);
 // 可长时间延时
 static inline void delay(uint32_t ms)
 {
-    uint32_t startStamp = Get_GlobalTimeStamp();
+    uint32_t startStamp = millis();
     for (;;)
     {
         if (IsTimeOut(startStamp, ms))
@@ -41,10 +41,11 @@ static inline void delay(uint32_t ms)
 
 static inline uint32_t gt_get_sub(uint32_t c)
 {
-    (c > global_times) ? (c -= global_times) : (c = 0);
+    uint32_t t = millis();
+    (c > t) ? (c -= t) : (c = 0);
     return c;
 }
 
-#define gt_get() Get_GlobalTimeStamp()
+#define gt_get() millis()
 
 #endif
