@@ -72,6 +72,7 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next);
 void Auto_RouteTask(RouteNode_t *current, RouteNode_t next);
 void Auto_Run(RouteSetting_t *routeTask, uint8_t taskNumber, RouteNode_t *current);
 
+void Reverse_Parcking(RouteNode_t *current, uint8_t targetGarage[3]);
 void Auto_ReverseParcking(RouteNode_t *current, uint8_t targetGarage[3], void(*taskAfterParcking)(void));
 
 #endif // _MOVEMENT_H_

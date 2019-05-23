@@ -107,49 +107,6 @@ void Block_InfoInit(Block_Info_t *blockInfo, uint8_t blockNumber)
     }
 }
 
-// 初始化RFID信息为默认
-void RFID_InfoInit(RFID_Info_t *RFIDInfo)
-{
-    memset(RFIDInfo, 0, sizeof(RFID_Info_t));
-
-    // RFIDInfo->blockInfo[0].
-
-    // for (uint8_t i = 0; i < RFIDInfo->blockNumber; i++)
-    // {
-        
-    // }
-    
-
-    // Block_Info_t block_info[3];
-    // for (uint8_t i = 0; i < 3; i++)
-    // {
-    //     block_info[i].authMode = PICC_AUTHENT1A;
-    //     block_info[i].block = 4 + i;
-    //     for (uint8_t j = 0; j < 6; j++)
-    //     {
-    //         block_info[i].key[j] = 0xFF;
-    //     }
-    // }
-    // RFID_Info_t rfid1;
-    // rfid1.blockInfo = block_info;
-    // rfid1.blockNumber = 3;
-    // Read_RFID(&rfid1);
-}
-
-void rfidTest(void)
-{
-    Block_Info_t RFID1_Block[2];
-    RFID_Info_t RFID1;
-    
-    Block_InfoInit(RFID1_Block, 2);
-    RFID_InfoInit(&RFID1);
-
-    RFID1.blockInfo = RFID1_Block;
-
-    RFID1_Block[0].block = 4;
-
-}
-
 // 设定当前卡信息
 void Set_CurrentCardInfo(RFID_Info_t *RFIDx)
 {

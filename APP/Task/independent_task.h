@@ -51,16 +51,6 @@ typedef struct RFID_Info_Struct
     int8_t blockNumber;      // 数据块个数
 } RFID_Info_t;
 
-// typedef struct RFID_Info_Struct
-// {
-//     uint8_t dataBlockLocation;
-//     uint8_t authMode;
-//     RouteNode_t coordinate;
-//     uint8_t key[6];
-//     uint8_t data[17];
-//     uint8_t data2[17];
-// } RFID_Info_t;
-
 extern uint8_t FOUND_RFID_CARD;
 extern uint8_t RFID_RoadSection;
 extern RFID_Info_t *CurrentRFIDCard;
@@ -90,9 +80,9 @@ void RFID_Task(void);
 
 // RFID测试用函数
 
-void Task_RFIDTestStart(void);
-void Task_RFIDTestEnd(void);
-void Test_RFID(uint8_t block);
+// void Task_RFIDTestStart(void);
+// void Task_RFIDTestEnd(void);
+// void Test_RFID(uint8_t block);
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 特殊地形部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
