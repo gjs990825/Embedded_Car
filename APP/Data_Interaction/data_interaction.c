@@ -35,8 +35,8 @@ bool AGV_MissionComplete = false;
 #define DefineDataStatus(name) ZigBee_DataStatus_t name##_Status = {0, {0}, 0}
 
 // 处理ZigBee返回数据
-#define ProcessZigBeeReturnData(X)                \
-    X##_Status.isSet = SET;                       \
+#define ProcessZigBeeReturnData(X)   \
+    X##_Status.isSet = SET;          \
     X##_Status.timeStamp = millis(); \
     memcpy(X##_Status.cmd, cmd, 8)
 

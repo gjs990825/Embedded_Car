@@ -22,13 +22,7 @@
 
 #define Send_ZigBeeData5Times(data) Send_ZigBeeDataNTimes(data, 5, 200)
 
-// 寻到白卡
-uint8_t FOUND_RFID_CARD = false;
-// 白卡路段
-uint8_t RFID_RoadSection = false;
-// 当前卡信息指针
-RFID_Info_t *CurrentRFIDCard = NULL;
-// 遇到白卡时的状态数据
+// 暂存运行状态数据
 struct RunningStatus_Struct
 {
     uint8_t stopFlag;
@@ -37,6 +31,17 @@ struct RunningStatus_Struct
     Moving_ByEncoder_t movingByencoder;
     uint16_t remainEncoderValue;
 } RunningStatus;
+
+// 白卡的标志位和指针
+
+// 寻到白卡
+uint8_t FOUND_RFID_CARD = false;
+// 白卡路段
+uint8_t RFID_RoadSection = false;
+// 当前卡信息指针
+RFID_Info_t *CurrentRFIDCard = NULL;
+
+// 特殊地形的标志位
 
 // 特殊地形路段
 uint8_t Special_RoadSection = false;
@@ -80,7 +85,70 @@ void Resume_RunningStatus(uint16_t encoderChangeValue)
     Submit_SpeedChanges();
 }
 
-// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ RFID部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ RFID处理部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+// 初始化默认KEY
+void UseDefaultKey(uint8_t *key, uint8_t keyx)
+{
+    for (uint8_t i = 0; i < 6; i++)
+    {
+        key[i] = keyx;
+    }
+}
+
+// 块信息初始化
+void Block_InfoInit(Block_Info_t *blockInfo, uint8_t blockNumber)
+{
+    memset(blockInfo, 0, sizeof(Block_Info_t) * blockNumber);
+
+    for (uint8_t i = 0; i < blockNumber; i++)
+    {
+        blockInfo[i].authMode = PICC_AUTHENT1A;        
+    }
+}
+
+// 初始化RFID信息为默认
+void RFID_InfoInit(RFID_Info_t *RFIDInfo)
+{
+    memset(RFIDInfo, 0, sizeof(RFID_Info_t));
+
+    // RFIDInfo->blockInfo[0].
+
+    // for (uint8_t i = 0; i < RFIDInfo->blockNumber; i++)
+    // {
+        
+    // }
+    
+
+    // Block_Info_t block_info[3];
+    // for (uint8_t i = 0; i < 3; i++)
+    // {
+    //     block_info[i].authMode = PICC_AUTHENT1A;
+    //     block_info[i].block = 4 + i;
+    //     for (uint8_t j = 0; j < 6; j++)
+    //     {
+    //         block_info[i].key[j] = 0xFF;
+    //     }
+    // }
+    // RFID_Info_t rfid1;
+    // rfid1.blockInfo = block_info;
+    // rfid1.blockNumber = 3;
+    // Read_RFID(&rfid1);
+}
+
+void rfidTest(void)
+{
+    Block_Info_t RFID1_Block[2];
+    RFID_Info_t RFID1;
+    
+    Block_InfoInit(RFID1_Block, 2);
+    RFID_InfoInit(&RFID1);
+
+    RFID1.blockInfo = RFID1_Block;
+
+    RFID1_Block[0].block = 4;
+
+}
 
 // 设定当前卡信息
 void Set_CurrentCardInfo(RFID_Info_t *RFIDx)
@@ -88,25 +156,37 @@ void Set_CurrentCardInfo(RFID_Info_t *RFIDx)
     CurrentRFIDCard = RFIDx;
 }
 
-// 读卡
+// 读取当前卡片信息
 ErrorStatus Read_RFID(RFID_Info_t *RFIDx)
 {
-    ErrorStatus status1 = PICC_ReadBlock(RFIDx->dataBlockLocation, RFIDx->authMode, RFIDx->key, RFIDx->data);
-    ErrorStatus status2 = PICC_ReadBlock(RFIDx->dataBlockLocation + 1, RFIDx->authMode, RFIDx->key, RFIDx->data2);
+    ErrorStatus status = SUCCESS;
+    ErrorStatus tmpStatus;
 
-    if (status1 == SUCCESS && status2 == SUCCESS)
+    for (uint8_t i = 0; i < RFIDx->blockNumber; i++)
     {
-        print_info("Data1:%s\r\n", RFIDx->data);
-        print_info("Data2:%s\r\n", RFIDx->data2);
+        tmpStatus = PICC_ReadBlock(&RFIDx->blockInfo[i]);
+
+        if (tmpStatus)
+        {
+            print_info("Block%d success, ", RFIDx->blockInfo[i].block);
+            print_info("data:%s\r\n", RFIDx->blockInfo[i].data);
+        }
+        else
+        {
+            print_info("Block%d fail\r\n", RFIDx->blockInfo[i].block);
+        }
+        // 添加结束符（RFID内一般为字符串）
+        RFIDx->blockInfo[i].data[16] = '\0';
+        status &= tmpStatus;
+        delay(100);
     }
-    else
-    {
-        print_info("READ CARD FAIL\r\n");
-    }
-    return (ErrorStatus)(status1 == SUCCESS && status2 == SUCCESS);
+
+    print_info("RFID %s\r\n", status ? "all pass" : "something wrong");
+
+    return status;
 }
 
-// RFID读卡任务，检测到白卡时执行
+// RFID寻卡任务，检测到前方白卡时执行
 void RFID_Task(void)
 {
     uint8_t i;
@@ -117,10 +197,10 @@ void RFID_Task(void)
 
     // 记录位置信息
     CurrentRFIDCard->coordinate = NextStatus;
-    print_info("Card At:(%d,%d)\r\n", CurrentRFIDCard->coordinate.x, CurrentRFIDCard->coordinate.y);
+    print_info("Card At:%s\r\n", ReCoordinate_Convert(NextStatus));
 
     MOVE(8);
-    for (i = 0; i < 9; i++) // 读卡范围约 11.5-16.5，间隔一公分读取()
+    for (i = 0; i < 9; i++) // 间隔一公分
     {
         MOVE(1);
         if (Read_RFID(CurrentRFIDCard) == SUCCESS)
@@ -139,55 +219,55 @@ void RFID_Task(void)
     }
 }
 
-// 配置调试卡使用的信息
-uint8_t _testRFIDDataBlock = 5;
-uint8_t _testRFIDKey[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-uint8_t _testRFIDAuthMode = PICC_AUTHENT1A;
+// // 配置调试卡使用的信息
+// uint8_t _testRFIDDataBlock = 5;
+// uint8_t _testRFIDKey[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+// uint8_t _testRFIDAuthMode = PICC_AUTHENT1A;
 
-// RFID测试任务开始
-void Task_RFIDTestStart(void)
-{
-    RFID_Info_t *rfid = malloc(sizeof(RFID_Info_t));
+// // RFID测试任务开始
+// void Task_RFIDTestStart(void)
+// {
+//     RFID_Info_t *rfid = malloc(sizeof(RFID_Info_t));
 
-    // 清空
-    memset(rfid, 0, sizeof(RFID_Info_t));
+//     // 清空
+//     memset(rfid, 0, sizeof(RFID_Info_t));
 
-    // 写入调试信息
-    memcpy(rfid->key, _testRFIDKey, 6);
-    rfid->authMode = _testRFIDAuthMode;
-    rfid->dataBlockLocation = _testRFIDDataBlock;
+//     // 写入调试信息
+//     memcpy(rfid->key, _testRFIDKey, 6);
+//     rfid->authMode = _testRFIDAuthMode;
+//     rfid->dataBlockLocation = _testRFIDDataBlock;
 
-    Set_CurrentCardInfo(rfid);
-    RFID_RoadSection = true;
-}
+//     Set_CurrentCardInfo(rfid);
+//     RFID_RoadSection = true;
+// }
 
-// RFID测试任务结束
-void Task_RFIDTestEnd(void)
-{
-    free(CurrentRFIDCard);
-    CurrentRFIDCard = NULL;
-    RFID_RoadSection = false;
-}
+// // RFID测试任务结束
+// void Task_RFIDTestEnd(void)
+// {
+//     free(CurrentRFIDCard);
+//     CurrentRFIDCard = NULL;
+//     RFID_RoadSection = false;
+// }
 
-// 使用设定key读某个扇区
-void Test_RFID(uint8_t block)
-{
-    uint8_t buf[17];
+// // 使用设定key读某个扇区
+// void Test_RFID(uint8_t block)
+// {
+//     uint8_t buf[17];
 
-    if (PICC_ReadBlock(block, _testRFIDAuthMode, _testRFIDKey, buf) == SUCCESS)
-    {
-        for (uint8_t i = 0; i < 16; i++)
-        {
-            print_info("%02X ", buf[i]);
-            delay_ms(5);
-        }
-        print_info("\r\n");
-    }
-    else
-    {
-        print_info("ERROR\r\n");
-    }
-}
+//     if (PICC_ReadBlock(block, _testRFIDAuthMode, _testRFIDKey, buf) == SUCCESS)
+//     {
+//         for (uint8_t i = 0; i < 16; i++)
+//         {
+//             print_info("%02X ", buf[i]);
+//             delay_ms(5);
+//         }
+//         print_info("\r\n");
+//     }
+//     else
+//     {
+//         print_info("ERROR\r\n");
+//     }
+// }
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 特殊地形部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
@@ -222,7 +302,7 @@ void SpecialRoad_Test(void)
 }
 
 // 蜂鸣两次
-void BEEP_Test(void)
+void BEEP_Twice(void)
 {
     Beep(2);
 }
@@ -319,7 +399,7 @@ void LEDDisplay_Distance(uint16_t dis)
 // 旋转LED显示车牌和坐标
 void RotationLED_PlateAndCoord(uint8_t plate[6], RouteNode_t coord)
 {
-    uint8_t *stringCoord = ReCoordinate_Covent(coord);
+    uint8_t *stringCoord = ReCoordinate_Convert(coord);
 
     Infrared_RotationLEDData[1] = RotationLEDMode_PlateFront4BytesData;
     memcpy(&Infrared_RotationLEDData[2], plate, 4);
@@ -759,7 +839,7 @@ void AGV_Task(DataToAGV_t agvData)
     bool needToAvoid = false;
     if (agvData.avoidGarage != NULL)
     {
-        if (Is_ContainCoordinate(agvRoute, ReCoordinate_Covent(CurrentStaus)))
+        if (Is_ContainCoordinate(agvRoute, ReCoordinate_Convert(CurrentStatus)))
         {
             needToAvoid = true;
         }
@@ -768,7 +848,7 @@ void AGV_Task(DataToAGV_t agvData)
     // 处理避让临时入库
     if (needToAvoid)
     {
-        Auto_ReverseParcking(&CurrentStaus, agvData.avoidGarage, NULL);
+        Auto_ReverseParcking(&CurrentStatus, agvData.avoidGarage, NULL);
     }
 
     // 启动

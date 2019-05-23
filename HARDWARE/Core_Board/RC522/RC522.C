@@ -6,6 +6,7 @@
 #include "Timer.h"
 #include "canp_hostcom.h"
 #include "debug.h"
+#include "independent_task.h"
 
 #define MAXRLEN 18
 
@@ -81,7 +82,7 @@ int8_t RFID_ReadBlock(uint8_t block, uint8_t key[6], uint8_t *buf)
 }
 
 // RFID 读卡： 扇区 KEY类型 KEY 缓冲
-ErrorStatus PICC_ReadBlock(uint8_t block, uint8_t authMode, uint8_t *key, uint8_t *buffer)
+ErrorStatus PICC_ReadBlock(Block_Info_t *blockInfo)
 {
     uint8_t piccType[2]; //卡类型
     uint8_t cardId[4];   //卡号
@@ -100,11 +101,12 @@ ErrorStatus PICC_ReadBlock(uint8_t block, uint8_t authMode, uint8_t *key, uint8_
             if (PcdSelect(cardId) == MI_OK)
             {
                 LED3 = 1;
-                if (PcdAuthState(authMode, block, key, cardId) == MI_OK)
+                if (PcdAuthState(blockInfo->authMode, blockInfo->block, blockInfo->key, cardId) == MI_OK)
                 {
                     LED4 = 1;
-                    if (PcdRead(block, buffer) == MI_OK)
+                    if (PcdRead(blockInfo->block, blockInfo->data) == MI_OK)
                     {
+                        PcdHalt();
                         Beep(2);
                         LED1 = 0;
                         LED2 = 0;
@@ -116,6 +118,8 @@ ErrorStatus PICC_ReadBlock(uint8_t block, uint8_t authMode, uint8_t *key, uint8_
             }
         }
     }
+
+    PcdHalt();
 
     Beep(1);
     LED1 = 0;

@@ -34,15 +34,32 @@ typedef struct DataToAGV_Strusct
 
 // RFID相关 ↓
 
+// 单个数据块信息
+typedef struct Block_Info_Struct
+{
+    int8_t block;     // 块位置, -1为空
+    uint8_t authMode; // KEY类型
+    uint8_t key[6];   // KEY
+    uint8_t data[17]; // 数据
+} Block_Info_t;
+
+// RFID卡信息
 typedef struct RFID_Info_Struct
 {
-    uint8_t dataBlockLocation;
-    uint8_t authMode;
-    RouteNode_t coordinate;
-    uint8_t key[6];
-    uint8_t data[17];
-    uint8_t data2[17];
+    RouteNode_t coordinate;  // 卡片坐标
+    Block_Info_t *blockInfo; // 数据块信息集合
+    int8_t blockNumber;      // 数据块个数
 } RFID_Info_t;
+
+// typedef struct RFID_Info_Struct
+// {
+//     uint8_t dataBlockLocation;
+//     uint8_t authMode;
+//     RouteNode_t coordinate;
+//     uint8_t key[6];
+//     uint8_t data[17];
+//     uint8_t data2[17];
+// } RFID_Info_t;
 
 extern uint8_t FOUND_RFID_CARD;
 extern uint8_t RFID_RoadSection;
@@ -55,7 +72,7 @@ extern uint8_t ENTER_SPECIAL_ROAD;
 extern uint8_t Special_Road_Processed;
 
 void Emergency_Flasher(uint16_t time);
-void BEEP_Test(void);
+void BEEP_Twice(void);
 
 ///////////////////////////////////////////////////////
 // 下面是标志物的操作和控制函数
@@ -154,7 +171,7 @@ uint8_t StreetLight_AdjustTo(uint8_t targetLevel);
 
 ///////////////////////////////////////////////////////
 // 下面是独立任务，进入前需保证位置距离朝向等准确无误
-// 任务结束和开始车身方向不一样的需要手动设置 CurrentStaus.dir = DIR_XX;
+// 任务结束和开始车身方向不一样的需要手动设置 CurrentStatus.dir = DIR_XX;
 ///////////////////////////////////////////////////////
 
 void Start_Task(void);

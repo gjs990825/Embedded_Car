@@ -1,55 +1,44 @@
-/////////////////////////////////////////////////////////////////////
-//函数原型
-/////////////////////////////////////////////////////////////////////
-#include "stm32f4xx.h"
+#include "sys.h"
+#include "independent_task.h"
 
-extern uint8_t RXRFID[16];
+int8_t PcdReset(void);
+void PcdAntennaOn(void);
+void PcdAntennaOff(void);
+int8_t PcdRequest(uint8_t req_code, uint8_t *pTagType);
+int8_t PcdAnticoll(uint8_t *pSnr);
+int8_t PcdSelect(uint8_t *pSnr);
+int8_t PcdAuthState(uint8_t auth_mode, uint8_t addr, uint8_t *pKey, uint8_t *pSnr);
+int8_t PcdRead(uint8_t addr, uint8_t *pData);
+int8_t PcdWrite(uint8_t addr, uint8_t *pData);
+int8_t PcdValue(uint8_t dd_mode, uint8_t addr, uint8_t *pValue);
+int8_t PcdBakValue(uint8_t sourceaddr, uint8_t goaladdr);
+int8_t PcdHalt(void);
+int8_t PcdComMF522(uint8_t Command, uint8_t *pInData, uint8_t InLenByte, uint8_t *pOutData, uint32_t *pOutLenBit);
+int8_t CalulateCRC(uint8_t *pIndata, uint8_t len, uint8_t *pOutData);
+// short WriteRawRC(uint8_t Address,uint8_t value);
+short WriteRawRC_HDL(uint8_t Address, uint8_t value);
+uint8_t ReadRawRC(uint8_t Address);
+int8_t SetBitMask(uint8_t reg, uint8_t mask);
+int8_t ClearBitMask(uint8_t reg, uint8_t mask);
+int8_t M500PcdConfigISOType(uint8_t type);
+void WaitCardOff(void);
+void delay_ns(u32 ns);
+void RC522Port_Init(void);
+int8_t InitRc522(void);
+void Reset_RC522(void);
+void RC522_Uart_init(uint32_t baudrate);
+void Readcard_Device_Init(void);
 
-extern int8_t PcdReset(void);
-extern void PcdAntennaOn(void);
-extern void PcdAntennaOff(void);
-extern int8_t PcdRequest(uint8_t req_code, uint8_t *pTagType);
-extern int8_t PcdAnticoll(uint8_t *pSnr);
-extern int8_t PcdSelect(uint8_t *pSnr);
-extern int8_t PcdAuthState(uint8_t auth_mode, uint8_t addr, uint8_t *pKey, uint8_t *pSnr);
-extern int8_t PcdRead(uint8_t addr, uint8_t *pData);
-extern int8_t PcdWrite(uint8_t addr, uint8_t *pData);
-extern int8_t PcdValue(uint8_t dd_mode, uint8_t addr, uint8_t *pValue);
-extern int8_t PcdBakValue(uint8_t sourceaddr, uint8_t goaladdr);
-extern int8_t PcdHalt(void);
-extern int8_t PcdComMF522(uint8_t Command,
-                        uint8_t *pInData,
-                        uint8_t InLenByte,
-                        uint8_t *pOutData,
-                        unsigned int *pOutLenBit);
-extern int8_t CalulateCRC(uint8_t *pIndata, uint8_t len, uint8_t *pOutData);
-//extern short WriteRawRC(uint8_t Address,uint8_t value);
-extern short WriteRawRC_HDL(uint8_t Address, uint8_t value);
-extern uint8_t ReadRawRC(uint8_t Address);
-extern int8_t SetBitMask(uint8_t reg, uint8_t mask);
-extern int8_t ClearBitMask(uint8_t reg, uint8_t mask);
-extern int8_t M500PcdConfigISOType(uint8_t type);
-extern void WaitCardOff(void);
-extern void delay_ns(u32 ns);
-extern void RC522Port_Init(void);
-extern int8_t InitRc522(void);
-extern void Reset_RC522(void);
-extern void RC522_Uart_init(uint32_t baudrate);
-extern void Readcard_Device_Init(void);
-
-extern uint8_t Rc522_GetLinkFlag(void);
-extern void Rc522_LinkTest(void);
-extern void Send_data(uint8_t ch);
-extern int8_t Rc522_ToSRst(void);
-extern int8_t Rc522_OutSRst(void);
-extern void Read_Card(void);
-
+uint8_t Rc522_GetLinkFlag(void);
+void Rc522_LinkTest(void);
+void Send_data(uint8_t ch);
+int8_t Rc522_ToSRst(void);
+int8_t Rc522_OutSRst(void);
+void Read_Card(void);
 
 int8_t RFID_ReadBlock(uint8_t block, uint8_t key[6], uint8_t *buf);
 
-ErrorStatus PICC_ReadBlock(uint8_t block, uint8_t authMode, uint8_t *key, uint8_t *buffer);
-
-
+ErrorStatus PICC_ReadBlock(Block_Info_t *blockInfo);
 
 /////////////////////////////////////////////////////////////////////
 //MF522命令字
