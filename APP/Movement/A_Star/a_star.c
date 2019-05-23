@@ -340,7 +340,7 @@ void A_Star_AdjustBarrier(uint8_t *barrierNodes)
 
 	for (uint8_t i = 0; i < count; i++)
 	{
-		newBarrier = Coordinate_Covent(&barrierNodes[i * 2]);
+		newBarrier = Coordinate_Convert(&barrierNodes[i * 2]);
 		maze[newBarrier.x][newBarrier.y] = BARRIER;
 		print_info("B(%d, %d)\r\n", newBarrier.x, newBarrier.y);
 		delay_ms(10);

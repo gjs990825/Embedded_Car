@@ -346,11 +346,22 @@ void TurnOnce_EncoderMethod(Direction_t dir)
 	TURN((dir == DIR_LEFT) ? -90 : 90);
 }
 
+// 自动判断方向倒车入库
+// 当前在车库入口时使用
+void Reverse_Parcking(RouteNode_t *current, uint8_t targetGarage[3])
+{
+	uint8_t *currentStr = ReCoordinate_Convert(*current);
+	Direction_t dir = Get_Towards(targetGarage, currentStr);
+
+	Turn_ToDirection(&current->dir, dir, TurnOnce_TrackMethod);
+	MOVE(-35);
+}
+
 // 全自动倒车入库
 // 可做临时避让用
 void Auto_ReverseParcking(RouteNode_t *current, uint8_t targetGarage[3], void (*taskAfterParcking)(void))
 {
-	RouteNode_t target = Coordinate_Covent(targetGarage);
+	RouteNode_t target = Coordinate_Convert(targetGarage);
 	RouteNode_t *route = malloc(sizeof(RouteNode_t) * 12);
 	uint8_t routeCount;
 
@@ -362,15 +373,9 @@ void Auto_ReverseParcking(RouteNode_t *current, uint8_t targetGarage[3], void (*
 		NextStatus = route[i];
 		Go_ToNextNode(current, route[i]);
 	}
-
 	free(route);
 
-	// 计算方向，倒车入库
-	uint8_t *currentStr = ReCoordinate_Covent(*current);
-	Direction_t dir = Get_Towards(targetGarage, currentStr);
-
-	Turn_ToDirection(&current->dir, dir, TurnOnce_TrackMethod);
-	MOVE(-35);
+	Reverse_Parcking(current, targetGarage);
 
 	// 入库完成后任务
 	if (taskAfterParcking != NULL)

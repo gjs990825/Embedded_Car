@@ -37,13 +37,13 @@ extern uint8_t ROUTE_TASK_NUMBER;
 extern RouteSetting_t RFID_TestRoute[];
 extern uint8_t RFID_TESTROUTE_NUMBER;
 
-extern RouteNode_t CurrentStaus;
+extern RouteNode_t CurrentStatus;
 extern RouteNode_t NextStatus;
 
 // 坐标字符串转换
 
-RouteNode_t Coordinate_Covent(uint8_t str[3]);
-uint8_t *ReCoordinate_Covent(RouteNode_t coordinate);
+RouteNode_t Coordinate_Convert(uint8_t str[3]);
+uint8_t *ReCoordinate_Convert(RouteNode_t coordinate);
 
 // 坐标生成
 

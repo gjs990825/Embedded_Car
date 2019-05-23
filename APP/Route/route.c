@@ -7,7 +7,7 @@
 #include "a_star.h"
 
 // 当前位置状态
-RouteNode_t CurrentStaus;
+RouteNode_t CurrentStatus;
 // 下一个位置和状态
 RouteNode_t NextStatus;
 
@@ -37,8 +37,15 @@ RouteNode_t NextStatus;
 //     // {.coordinate = "A2", .Task = Task_A2},
 // };
 RouteSetting_t Route_Task[] = {
-    {.coordinate = "F7", .Task = NULL, .node.dir = DIR_UP},
-    {.coordinate = "F4", .Task = Task_Test},
+    {.coordinate = "F7", .Task = RFID1_Begin, .node.dir = DIR_UP},
+    {.coordinate = "F6", .Task = NULL},
+    {.coordinate = "F5", .Task = RFID1_End},
+    {.coordinate = "F4", .Task = RFID2_Begin},
+    {.coordinate = "E4", .Task = NULL},
+    {.coordinate = "D4", .Task = RFID2_End},
+    {.coordinate = "C4", .Task = RFID3_Begin},
+    {.coordinate = "B4", .Task = NULL},
+    {.coordinate = "B5", .Task = RFID3_End},
 };
 
 
@@ -65,10 +72,10 @@ uint8_t ROUTE_TASK_NUMBER = GET_ARRAY_LENGEH(Route_Task);
 // RFID 寻卡测试用路径
 RouteSetting_t RFID_TestRoute[] = {
     {.coordinate = "B7", .Task = NULL, .node.dir = DIR_UP},
-    {.coordinate = "B6", .Task = Task_RFIDTestStart},
+    // {.coordinate = "B6", .Task = Task_RFIDTestStart},
     {.coordinate = "B5", .Task = NULL},
     {.coordinate = "B4", .Task = NULL},
-    {.coordinate = "C4", .Task = Task_RFIDTestEnd},
+    // {.coordinate = "C4", .Task = Task_RFIDTestEnd},
     {.coordinate = "D4", .Task = NULL},
 };
 uint8_t RFID_TESTROUTE_NUMBER = GET_ARRAY_LENGEH(RFID_TestRoute);
@@ -78,7 +85,7 @@ uint8_t RFID_TESTROUTE_NUMBER = GET_ARRAY_LENGEH(RFID_TestRoute);
 //////////////////////
 
 // 转换字符串到坐标点
-RouteNode_t Coordinate_Covent(uint8_t coordinate[3])
+RouteNode_t Coordinate_Convert(uint8_t coordinate[3])
 {
     static const RouteNode_t badNode = {.x = -1, .y = -1, .dir = DIR_NOTSET};
     RouteNode_t outNode;
@@ -102,7 +109,7 @@ RouteNode_t Coordinate_Covent(uint8_t coordinate[3])
 }
 
 // 转换坐标点到字符串
-uint8_t *ReCoordinate_Covent(RouteNode_t coordinate)
+uint8_t *ReCoordinate_Convert(RouteNode_t coordinate)
 {
     static const char *badCoordinate = "\0\0\0";
     static uint8_t tempCoordinate[3];
@@ -153,7 +160,7 @@ bool Generate_Routetask(RouteSetting_t routeSetting[], uint8_t count)
 
     for (uint8_t i = 0; i < count; i++)
     {
-        tempNode = Coordinate_Covent(routeSetting[i].coordinate);
+        tempNode = Coordinate_Convert(routeSetting[i].coordinate);
         routeSetting[i].node.x = tempNode.x; // 防止设定的方向被变更
         routeSetting[i].node.y = tempNode.y;
 
@@ -226,7 +233,7 @@ int8_t Is_ContainCoordinate(uint8_t *stringRoute, uint8_t coord[3])
 
     for (uint8_t i = 0; i < length; i++)
     {
-        route[i] = Coordinate_Covent(&stringRoute[i * 2]);
+        route[i] = Coordinate_Convert(&stringRoute[i * 2]);
     }
 
     RouteNode_t *tempRoute = malloc(sizeof(RouteNode_t) * 12); // 两点间最多12途径点
@@ -238,7 +245,7 @@ int8_t Is_ContainCoordinate(uint8_t *stringRoute, uint8_t coord[3])
 
     uint8_t routeCount;
     uint8_t allRouteCount = 0;
-    RouteNode_t coordinate = Coordinate_Covent(coord);
+    RouteNode_t coordinate = Coordinate_Convert(coord);
 
     for (uint8_t i = 0; i < length - 1; i++)
     {
@@ -289,8 +296,8 @@ Direction_t Get_TowardsByNode(RouteNode_t currentNode, RouteNode_t towardsNode)
 // 不检查字符串中信息正确性，请确保输入正确坐标
 Direction_t Get_Towards(uint8_t current[3], uint8_t towards[3])
 {
-    RouteNode_t currentNode = Coordinate_Covent(current);
-    RouteNode_t towardsNode = Coordinate_Covent(towards);
+    RouteNode_t currentNode = Coordinate_Convert(current);
+    RouteNode_t towardsNode = Coordinate_Convert(towards);
 
     return Get_TowardsByNode(currentNode, towardsNode);
 }

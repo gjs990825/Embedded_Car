@@ -13,9 +13,9 @@ int main(void)
 
 		if (autoRunEnable)
 		{
-			Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
+			Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStatus);
 			autoRunEnable = 0;
-			
+
 			// 执行任务后进入死循环
 			infinity_loop();
 		}

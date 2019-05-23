@@ -186,7 +186,7 @@ void AGV_SetRoute(uint8_t *str)
 
     for (uint8_t i = 0; i < length; i++)
     {
-        tempNode = Coordinate_Covent(&str[i * 2]);
+        tempNode = Coordinate_Convert(&str[i * 2]);
         AGV_SendSinglePoint(i, tempNode);
     }
 }

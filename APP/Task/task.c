@@ -25,8 +25,60 @@
 #include "string.h"
 #include "ctype.h"
 
+Block_Info_t RFID1_Block[2] = {
+    {.block = 4, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
+    {.block = 6, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
+};
+
+Block_Info_t RFID2_Block[2] = {
+    {.block = 4, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
+    {.block = 5, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
+};
+
+Block_Info_t RFID3_Block[2] = {
+    {.block = 5, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
+    {.block = 6, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
+};
+
+RFID_Info_t RFID1 = {.blockInfo = RFID1_Block, .blockNumber = 2};
+RFID_Info_t RFID2 = {.blockInfo = RFID2_Block, .blockNumber = 2};
+RFID_Info_t RFID3 = {.blockInfo = RFID3_Block, .blockNumber = 2};
+
+void RFID1_Begin(void)
+{
+    Set_CurrentCardInfo(&RFID1);
+    RFID_RoadSectionTrue();
+}
+
+void RFID1_End(void)
+{
+    RFID_RoadSectionFalse();
+}
+
+void RFID2_Begin(void)
+{
+    Set_CurrentCardInfo(&RFID2);
+    RFID_RoadSectionTrue();
+}
+
+void RFID2_End(void)
+{
+    RFID_RoadSectionFalse();
+}
+
+void RFID3_Begin(void)
+{
+    Set_CurrentCardInfo(&RFID3);
+    RFID_RoadSectionTrue();
+}
+
+void RFID3_End(void)
+{
+    RFID_RoadSectionFalse();
+}
+
 uint8_t currentLightLevel;
-RFID_Info_t RFID1 = {.authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}};
+// RFID_Info_t RFID1 = {.authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}};
 
 uint8_t Calculate_N(uint8_t *str)
 {
@@ -110,7 +162,7 @@ void Task_A2(void)
 
 void Task_B2(void)
 {
-    // Auto_ReverseParcking(&CurrentStaus, "A4", TaskAfterParcking);
+    // Auto_ReverseParcking(&CurrentStatus, "A4", TaskAfterParcking);
     // TURN_TO(DIR_UP);
 
     // currentLightLevel = StreetLight_AdjustTo(1);
@@ -134,7 +186,7 @@ void Task_B3(void)
     TURN(90);
 
     RFID_RoadSectionTrue();
-    Set_CurrentCardInfo(&RFID1);
+    // Set_CurrentCardInfo(&RFID1);
 }
 
 void Task_B4(void)
@@ -163,7 +215,6 @@ void Task_F6(void)
     taskCoord[0].taskID = AGVPresetTask_Streetlight;
     taskCoord[1].coord = "D6";
     taskCoord[1].taskID = 0;
-
 
     AGVData.alarmData = Infrared_AlarmON;
     AGVData.avoidGarage = "G6";
@@ -200,7 +251,7 @@ void Task_F6(void)
     TURN_TO(DIR_LEFT);
     TURN(-40);
 
-    RotationLED_PlateAndCoord("AaBbCc", RFID1.coordinate);
+    // RotationLED_PlateAndCoord("AaBbCc", RFID1.coordinate);
 
     TURN(40);
 }
@@ -220,119 +271,5 @@ void Task_D6(void)
 
 void Task_Test(void)
 {
-    Auto_ReverseParcking(&CurrentStaus, "F7", infinity_loop);
+    Auto_ReverseParcking(&CurrentStatus, "F7", infinity_loop);
 }
-
-// uint16_t distanceMeasured = 0;
-// RFID_Info_t RFID_1 = {.authMode = PICC_AUTHENT1A};
-
-// void Task_F7(void)
-// {
-//     RFID_Info_t *rfid = &RFID_1;
-
-//     memset(rfid, 0, sizeof(RFID_Info_t));
-//     for (uint8_t i = 0; i < 6; i++)
-//     {
-//         rfid->key[i] = 0x00;
-//     }
-//     rfid->authMode = PICC_AUTHENT1A;
-
-//     Start_Task();
-// }
-
-// void Task_F6(void)
-// {
-//     TURN_TO(DIR_LEFT);
-//     TrafficLight_Task();
-// }
-
-// void Task_D6(void)
-// {
-//     QRCode_Task(RequestTask_QRCode1);
-
-//     uint8_t *key = Get_QRCode(DataRequest_QRCode1, 1);
-//     dump_array(key, 6);
-// }
-
-// void Task_B6(void)
-// {
-//     TFT_Task();
-// }
-
-// void Task_B4(void)
-// {
-//     Set_CurrentCardInfo(&RFID_1);
-//     RFID_RoadSection = true;
-
-//     TURN(-90);
-//     CurrentStaus.dir = DIR_LEFT;
-
-//     MOVE(-15);
-
-//     QRCode_Task(RequestTask_QRCode2);
-
-//     distanceMeasured = Ultrasonic_GetAverage(10);
-//     RFID_1.dataBlockLocation = (distanceMeasured / 100) % 3 + 4;
-//     print_var(RFID_1.dataBlockLocation);
-
-//     LEDDisplay_Distance(distanceMeasured);
-
-//     MOVE(15);
-//     TURN_TO(DIR_RIGHT);
-// }
-
-// void Task_D4(void)
-// {
-// }
-
-// void Task_F4(void)
-// {
-//     TURN_TO(DIR_UP);
-
-//     TURN(-50);
-
-//     RotationLED_PlateAndCoord(Get_PlateNumber(), RFID_1.coordinate);
-
-//     TURN(50);
-
-//     BarrierGate_Task(NULL);
-// }
-
-// void Task_F2(void)
-// {
-//     uint8_t str[3];
-//     str[0] = 0xDC;
-//     str[1] = 0x01;
-//     str[2] = Start_VoiceCommandRecognition(3) % 100;
-//     TFT_HexData(str);
-// }
-
-// void Task_D2(void)
-// {
-//     DataToAGV_t agvData;
-
-//     agvData.alarmData = Get_QRCode(DataRequest_QRCode2, 1);
-//     agvData.barrierGateCoord = "F3";
-//     agvData.currentCoord = "G2";
-//     agvData.direction = DIR_LEFT;
-//     agvData.routeInfo = RFID_1.data;
-//     agvData.taskCoord = "D4";
-
-//     AGV_Task(agvData);
-// }
-
-// void Task_B2(void)
-// {
-//     TURN_TO(DIR_UP);
-
-//     uint8_t shapeNumber = Get_ShapeColorNumber(Shape_Rectangle, Color_Red);
-//     print_var(shapeNumber);
-//     StreetLight_AdjustTo(shapeNumber % 4 + 1);
-
-//     TURN_TO(DIR_RIGHT);
-//     MOVE(-30);
-
-//     WirelessCharging_ON();
-
-//     End_Task();
-// }

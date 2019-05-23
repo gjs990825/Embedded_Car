@@ -19,7 +19,7 @@
 #define MP_SPK PHout(5)
 
 void Cba_Init(void);
-void Beep(uint8_t times);
+void Beep(uint8_t Ntimes);
 void KEY_Check(void);
 
 #endif

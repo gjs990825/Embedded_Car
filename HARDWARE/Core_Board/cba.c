@@ -21,8 +21,8 @@
 #include "debug.h"
 #include "bh1750.h"
 
-// Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
-// Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStaus);
+// Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStatus);
+// Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStatus);
 
 #define KEY_DEFAULT 0
 #define KEY_DATA_INTERACTION 1
@@ -37,9 +37,9 @@
 #if (KEY_CONFIGURATION == KEY_DEFAULT)
 
 // 默认配置
-#define Action_S1() Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
-#define Action_S2() Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStaus);
-#define Action_S3() Test_RFID(5)
+#define Action_S1() Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStatus);
+#define Action_S2() Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStatus);
+#define Action_S3() Infrared_Send_A(Infrared_AlarmON)
 #define Action_S4() print_info("light:%d\r\n", BH1750_GetAverage(10))
 
 #elif (KEY_CONFIGURATION == KEY_DATA_INTERACTION)
@@ -53,13 +53,13 @@
 #elif (KEY_CONFIGURATION == KEY_AGV_TEST)
 
 // 从车测试配置
-#define Action_S1() Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStaus);
+#define Action_S1() Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStatus);
 #define Action_S2() AGV_SetTaskID(1, 0)
 #define Action_S3() AGV_SetRoute("B7B6D6D4G4")
 #define Action_S4()                                  \
-	CurrentStaus.x = 5;                              \
-	CurrentStaus.y = 5;                              \
-	CurrentStaus.dir = DIR_UP;                       \
+	CurrentStatus.x = 5;                              \
+	CurrentStatus.y = 5;                              \
+	CurrentStatus.dir = DIR_UP;                       \
 	DataToAGV_t AGVData;                             \
 	taskCoord_t taskCoord[2];                        \
 	taskCoord[0].coord = "B2";                       \
@@ -80,7 +80,7 @@
 #elif (KEY_CONFIGURATION == KEY_RFID_TEST)
 
 // 白卡调试配置
-#define Action_S1() Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStaus);
+#define Action_S1() Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStatus);
 #define Action_S2() Test_RFID(6)
 #define Action_S3() Test_RFID(5)
 #define Action_S4() Test_RFID(4)
@@ -99,7 +99,7 @@
 #define Action_S1() print_info("AGV:%d\r\n", AGV_MissionComplete)
 #define Action_S2() BarrierGate_Task("DEF456")
 #define Action_S3() BarrierGate_Task(NULL)
-#define Action_S4() BarrierGate_Control(false)
+#define Action_S4() CurrentStatus = Coordinate_Convert("F7"); CurrentStatus.dir = DIR_UP; Auto_ReverseParcking(&CurrentStatus, "G4", NULL)
 
 #endif
 
@@ -110,13 +110,13 @@ void Cba_Init(void)
 
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOI | RCC_AHB1Periph_GPIOH, ENABLE);
 
-	//GPIOI4\5\6\7----KEY
+	// GPIOI4\5\6\7----KEY
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN; //通用输出
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP; //上拉
 	GPIO_Init(GPIOI, &GPIO_InitStructure);
 
-	//GPIOH12\13\14\15-----LED
+	// GPIOH12\13\14\15-----LED
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;  //通用输出
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; //推挽输出
@@ -124,7 +124,7 @@ void Cba_Init(void)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_Init(GPIOH, &GPIO_InitStructure);
 
-	//GPIOH5 ---- MP_SPK
+	// GPIOH5 ---- MP_SPK
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;  //通用输出
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; //推挽输出
@@ -133,9 +133,10 @@ void Cba_Init(void)
 	GPIO_Init(GPIOH, &GPIO_InitStructure);
 }
 
-void Beep(uint8_t times)
+// 蜂鸣N次
+void Beep(uint8_t Ntimes)
 {
-	for (uint8_t i = 0; i < times; i++)
+	for (uint8_t i = 0; i < Ntimes; i++)
 	{
 		MP_SPK = 1;
 		delay_ms(70);

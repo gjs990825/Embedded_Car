@@ -48,7 +48,7 @@ typedef enum TurnMethod_Struct
 // 前后移动
 #define MOVE(distance) ExcuteAndWait(Move_ByEncoder(Mission_Speed, distance), Stop_Flag, FORBACKCOMPLETE)
 // 根据循迹线转到某个方向，自动记录方向变化
-#define TURN_TO(target) Turn_ToDirection(&CurrentStaus.dir, target, TurnOnce_TrackMethod)
+#define TURN_TO(target) Turn_ToDirection(&CurrentStatus.dir, target, TurnOnce_TrackMethod)
 
 // 基本运动控制
 void Move_ByEncoder(int speed, float distance);
