@@ -77,12 +77,14 @@ void Resume_RunningStatus(uint16_t encoderChangeValue);
 void Set_CurrentCardInfo(RFID_Info_t *RFIDx);
 ErrorStatus Read_RFID(RFID_Info_t *RFIDx);
 void RFID_Task(void);
+void RFIDx_Begin(RFID_Info_t *RFIDx);
+void RFIDx_End(void);
 
 // RFID测试用函数
 
-// void Task_RFIDTestStart(void);
-// void Task_RFIDTestEnd(void);
-// void Test_RFID(uint8_t block);
+void RFID1_Begin(void);
+void RFID2_Begin(void);
+void RFID3_Begin(void);
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 特殊地形部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 

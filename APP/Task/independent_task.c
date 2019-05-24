@@ -103,7 +103,7 @@ void Block_InfoInit(Block_Info_t *blockInfo, uint8_t blockNumber)
 
     for (uint8_t i = 0; i < blockNumber; i++)
     {
-        blockInfo[i].authMode = PICC_AUTHENT1A;        
+        blockInfo[i].authMode = PICC_AUTHENT1A;
     }
 }
 
@@ -176,55 +176,58 @@ void RFID_Task(void)
     }
 }
 
-// // 配置调试卡使用的信息
-// uint8_t _testRFIDDataBlock = 5;
-// uint8_t _testRFIDKey[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-// uint8_t _testRFIDAuthMode = PICC_AUTHENT1A;
+// RFIDx开始
+void RFIDx_Begin(RFID_Info_t *RFIDx)
+{
+    Set_CurrentCardInfo(RFIDx);
+    RFID_RoadSectionTrue();
+}
 
-// // RFID测试任务开始
-// void Task_RFIDTestStart(void)
-// {
-//     RFID_Info_t *rfid = malloc(sizeof(RFID_Info_t));
+// RFIDx结束
+void RFIDx_End(void)
+{
+    RFID_RoadSectionFalse();
+}
 
-//     // 清空
-//     memset(rfid, 0, sizeof(RFID_Info_t));
+// 数据块定义
 
-//     // 写入调试信息
-//     memcpy(rfid->key, _testRFIDKey, 6);
-//     rfid->authMode = _testRFIDAuthMode;
-//     rfid->dataBlockLocation = _testRFIDDataBlock;
+Block_Info_t RFID1_Block[2] = {
+    {.block = 4, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
+    {.block = 6, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
+};
 
-//     Set_CurrentCardInfo(rfid);
-//     RFID_RoadSection = true;
-// }
+Block_Info_t RFID2_Block[2] = {
+    {.block = 4, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
+    {.block = 5, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
+};
 
-// // RFID测试任务结束
-// void Task_RFIDTestEnd(void)
-// {
-//     free(CurrentRFIDCard);
-//     CurrentRFIDCard = NULL;
-//     RFID_RoadSection = false;
-// }
+Block_Info_t RFID3_Block[2] = {
+    {.block = 5, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
+    {.block = 6, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
+};
 
-// // 使用设定key读某个扇区
-// void Test_RFID(uint8_t block)
-// {
-//     uint8_t buf[17];
+// RFID卡片定义
 
-//     if (PICC_ReadBlock(block, _testRFIDAuthMode, _testRFIDKey, buf) == SUCCESS)
-//     {
-//         for (uint8_t i = 0; i < 16; i++)
-//         {
-//             print_info("%02X ", buf[i]);
-//             delay_ms(5);
-//         }
-//         print_info("\r\n");
-//     }
-//     else
-//     {
-//         print_info("ERROR\r\n");
-//     }
-// }
+RFID_Info_t RFID1 = {.blockInfo = RFID1_Block, .blockNumber = 2};
+RFID_Info_t RFID2 = {.blockInfo = RFID2_Block, .blockNumber = 2};
+RFID_Info_t RFID3 = {.blockInfo = RFID3_Block, .blockNumber = 2};
+
+// RFID测试用函数
+
+void RFID1_Begin(void)
+{
+    RFIDx_Begin(&RFID1);
+}
+
+void RFID2_Begin(void)
+{
+    RFIDx_Begin(&RFID2);
+}
+
+void RFID3_Begin(void)
+{
+    RFIDx_Begin(&RFID3);
+}
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 特殊地形部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 

@@ -25,60 +25,7 @@
 #include "string.h"
 #include "ctype.h"
 
-Block_Info_t RFID1_Block[2] = {
-    {.block = 4, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
-    {.block = 6, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
-};
-
-Block_Info_t RFID2_Block[2] = {
-    {.block = 4, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
-    {.block = 5, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
-};
-
-Block_Info_t RFID3_Block[2] = {
-    {.block = 5, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
-    {.block = 6, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
-};
-
-RFID_Info_t RFID1 = {.blockInfo = RFID1_Block, .blockNumber = 2};
-RFID_Info_t RFID2 = {.blockInfo = RFID2_Block, .blockNumber = 2};
-RFID_Info_t RFID3 = {.blockInfo = RFID3_Block, .blockNumber = 2};
-
-void RFID1_Begin(void)
-{
-    Set_CurrentCardInfo(&RFID1);
-    RFID_RoadSectionTrue();
-}
-
-void RFID1_End(void)
-{
-    RFID_RoadSectionFalse();
-}
-
-void RFID2_Begin(void)
-{
-    Set_CurrentCardInfo(&RFID2);
-    RFID_RoadSectionTrue();
-}
-
-void RFID2_End(void)
-{
-    RFID_RoadSectionFalse();
-}
-
-void RFID3_Begin(void)
-{
-    Set_CurrentCardInfo(&RFID3);
-    RFID_RoadSectionTrue();
-}
-
-void RFID3_End(void)
-{
-    RFID_RoadSectionFalse();
-}
-
 uint8_t currentLightLevel;
-// RFID_Info_t RFID1 = {.authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}};
 
 uint8_t Calculate_N(uint8_t *str)
 {
@@ -267,9 +214,4 @@ void Task_D6(void)
 
     Route_Task[8].node.x = 0;
     Route_Task[8].node.y = 1;
-}
-
-void Task_Test(void)
-{
-    Auto_ReverseParcking(&CurrentStatus, "F7", infinity_loop);
 }

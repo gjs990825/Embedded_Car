@@ -36,18 +36,22 @@ RouteNode_t NextStatus;
 //     {.coordinate = "B2", .Task = Task_B2},
 //     // {.coordinate = "A2", .Task = Task_A2},
 // };
-RouteSetting_t Route_Task[] = {
-    {.coordinate = "F7", .Task = RFID1_Begin, .node.dir = DIR_UP},
-    {.coordinate = "F6", .Task = NULL},
-    {.coordinate = "F5", .Task = RFID1_End},
-    {.coordinate = "F4", .Task = RFID2_Begin},
-    {.coordinate = "E4", .Task = NULL},
-    {.coordinate = "D4", .Task = RFID2_End},
-    {.coordinate = "C4", .Task = RFID3_Begin},
-    {.coordinate = "B4", .Task = NULL},
-    {.coordinate = "B5", .Task = RFID3_End},
-};
 
+RouteSetting_t Route_Task[] = {
+    {.coordinate = "F7", .Task = NULL, .node.dir = DIR_UP},
+    {.coordinate = "F6", .Task = NULL},
+    {.coordinate = "D6", .Task = NULL},
+    {.coordinate = "B6", .Task = NULL},
+    {.coordinate = "B4", .Task = NULL},
+    {.coordinate = "B2", .Task = NULL},
+    {.coordinate = "D2", .Task = NULL},
+    {.coordinate = "F2", .Task = NULL},
+    {.coordinate = "F4", .Task = NULL},
+    {.coordinate = "D4", .Task = NULL},
+    {.coordinate = "D6", .Task = NULL},
+    {.coordinate = "F6", .Task = NULL},
+    {.coordinate = "F7", .Task = NULL},
+};
 
 // 任务点个数
 uint8_t ROUTE_TASK_NUMBER = GET_ARRAY_LENGEH(Route_Task);
@@ -71,12 +75,15 @@ uint8_t ROUTE_TASK_NUMBER = GET_ARRAY_LENGEH(Route_Task);
 
 // RFID 寻卡测试用路径
 RouteSetting_t RFID_TestRoute[] = {
-    {.coordinate = "B7", .Task = NULL, .node.dir = DIR_UP},
-    // {.coordinate = "B6", .Task = Task_RFIDTestStart},
-    {.coordinate = "B5", .Task = NULL},
+    {.coordinate = "F7", .Task = RFID1_Begin, .node.dir = DIR_UP},
+    {.coordinate = "F6", .Task = NULL},
+    {.coordinate = "F5", .Task = RFIDx_End},
+    {.coordinate = "F4", .Task = RFID2_Begin},
+    {.coordinate = "E4", .Task = NULL},
+    {.coordinate = "D4", .Task = RFIDx_End},
+    {.coordinate = "C4", .Task = RFID3_Begin},
     {.coordinate = "B4", .Task = NULL},
-    // {.coordinate = "C4", .Task = Task_RFIDTestEnd},
-    {.coordinate = "D4", .Task = NULL},
+    {.coordinate = "B5", .Task = RFIDx_End},
 };
 uint8_t RFID_TESTROUTE_NUMBER = GET_ARRAY_LENGEH(RFID_TestRoute);
 
