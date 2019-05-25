@@ -34,7 +34,7 @@ DeclareExternDataStatus(VoiceBroadcast);
 
 // 指令、数据处理
 
-void Process_DataFromHost(uint8_t mainCmd);
+void Process_CommandFromHost(uint8_t mainCmd);
 void ZigBee_CmdHandler(uint8_t *cmd);
 void HostData_Handler(uint8_t *buf);
 

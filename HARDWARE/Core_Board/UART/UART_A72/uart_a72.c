@@ -134,7 +134,6 @@ void Hard_Uart_MurtSel(uint8_t c)
 }
 
 //************************************************串口2********************************************//
-#define PUART_A72TX (&(uart_struct[4]))
 
 uint8_t Uart_A72_TxEmpty;
 

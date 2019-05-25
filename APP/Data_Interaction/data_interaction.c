@@ -258,30 +258,15 @@ void Send_RFIDData(uint8_t RFIDx, uint8_t *RFIDData, uint8_t length)
     Send_ToHost(RFIDData, length);
 }
 
-// 处理上位机发送的数据
-void Process_DataFromHost(uint8_t mainCmd)
+// 处理上位机的指令，与官方主指令对应
+// 只置位因为没有数据，当作标志位使用
+void Process_CommandFromHost(uint8_t mainCmd)
 {
-    switch (mainCmd)
-    {
-    case FromHost_Start:
-        break; // 小车启动命令
-
-    case FromHost_TFTRecognition:
-        break; // TFT识别完成
-
-    case FromHost_TrafficLight:
-        break; // 交通灯识别完成
-
-    case FromHost_QRCodeRecognition:
-        break; // 二维码识别完成
-
-    default:
-        break;
-    }
     SetCmdFlag(mainCmd);
 }
 
 // 处理上位机返回的数据
+// 自定义的数据接收，长度在DataBuffer结构体中定义
 void HostData_Handler(uint8_t *buf)
 {
     uint8_t requestID = buf[Data_ID];
@@ -289,7 +274,8 @@ void HostData_Handler(uint8_t *buf)
     if (requestID > 0 && requestID <= DATA_REQUEST_NUMBER) // 确认命令是否在设定范围
     {
         // 结构体数组 DataBuffer 中取出ID对应的指针，从ID号之后开始，拷贝相应的ID字节数
-        memcpy(DataBuffer[requestID].buffer, &buf[Data_ID + 1], DataBuffer[requestID].Data_Length);
+        memcpy(DataBuffer[requestID].buffer, &buf[Data_Length], DataBuffer[requestID].Data_Length);
+        // 标记已接收
         DataBuffer[requestID].isSet = SET;
     }
 }
@@ -297,135 +283,118 @@ void HostData_Handler(uint8_t *buf)
 ///////////////////
 // 向上位机请求数据
 
-// 数据请求头
-uint8_t dataRequestHeader[3] = {0x56, 0x66, 0x00};
+// 返回ID对应的Buffer
+#define ReturnBuffer(requestID) return DataBuffer[requestID].buffer
+// 自动填充buf长度（buf不能为指针！）
+#define ResetRquestWait(requestID, buf) Reset_Rquest_Wait(requestID, buf, sizeof(buf))
 
-// 多指令请求
-void HostData_RequestMulti(uint8_t requestID, uint8_t *param, uint8_t paramLen)
+// 请求数据
+void HostData_Request(uint8_t requestID, uint8_t *param, uint8_t paramLen)
 {
+    // 数据请求头
+    static uint8_t dataRequestHeader[3] = {0x56, 0x66, 0x00};
+
     dataRequestHeader[Data_ID] = requestID;
     Send_ToHost(dataRequestHeader, 3);
     Send_ToHost(param, paramLen);
 }
 
-// 置位接收标志位
-#define ResetDataIsSet(requestID) DataBuffer[requestID].isSet = RESET
+// 置位后请求并等待
+void Reset_Rquest_Wait(uint8_t requestID, uint8_t *buf, uint8_t buflen)
+{
+    // 清空标志位
+    DataBuffer[requestID].isSet = RESET;
 
-// 置位后请求多指令并等待
-#define ResetAndRquestMulti(requestID, buf, buflen, timeout, retry)     \
-    do                                                                  \
-    {                                                                   \
-        ResetDataIsSet(requestID);                                      \
-        for (uint8_t i = 0; i < retry; i++)                             \
-        {                                                               \
-            HostData_RequestMulti(requestID, buf, buflen);              \
-            WaitForFlagInMs(DataBuffer[requestID].isSet, SET, timeout); \
-            if (DataBuffer[requestID].isSet == SET)                     \
-            {                                                           \
-                break;                                                  \
-            }                                                           \
-        }                                                               \
-    } while (0)
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        // 发送请求
+        HostData_Request(requestID, buf, buflen);
+        WaitForFlagInMs(DataBuffer[requestID].isSet, SET, 300);
 
-// 返回ID对应的Buffer
-#define ReturnBuffer(requestID) return DataBuffer[requestID].buffer
+        // 判断返回状态
+        if (DataBuffer[requestID].isSet == SET)
+            break;
+    }
+}
+
+// 预设的请求数据接口↓
 
 // 获取车牌号（字符串）
 uint8_t *Get_PlateNumber(uint8_t TFTx)
 {
-    uint8_t buf[1] = {TFTx};
-
-    ResetAndRquestMulti(DataRequest_PlateNumber, buf, 1, 300, 3);
+    uint8_t buf[] = {TFTx};
+    ResetRquestWait(DataRequest_PlateNumber, buf);
     ReturnBuffer(DataRequest_PlateNumber);
 }
 
 // 获取二维码（字符串）
 uint8_t *Get_QRCode(uint8_t QRID, uint8_t use)
 {
-    uint8_t buf[2] = {QRID, use};
-
-    do
-    {
-        ResetDataIsSet(QRID);
-        for (uint8_t i = 0; i < 3; i++)
-        {
-            HostData_RequestMulti(QRID, buf, 2);
-            WaitForFlagInMs(DataBuffer[QRID].isSet, SET, 300);
-            if (DataBuffer[QRID].isSet == SET)
-            {
-                break;
-            }
-        }
-    } while (0);
-
+    uint8_t buf[] = {use};
+    ResetRquestWait(QRID, buf);
     ReturnBuffer(QRID);
 }
 
 // 获取交通灯状态
 uint8_t Get_TrafficLight(uint8_t light_x)
 {
-    uint8_t buf[1] = {light_x};
-
-    ResetAndRquestMulti(DataRequest_TrafficLight, buf, sizeof(buf), 300, 3);
+    uint8_t buf[] = {light_x};
+    ResetRquestWait(DataRequest_TrafficLight, buf);
     ReturnBuffer(DataRequest_TrafficLight)[0];
 }
 
 // 获取某个形状的图形个数
 uint8_t Get_ShapeNumber(uint8_t TFTx, uint8_t Shape)
 {
-    uint8_t buf[2] = {Shape, TFTx};
-    ResetAndRquestMulti(DataRequest_ShapeNumber, buf, sizeof(buf), 300, 3);
+    uint8_t buf[] = {TFTx, Shape};
+    ResetRquestWait(DataRequest_ShapeNumber, buf);
     ReturnBuffer(DataRequest_ShapeNumber)[0];
 }
 
 // 获取某个颜色的图形个数
 uint8_t Get_ColorNumber(uint8_t TFTx, uint8_t Color)
 {
-    uint8_t buf[2] = {Color, TFTx};
-    ResetAndRquestMulti(DataRequest_ColorNumber, buf, sizeof(buf), 300, 3);
+    uint8_t buf[] = {TFTx, Color};
+    ResetRquestWait(DataRequest_ColorNumber, buf);
     ReturnBuffer(DataRequest_ColorNumber)[0];
 }
 
 // 获取某个特定形状颜色的图形个数
 uint8_t Get_ShapeColorNumber(uint8_t TFTx, uint8_t Shape, uint8_t Color)
 {
-    uint8_t buf[3] = {Shape, Color, TFTx};
-    ResetAndRquestMulti(DataRequest_ShapeColorNumber, buf, sizeof(buf), 300, 3);
+    uint8_t buf[] = {TFTx, Shape, Color};
+    ResetRquestWait(DataRequest_ShapeColorNumber, buf);
     ReturnBuffer(DataRequest_ShapeColorNumber)[0];
 }
 
 // 获取RFID处理结果
 uint8_t *Get_RFIDInfo(uint8_t RFIDx)
 {
-    uint8_t buf[1] = {RFIDx};
-
-    ResetAndRquestMulti(DataRequest_RFID, buf, sizeof(buf), 300, 3);
+    uint8_t buf[] = {RFIDx};
+    ResetRquestWait(DataRequest_RFID, buf);
     ReturnBuffer(DataRequest_RFID);
 }
 
 // 获取TFT信息（HEX，3bytes）
 uint8_t *Get_TFTInfo(uint8_t TFTx)
 {
-    uint8_t buf[1] = {TFTx};
-
-    ResetAndRquestMulti(DataRequest_TFTInfo, buf, sizeof(buf), 300, 3);
+    uint8_t buf[] = {TFTx};
+    ResetRquestWait(DataRequest_TFTInfo, buf);
     ReturnBuffer(DataRequest_TFTInfo);
 }
 
 // 获取所有出现的颜色数量
 uint8_t Get_AllColorCount(uint8_t TFTx)
 {
-    uint8_t buf[1] = {TFTx};
-
-    ResetAndRquestMulti(DataRequest_AllColorCount, buf, sizeof(buf), 300, 3);
+    uint8_t buf[] = {TFTx};
+    ResetRquestWait(DataRequest_AllColorCount, buf);
     ReturnBuffer(DataRequest_AllColorCount)[0];
 }
 
 // 获取所有出现的形状数量
 uint8_t Get_AllShapeCount(uint8_t TFTx)
 {
-    uint8_t buf[1] = {TFTx};
-
-    ResetAndRquestMulti(DataRequest_AllShapeCount, buf, sizeof(buf), 300, 3);
+    uint8_t buf[] = {TFTx};
+    ResetRquestWait(DataRequest_AllShapeCount, buf);
     ReturnBuffer(DataRequest_AllShapeCount)[0];
 }

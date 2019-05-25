@@ -18,17 +18,13 @@ enum
     DataLength_ColorNumber = 1,      // 颜色数量
     DataLength_ShapeColorNumber = 1, // 形状颜色数量
     DataLength_RFID = 16,            // RFID数据
-    DataLength_TFTInfo = 8,          // TFT信息
+    DataLength_TFTInfo = 3,          // TFT信息
     DataLength_AllColorCount = 1,    // 颜色总和
-    DataLength_AllShapeCount = 16,   // 形状总和
+    DataLength_AllShapeCount = 1,    // 形状总和
 };
 
 // 与上位机通信的发送函数指针
 void (*Send_ToHost)(uint8_t *, uint8_t) = NULL;
-
-// 请求ID和数据长度在一块的版本，暂未使用
-#define GetRequestID(request) (DataRequest_##request >> 4)
-#define GetRequestLength(request) (DataRequest_##request & 0x08)
 
 // 定义数据buffer
 #define DefineBuffer(X) uint8_t Data_##X[DataLength_##X]
@@ -118,12 +114,10 @@ void Send_DataToUsart(uint8_t *buf, uint8_t length)
 
     // 等待发送完成
     timeStamp = millis();
-    while (!UartTx_EndCheck(&(uart_struct[4])))
+    while (!UartTx_EndCheck(PUART_A72TX))
     {
         if (IsTimeOut(timeStamp, 10))
-        {
             break;
-        }
     }
 }
 

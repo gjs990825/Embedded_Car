@@ -128,7 +128,7 @@ void Can_WifiRx_Check(void)
     {
         if (Wifi_Rx_Buf[1] == 0xAA)
         {
-            Process_DataFromHost(Wifi_Rx_Buf[2]); // 判断指令，执行、置位
+            Process_CommandFromHost(Wifi_Rx_Buf[2]); // 判断指令，执行、置位
         }
         else
         {

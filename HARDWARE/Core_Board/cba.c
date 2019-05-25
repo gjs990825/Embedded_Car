@@ -32,7 +32,7 @@
 #define KEY_TEMP 5
 
 // 配置按键调试方案
-#define KEY_CONFIGURATION KEY_TEMP
+#define KEY_CONFIGURATION KEY_DATA_INTERACTION
 
 #if (KEY_CONFIGURATION == KEY_DEFAULT)
 
@@ -45,10 +45,26 @@
 #elif (KEY_CONFIGURATION == KEY_DATA_INTERACTION)
 
 // 数据交互配置
-#define Action_S1() print_info("Plate:%s\r\n", Get_PlateNumber())
-#define Action_S2() print_info("QRCOde:%s\r\n", Get_QRCode(DataRequest_QRCode1, 0))
-#define Action_S3() print_info("Shape:%d\r\n", Get_ShapeNumber(Shape_Triangle))
-#define Action_S4() print_info("AllColor:%d\r\n", Get_AllColorCount())
+
+#define Action_S1() print_info("Plate:%s\r\n", Get_PlateNumber(TFT_A))
+#define Action_S2() print_info("QRCode:%s\r\n", Get_QRCode(DataRequest_QRCode1, 0))
+#define Action_S3() print_info("Shape:%d\r\n", Get_ShapeNumber(TFT_A, Shape_Triangle))
+#define Action_S4() print_info("AllColor:%d\r\n", Get_AllColorCount(TFT_A))
+
+// #define Action_S1() print_info("PlateNumber:%s\r\n", Get_PlateNumber(TFT_A))
+// #define Action_S2() print_info("QRCode:%s\r\n", Get_QRCode(DataRequest_QRCode1, 2))
+// #define Action_S3() print_info("TrafficLight:%d\r\n", Get_TrafficLight(TrafficLight_A))
+// #define Action_S4() print_info("ShapeNumber:%d\r\n", Get_ShapeNumber(TFT_A, Shape_Circle))
+
+// #define Action_S1() print_info("ColorNumber:%d\r\n", Get_ColorNumber(TFT_A, Color_Cyan))
+// #define Action_S2() print_info("ShapeColorNumber:%d\r\n", Get_ShapeColorNumber(TFT_A, Shape_Rectangle, Color_Red))
+// #define Action_S3() print_info("RFIDInfo:%s\r\n", Get_RFIDInfo(2))
+// #define Action_S4() print_info("TFTInfo:%s\r\n", Get_TFTInfo(TFT_A))
+
+// #define Action_S1() print_info("AllColorCount:%d\r\n", Get_AllColorCount(TFT_A))
+// #define Action_S2() print_info("AllShapeCount:%d\r\n", Get_AllShapeCount(TFT_B))
+// #define Action_S3() (void)0
+// #define Action_S4() (void)0
 
 #elif (KEY_CONFIGURATION == KEY_AGV_TEST)
 
@@ -57,9 +73,9 @@
 #define Action_S2() AGV_SetTaskID(1, 0)
 #define Action_S3() AGV_SetRoute("B7B6D6D4G4")
 #define Action_S4()                                  \
-	CurrentStatus.x = 5;                              \
-	CurrentStatus.y = 5;                              \
-	CurrentStatus.dir = DIR_UP;                       \
+	CurrentStatus.x = 5;                             \
+	CurrentStatus.y = 5;                             \
+	CurrentStatus.dir = DIR_UP;                      \
 	DataToAGV_t AGVData;                             \
 	taskCoord_t taskCoord[2];                        \
 	taskCoord[0].coord = "B2";                       \
@@ -81,9 +97,9 @@
 
 // 白卡调试配置
 #define Action_S1() Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStatus);
-#define Action_S2() Test_RFID(6)
-#define Action_S3() Test_RFID(5)
-#define Action_S4() Test_RFID(4)
+#define Action_S2() Read_RFID(&RFID1)
+#define Action_S3() Read_RFID(&RFID2)
+#define Action_S4() Read_RFID(&RFID3)
 
 #elif (KEY_CONFIGURATION == KEY_TASK_BOARD_TEST)
 
@@ -96,10 +112,10 @@
 #elif (KEY_CONFIGURATION == KEY_TEMP)
 
 // 临时配置
-#define Action_S1() print_info("AGV:%d\r\n", AGV_MissionComplete)
-#define Action_S2() BarrierGate_Task("DEF456")
-#define Action_S3() BarrierGate_Task(NULL)
-#define Action_S4() CurrentStatus = Coordinate_Convert("F7"); CurrentStatus.dir = DIR_UP; Auto_ReverseParcking(&CurrentStatus, "G4", NULL)
+#define Action_S1() (void)0
+#define Action_S2() (void)0
+#define Action_S3() (void)0
+#define Action_S4() (void)0
 
 #endif
 

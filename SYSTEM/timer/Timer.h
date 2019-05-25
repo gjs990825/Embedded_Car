@@ -8,7 +8,7 @@ extern volatile uint32_t global_times;
 // 获取当前时间戳
 #define millis() (global_times)
 // 返回是否超时（单位ms）
-#define IsTimeOut(setTimeStamp, timeOutLimit) (millis() > (setTimeStamp + timeOutLimit))
+#define IsTimeOut(setTimeStamp, timeOutLimit) (millis() > (setTimeStamp + (timeOutLimit)))
 
 // 等待某个标志位，超时则忽略
 #define WaitForFlagInMs(flag, status, timeout)                        \

@@ -9,6 +9,8 @@
 #define GLOBAL extern
 #endif
 
+#define PUART_A72TX (&(uart_struct[4]))
+
 GLOBAL void Uart_A72_PortInit(void);
 GLOBAL void Hard_Uart_MurtSel(uint8_t c);
 GLOBAL void UartA72_Init(void);

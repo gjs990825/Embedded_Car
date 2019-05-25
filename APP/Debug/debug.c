@@ -2,6 +2,7 @@
 #include "stdarg.h"
 #include <stdio.h>
 #include <string.h>
+#include "canp_hostcom.h"
 #include "independent_task.h"
 
 // 与printf的用法一样
