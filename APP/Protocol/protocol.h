@@ -2,8 +2,6 @@
 #define __PROTOCOL_H_
 
 #include "sys.h"
-#include "canp_hostcom.h"
-#include "uart_a72.h"
 #include "delay.h"
 
 // 与上位机通信的发送函数指针
@@ -210,9 +208,9 @@ enum
     DataRequest_ColorNumber = 7,      // 颜色数量
     DataRequest_ShapeColorNumber = 8, // 形状颜色数量
     DataRequest_RFID = 9,             // RFID数据
-    DataRequest_ShapeInfo = 10,       // 形状信息
+    DataRequest_TFTInfo = 10,         // TFT信息
     DataRequest_AllColorCount = 11,   // 颜色总和
-    DataRequest_Preset3 = 12,         // 预设3
+    DataRequest_AllShapeCount = 12,   // 形状总和
 };
 
 // 数据请求储存格式
