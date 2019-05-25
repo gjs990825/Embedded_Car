@@ -356,10 +356,10 @@ void TRACK_LINE(void)
     }
 
 #endif // _ENABLE_TURNING_BY_TRACK_
-    
+
     // 判断循迹灯并分类处理
     // 循迹灯全白
-    if (IS_All_WHITE()) 
+    if (IS_All_WHITE())
     {
         if ((Track_Mode == TrackMode_NORMAL) || (Track_Mode == TrackMode_ENCODER)) // 循迹状态
         {
@@ -389,7 +389,7 @@ void TRACK_LINE(void)
         }
     }
     // 全黑
-    else if (IS_ALL_BLACK()) 
+    else if (IS_ALL_BLACK())
     {
         if (Track_Mode == TrackMode_NORMAL)
         {
@@ -435,7 +435,7 @@ void TRACK_LINE(void)
             {
                 // 标记十字路口并停车
                 Roadway_Flag_clean();
-                PidData_Clear();
+                PidData_Clear(); // 遇黑线清空PID数据
                 Update_MotorSpeed(0, 0);
                 Stop_Flag = CROSSROAD;
             }

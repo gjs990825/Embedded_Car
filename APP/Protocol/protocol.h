@@ -200,36 +200,19 @@ enum
 // 数据请求和返回ID
 enum
 {
-    DataRequest_NotUsed = 0x00,   // 未使用
-    DataRequest_PlateNumber,      // 车牌号
-    DataRequest_QRCode1,          // 二维码1
-    DataRequest_QRCode2,          // 二维码2
-    DataRequest_QRCodeSecondCar,  // 二维码3
-    DataRequest_TrafficLight,     // 交通灯
-    DataRequest_ShapeNumber,      // 形状数量
-    DataRequest_ColorNumber,      // 颜色数量
-    DataRequest_ShapeColorNumber, // 形状颜色数量
-    DataRequest_RFID,             // RFID数据
-    DataRequest_Preset1,          // 预设1
-    DataRequest_Preset2,          // 预设2
-    DataRequest_Preset3,          // 预设3
-};
-
-// 定义每种数据的长度
-enum
-{
-    DataLength_PlateNumber = 6,      // 车牌号
-    DataLength_QRCode1 = 8,          // 二维码1
-    DataLength_QRCode2 = 8,          // 二维码2
-    DataLength_QRCodeSecondCar = 8,  // 二维码3
-    DataLength_TrafficLight = 1,     // 交通灯
-    DataLength_ShapeNumber = 1,      // 形状数量
-    DataLength_ColorNumber = 1,      // 颜色数量
-    DataLength_ShapeColorNumber = 1, // 形状颜色数量
-    DataLength_RFID = 16,            // RFID数据
-    DataLength_Preset1 = 16,         // 预设1
-    DataLength_Preset2 = 16,         // 预设2
-    DataLength_Preset3 = 16,         // 预设3
+    DataRequest_NotUsed = 0x00,       // 未使用
+    DataRequest_PlateNumber = 1,      // 车牌号
+    DataRequest_QRCode1 = 2,          // 二维码1
+    DataRequest_QRCode2 = 3,          // 二维码2
+    DataRequest_QRCodeSecondCar = 4,  // 二维码3
+    DataRequest_TrafficLight = 5,     // 交通灯
+    DataRequest_ShapeNumber = 6,      // 形状数量
+    DataRequest_ColorNumber = 7,      // 颜色数量
+    DataRequest_ShapeColorNumber = 8, // 形状颜色数量
+    DataRequest_RFID = 9,             // RFID数据
+    DataRequest_ShapeInfo = 10,       // 形状信息
+    DataRequest_AllColorCount = 11,   // 颜色总和
+    DataRequest_Preset3 = 12,         // 预设3
 };
 
 // 数据请求储存格式
@@ -239,6 +222,8 @@ typedef struct DataSetting_Struct
     uint8_t Data_Length; // 数据长度信息
     uint8_t isSet;       // 接收标志位
 } DataSetting_t;
+
+// 标志物协议的命令和功能字节
 
 // 报警灯标志物
 enum

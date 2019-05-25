@@ -55,6 +55,12 @@ extern uint8_t FOUND_RFID_CARD;
 extern uint8_t RFID_RoadSection;
 extern RFID_Info_t *CurrentRFIDCard;
 
+// 预设卡片信息
+
+extern RFID_Info_t RFID1;
+extern RFID_Info_t RFID2;
+extern RFID_Info_t RFID3;
+
 // 特殊地形相关 ↓
 
 extern uint8_t Special_RoadSection;

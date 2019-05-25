@@ -156,23 +156,25 @@ void RFID_Task(void)
     CurrentRFIDCard->coordinate = NextStatus;
     print_info("Card At:%s\r\n", ReCoordinate_Convert(NextStatus));
 
-    MOVE(8);
-    for (i = 0; i < 9; i++) // 间隔一公分
+    MOVE(7);
+    for (i = 0; i < 6; i++) // 间隔一公分
     {
         MOVE(1);
+        delay_ms(500);
         if (Read_RFID(CurrentRFIDCard) == SUCCESS)
             break; // 读取成功，跳出
-        delay_ms(500);
     }
 
     RFID_RoadSection = false; // 结束寻卡
     FOUND_RFID_CARD = false;  // 清空标志位
-    MOVE(-(8 + i));           // 返回读卡前位置
+    CurrentRFIDCard = NULL;   // 清空指针
+    MOVE(-(7 + i));           // 返回读卡前位置
 
     // 十字路口需要多退后一点，因为响应时间变长会多走一点
+    // 另外防止过线的危险hhhhhhhh
     if ((NextStatus.x % 2) && (NextStatus.y % 2) != 0)
     {
-        MOVE(-2);
+        MOVE(-5);
     }
 }
 
@@ -191,26 +193,29 @@ void RFIDx_End(void)
 
 // 数据块定义
 
-Block_Info_t RFID1_Block[2] = {
+Block_Info_t RFID1_Block[] = {
     {.block = 4, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
-    {.block = 6, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
 };
 
-Block_Info_t RFID2_Block[2] = {
+Block_Info_t RFID2_Block[] = {
     {.block = 4, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
     {.block = 5, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
 };
 
-Block_Info_t RFID3_Block[2] = {
+Block_Info_t RFID3_Block[] = {
     {.block = 5, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
     {.block = 6, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
 };
 
 // RFID卡片定义
 
-RFID_Info_t RFID1 = {.blockInfo = RFID1_Block, .blockNumber = 2};
-RFID_Info_t RFID2 = {.blockInfo = RFID2_Block, .blockNumber = 2};
-RFID_Info_t RFID3 = {.blockInfo = RFID3_Block, .blockNumber = 2};
+#define DefineRFIDCard(RFIDx)                          \
+    RFID_Info_t RFIDx## = {.blockInfo = RFIDx##_Block, \
+                           .blockNumber = GET_ARRAY_LENGEH(RFIDx##_Block)}
+
+DefineRFIDCard(RFID1);
+DefineRFIDCard(RFID2);
+DefineRFIDCard(RFID3);
 
 // RFID测试用函数
 

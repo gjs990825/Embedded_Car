@@ -431,8 +431,8 @@ uint8_t *Get_ShapeInfo(uint8_t TFTx)
 {
     uint8_t buf[1] = {TFTx};
 
-    ResetAndRquestMulti(DataRequest_Preset1, buf, 1, 300, 3);
-    ReturnBuffer(DataRequest_Preset1);
+    ResetAndRquestMulti(DataRequest_ShapeInfo, buf, 1, 300, 3);
+    ReturnBuffer(DataRequest_ShapeInfo);
 }
 
 // 获取所有出线的颜色数量
@@ -440,6 +440,6 @@ uint8_t Get_AllColorCount(uint8_t TFTx)
 {
     uint8_t buf[1] = {TFTx};
 
-    ResetAndRquestMulti(DataRequest_Preset2, buf, 1, 300, 3);
-    ReturnBuffer(DataRequest_Preset2)[0];
+    ResetAndRquestMulti(DataRequest_AllColorCount, buf, 1, 300, 3);
+    ReturnBuffer(DataRequest_AllColorCount)[0];
 }

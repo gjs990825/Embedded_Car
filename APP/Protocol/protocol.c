@@ -2,6 +2,23 @@
 #include "my_lib.h"
 #include "debug.h"
 
+// 定义每种数据的长度
+enum
+{
+    DataLength_PlateNumber = 6,      // 车牌号
+    DataLength_QRCode1 = 8,          // 二维码1
+    DataLength_QRCode2 = 8,          // 二维码2
+    DataLength_QRCodeSecondCar = 8,  // 二维码3
+    DataLength_TrafficLight = 1,     // 交通灯
+    DataLength_ShapeNumber = 1,      // 形状数量
+    DataLength_ColorNumber = 1,      // 颜色数量
+    DataLength_ShapeColorNumber = 1, // 形状颜色数量
+    DataLength_RFID = 16,            // RFID数据
+    DataLength_ShapeInfo = 16,       // 形状信息
+    DataLength_AllColorCount = 16,   // 颜色总和
+    DataLength_Preset3 = 16,         // 预设3
+};
+
 // 与上位机通信的发送函数指针
 void (*Send_ToHost)(uint8_t *, uint8_t) = NULL;
 
@@ -27,8 +44,8 @@ DefineBuffer(ShapeNumber);
 DefineBuffer(ColorNumber);
 DefineBuffer(ShapeColorNumber);
 DefineBuffer(RFID);
-DefineBuffer(Preset1);
-DefineBuffer(Preset2);
+DefineBuffer(ShapeInfo);
+DefineBuffer(AllColorCount);
 DefineBuffer(Preset3);
 
 // 储存buffer指针/长度/状态的结构体数组
@@ -43,8 +60,8 @@ DataSetting_t DataBuffer[] = {
     DataAndLength(ColorNumber),
     DataAndLength(ShapeColorNumber),
     DataAndLength(RFID),
-    DataAndLength(Preset1),
-    DataAndLength(Preset2),
+    DataAndLength(ShapeInfo),
+    DataAndLength(AllColorCount),
     DataAndLength(Preset3),
 };
 // 数据请求命令个数
