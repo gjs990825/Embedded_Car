@@ -300,13 +300,6 @@ void HostData_Handler(uint8_t *buf)
 // 数据请求头
 uint8_t dataRequestHeader[3] = {0x56, 0x66, 0x00};
 
-// 单个指令请求
-void HostData_RequestSingle(uint8_t requestID)
-{
-    dataRequestHeader[Data_ID] = requestID;
-    Send_ToHost(dataRequestHeader, 3);
-}
-
 // 多指令请求
 void HostData_RequestMulti(uint8_t requestID, uint8_t *param, uint8_t paramLen)
 {
@@ -317,22 +310,6 @@ void HostData_RequestMulti(uint8_t requestID, uint8_t *param, uint8_t paramLen)
 
 // 置位接收标志位
 #define ResetDataIsSet(requestID) DataBuffer[requestID].isSet = RESET
-
-// 置位后请求单指令并等待
-#define ResetAndRquest(requestID, timeout, retry)                       \
-    do                                                                  \
-    {                                                                   \
-        ResetDataIsSet(requestID);                                      \
-        for (uint8_t i = 0; i < retry; i++)                             \
-        {                                                               \
-            HostData_RequestSingle(requestID);                          \
-            WaitForFlagInMs(DataBuffer[requestID].isSet, SET, timeout); \
-            if (DataBuffer[requestID].isSet == SET)                     \
-            {                                                           \
-                break;                                                  \
-            }                                                           \
-        }                                                               \
-    } while (0)
 
 // 置位后请求多指令并等待
 #define ResetAndRquestMulti(requestID, buf, buflen, timeout, retry)     \
@@ -389,7 +366,7 @@ uint8_t Get_TrafficLight(uint8_t light_x)
 {
     uint8_t buf[1] = {light_x};
 
-    ResetAndRquestMulti(DataRequest_TrafficLight, buf, 1, 300, 3);
+    ResetAndRquestMulti(DataRequest_TrafficLight, buf, sizeof(buf), 300, 3);
     ReturnBuffer(DataRequest_TrafficLight)[0];
 }
 
@@ -397,7 +374,7 @@ uint8_t Get_TrafficLight(uint8_t light_x)
 uint8_t Get_ShapeNumber(uint8_t TFTx, uint8_t Shape)
 {
     uint8_t buf[2] = {Shape, TFTx};
-    ResetAndRquestMulti(DataRequest_ShapeNumber, buf, 2, 300, 3);
+    ResetAndRquestMulti(DataRequest_ShapeNumber, buf, sizeof(buf), 300, 3);
     ReturnBuffer(DataRequest_ShapeNumber)[0];
 }
 
@@ -405,7 +382,7 @@ uint8_t Get_ShapeNumber(uint8_t TFTx, uint8_t Shape)
 uint8_t Get_ColorNumber(uint8_t TFTx, uint8_t Color)
 {
     uint8_t buf[2] = {Color, TFTx};
-    ResetAndRquestMulti(DataRequest_ColorNumber, buf, 2, 300, 3);
+    ResetAndRquestMulti(DataRequest_ColorNumber, buf, sizeof(buf), 300, 3);
     ReturnBuffer(DataRequest_ColorNumber)[0];
 }
 
@@ -413,7 +390,7 @@ uint8_t Get_ColorNumber(uint8_t TFTx, uint8_t Color)
 uint8_t Get_ShapeColorNumber(uint8_t TFTx, uint8_t Shape, uint8_t Color)
 {
     uint8_t buf[3] = {Shape, Color, TFTx};
-    ResetAndRquestMulti(DataRequest_ShapeColorNumber, buf, 3, 300, 3);
+    ResetAndRquestMulti(DataRequest_ShapeColorNumber, buf, sizeof(buf), 300, 3);
     ReturnBuffer(DataRequest_ShapeColorNumber)[0];
 }
 
@@ -422,24 +399,33 @@ uint8_t *Get_RFIDInfo(uint8_t RFIDx)
 {
     uint8_t buf[1] = {RFIDx};
 
-    ResetAndRquestMulti(DataRequest_RFID, buf, 1, 300, 3);
+    ResetAndRquestMulti(DataRequest_RFID, buf, sizeof(buf), 300, 3);
     ReturnBuffer(DataRequest_RFID);
 }
 
-// 获取图形信息（字符串）
-uint8_t *Get_ShapeInfo(uint8_t TFTx)
+// 获取TFT信息（HEX，3bytes）
+uint8_t *Get_TFTInfo(uint8_t TFTx)
 {
     uint8_t buf[1] = {TFTx};
 
-    ResetAndRquestMulti(DataRequest_ShapeInfo, buf, 1, 300, 3);
-    ReturnBuffer(DataRequest_ShapeInfo);
+    ResetAndRquestMulti(DataRequest_TFTInfo, buf, sizeof(buf), 300, 3);
+    ReturnBuffer(DataRequest_TFTInfo);
 }
 
-// 获取所有出线的颜色数量
+// 获取所有出现的颜色数量
 uint8_t Get_AllColorCount(uint8_t TFTx)
 {
     uint8_t buf[1] = {TFTx};
 
-    ResetAndRquestMulti(DataRequest_AllColorCount, buf, 1, 300, 3);
+    ResetAndRquestMulti(DataRequest_AllColorCount, buf, sizeof(buf), 300, 3);
     ReturnBuffer(DataRequest_AllColorCount)[0];
+}
+
+// 获取所有出现的形状数量
+uint8_t Get_AllShapeCount(uint8_t TFTx)
+{
+    uint8_t buf[1] = {TFTx};
+
+    ResetAndRquestMulti(DataRequest_AllShapeCount, buf, sizeof(buf), 300, 3);
+    ReturnBuffer(DataRequest_AllShapeCount)[0];
 }

@@ -27,6 +27,7 @@
 #include "malloc.h"
 #include "independent_task.h"
 #include "my_lib.h"
+#include "uart_a72.h"
 
 void Hardware_Init(void);
 

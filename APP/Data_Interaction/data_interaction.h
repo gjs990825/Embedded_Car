@@ -68,7 +68,8 @@ uint8_t Get_ShapeNumber(uint8_t TFTx, uint8_t Shape);
 uint8_t Get_ColorNumber(uint8_t TFTx, uint8_t Color);
 uint8_t Get_ShapeColorNumber(uint8_t TFTx, uint8_t Shape, uint8_t Color);
 uint8_t *Get_RFIDInfo(uint8_t RFIDx);
-uint8_t *Get_ShapeInfo(uint8_t TFTx);
+uint8_t *Get_TFTInfo(uint8_t TFTx);
 uint8_t Get_AllColorCount(uint8_t TFTx);
+uint8_t Get_AllShapeCount(uint8_t TFTx);
 
 #endif // _DATA_FROM_HOST_H_
