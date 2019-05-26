@@ -1,8 +1,11 @@
 #include "tba.h"
+#include "analog_switch.h"
 
 // 任务板光敏电阻配置
 void Tba_Photoresistance_Config(void)
 {
+#if !defined(_USE_NEW_BOARD_)
+
 	GPIO_InitTypeDef GPIO_TypeDefStructure;
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);
 
@@ -10,6 +13,8 @@ void Tba_Photoresistance_Config(void)
 	GPIO_TypeDefStructure.GPIO_Mode = GPIO_Mode_IN; //输入
 	GPIO_TypeDefStructure.GPIO_PuPd = GPIO_PuPd_UP; //上拉
 	GPIO_Init(GPIOA, &GPIO_TypeDefStructure);
+
+#endif // _USE_NEW_BOARD_
 }
 
 uint8_t Get_tba_phsis_value(void)
@@ -20,6 +25,9 @@ uint8_t Get_tba_phsis_value(void)
 // 任务板蜂鸣器配置
 void Tba_Beep_Config(void)
 {
+
+#if !defined(_USE_NEW_BOARD_)
+
 	GPIO_InitTypeDef GPIO_TypeDefStructure;
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
 
@@ -29,6 +37,8 @@ void Tba_Beep_Config(void)
 	GPIO_TypeDefStructure.GPIO_Speed = GPIO_Speed_50MHz; // 有毒！！
 	GPIO_Init(GPIOC, &GPIO_TypeDefStructure);
 	GPIO_SetBits(GPIOC, GPIO_Pin_13);
+
+#endif // _USE_NEW_BOARD_
 }
 
 /**
@@ -38,6 +48,8 @@ void Tba_Beep_Config(void)
 */
 void Set_tba_Beep(uint8_t swch)
 {
+#if !defined(_USE_NEW_BOARD_)
+
 	if (swch == SET)
 	{
 		GPIO_ResetBits(GPIOC, GPIO_Pin_13);
@@ -46,11 +58,20 @@ void Set_tba_Beep(uint8_t swch)
 	{
 		GPIO_SetBits(GPIOC, GPIO_Pin_13);
 	}
+
+#else // _USE_NEW_BOARD_
+
+	AnalogSwitch_CelectChannel(Channel_BEEP);
+	AnalogSwitch_Output(swch);
+
+#endif // _USE_NEW_BOARD_
 }
 
 // 任务板转向灯配置
 void Tba_WheelLED_Config(void)
 {
+#if !defined(_USE_NEW_BOARD_)
+
 	GPIO_InitTypeDef GPIO_TypeDefStructure;
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOH, ENABLE);
 
@@ -60,6 +81,8 @@ void Tba_WheelLED_Config(void)
 	GPIO_TypeDefStructure.GPIO_PuPd = GPIO_PuPd_UP;  //上拉
 	GPIO_Init(GPIOH, &GPIO_TypeDefStructure);
 	GPIO_SetBits(GPIOH, GPIO_Pin_10 | GPIO_Pin_11);
+
+#endif // _USE_NEW_BOARD_
 }
 
 /**
@@ -70,6 +93,8 @@ void Tba_WheelLED_Config(void)
 */
 void Set_tba_WheelLED(uint8_t LorR, uint8_t swch)
 {
+#if !defined(_USE_NEW_BOARD_)
+
 	switch (LorR)
 	{
 	case L_LED:
@@ -85,12 +110,39 @@ void Set_tba_WheelLED(uint8_t LorR, uint8_t swch)
 			GPIO_SetBits(GPIOH, GPIO_Pin_11);
 		break;
 	}
+
+#else // _USE_NEW_BOARD_
+
+	switch (LorR)
+	{
+	case L_LED:
+		AnalogSwitch_CelectChannel(Channel_LED_L);
+		AnalogSwitch_Output(swch);
+		break;
+	case R_LED:
+		AnalogSwitch_CelectChannel(Channel_LED_R);
+		AnalogSwitch_Output(swch);
+		break;
+	}
+
+#endif // _USE_NEW_BOARD_
 }
 
 // 任务板初始化
 void Tba_Init(void)
 {
+	#if !defined(_USE_NEW_BOARD_)
+
 	Tba_Photoresistance_Config();
 	Tba_Beep_Config();
 	Tba_WheelLED_Config();
+
+	#else // _USE_NEW_BOARD_
+	
+	AnalogSwitch_PortInit();
+	
+	#endif // _USE_NEW_BOARD_
+	
+
+
 }

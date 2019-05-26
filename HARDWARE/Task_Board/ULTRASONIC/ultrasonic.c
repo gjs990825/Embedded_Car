@@ -1,7 +1,23 @@
 #include "stm32f4xx.h"
 #include "ultrasonic.h"
 #include "delay.h"
-#include "cba.h"
+#include "tba.h"
+#include "analog_switch.h"
+// #include "cba.h"
+
+// 超声波引脚定义
+
+#if !defined(_USE_NEW_BOARD_)
+
+#define INC(x) PAout(15) = x
+
+#else
+
+#define INC(x)                               \
+	AnalogSwitch_CelectChannel(Channel_INC); \
+	AnalogSwitch_Output(x)
+
+#endif
 
 uint32_t Ultrasonic_Num = 0; // 计数值
 uint16_t tempDistance = 0;
@@ -18,6 +34,8 @@ void Ultrasonic_Port(void)
 	GPIO_PinAFConfig(GPIOA, GPIO_PinSource14, GPIO_AF_SWJ);
 	GPIO_PinAFConfig(GPIOA, GPIO_PinSource13, GPIO_AF_SWJ);
 
+#if !defined(_USE_NEW_BOARD_)
+
 	//GPIOA15---INC--RX
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;  //通用输出
@@ -25,6 +43,8 @@ void Ultrasonic_Port(void)
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;   //上拉
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+#endif // _USE_NEW_BOARD_
 
 	//GPIOB4---INT0--TX
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
@@ -94,9 +114,9 @@ void Ultrasonic_Init(void)
 //超声波测距
 void Ultrasonic_Ranging(void)
 {
-	INC = 1;
+	INC(1);
 	delay_us(3);
-	INC = 0;
+	INC(0);
 
 	TIM_Cmd(TIM6, ENABLE);
 	//EXTI_ClearITPendingBit(EXTI_Line4);
@@ -105,7 +125,7 @@ void Ultrasonic_Ranging(void)
 	Ultrasonic_Num = 0; // 定时器清零
 
 	delay_ms(30); //等待一段时间，等待发送超声波控制信号
-	INC = 1;
+	INC(1);
 	delay_ms(5);
 }
 
@@ -127,7 +147,7 @@ void EXTI4_IRQHandler(void)
 			TIM_Cmd(TIM6, DISABLE);
 
 			// 计算距离定时10us，S = v * t / 2;
-			tempDistance = (uint16_t)((float)Ultrasonic_Num * 1.72f); 
+			tempDistance = (uint16_t)((float)Ultrasonic_Num * 1.72f);
 		}
 		EXTI_ClearITPendingBit(EXTI_Line4);
 	}

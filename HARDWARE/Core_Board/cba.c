@@ -5,6 +5,7 @@
 
 // 按键设置启动程序
 
+#include "tba.h"
 #include "infrared.h"
 #include "Rc522.h"
 #include "a_star.h"
@@ -32,7 +33,7 @@
 #define KEY_TEMP 5
 
 // 配置按键调试方案
-#define KEY_CONFIGURATION KEY_DATA_INTERACTION
+#define KEY_CONFIGURATION KEY_DEFAULT
 
 #if (KEY_CONFIGURATION == KEY_DEFAULT)
 
@@ -104,10 +105,15 @@
 #elif (KEY_CONFIGURATION == KEY_TASK_BOARD_TEST)
 
 // 任务板调试配置
-#define Action_S1() Infrared_Send_A(Infrared_AlarmON)
-#define Action_S2() print_info("Diatance:%d\r\n", Ultrasonic_Task(20))
+// #define Action_S1() Infrared_Send_A(Infrared_AlarmON)
+// #define Action_S2() print_info("Diatance:%d\r\n", Ultrasonic_Task(20))
+// #define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10))
+// #define Action_S4() Start_VoiceCommandRecognition(3)
+
+#define Action_S1() Infrared_Send_A(Infrared_AlarmON) 
+#define Action_S2() print_info("Diatance:%d\r\n", Ultrasonic_GetAverage(20))
 #define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10))
-#define Action_S4() Start_VoiceCommandRecognition(3)
+#define Action_S4() Set_tba_Beep(1); delay(100); Set_tba_Beep(0);
 
 #elif (KEY_CONFIGURATION == KEY_TEMP)
 

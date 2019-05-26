@@ -1,10 +1,7 @@
-#include "sys.h"
-
 #ifndef __ULTRASONIC_H
 #define __ULTRASONIC_H
 
-// 超声波引脚定义
-#define INC PAout(15)
+#include "sys.h"
 
 // 超声波误差修正
 // warning：在确定超声波数值变化基本线性时调整此数值
