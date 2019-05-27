@@ -353,7 +353,8 @@ void Reverse_Parcking(RouteNode_t *current, uint8_t targetGarage[3])
 	uint8_t *currentStr = ReCoordinate_Convert(*current);
 	Direction_t dir = Get_Towards(targetGarage, currentStr);
 
-	Turn_ToDirection(&current->dir, dir, TurnOnce_TrackMethod);
+	// warning:码盘转向
+	Turn_ToDirection(&current->dir, dir, TurnOnce_EncoderMethod);
 	MOVE(-35);
 }
 

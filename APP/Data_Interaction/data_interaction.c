@@ -167,7 +167,7 @@ bool Get_BarrierGateStatus(void)
 uint8_t Get_StereoGrageLayer(uint8_t garage_x)
 {
     ZigBee_DataStatus_t *StereoGarage_Status;
-    StereoGarage_Status = garage_x ? (&StereoGarage_A_Status) : (&StereoGarage_B_Status);
+    StereoGarage_Status = (garage_x == StereoGarage_A) ? (&StereoGarage_A_Status) : (&StereoGarage_B_Status);
 
     StereoGarage_Status->isSet = RESET;
 
@@ -194,7 +194,7 @@ uint8_t *Get_StereoGrageInfraredStatus(uint8_t garage_x)
     static uint8_t IRStatus[2];
 
     ZigBee_DataStatus_t *StereoGarage_Status;
-    StereoGarage_Status = garage_x ? (&StereoGarage_A_Status) : (&StereoGarage_B_Status);
+    StereoGarage_Status = (garage_x == StereoGarage_A) ? (&StereoGarage_A_Status) : (&StereoGarage_B_Status);
 
     StereoGarage_Status->isSet = RESET;
 

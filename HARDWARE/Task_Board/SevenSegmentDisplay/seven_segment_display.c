@@ -51,19 +51,33 @@ void SevenSegmentDisplay_PortInit(void)
     SevenSegmentDisplay_HEX(0x00);
 }
 
+// // 写入数据并输出
+// void HC595_Write_Data(uint8_t data)
+// {
+//     for (uint8_t i = 0; i < 8; i++)
+//     {
+//         ShiftClock = 0;
+
+//         SerialInput = ((data & 0x80) == 0x80);
+//         data <<= 1;
+
+//         ShiftClock = 1;
+//     }
+//     LatchClock = 0;
+//     LatchClock = 1;
+// }
+
 // 写入数据并输出
+// MSB First
 void HC595_Write_Data(uint8_t data)
 {
+    LatchClock = 0;
     for (uint8_t i = 0; i < 8; i++)
     {
-        ShiftClock = 0;
-
-        SerialInput = ((data & 0x80) == 0x80);
-        data <<= 1;
-
+        SerialInput = !!(data & (1 << (7 - i)));
         ShiftClock = 1;
+        ShiftClock = 0;
     }
-    LatchClock = 0;
     LatchClock = 1;
 }
 

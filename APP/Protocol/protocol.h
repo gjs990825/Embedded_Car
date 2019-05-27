@@ -113,9 +113,9 @@ enum
     BarrierGate,        // 道闸
     ETC,                // ETC系统
     TrafficLight_A = 1, // 交通灯A
-    TrafficLight_B = 0, // 交通灯B
+    TrafficLight_B = 2, // 交通灯B
     StereoGarage_A = 1, // 立体车库A
-    StereoGarage_B = 0, // 立体车库B
+    StereoGarage_B = 2, // 立体车库B
     AGV,                // 从车返回
     VoiceBroadcast,     // 语音播报
 };

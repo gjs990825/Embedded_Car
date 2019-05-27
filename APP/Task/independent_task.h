@@ -8,7 +8,7 @@
 enum
 {
     TFT_A = 1,
-    TFT_B = 0,
+    TFT_B = 2,
     TFT_ALL = 3,
 };
 
@@ -25,9 +25,10 @@ typedef struct DataToAGV_Strusct
     uint8_t *routeInfo;        // 路径信息
     uint8_t *alarmData;        // 报警码
     taskCoord_t *taskCoord;    // 任务点和ID
-    uint8_t tasknumber;        // 任务数量
+    uint8_t taskNumber;        // 任务数量
     uint8_t *barrierGateCoord; // 道闸位置
     uint8_t *avoidGarage;      // 避让车库
+    uint8_t *avoidGarage2;     // 备选避让车库
     uint8_t streetLightLevel;  // 路灯档位
     // uint8_t isBarrierChanged;  // 障碍点是否变更
 } DataToAGV_t;

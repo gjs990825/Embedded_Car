@@ -19,6 +19,7 @@
 #include "Timer.h"
 #include "data_interaction.h"
 #include "agv.h"
+#include "canp_hostcom.h"
 
 #define Send_ZigBeeData5Times(data) Send_ZigBeeDataNTimes(data, 5, 200)
 
@@ -422,7 +423,7 @@ void RotationLED_Default(void)
 // TFT显示编号图片
 void TFT_ShowPicture(uint8_t TFTx, uint8_t picNumber)
 {
-    ZigBee_TFTData[Pack_Header2] = TFTx ? ZigBeeID_TFTA : ZigBeeID_TFTB;
+    ZigBee_TFTData[Pack_Header2] = (TFTx == TFT_A) ? ZigBeeID_TFTA : ZigBeeID_TFTB;
 
     if (picNumber > 20 || picNumber < 1)
         return;
@@ -436,7 +437,7 @@ void TFT_ShowPicture(uint8_t TFTx, uint8_t picNumber)
 // TFT上一张图片
 void TFT_PicturePrevious(uint8_t TFTx)
 {
-    ZigBee_TFTData[Pack_Header2] = TFTx ? ZigBeeID_TFTA : ZigBeeID_TFTB;
+    ZigBee_TFTData[Pack_Header2] = (TFTx == TFT_A) ? ZigBeeID_TFTA : ZigBeeID_TFTB;
 
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_Picture;
     ZigBee_TFTData[Pack_SubCmd1] = 0x01;
@@ -446,7 +447,7 @@ void TFT_PicturePrevious(uint8_t TFTx)
 // TFT下一张图片
 void TFT_PictureNext(uint8_t TFTx)
 {
-    ZigBee_TFTData[Pack_Header2] = TFTx ? ZigBeeID_TFTA : ZigBeeID_TFTB;
+    ZigBee_TFTData[Pack_Header2] = (TFTx == TFT_A) ? ZigBeeID_TFTA : ZigBeeID_TFTB;
 
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_Picture;
     ZigBee_TFTData[Pack_SubCmd1] = 0x02;
@@ -456,7 +457,7 @@ void TFT_PictureNext(uint8_t TFTx)
 // TFT图片自动翻页
 void TFT_PictureAuto(uint8_t TFTx)
 {
-    ZigBee_TFTData[Pack_Header2] = TFTx ? ZigBeeID_TFTA : ZigBeeID_TFTB;
+    ZigBee_TFTData[Pack_Header2] = (TFTx == TFT_A) ? ZigBeeID_TFTA : ZigBeeID_TFTB;
 
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_Picture;
     ZigBee_TFTData[Pack_SubCmd1] = 0x03;
@@ -466,7 +467,7 @@ void TFT_PictureAuto(uint8_t TFTx)
 // TFT显示车牌
 void TFT_Plate(uint8_t TFTx, uint8_t plate[6])
 {
-    ZigBee_TFTData[Pack_Header2] = TFTx ? ZigBeeID_TFTA : ZigBeeID_TFTB;
+    ZigBee_TFTData[Pack_Header2] = (TFTx == TFT_A) ? ZigBeeID_TFTA : ZigBeeID_TFTB;
 
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_PlateDataA;
     memcpy(&ZigBee_TFTData[Pack_SubCmd1], plate, 3);
@@ -480,7 +481,7 @@ void TFT_Plate(uint8_t TFTx, uint8_t plate[6])
 // TFT计时模式控制
 void TFT_Timer(uint8_t TFTx, TimerMode_t mode)
 {
-    ZigBee_TFTData[Pack_Header2] = TFTx ? ZigBeeID_TFTA : ZigBeeID_TFTB;
+    ZigBee_TFTData[Pack_Header2] = (TFTx == TFT_A) ? ZigBeeID_TFTA : ZigBeeID_TFTB;
 
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_Timer;
     ZigBee_TFTData[Pack_SubCmd1] = (uint8_t)mode;
@@ -490,7 +491,7 @@ void TFT_Timer(uint8_t TFTx, TimerMode_t mode)
 // TFT六位数据显示模式（HEX）
 void TFT_HexData(uint8_t TFTx, uint8_t data[3])
 {
-    ZigBee_TFTData[Pack_Header2] = TFTx ? ZigBeeID_TFTA : ZigBeeID_TFTB;
+    ZigBee_TFTData[Pack_Header2] = (TFTx == TFT_A) ? ZigBeeID_TFTA : ZigBeeID_TFTB;
 
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_Hex;
     memcpy(&ZigBee_TFTData[Pack_SubCmd1], data, 3);
@@ -500,7 +501,7 @@ void TFT_HexData(uint8_t TFTx, uint8_t data[3])
 // TFT显示距离
 void TFT_Distance(uint8_t TFTx, uint16_t dis)
 {
-    ZigBee_TFTData[Pack_Header2] = TFTx ? ZigBeeID_TFTA : ZigBeeID_TFTB;
+    ZigBee_TFTData[Pack_Header2] = (TFTx == TFT_A) ? ZigBeeID_TFTA : ZigBeeID_TFTB;
 
     ZigBee_TFTData[Pack_MainCmd] = TFTMode_Distance;
     ZigBee_TFTData[Pack_SubCmd2] = HEX2BCD(dis / 100);
@@ -513,7 +514,7 @@ void TFT_Distance(uint8_t TFTx, uint16_t dis)
 // 立体车库到达第X层
 void StereoGarage_ToLayer(uint8_t garage_x, uint8_t layer)
 {
-    ZigBee_StereoGarageData[Pack_Header2] = garage_x ? ZigBeeID_StereoGarage_A : ZigBeeID_StereoGarage_B;
+    ZigBee_StereoGarageData[Pack_Header2] = (garage_x == StereoGarage_A) ? ZigBeeID_StereoGarage_A : ZigBeeID_StereoGarage_B;
 
     if (layer > 4 || layer < 1)
         return;
@@ -526,7 +527,7 @@ void StereoGarage_ToLayer(uint8_t garage_x, uint8_t layer)
 // 立体车库返回位于第几层
 void StereoGarage_ReturnLayer(uint8_t garage_x)
 {
-    ZigBee_StereoGarageData[Pack_Header2] = garage_x ? ZigBeeID_StereoGarage_A : ZigBeeID_StereoGarage_B;
+    ZigBee_StereoGarageData[Pack_Header2] = (garage_x == StereoGarage_A) ? ZigBeeID_StereoGarage_A : ZigBeeID_StereoGarage_B;
 
     ZigBee_StereoGarageData[Pack_MainCmd] = StereoGarage_Return;
     ZigBee_StereoGarageData[Pack_SubCmd1] = 0x01;
@@ -536,7 +537,7 @@ void StereoGarage_ReturnLayer(uint8_t garage_x)
 // 立体车库返回前后红外信息
 void StereoGarage_ReturnInfraredStatus(uint8_t garage_x)
 {
-    ZigBee_StereoGarageData[Pack_Header2] = garage_x ? ZigBeeID_StereoGarage_A : ZigBeeID_StereoGarage_B;
+    ZigBee_StereoGarageData[Pack_Header2] = (garage_x == StereoGarage_A) ? ZigBeeID_StereoGarage_A : ZigBeeID_StereoGarage_B;
 
     ZigBee_StereoGarageData[Pack_MainCmd] = StereoGarage_Return;
     ZigBee_StereoGarageData[Pack_SubCmd1] = 0x02;
@@ -548,7 +549,7 @@ void StereoGarage_ReturnInfraredStatus(uint8_t garage_x)
 // 交通灯进入识别状态
 void TrafficLight_RecognitionMode(uint8_t light_x)
 {
-    ZigBee_TrafficLightData[Pack_Header2] = light_x ? ZigBeeID_TrafficLight_A : ZigBeeID_TrafficLight_B;
+    ZigBee_TrafficLightData[Pack_Header2] = (light_x == TrafficLight_A) ? ZigBeeID_TrafficLight_A : ZigBeeID_TrafficLight_B;
 
     ZigBee_TrafficLightData[Pack_MainCmd] = TrafficLight_Recognition;
     ZigBee_TrafficLightData[Pack_SubCmd1] = 0x00;
@@ -558,7 +559,7 @@ void TrafficLight_RecognitionMode(uint8_t light_x)
 // 交通灯确认识别结果
 void TrafficLight_ConfirmColor(uint8_t light_x, TrafficLightColor_t light)
 {
-    ZigBee_TrafficLightData[Pack_Header2] = light_x ? ZigBeeID_TrafficLight_A : ZigBeeID_TrafficLight_B;
+    ZigBee_TrafficLightData[Pack_Header2] = (light_x == TrafficLight_A) ? ZigBeeID_TrafficLight_A : ZigBeeID_TrafficLight_B;
 
     ZigBee_TrafficLightData[Pack_MainCmd] = TrafficLight_Confirm;
     ZigBee_TrafficLightData[Pack_SubCmd1] = (uint8_t)light;
@@ -714,7 +715,7 @@ void BarrierGate_Task(uint8_t plate[6])
 // 交通灯识别
 void TrafficLight_Task(uint8_t light_x)
 {
-    uint8_t requestID = light_x ? RequestTask_TrafficLightA : RequestTask_TrafficLightB;
+    uint8_t requestID = (light_x == TrafficLight_A) ? RequestTask_TrafficLightA : RequestTask_TrafficLightB;
 
     TrafficLight_RecognitionMode(light_x); // 开始识别交通灯
     delay_ms(700);
@@ -725,10 +726,10 @@ void TrafficLight_Task(uint8_t light_x)
 // TFT图形图像识别
 void TFT_Task(uint8_t TFTx)
 {
-    uint8_t requestID = TFTx ? RequestTask_TFTRecognitionA : RequestTask_TFTRecognitionB;
+    uint8_t requestID = (TFTx == TFT_A) ? RequestTask_TFTRecognitionA : RequestTask_TFTRecognitionB;
 
     RequestToHost_Task(requestID);                                        // 请求识别TFT内容
-    WaitForFlagInMs(GetCmdFlag(FromHost_TFTRecognition), SET, 37 * 1000); // 等待识别完成
+    WaitForFlagInMs(GetCmdFlag(FromHost_TFTRecognition), SET, 60 * 1000); // 等待识别完成
 }
 
 // 二维码识别
@@ -736,7 +737,7 @@ void QRCode_Task(uint8_t QRrequest)
 {
     GetCmdFlag(FromHost_QRCodeRecognition) = RESET;
     RequestToHost_Task(QRrequest);
-    WaitForFlagInMs(GetCmdFlag(FromHost_QRCodeRecognition), SET, 5 * 1000);
+    WaitForFlagInMs(GetCmdFlag(FromHost_QRCodeRecognition), SET, 15 * 1000);
 }
 
 // 语音任务
@@ -790,9 +791,9 @@ void AGV_Task(DataToAGV_t agvData)
     }
 
     // 任务组
-    if (agvData.tasknumber != 0)
+    if (agvData.taskNumber != 0)
     {
-        for (uint8_t i = 0; i < agvData.tasknumber; i++)
+        for (uint8_t i = 0; i < agvData.taskNumber; i++)
         {
             uint8_t taskOrder = Get_TaskNumber(agvData.taskCoord[i].coord, agvRoute, 1);
             print_info("Task%d: %d\r\n", i, taskOrder);
@@ -804,7 +805,8 @@ void AGV_Task(DataToAGV_t agvData)
     bool needToAvoid = false;
     if (agvData.avoidGarage != NULL)
     {
-        if (Is_ContainCoordinate(agvRoute, ReCoordinate_Convert(CurrentStatus)))
+        // 检测主车当前位置是否在从车路径点内
+        if (Is_ContainCoordinate(agvRoute, ReCoordinate_Convert(CurrentStatus)) != -1)
         {
             needToAvoid = true;
         }
@@ -813,7 +815,17 @@ void AGV_Task(DataToAGV_t agvData)
     // 处理避让临时入库
     if (needToAvoid)
     {
-        Auto_ReverseParcking(&CurrentStatus, agvData.avoidGarage, NULL);
+        // 若首选库为从车入库点则选择备选库
+        uint8_t *garage = NULL;
+        if (!Is_ContainCoordinate(agvRoute, agvData.avoidGarage))
+        {
+            garage = agvData.avoidGarage;
+        }
+        else
+        {
+            garage = agvData.avoidGarage2;
+        }
+        Auto_ReverseParcking(&CurrentStatus, garage, NULL);
     }
 
     // 启动
