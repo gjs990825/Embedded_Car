@@ -3,7 +3,7 @@
 #include "stm32f4xx.h"
 
 // 使用新任务板
-// #define _USE_NEW_BOARD_
+#define _USE_NEW_BOARD_
 
 #define L_LED 0x01
 #define R_LED 0x02

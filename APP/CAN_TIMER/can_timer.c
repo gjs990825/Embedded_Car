@@ -1,6 +1,13 @@
 #include "can_timer.h"
 #include "canp_hostcom.h"
 #include "debug.h"
+#include "tba.h"
+
+#if defined(_USE_NEW_BOARD_)
+
+#include "seven_segment_display.h"
+
+#endif // _USE_NEW_BOARD_
 
 // 初始化CAN数据检查(ZigBee和WiFi)定时器(TIM3)
 void CanTimer_Init(uint16_t arr, uint16_t psc)
@@ -32,10 +39,17 @@ void TIM3_IRQHandler(void)
     if (TIM_GetITStatus(TIM3, TIM_IT_Update) == SET)
     {
         Can_WifiRx_Check();
-		Can_ZigBeeRx_Check();
+        Can_ZigBeeRx_Check();
+
+#if defined(_USE_NEW_BOARD_)
+
+        // 刷新数码管
+        // warning:不推荐使用定时器一直刷新数码管
+        // 控制线共用
+        // SevenSegmentDisplay_Refresh();
+
+#endif
 
         TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
     }
 }
-
-

@@ -4,10 +4,7 @@
 #ifndef __INFRARED_H
 #define __INFRARED_H
 
-// 红外发送
-#define RI_TXD PFout(11)
-
 void Infrared_Init(void);
-void Infrared_Send(u8 *s, int n);
+void Infrared_Send(uint8_t *s, int n);
 
 #endif

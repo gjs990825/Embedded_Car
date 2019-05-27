@@ -1,5 +1,6 @@
 #include "tba.h"
 #include "analog_switch.h"
+#include "seven_segment_display.h"
 
 // 任务板光敏电阻配置
 void Tba_Photoresistance_Config(void)
@@ -62,7 +63,7 @@ void Set_tba_Beep(uint8_t swch)
 #else // _USE_NEW_BOARD_
 
 	AnalogSwitch_CelectChannel(Channel_BEEP);
-	AnalogSwitch_Output(swch);
+	AnalogSwitch_Output(!swch);
 
 #endif // _USE_NEW_BOARD_
 }
@@ -113,6 +114,7 @@ void Set_tba_WheelLED(uint8_t LorR, uint8_t swch)
 
 #else // _USE_NEW_BOARD_
 
+	// 新板不能双闪
 	switch (LorR)
 	{
 	case L_LED:
@@ -121,7 +123,7 @@ void Set_tba_WheelLED(uint8_t LorR, uint8_t swch)
 		break;
 	case R_LED:
 		AnalogSwitch_CelectChannel(Channel_LED_R);
-		AnalogSwitch_Output(swch);
+		AnalogSwitch_Output(!swch);
 		break;
 	}
 
@@ -140,6 +142,7 @@ void Tba_Init(void)
 	#else // _USE_NEW_BOARD_
 	
 	AnalogSwitch_PortInit();
+	SevenSegmentDisplay_PortInit();
 	
 	#endif // _USE_NEW_BOARD_
 	

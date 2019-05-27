@@ -1,9 +1,25 @@
 #include "stm32f4xx.h"
 #include "infrared.h"
 #include "delay.h"
+#include "tba.h"
+#include "analog_switch.h"
+
+#if !defined(_USE_NEW_BOARD_)
+
+#define IR_TX(x) PFout(11) = x
+
+#else // _USE_NEW_BOARD_
+
+#define IR_TX(x)                            \
+    AnalogSwitch_CelectChannel(Channel_IR); \
+    AnalogSwitch_Output(x)
+
+#endif // _USE_NEW_BOARD_
 
 void Infrared_Init(void)
 {
+#if !defined(_USE_NEW_BOARD_)
+
     GPIO_InitTypeDef GPIO_InitStructure;
 
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);
@@ -16,7 +32,9 @@ void Infrared_Init(void)
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
     GPIO_Init(GPIOF, &GPIO_InitStructure);
 
-    RI_TXD = 1;
+#endif // _USE_NEW_BOARD_
+
+    IR_TX(1);
 }
 
 /***************************************************************
@@ -25,13 +43,13 @@ void Infrared_Init(void)
 **             n：数据长度
 ** 返回值：    无
 ****************************************************************/
-void Infrared_Send(u8 *s, int n)
+void Infrared_Send(uint8_t *s, int n)
 {
-    u8 i, j, temp;
+    uint8_t i, j, temp;
 
-    RI_TXD = 0;
+    IR_TX(0);
     delay_ms(9);
-    RI_TXD = 1;
+    IR_TX(1);
     delay_ms(4);
     delay_us(560);
 
@@ -42,22 +60,22 @@ void Infrared_Send(u8 *s, int n)
             temp = (s[i] >> j) & 0x01;
             if (temp == 0) //发射0
             {
-                RI_TXD = 0;
+                IR_TX(0);
                 delay_us(500); //延时0.5ms
-                RI_TXD = 1;
+                IR_TX(1);
                 delay_us(500); //延时0.5ms
             }
             if (temp == 1) //发射1
             {
-                RI_TXD = 0;
+                IR_TX(0);
                 delay_us(500); //延时0.5ms
-                RI_TXD = 1;
+                IR_TX(1);
                 delay_ms(1);
                 delay_us(800); //延时1.69ms  690
             }
         }
     }
-    RI_TXD = 0;    //结束
+    IR_TX(0);      //结束
     delay_us(560); //延时0.56ms
-    RI_TXD = 1;    //关闭红外发射
+    IR_TX(1);      //关闭红外发射
 }

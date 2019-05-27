@@ -4,6 +4,8 @@
 #include "sys.h"
 
 void SevenSegmentDisplay_PortInit(void);
-void SevenSegmentDisplay_HEX(uint8_t hexData);
+void SevenSegmentDisplay_Refresh(void);
+void SevenSegmentDisplay_Update(uint8_t data);
+void SevenSegmentDisplay_UpdateHex(uint8_t data);
 
 #endif // _SEVENN_SEG_H_

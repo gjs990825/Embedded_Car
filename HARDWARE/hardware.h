@@ -28,6 +28,7 @@
 #include "independent_task.h"
 #include "my_lib.h"
 #include "uart_a72.h"
+#include "seven_segment_display.h"
 
 void Hardware_Init(void);
 

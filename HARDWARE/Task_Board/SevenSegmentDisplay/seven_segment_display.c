@@ -1,26 +1,30 @@
 #include "seven_segment_display.h"
 #include "analog_switch.h"
+#include "my_lib.h"
 
 #define SerialInput PCout(13) // SER
 #define LatchClock PFout(11)  // RCK
 #define ShiftClock PGout(8)   // SCK
 
 // 控制数码管A
-#define Select_A(x)                            \
+#define Control_A(x)                           \
     AnalogSwitch_CelectChannel(Channel_SMG_A); \
     AnalogSwitch_Output(x);
 
 // 控制数码管B
-#define Select_B(x)                            \
+// AB的控制电平相反
+#define Control_B(x)                           \
     AnalogSwitch_CelectChannel(Channel_SMG_B); \
     AnalogSwitch_Output(x);
 
-// 显示数据
+// 数码管显示数据 0-F + 熄灭
 const uint8_t SevenSegmentDisplayCode[] = {
-    0xc0, 0xf9, 0xa4, 0xb0,
-    0x99, 0x92, 0x82, 0xf8,
-    0x80, 0x90, 0x88, 0xc6,
-    0x86, 0x8e, 0x89, 0xc7};
+    0xC0, 0xF9, 0xA4, 0xB0, 0x99, 0x92, 0x82, 0xF8,
+    0x80, 0x90, 0x88, 0x83, 0xC6, 0xA1, 0x86, 0x8E,
+    0xFF};
+
+// 显示缓冲
+static uint8_t displayData = 0x00;
 
 // 数码管端口初始化
 void SevenSegmentDisplay_PortInit(void)
@@ -31,6 +35,7 @@ void SevenSegmentDisplay_PortInit(void)
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
 
     // PC13
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
@@ -47,27 +52,9 @@ void SevenSegmentDisplay_PortInit(void)
     ShiftClock = 0;
     SerialInput = 0;
     LatchClock = 0;
-    SevenSegmentDisplay_HEX(0x00);
-    SevenSegmentDisplay_HEX(0x00);
 }
 
-// // 写入数据并输出
-// void HC595_Write_Data(uint8_t data)
-// {
-//     for (uint8_t i = 0; i < 8; i++)
-//     {
-//         ShiftClock = 0;
-
-//         SerialInput = ((data & 0x80) == 0x80);
-//         data <<= 1;
-
-//         ShiftClock = 1;
-//     }
-//     LatchClock = 0;
-//     LatchClock = 1;
-// }
-
-// 写入数据并输出
+// 74HC595写入数据并输出
 // MSB First
 void HC595_Write_Data(uint8_t data)
 {
@@ -81,67 +68,37 @@ void HC595_Write_Data(uint8_t data)
     LatchClock = 1;
 }
 
-// 十六进制数据显示
-// 一次显示一半
-void SevenSegmentDisplay_HEX(uint8_t hexData)
+// 刷新数码管显示内容
+// 刷新一次显示一半
+void SevenSegmentDisplay_Refresh(void)
 {
     static bool A_OR_B = true;
-
     uint8_t data;
 
     if (A_OR_B)
     {
-        data = (hexData >> 4) & 0x0F;
-        Select_B(1); // 关闭B
-        Select_A(1); // 打开A
+        data = (displayData >> 4) & 0x0F;
+        Control_B(1);
+        Control_A(1);
     }
     else
     {
-        data = hexData & 0x0F;
-        Select_A(0); // 关闭A
-        Select_B(0); // 打开B
+        data = displayData & 0x0F;
+        Control_A(0);
+        Control_B(0);
     }
     HC595_Write_Data(SevenSegmentDisplayCode[data]);
+    A_OR_B = !A_OR_B;
 }
 
-// void HC595_Write_Data(uint8_t dis_data)
-// {
-//     for (uint8_t i = 0; i < 8; i++)
-//     {
-//         SCK_RESET();
-//         if ((dis_data & 0x80) == 0x80)
-//         {
-//             DSP_SET();
-//         }
-//         else
-//         {
-//             DSP_RESET();
-//         }
-//         dis_data = dis_data << 1;
-//         SCK_SET();
-//     }
-//     RCK_RESET();
-//     RCK_SET();
-// }
+// 数码管更新显示数据 DEC
+void SevenSegmentDisplay_Update(uint8_t data)
+{
+    displayData = HEX2BCD(data % 100);
+}
 
-// #define DSP_SET() GPIO_SetBits(GPIOB, GPIO_Pin_15)
-// #define DSP_RESET() GPIO_ResetBits(GPIOB, GPIO_Pin_15)
-
-// #define SCK_SET() GPIO_SetBits(GPIOH, GPIO_Pin_11)
-// #define SCK_RESET() GPIO_ResetBits(GPIOH, GPIO_Pin_11)
-
-// #define RCK_SET() GPIO_SetBits(GPIOH, GPIO_Pin_10)
-// #define RCK_RESET() GPIO_ResetBits(GPIOH, GPIO_Pin_10)
-
-// void display(uint8_t a, uint8_t b)
-// {
-//     while (1)
-//     {
-//         GPIO_ResetBits(GPIOC, GPIO_Pin_13);
-//         HC595_Write_Data(SevenSegmentDisplayCode[a]);
-//         delay_ms(5);
-//         GPIO_SetBits(GPIOC, GPIO_Pin_13);
-//         HC595_Write_Data(SevenSegmentDisplayCode[b]);
-//         delay_ms(5);
-//     }
-// }
+// 数码管更新显示数据 HEX
+void SevenSegmentDisplay_UpdateHex(uint8_t data)
+{
+    displayData = data;
+}

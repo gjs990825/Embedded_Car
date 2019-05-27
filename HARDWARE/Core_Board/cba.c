@@ -21,6 +21,7 @@
 #include "data_interaction.h"
 #include "debug.h"
 #include "bh1750.h"
+#include "seven_segment_display.h"
 
 // Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStatus);
 // Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStatus);
@@ -33,13 +34,13 @@
 #define KEY_TEMP 5
 
 // 配置按键调试方案
-#define KEY_CONFIGURATION KEY_DEFAULT
+#define KEY_CONFIGURATION KEY_TASK_BOARD_TEST
 
 #if (KEY_CONFIGURATION == KEY_DEFAULT)
 
 // 默认配置
 #define Action_S1() Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStatus);
-#define Action_S2() Auto_Run(RFID_TestRoute, RFID_TESTROUTE_NUMBER, &CurrentStatus);
+#define Action_S2() print_info("BarrierGate:%d\r\n", Get_BarrierGateStatus())
 #define Action_S3() Infrared_Send_A(Infrared_AlarmON)
 #define Action_S4() print_info("light:%d\r\n", BH1750_GetAverage(10))
 
@@ -47,52 +48,66 @@
 
 // 数据交互配置
 
-#define Action_S1() print_info("Plate:%s\r\n", Get_PlateNumber(TFT_A))
-#define Action_S2() print_info("QRCode:%s\r\n", Get_QRCode(DataRequest_QRCode1, 0))
-#define Action_S3() print_info("Shape:%d\r\n", Get_ShapeNumber(TFT_A, Shape_Triangle))
-#define Action_S4() print_info("AllColor:%d\r\n", Get_AllColorCount(TFT_A))
+// #define Action_S1() print_info("Shape:%d\r\n", Get_ShapeNumber(TFT_A, Shape_Rectangle))
+// #define Action_S2() print_info("Shape:%d\r\n", Get_ShapeNumber(TFT_B, Shape_Rectangle))
+// #define Action_S3() print_info("Shape:%d\r\n", Get_ShapeNumber(TFT_ALL, Shape_Rectangle))
+// #define Action_S4() print_info("Shape:%d\r\n", Get_ShapeNumber(TFT_A, Shape_Circle))
 
-// #define Action_S1() print_info("PlateNumber:%s\r\n", Get_PlateNumber(TFT_A))
-// #define Action_S2() print_info("QRCode:%s\r\n", Get_QRCode(DataRequest_QRCode1, 2))
+// #define Action_S1() print_info("Plate:%s\r\n", Get_PlateNumber(TFT_A))
+// #define Action_S2() print_info("QRCode:%s\r\n", Get_QRCode(DataRequest_QRCode1, 0))
+// #define Action_S3() print_info("Shape:%d\r\n", Get_ShapeNumber(TFT_A, Shape_Triangle))
+// #define Action_S4() print_info("AllColorCount:%d\r\n", Get_AllColorCount(TFT_A))
+
+// #define Action_S1() print_info("PlateNumber:%s\r\n", Get_PlateNumber(TFT_B))
+// #define Action_S2() print_info("AllShapeCount:%d\r\n", Get_AllShapeCount(TFT_B))
 // #define Action_S3() print_info("TrafficLight:%d\r\n", Get_TrafficLight(TrafficLight_A))
 // #define Action_S4() print_info("ShapeNumber:%d\r\n", Get_ShapeNumber(TFT_A, Shape_Circle))
 
 // #define Action_S1() print_info("ColorNumber:%d\r\n", Get_ColorNumber(TFT_A, Color_Cyan))
 // #define Action_S2() print_info("ShapeColorNumber:%d\r\n", Get_ShapeColorNumber(TFT_A, Shape_Rectangle, Color_Red))
 // #define Action_S3() print_info("RFIDInfo:%s\r\n", Get_RFIDInfo(2))
-// #define Action_S4() print_info("TFTInfo:%s\r\n", Get_TFTInfo(TFT_A))
+// #define Action_S4() print_info("TrafficLight:%d\r\n", Get_TrafficLight(TrafficLight_B))
 
-// #define Action_S1() print_info("AllColorCount:%d\r\n", Get_AllColorCount(TFT_A))
-// #define Action_S2() print_info("AllShapeCount:%d\r\n", Get_AllShapeCount(TFT_B))
-// #define Action_S3() (void)0
-// #define Action_S4() (void)0
+#define Action_S1() Send_QRCodeData("1234567890", 10)
+#define Action_S2()               \
+	Send_RFIDData(1, "12345", 5); \
+	print_info("RFIDInfo1:%s\r\n", Get_RFIDInfo(1))
+#define Action_S3()               \
+	Send_RFIDData(2, "54321", 5); \
+	print_info("RFIDInfo2:%s\r\n", Get_RFIDInfo(2))
+#define Action_S4()               \
+	Send_RFIDData(3, "ABCDE", 5); \
+	print_info("RFIDInfo3:%s\r\n", Get_RFIDInfo(3))
+
+// #define Action_S1() print_info("QRCode1_1:%s\r\n", Get_QRCode(DataRequest_QRCode1, 1))
+// #define Action_S2() print_info("QRCode1_2:%s\r\n", Get_QRCode(DataRequest_QRCode1, 2))
+// #define Action_S3() print_info("QRCode2_1:%s\r\n", Get_QRCode(DataRequest_QRCode2, 1))
+// #define Action_S4() print_info("QRCode2_2:%s\r\n", Get_QRCode(DataRequest_QRCode2, 2))
 
 #elif (KEY_CONFIGURATION == KEY_AGV_TEST)
 
 // 从车测试配置
 #define Action_S1() Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStatus);
-#define Action_S2() AGV_SetTaskID(1, 0)
-#define Action_S3() AGV_SetRoute("B7B6D6D4G4")
-#define Action_S4()                                  \
-	CurrentStatus.x = 5;                             \
-	CurrentStatus.y = 5;                             \
-	CurrentStatus.dir = DIR_UP;                      \
-	DataToAGV_t AGVData;                             \
-	taskCoord_t taskCoord[2];                        \
-	taskCoord[0].coord = "B2";                       \
-	taskCoord[0].taskID = AGVPresetTask_Streetlight; \
-	taskCoord[1].coord = "D6";                       \
-	taskCoord[1].taskID = 0;                         \
-	AGVData.alarmData = Infrared_AlarmON;            \
-	AGVData.avoidGarage = "G2";                      \
-	AGVData.barrierGateCoord = "F3";                 \
-	AGVData.currentCoord = "F5";                     \
-	AGVData.direction = DIR_RIGHT;                   \
-	AGVData.routeInfo = "F2B2B6D6";                  \
-	AGVData.streetLightLevel = 3;                    \
-	AGVData.taskCoord = taskCoord;                   \
-	AGVData.tasknumber = 2;                          \
-	AGV_Task(AGVData);
+#define Action_S2() print_info("%d\r\n", Is_ContainCoordinate("F4D4D6B6B7", "B2"))
+#define Action_S3() print_info("%d\r\n", Is_ContainCoordinate("F4D4D2B2B1", "B2"))
+#define Action_S4()                               \
+	CurrentStatus = Coordinate_Convert("B2");     \
+	CurrentStatus.dir = DIR_UP;                   \
+	DataToAGV_t DataToAGV;                        \
+	taskCoord_t taskCoord[1];                     \
+	taskCoord[0].coord = "D4";                    \
+	taskCoord[0].taskID = 0;                      \
+	DataToAGV.currentCoord = "G4";                \
+	DataToAGV.direction = DIR_LEFT;               \
+	DataToAGV.routeInfo = "F4D4D6B6B7\0\0\0\0\0"; \
+	DataToAGV.alarmData = Infrared_AlarmON;       \
+	DataToAGV.taskCoord = taskCoord;              \
+	DataToAGV.taskNumber = 1;                     \
+	DataToAGV.barrierGateCoord = "F3";            \
+	DataToAGV.avoidGarage = "B1";                 \
+	DataToAGV.avoidGarage2 = "A2";                \
+	DataToAGV.streetLightLevel = 0;               \
+	AGV_Task(DataToAGV);
 
 #elif (KEY_CONFIGURATION == KEY_RFID_TEST)
 
@@ -105,23 +120,64 @@
 #elif (KEY_CONFIGURATION == KEY_TASK_BOARD_TEST)
 
 // 任务板调试配置
-// #define Action_S1() Infrared_Send_A(Infrared_AlarmON)
-// #define Action_S2() print_info("Diatance:%d\r\n", Ultrasonic_Task(20))
-// #define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10))
+// #define Action_S1() print_info("Diatance:%d\r\n", Ultrasonic_GetAverage(20))
+// #define Action_S2() print_info("light:%d\r\n", BH1750_GetAverage(10))
+// #define Action_S3() Infrared_Send_A(Infrared_LightAdd1)
 // #define Action_S4() Start_VoiceCommandRecognition(3)
 
-#define Action_S1() Infrared_Send_A(Infrared_AlarmON) 
-#define Action_S2() print_info("Diatance:%d\r\n", Ultrasonic_GetAverage(20))
-#define Action_S3() print_info("light:%d\r\n", BH1750_GetAverage(10))
-#define Action_S4() Set_tba_Beep(1); delay(100); Set_tba_Beep(0);
+#define Action_S1()                           \
+	while (1)                                 \
+	{                                         \
+		static uint8_t count = 0;             \
+		SevenSegmentDisplay_UpdateHex(count); \
+		for (uint8_t i = 0; i < 50; i++)      \
+		{                                     \
+			SevenSegmentDisplay_Refresh();    \
+			delay_ms(10);                     \
+		}                                     \
+		count++;                              \
+	}
+#define Action_S2()  \
+	Set_tba_Beep(1); \
+	delay(1500);     \
+	Set_tba_Beep(0);
+#define Action_S3()             \
+	Set_tba_WheelLED(R_LED, 1); \
+	delay(1000);                \
+	Set_tba_WheelLED(R_LED, 0);
+#define Action_S4()             \
+	Set_tba_WheelLED(L_LED, 1); \
+	delay(1000);                \
+	Set_tba_WheelLED(L_LED, 0);
 
 #elif (KEY_CONFIGURATION == KEY_TEMP)
 
 // 临时配置
-#define Action_S1() (void)0
-#define Action_S2() (void)0
-#define Action_S3() (void)0
-#define Action_S4() (void)0
+#define Action_S1() Auto_Run(Route_Task, ROUTE_TASK_NUMBER, &CurrentStatus);
+#define Action_S2()                                       \
+	uint8_t buf[] = {0x49, 0x44, 0x44, 0x48, 0x48, 0x44}; \
+	Alarm_ChangeCode(buf)
+#define Action_S3()                                       \
+	uint8_t buf[] = {0x41, 0x45, 0x45, 0x56, 0x59, 0x55}; \
+	Alarm_ChangeCode(buf)
+#define Action_S4()                               \
+	CurrentStatus = Coordinate_Convert("B2");     \
+	CurrentStatus.dir = DIR_UP;                   \
+	DataToAGV_t DataToAGV;                        \
+	taskCoord_t taskCoord[1];                     \
+	taskCoord[0].coord = "D4";                    \
+	taskCoord[0].taskID = 0;                      \
+	DataToAGV.currentCoord = "G4";                \
+	DataToAGV.direction = DIR_LEFT;               \
+	DataToAGV.routeInfo = "F4D4D2B2B1\0\0\0\0\0"; \
+	DataToAGV.alarmData = Infrared_AlarmON;       \
+	DataToAGV.taskCoord = taskCoord;              \
+	DataToAGV.taskNumber = 1;                     \
+	DataToAGV.barrierGateCoord = "F3";            \
+	DataToAGV.avoidGarage = "B1";                 \
+	DataToAGV.avoidGarage2 = "A2";                \
+	DataToAGV.streetLightLevel = 0;               \
+	AGV_Task(DataToAGV);
 
 #endif
 
