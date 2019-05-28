@@ -34,7 +34,7 @@
 #define KEY_TEMP 5
 
 // 配置按键调试方案
-#define KEY_CONFIGURATION KEY_TASK_BOARD_TEST
+#define KEY_CONFIGURATION KEY_TEMP
 
 #if (KEY_CONFIGURATION == KEY_DEFAULT)
 
@@ -120,35 +120,42 @@
 #elif (KEY_CONFIGURATION == KEY_TASK_BOARD_TEST)
 
 // 任务板调试配置
+
 // #define Action_S1() print_info("Diatance:%d\r\n", Ultrasonic_GetAverage(20))
 // #define Action_S2() print_info("light:%d\r\n", BH1750_GetAverage(10))
 // #define Action_S3() Infrared_Send_A(Infrared_LightAdd1)
-// #define Action_S4() Start_VoiceCommandRecognition(3)
+// #define Action_S4() print_info("voiceID:%d\r\n", Start_VoiceCommandRecognition(3))
 
-#define Action_S1()                           \
-	while (1)                                 \
-	{                                         \
-		static uint8_t count = 0;             \
-		SevenSegmentDisplay_UpdateHex(count); \
-		for (uint8_t i = 0; i < 50; i++)      \
-		{                                     \
-			SevenSegmentDisplay_Refresh();    \
-			delay_ms(10);                     \
-		}                                     \
-		count++;                              \
-	}
-#define Action_S2()  \
-	Set_tba_Beep(1); \
-	delay(1500);     \
-	Set_tba_Beep(0);
-#define Action_S3()             \
-	Set_tba_WheelLED(R_LED, 1); \
-	delay(1000);                \
-	Set_tba_WheelLED(R_LED, 0);
-#define Action_S4()             \
-	Set_tba_WheelLED(L_LED, 1); \
-	delay(1000);                \
-	Set_tba_WheelLED(L_LED, 0);
+// 语音
+#define Action_S1() print_info("voiceID:%d\r\n", Start_VoiceCommandRecognition(1))
+#define Action_S2() SYN7318_Test()
+#define Action_S3() SYN_TTS("1234");
+#define Action_S4() print_info("voiceID:%d\r\n", Start_VoiceCommandRecognition(3))
+
+// #define Action_S1()                           \
+// 	while (1)                                 \
+// 	{                                         \
+// 		static uint8_t count = 0;             \
+// 		SevenSegmentDisplay_UpdateHex(count); \
+// 		for (uint8_t i = 0; i < 50; i++)      \
+// 		{                                     \
+// 			SevenSegmentDisplay_Refresh();    \
+// 			delay_ms(10);                     \
+// 		}                                     \
+// 		count++;                              \
+// 	}
+// #define Action_S2()  \
+// 	Set_tba_Beep(1); \
+// 	delay(1500);     \
+// 	Set_tba_Beep(0);
+// #define Action_S3()             \
+// 	Set_tba_WheelLED(R_LED, 1); \
+// 	delay(1000);                \
+// 	Set_tba_WheelLED(R_LED, 0);
+// #define Action_S4()             \
+// 	Set_tba_WheelLED(L_LED, 1); \
+// 	delay(1000);                \
+// 	Set_tba_WheelLED(L_LED, 0);
 
 #elif (KEY_CONFIGURATION == KEY_TEMP)
 
@@ -160,24 +167,7 @@
 #define Action_S3()                                       \
 	uint8_t buf[] = {0x41, 0x45, 0x45, 0x56, 0x59, 0x55}; \
 	Alarm_ChangeCode(buf)
-#define Action_S4()                               \
-	CurrentStatus = Coordinate_Convert("B2");     \
-	CurrentStatus.dir = DIR_UP;                   \
-	DataToAGV_t DataToAGV;                        \
-	taskCoord_t taskCoord[1];                     \
-	taskCoord[0].coord = "D4";                    \
-	taskCoord[0].taskID = 0;                      \
-	DataToAGV.currentCoord = "G4";                \
-	DataToAGV.direction = DIR_LEFT;               \
-	DataToAGV.routeInfo = "F4D4D2B2B1\0\0\0\0\0"; \
-	DataToAGV.alarmData = Infrared_AlarmON;       \
-	DataToAGV.taskCoord = taskCoord;              \
-	DataToAGV.taskNumber = 1;                     \
-	DataToAGV.barrierGateCoord = "F3";            \
-	DataToAGV.avoidGarage = "B1";                 \
-	DataToAGV.avoidGarage2 = "A2";                \
-	DataToAGV.streetLightLevel = 0;               \
-	AGV_Task(DataToAGV);
+#define Action_S4()  Task_F2()
 
 #endif
 

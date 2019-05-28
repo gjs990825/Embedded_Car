@@ -10,6 +10,16 @@
 
 #define _ENABLE_USART6_INFO_OUTPUT_ 1
 
+#define USART6_RX_LEN 100
+#define USART6_TX_LEN 100
+
+extern uint8_t USART6_RX_BUF[USART6_RX_LEN];
+extern uint8_t USART6_TX_BUF[USART6_TX_LEN];
+extern uint16_t USART6_RX_STA;
+
+#define USART6_RxFlag ((USART6_RX_STA & 0xF000) == 0xF000)
+#define USART6_RxLenth (USART6_RX_STA & 0x0FFF)
+
 #define SYN7318_RST_H GPIO_SetBits(GPIOB, GPIO_Pin_9)
 #define SYN7318_RST_L GPIO_ResetBits(GPIOB, GPIO_Pin_9)
 
@@ -23,10 +33,6 @@ unsigned char Stop_Wake_Up[] = {0xFD, 0x00, 0x01, 0x52};
 // 自动语音识别
 unsigned char Start_ASR[] = {0xFD, 0x00, 0x02, 0x10, 0x05}; // 0x03
 unsigned char Stop_ASR[] = {0xFD, 0x00, 0x01, 0x11};
-
-// unsigned char Play_MP3[] = {0xFD, 0x00, 0x1E, 0x01, 0x01, 0xC6, 0xF4, 0xB6, 0xAF, 0xD3, 0xEF, 0xD2, 0xF4,
-//                             0xBF, 0xD8, 0xD6, 0xC6, 0xBC, 0xDD, 0xCA, 0xBB, 0xA3, 0xAC, 0xC7, 0xEB,
-//                             0xB7, 0xA2, 0xB3, 0xF6, 0xD6, 0xB8, 0xC1, 0xEE};
 
 void USART6_Init(uint32_t baudrate)
 {
@@ -98,10 +104,13 @@ void USART6_SendChar(uint8_t ch)
 
 void USART6_SendString(uint8_t *str, uint16_t len)
 {
+    // print_info("Send:");
     for (uint16_t i = 0; i < len; i++)
     {
         USART6_SendChar(str[i]);
+        // print_info("%02X ", str[i]);
     }
+    // print_info("\r\n");
 }
 
 // 获取指令
@@ -190,6 +199,8 @@ void USART6_IRQHandler(void)
 bool SYN7318_Rst(void)
 {
     uint8_t buf[4];
+    USART6_GetCmd(buf);
+
     SYN7318_RST_H;
     delay_ms(10);
     SYN7318_RST_L;
@@ -208,11 +219,13 @@ void SYN_TTS(uint8_t *str)
     uint8_t buf[4] = {0};
 
     Length = strlen((char *)str);
-    Frame[0] = 0xFD;              //帧头
+    Frame[0] = 0xFD; //帧头
     Frame[1] = 0x00;
     Frame[2] = Length + 2;
     Frame[3] = 0x01; //语音合成播放命令
     Frame[4] = 0x00; //播放编码格式为“GB2312”
+
+    USART6_GetCmd(buf);
 
     USART6_SendString(Frame, 5);
     USART6_SendString(str, Length);
@@ -221,7 +234,7 @@ void SYN_TTS(uint8_t *str)
     if (buf[0] != 0x41)
         return;
 
-    WaitForFlagInMs(USART6_GetCmd(buf), true, Length * 350); //每个汉字为300ms 左右
+    WaitForFlagInMs(USART6_GetCmd(buf), true, Length * 400); //每个汉字为300ms 左右
     if (buf[0] != 0x4F)
         return;
 }
@@ -229,12 +242,10 @@ void SYN_TTS(uint8_t *str)
 // 查询状态
 bool Status_Query(void)
 {
-    uint8_t Frame[4]; //保存发送命令的数组
+    uint8_t Frame[4] = {0xFD, 0x00, 0x01, 0x21}; //保存发送命令的数组
     uint8_t buf[4] = {0};
-    Frame[0] = 0xFD; //帧头
-    Frame[1] = 0x00;
-    Frame[2] = 0x01;
-    Frame[3] = 0x21; //状态查询命令
+
+    USART6_GetCmd(buf);
 
     USART6_SendString(Frame, 4);
     WaitForFlagInMs(USART6_GetCmd(buf), true, 500);
@@ -262,6 +273,8 @@ void SYN7318_Test(void)
         LED2 = 1;
         delay_ms(1);
 
+        USART6_GetCmd(buf);
+
         USART6_SendString(Wake_Up, 5); //发送唤醒指令
         WaitForFlagInMs(USART6_GetCmd(buf), true, 500);
         if (buf[0] == 0x41) // 唤醒开启成功
@@ -275,16 +288,15 @@ void SYN7318_Test(void)
                 if (buf[0] == 0x21) // 唤醒成功
                 {
                     LED4 = 1;
-                    // USART6_SendString(Play_MP3, 33); //播放“我在这”
                     SYN_TTS("唤醒成功");
                     delay_ms(100);
-
                     Start_VoiceCommandRecognition(3);
 
                     break;
                 }
             }
         }
+        USART6_GetCmd(buf);
         USART6_SendString(Stop_Wake_Up, 4); // 停止唤醒
         WaitForFlagInMs(USART6_GetCmd(buf), true, 5000);
     }
@@ -301,6 +313,8 @@ uint8_t Start_VoiceCommandRecognition(uint8_t retryTimes)
 
     for (uint8_t i = 0; i < retryTimes; i++) // 三次识别失败退出
     {
+        USART6_GetCmd(buf);
+
         USART6_SendString(Start_ASR, 5);                 // 开始识别
         WaitForFlagInMs(USART6_GetCmd(buf), true, 500);  // 等待接收成功
         Send_ZigBeeData(ZigBee_VoiceRandom);             // 获取随机语音指令
@@ -312,6 +326,7 @@ uint8_t Start_VoiceCommandRecognition(uint8_t retryTimes)
                 return buf[5];
             }
         }
+        USART6_GetCmd(buf);
         USART6_SendString(Stop_ASR, 4);                 // 停止识别
         WaitForFlagInMs(USART6_GetCmd(buf), true, 500); // 等待接收成功
         delay_ms(100);

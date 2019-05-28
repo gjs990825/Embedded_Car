@@ -12,46 +12,34 @@ RouteNode_t CurrentStatus;
 RouteNode_t NextStatus;
 
 // 任务和路径设定
-// RouteSetting_t Route_Task[] = {
-//     {.coordinate = "A2", .Task = Task_A2, .node.dir = DIR_RIGHT},
-//     {.coordinate = "B2", .Task = Task_B2},
-//     {.coordinate = "B3", .Task = Task_B3},
-//     {.coordinate = "B4", .Task = Task_B4},
-//     {.coordinate = "D4", .Task = Task_D4},
-//     {.coordinate = "F4", .Task = Task_F4},
-//     {.coordinate = "F6", .Task = Task_F6},
-//     {.coordinate = "D6", .Task = Task_D6},
-//     {.coordinate = "\0\0", .Task = Task_Final},
-// };
-// RouteSetting_t Route_Task[] = {
-//     {.coordinate = "F7", .Task = Task_F7, .node.dir = DIR_UP},
-//     {.coordinate = "F6", .Task = Task_F6},
-//     {.coordinate = "D6", .Task = Task_D6},
-//     {.coordinate = "B6", .Task = Task_B6},
-//     {.coordinate = "B4", .Task = Task_B4},
-//     {.coordinate = "D4", .Task = Task_D4},
-//     {.coordinate = "F4", .Task = Task_F4},
-//     {.coordinate = "F2", .Task = Task_F2},
-//     {.coordinate = "D2", .Task = Task_D2},
-//     {.coordinate = "B2", .Task = Task_B2},
-//     // {.coordinate = "A2", .Task = Task_A2},
-// };
-
 RouteSetting_t Route_Task[] = {
     {.coordinate = "F7", .Task = Task_F7, .node.dir = DIR_UP},
     {.coordinate = "F6", .Task = Task_F6},
     {.coordinate = "D6", .Task = Task_D6},
     {.coordinate = "B6", .Task = Task_B6},
     {.coordinate = "B4", .Task = Task_B4},
-    {.coordinate = "B2", .Task = Task_B2},
-    {.coordinate = "D2", .Task = Task_D2},
-    {.coordinate = "F2", .Task = Task_F2},
-    {.coordinate = "F4", .Task = Task_F4},
     {.coordinate = "D4", .Task = Task_D4},
-    {.coordinate = "D6", .Task = Task_D6_2},
-    {.coordinate = "F6", .Task = Task_F6_2},
-    // {.coordinate = "F7", .Task = Task_F7_2},
+    {.coordinate = "F4", .Task = Task_F4},
+    {.coordinate = "F2", .Task = Task_F2},
+    {.coordinate = "D2", .Task = Task_D2},
+    {.coordinate = "B2", .Task = Task_B2},
+    {.coordinate = "A2", .Task = Task_A2},
 };
+// RouteSetting_t Route_Task[] = {
+//     {.coordinate = "F7", .Task = Task_F7, .node.dir = DIR_UP},
+//     {.coordinate = "F6", .Task = Task_F6},
+//     {.coordinate = "D6", .Task = Task_D6},
+//     {.coordinate = "B6", .Task = Task_B6},
+//     {.coordinate = "B4", .Task = Task_B4},
+//     {.coordinate = "B2", .Task = Task_B2},
+//     {.coordinate = "D2", .Task = Task_D2},
+//     {.coordinate = "F2", .Task = Task_F2},
+//     {.coordinate = "F4", .Task = Task_F4},
+//     {.coordinate = "D4", .Task = Task_D4},
+//     {.coordinate = "D6", .Task = Task_D6_2},
+//     {.coordinate = "F6", .Task = Task_F6_2},
+//     // {.coordinate = "F7", .Task = Task_F7_2},
+// };
 
 // 任务点个数
 uint8_t ROUTE_TASK_NUMBER = GET_ARRAY_LENGEH(Route_Task);
