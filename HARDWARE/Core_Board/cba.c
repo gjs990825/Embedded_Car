@@ -54,7 +54,7 @@
 // #define Action_S4() print_info("Shape:%d\r\n", Get_ShapeNumber(TFT_A, Shape_Circle))
 
 // #define Action_S1() print_info("Plate:%s\r\n", Get_PlateNumber(TFT_A))
-// #define Action_S2() print_info("QRCode:%s\r\n", Get_QRCode(DataRequest_QRCode1, 0))
+// #define Action_S2() print_info("QRCode:%s\r\n", Get_QRCode(QRCode_1, 0))
 // #define Action_S3() print_info("Shape:%d\r\n", Get_ShapeNumber(TFT_A, Shape_Triangle))
 // #define Action_S4() print_info("AllColorCount:%d\r\n", Get_AllColorCount(TFT_A))
 
@@ -79,10 +79,10 @@
 	Send_RFIDData(3, "ABCDE", 5); \
 	print_info("RFIDInfo3:%s\r\n", Get_RFIDInfo(3))
 
-// #define Action_S1() print_info("QRCode1_1:%s\r\n", Get_QRCode(DataRequest_QRCode1, 1))
-// #define Action_S2() print_info("QRCode1_2:%s\r\n", Get_QRCode(DataRequest_QRCode1, 2))
-// #define Action_S3() print_info("QRCode2_1:%s\r\n", Get_QRCode(DataRequest_QRCode2, 1))
-// #define Action_S4() print_info("QRCode2_2:%s\r\n", Get_QRCode(DataRequest_QRCode2, 2))
+// #define Action_S1() print_info("QRCode1_1:%s\r\n", Get_QRCode(QRCode_1, 1))
+// #define Action_S2() print_info("QRCode1_2:%s\r\n", Get_QRCode(QRCode_1, 2))
+// #define Action_S3() print_info("QRCode2_1:%s\r\n", Get_QRCode(QRCode_2, 1))
+// #define Action_S4() print_info("QRCode2_2:%s\r\n", Get_QRCode(QRCode_2, 2))
 
 #elif (KEY_CONFIGURATION == KEY_AGV_TEST)
 

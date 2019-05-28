@@ -5,13 +5,6 @@
 #include "protocol.h"
 #include "route.h"
 
-enum
-{
-    TFT_A = 1,
-    TFT_B = 2,
-    TFT_ALL = 3,
-};
-
 typedef struct taskCoordinate
 {
     uint8_t taskID;
@@ -177,7 +170,7 @@ void Start_Task(void);
 void End_Task(void);
 void TrafficLight_Task(uint8_t light_x);
 void TFT_Task(uint8_t TFTx);
-void QRCode_Task(uint8_t QRrequest);
+void QRCode_Task(uint8_t QRCode_x);
 void Voice_Task(void);
 void ETC_Task(void);
 void AGV_Task(DataToAGV_t agvData);

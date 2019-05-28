@@ -42,7 +42,7 @@ void Task_F6(void)
 
 void Task_D6(void)
 {
-    QRCode_Task(RequestTask_QRCode1);
+    QRCode_Task(QRCode_1);
 }
 
 void Task_B6(void)
@@ -62,7 +62,7 @@ void Task_B4(void)
 
     RFID1.blockInfo->block = (distanceMeasured / 100) % 3 + 4;
 
-    uint8_t *key = Get_QRCode(DataRequest_QRCode1, 1);
+    uint8_t *key = Get_QRCode(QRCode_1, 1);
 
     dump_array(key, 6);
     // memcpy(RFID1.blockInfo->key, key, 6);

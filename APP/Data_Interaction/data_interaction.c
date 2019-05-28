@@ -328,8 +328,9 @@ uint8_t *Get_PlateNumber(uint8_t TFTx)
 }
 
 // 获取二维码（字符串）
-uint8_t *Get_QRCode(uint8_t QRID, uint8_t use)
+uint8_t *Get_QRCode(uint8_t QRCode_x, uint8_t use)
 {
+    uint8_t QRID = (QRCode_x == QRCode_1) ? DataRequest_QRCode1 : DataRequest_QRCode2;
     uint8_t buf[] = {use};
     ResetRquestWait(QRID, buf);
     ReturnBuffer(QRID);

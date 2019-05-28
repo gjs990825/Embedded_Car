@@ -733,8 +733,9 @@ void TFT_Task(uint8_t TFTx)
 }
 
 // 二维码识别
-void QRCode_Task(uint8_t QRrequest)
+void QRCode_Task(uint8_t QRCode_x)
 {
+    uint8_t QRrequest = (QRCode_x == QRCode_1) ? RequestTask_QRCode1 : RequestTask_QRCode2;
     GetCmdFlag(FromHost_QRCodeRecognition) = RESET;
     RequestToHost_Task(QRrequest);
     WaitForFlagInMs(GetCmdFlag(FromHost_QRCodeRecognition), SET, 15 * 1000);

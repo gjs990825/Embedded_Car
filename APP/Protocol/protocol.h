@@ -107,17 +107,30 @@ enum
 };
 
 // ZigBee返回名称
-// 路灯和立体车库数值用作区分AB，其它只借用了名称
+// 只借用了名称，没有数据
 enum
 {
-    BarrierGate,        // 道闸
-    ETC,                // ETC系统
+    BarrierGate,    // 道闸
+    ETC,            // ETC系统
+    AGV,            // 从车返回
+    VoiceBroadcast, // 语音播报
+};
+
+// 标志物和请求名称区分
+enum
+{
+    TFT_A = 1,   // TFT A
+    TFT_B = 2,   // TFT B
+    TFT_ALL = 3, // TFT总和
+
     TrafficLight_A = 1, // 交通灯A
     TrafficLight_B = 2, // 交通灯B
+
     StereoGarage_A = 1, // 立体车库A
     StereoGarage_B = 2, // 立体车库B
-    AGV,                // 从车返回
-    VoiceBroadcast,     // 语音播报
+
+    QRCode_1 = 1, // 二维码1
+    QRCode_2 = 2, // 二维码2
 };
 
 // 通用ZigBee回传的数据状态和时间戳

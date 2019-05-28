@@ -62,7 +62,7 @@ void Send_RFIDData(uint8_t RFIDx, uint8_t *RFIDData, uint8_t length);
 // 向上位机请求数据
 
 uint8_t *Get_PlateNumber(uint8_t TFTx);
-uint8_t *Get_QRCode(uint8_t QRID, uint8_t use);
+uint8_t *Get_QRCode(uint8_t QRCode_x, uint8_t use);
 uint8_t Get_TrafficLight(uint8_t light_x);
 uint8_t Get_ShapeNumber(uint8_t TFTx, uint8_t Shape);
 uint8_t Get_ColorNumber(uint8_t TFTx, uint8_t Color);
