@@ -853,3 +853,21 @@ void AGV_Task(DataToAGV_t agvData)
         MOVE(35);
     }
 }
+
+// 设定任务
+taskCoord_t taskCoord[] = {
+    {.coord = "", .taskID = 0},
+};
+
+// 设定数据
+DataToAGV_t DataToAGV = {
+    .currentCoord = "",                        // 坐标点
+    .direction = DIR_NOTSET,                   // 车头朝向
+    .routeInfo = "",                           // 路径信息
+    .alarmData = "",                           // 报警码
+    .taskCoord = taskCoord,                    // 任务点和对应ID
+    .taskNumber = GET_ARRAY_LENGEH(taskCoord), // 任务数量
+    .barrierGateCoord = "",                    // 道闸位置
+    .avoidGarage = "",                         // 主车避让车库
+    .avoidGarage2 = "",                        // 主车备选避让车库
+    .streetLightLevel = 0};                    // 路灯档位

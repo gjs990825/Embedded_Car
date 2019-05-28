@@ -38,19 +38,19 @@ RouteNode_t NextStatus;
 // };
 
 RouteSetting_t Route_Task[] = {
-    {.coordinate = "F7", .Task = NULL, .node.dir = DIR_UP},
-    {.coordinate = "F6", .Task = NULL},
-    {.coordinate = "D6", .Task = NULL},
-    {.coordinate = "B6", .Task = NULL},
-    {.coordinate = "B4", .Task = NULL},
-    {.coordinate = "B2", .Task = NULL},
-    {.coordinate = "D2", .Task = NULL},
-    {.coordinate = "F2", .Task = NULL},
-    {.coordinate = "F4", .Task = NULL},
-    {.coordinate = "D4", .Task = NULL},
-    {.coordinate = "D6", .Task = NULL},
-    {.coordinate = "F6", .Task = NULL},
-    {.coordinate = "F7", .Task = NULL},
+    {.coordinate = "F7", .Task = Task_F7, .node.dir = DIR_UP},
+    {.coordinate = "F6", .Task = Task_F6},
+    {.coordinate = "D6", .Task = Task_D6},
+    {.coordinate = "B6", .Task = Task_B6},
+    {.coordinate = "B4", .Task = Task_B4},
+    {.coordinate = "B2", .Task = Task_B2},
+    {.coordinate = "D2", .Task = Task_D2},
+    {.coordinate = "F2", .Task = Task_F2},
+    {.coordinate = "F4", .Task = Task_F4},
+    {.coordinate = "D4", .Task = Task_D4},
+    {.coordinate = "D6", .Task = Task_D6_2},
+    {.coordinate = "F6", .Task = Task_F6_2},
+    // {.coordinate = "F7", .Task = Task_F7_2},
 };
 
 // 任务点个数
@@ -230,6 +230,7 @@ bool RouteString_Process(uint8_t *prefix, uint8_t *route, uint8_t *buffer)
 
 // 判断坐标是否在路径上
 // 若在返回步数，否则返回-1
+// warning: -1为真值，不能判断真假
 int8_t Is_ContainCoordinate(uint8_t *stringRoute, uint8_t coord[3])
 {
     uint8_t length = strlen((char *)stringRoute) / 2;
