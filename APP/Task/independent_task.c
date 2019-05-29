@@ -263,7 +263,7 @@ void SpecialRoad_Task(void)
 
 // 特殊地形测试
 // 标记下一个节点为特殊地形
-void SpecialRoad_Test(void)
+void SpecialRoad_Begin(void)
 {
     Special_RoadSection = true;
 }
@@ -637,8 +637,8 @@ uint8_t StreetLight_AdjustTo(uint8_t targetLevel)
         }
     }
 
-    // 目标档位为0时不调节
-    if (targetLevel != 0)
+    // 目标档位不合法时不调节
+    if ((targetLevel > 0) && (targetLevel < 5))
     {
         int8_t error = targetLevel - currentLevel;
         int errorArray[] = {error, error - 4, error + 4};
@@ -741,6 +741,15 @@ void QRCode_Task(uint8_t QRCode_x)
 void Voice_Task(void)
 {
     Voice_Recognition();
+}
+
+// 测距任务
+uint16_t DistanceMeasure_Task(void)
+{
+    MOVE(-15);
+    uint16_t distance = Ultrasonic_GetAverage(20);
+    MOVE(15);
+    return distance;
 }
 
 // ETC任务

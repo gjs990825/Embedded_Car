@@ -18,7 +18,7 @@ enum
     DataLength_ColorNumber = 1,      // 颜色数量
     DataLength_ShapeColorNumber = 1, // 形状颜色数量
     DataLength_RFID = 16,            // RFID数据
-    DataLength_TFTInfo = 3,          // TFT信息
+    DataLength_TFTInfo = 8,          // TFT信息
     DataLength_AllColorCount = 1,    // 颜色总和
     DataLength_AllShapeCount = 1,    // 形状总和
 };

@@ -89,7 +89,7 @@ void RFID3_Begin(void);
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 特殊地形部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 void SpecialRoad_Task(void);
-void SpecialRoad_Test(void);
+void SpecialRoad_Begin(void);
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 烽火台（报警台）部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
@@ -172,6 +172,7 @@ void TrafficLight_Task(uint8_t light_x);
 void TFT_Task(uint8_t TFTx);
 void QRCode_Task(uint8_t QRCode_x);
 void Voice_Task(void);
+uint16_t DistanceMeasure_Task(void);
 void ETC_Task(void);
 void AGV_Task(DataToAGV_t agvData);
 

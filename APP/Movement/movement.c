@@ -103,6 +103,11 @@ void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 		// 横坐标0和6的为两侧车库，码盘值需要变小
 		uint16_t encoderValue = ((next.x == 0) || (next.x == 6)) ? SidePark_Value : LongTrack_Value;
 
+		if (Special_RoadSection)
+		{
+			encoderValue = ShortTrack_Value;
+		}
+
 		Track_ByEncoder(Track_Speed, encoderValue);
 
 		while (Stop_Flag != FORBACKCOMPLETE)

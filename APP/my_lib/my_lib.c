@@ -3,6 +3,7 @@
 #include "stm32f4xx.h"
 #define __MY_LIB_C__
 #include "my_lib.h"
+#include <stdlib.h>
 
 uint32_t U8ToU32(uint8_t *datas)
 {
@@ -181,6 +182,7 @@ float constrain_float(float x, float a, float b)
 
 #define Bin(n) LongToBin(0x##n##l)
 
+// BCD转HEX
 uint8_t BCD2HEX(uint8_t bcd_data)
 {
 	uint8_t temp;
@@ -188,6 +190,7 @@ uint8_t BCD2HEX(uint8_t bcd_data)
 	return temp;
 }
 
+// HEX转BCD
 uint8_t HEX2BCD(uint8_t hex_data)
 {
 	uint8_t bcd_data;
@@ -199,6 +202,7 @@ uint8_t HEX2BCD(uint8_t hex_data)
 	return bcd_data;
 }
 
+// 冒泡排序
 void bubble_sort(uint16_t arr[], uint16_t len)
 {
 	uint16_t i, j, temp;

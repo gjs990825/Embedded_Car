@@ -32,7 +32,7 @@ static const int LongTrack_Value = (37.5f * Centimeter_Value);
 // Y轴中点循迹值
 static const int ShortTrack_Value = (30.0f * Centimeter_Value);
 // 到十字路口中心码盘值
-static const int ToCrossroadCenter = (15.5f * Centimeter_Value); // 16.5f
+static const int ToCrossroadCenter = (16.8f * Centimeter_Value); // 16.5f
 // 两侧车库最大前进值
 static const int SidePark_Value = (27.5f * Centimeter_Value);
 
