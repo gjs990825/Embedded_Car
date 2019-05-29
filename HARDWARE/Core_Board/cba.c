@@ -34,7 +34,7 @@
 #define KEY_TEMP 5
 
 // 配置按键调试方案
-#define KEY_CONFIGURATION KEY_TEMP
+#define KEY_CONFIGURATION KEY_TASK_BOARD_TEST
 
 #if (KEY_CONFIGURATION == KEY_DEFAULT)
 
@@ -127,10 +127,15 @@
 // #define Action_S4() print_info("voiceID:%d\r\n", Start_VoiceCommandRecognition(3))
 
 // 语音
-#define Action_S1() print_info("voiceID:%d\r\n", Start_VoiceCommandRecognition(1))
-#define Action_S2() SYN7318_Test()
-#define Action_S3() SYN_TTS("1234");
-#define Action_S4() print_info("voiceID:%d\r\n", Start_VoiceCommandRecognition(3))
+// #define Action_S1() print_info("voiceID:%d\r\n", Start_VoiceCommandRecognition(1))
+// #define Action_S2() SYN7318_Test()
+// #define Action_S3() SYN_TTS("1234");
+// #define Action_S4() print_info("voiceID:%d\r\n", Start_VoiceCommandRecognition(3))
+
+#define Action_S1() print_info("Current:%d\r\n", StreetLight_AdjustTo(1))
+#define Action_S2() print_info("Current:%d\r\n", StreetLight_AdjustTo(2))
+#define Action_S3() print_info("Current:%d\r\n", StreetLight_AdjustTo(3))
+#define Action_S4() print_info("Current:%d\r\n", StreetLight_AdjustTo(4))
 
 // #define Action_S1()                           \
 // 	while (1)                                 \

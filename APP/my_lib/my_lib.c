@@ -219,3 +219,21 @@ void infinity_loop(void)
 	{
 	}
 }
+
+// 返回绝对值最小的元素
+int MinimumAbsOf(int *array, uint16_t length)
+{
+	int minimum = abs(array[0]);
+	uint16_t miniumID = 0;
+	int temp;
+	for (uint16_t i = 0; i < length; i++)
+	{
+		temp = abs(array[i]);
+		if (minimum > temp)
+		{
+			minimum = temp;
+			miniumID = i;
+		}
+	}
+	return array[miniumID];
+}

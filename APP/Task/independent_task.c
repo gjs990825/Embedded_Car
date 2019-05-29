@@ -11,7 +11,7 @@
 #include "tba.h"
 #include "uart_a72.h"
 #include "Rc522.h"
-#include "malloc.h"
+// #include "malloc.h"
 #include "debug.h"
 #include "movement.h"
 #include "route.h"
@@ -20,6 +20,7 @@
 #include "data_interaction.h"
 #include "agv.h"
 #include "canp_hostcom.h"
+#include "stdlib.h"
 
 #define Send_ZigBeeData5Times(data) Send_ZigBeeDataNTimes(data, 5, 200)
 
@@ -607,7 +608,8 @@ void Voice_Recognition(void)
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 智能路灯部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
-// 路灯档位调节，输入目标档位自动调整，返回当前档位
+// 路灯档位调节，返回调整前档位
+// 0为不调节档位
 uint8_t StreetLight_AdjustTo(uint8_t targetLevel)
 {
     uint16_t temp_val[4];
@@ -615,9 +617,9 @@ uint8_t StreetLight_AdjustTo(uint8_t targetLevel)
     for (int8_t i = 0; i < 4; i++)
     {
         temp_val[i] = BH1750_GetAverage(10);
-        Beep(2);
         Infrared_Send_A(Infrared_LightAdd1);
-        delay(1600);
+        Beep(2);
+        delay(1000);
     }
 
     uint16_t currentBrightness = temp_val[0];
@@ -635,28 +637,22 @@ uint8_t StreetLight_AdjustTo(uint8_t targetLevel)
         }
     }
 
-    // 目标档位为0时不调整
+    // 目标档位为0时不调节
     if (targetLevel != 0)
     {
-        int8_t errorValue = (int8_t)targetLevel - currentLevel;
-        // 调整到目标档位
-        if (errorValue >= 0)
+        int8_t error = targetLevel - currentLevel;
+        int errorArray[] = {error, error - 4, error + 4};
+
+        int minimumError = MinimumAbsOf(errorArray, GET_ARRAY_LENGEH(errorArray));
+        int length = abs(minimumError);
+
+        for (int i = 0; i < length; i++)
         {
-            for (int8_t i = 0; i < errorValue; i++)
-            {
-                Infrared_Send_A(Infrared_LightAdd1);
-                delay(1600);
-            }
-        }
-        else
-        {
-            for (int8_t i = 0; i > errorValue; i--)
-            {
-                Infrared_Send_A(Infrared_LightAdd3);
-                delay(1600);
-            }
+            Infrared_Send_A((minimumError >= 0) ? Infrared_LightAdd1 : Infrared_LightAdd3);
+            delay(1000);
         }
     }
+    
     return currentLevel;
 }
 

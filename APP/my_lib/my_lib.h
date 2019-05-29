@@ -110,6 +110,7 @@ float constrain_float(float x, float a, float b);
 uint8_t BCD2HEX(uint8_t bcd_data);
 uint8_t HEX2BCD(uint8_t hex_data);
 void bubble_sort(uint16_t arr[], uint16_t len);
+int MinimumAbsOf(int *array, uint16_t length);
 
 void infinity_loop(void);
 
