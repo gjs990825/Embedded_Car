@@ -21,6 +21,9 @@ enum
     DataLength_TFTInfo = 8,          // TFT信息
     DataLength_AllColorCount = 1,    // 颜色总和
     DataLength_AllShapeCount = 1,    // 形状总和
+    DataLength_Preset1 = 16,        // 预设1
+    DataLength_Preset2 = 16,        // 预设2
+    DataLength_Preset3 = 16,        // 预设3
 };
 
 // 与上位机通信的发送函数指针
@@ -47,6 +50,9 @@ DefineBuffer(RFID);
 DefineBuffer(TFTInfo);
 DefineBuffer(AllColorCount);
 DefineBuffer(AllShapeCount);
+DefineBuffer(Preset1);
+DefineBuffer(Preset2);
+DefineBuffer(Preset3);
 
 // 储存buffer指针/长度/状态的结构体数组
 DataSetting_t DataBuffer[] = {
@@ -63,6 +69,9 @@ DataSetting_t DataBuffer[] = {
     DataAndLength(TFTInfo),
     DataAndLength(AllColorCount),
     DataAndLength(AllShapeCount),
+    DataAndLength(Preset1),
+    DataAndLength(Preset2),
+    DataAndLength(Preset3),
 };
 // 数据请求命令个数
 uint8_t DATA_REQUEST_NUMBER = GET_ARRAY_LENGEH(DataBuffer);
@@ -106,6 +115,9 @@ void Send_ZigBeeDataNTimes(uint8_t *data, uint8_t ntimes, uint16_t delay)
 // 发送数据到串口(A72开发板)
 void Send_DataToUsart(uint8_t *buf, uint8_t length)
 {
+    if (length == 0)
+        return;
+
     uint32_t timeStamp;
 
     UartA72_TxClear();

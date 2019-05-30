@@ -258,6 +258,15 @@ void Send_RFIDData(uint8_t RFIDx, uint8_t *RFIDData, uint8_t length)
     Send_ToHost(RFIDData, length);
 }
 
+// 发送预设接口数据
+void Send_PresetData(uint8_t preset_x, uint8_t *data, uint8_t length)
+{
+    dataSendHeader[Data_ID] = preset_x + DataSend_Preset1 - 1;
+    dataSendHeader[Data_Length] = length;
+    Send_ToHost(dataSendHeader, 4);
+    Send_ToHost(data, length);
+}
+
 // 处理上位机的指令，与官方主指令对应
 // 只置位因为没有数据，当作标志位使用
 void Process_CommandFromHost(uint8_t mainCmd)
@@ -398,4 +407,12 @@ uint8_t Get_AllShapeCount(uint8_t TFTx)
     uint8_t buf[] = {TFTx};
     ResetRquestWait(DataRequest_AllShapeCount, buf);
     ReturnBuffer(DataRequest_AllShapeCount)[0];
+}
+
+// 获取预设接口的数据
+uint8_t *Get_PresetData(uint8_t preset_x)
+{
+    preset_x += DataRequest_Preset1 - 1;
+    Reset_Rquest_Wait(preset_x, NULL, 0);
+    ReturnBuffer(preset_x);
 }

@@ -607,6 +607,9 @@ void Send_ZigbeeData_To_Fifo(u8 *p, u8 len)
 */
 void Send_WifiData_To_Fifo(u8 *p, u8 len)
 {
+	if (len == 0)
+		return;
+
 	FifoDrv_BufWrite(&Fifo_WifiTx, p, len);
 }
 

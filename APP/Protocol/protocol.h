@@ -210,12 +210,15 @@ enum
     DataSend_RFID = 1,   // RFID1
     DataSend_RFID2 = 2,  // RFID2
     DataSend_RFID3 = 3,  // RFID3
+    DataSend_Preset1 = 4, // 预留1
+    DataSend_Preset2 = 5, // 预留2
+    DataSend_Preset3 = 6, // 预留3
 };
 
 // 数据请求和返回ID
 enum
 {
-    DataRequest_NotUsed = 0x00,       // 未使用
+    DataRequest_NotUsed = 0,          // 未使用
     DataRequest_PlateNumber = 1,      // 车牌号
     DataRequest_QRCode1 = 2,          // 二维码1
     DataRequest_QRCode2 = 3,          // 二维码2
@@ -228,6 +231,9 @@ enum
     DataRequest_TFTInfo = 10,         // TFT信息
     DataRequest_AllColorCount = 11,   // 颜色总和
     DataRequest_AllShapeCount = 12,   // 形状总和
+    DataRequest_Preset1 = 13,         // 预设1
+    DataRequest_Preset2 = 14,         // 预设2
+    DataRequest_Preset3 = 15,         // 预设3
 };
 
 // 数据请求储存格式

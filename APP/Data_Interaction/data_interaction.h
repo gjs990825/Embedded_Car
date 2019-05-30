@@ -59,6 +59,8 @@ void RequestToHost_Task(uint8_t request);
 void Send_QRCodeData(uint8_t *QRData, uint8_t length);
 void Send_RFIDData(uint8_t RFIDx, uint8_t *RFIDData, uint8_t length);
 
+void Send_PresetData(uint8_t preset_x, uint8_t *data, uint8_t length);
+
 // 向上位机请求数据
 
 uint8_t *Get_PlateNumber(uint8_t TFTx);
@@ -71,5 +73,7 @@ uint8_t *Get_RFIDInfo(uint8_t RFIDx);
 uint8_t *Get_TFTInfo(uint8_t TFTx);
 uint8_t Get_AllColorCount(uint8_t TFTx);
 uint8_t Get_AllShapeCount(uint8_t TFTx);
+
+uint8_t *Get_PresetData(uint8_t preset_x);
 
 #endif // _DATA_FROM_HOST_H_

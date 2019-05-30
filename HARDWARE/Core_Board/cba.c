@@ -34,7 +34,7 @@
 #define KEY_TEMP 5
 
 // 配置按键调试方案
-#define KEY_CONFIGURATION KEY_TASK_BOARD_TEST
+#define KEY_CONFIGURATION KEY_DATA_INTERACTION
 
 #if (KEY_CONFIGURATION == KEY_DEFAULT)
 
@@ -68,21 +68,34 @@
 // #define Action_S3() print_info("RFIDInfo:%s\r\n", Get_RFIDInfo(2))
 // #define Action_S4() print_info("TrafficLight:%d\r\n", Get_TrafficLight(TrafficLight_B))
 
-#define Action_S1() Send_QRCodeData("1234567890", 10)
-#define Action_S2()               \
-	Send_RFIDData(1, "12345", 5); \
-	print_info("RFIDInfo1:%s\r\n", Get_RFIDInfo(1))
-#define Action_S3()               \
-	Send_RFIDData(2, "54321", 5); \
-	print_info("RFIDInfo2:%s\r\n", Get_RFIDInfo(2))
-#define Action_S4()               \
-	Send_RFIDData(3, "ABCDE", 5); \
-	print_info("RFIDInfo3:%s\r\n", Get_RFIDInfo(3))
+// #define Action_S1() Send_QRCodeData("1234567890", 10)
+// #define Action_S2()               \
+// 	Send_RFIDData(1, "12345", 5); \
+// 	print_info("RFIDInfo1:%s\r\n", Get_RFIDInfo(1))
+// #define Action_S3()               \
+// 	Send_RFIDData(2, "54321", 5); \
+// 	print_info("RFIDInfo2:%s\r\n", Get_RFIDInfo(2))
+// #define Action_S4()               \
+// 	Send_RFIDData(3, "ABCDE", 5); \
+// 	print_info("RFIDInfo3:%s\r\n", Get_RFIDInfo(3))
 
 // #define Action_S1() print_info("QRCode1_1:%s\r\n", Get_QRCode(QRCode_1, 1))
 // #define Action_S2() print_info("QRCode1_2:%s\r\n", Get_QRCode(QRCode_1, 2))
 // #define Action_S3() print_info("QRCode2_1:%s\r\n", Get_QRCode(QRCode_2, 1))
 // #define Action_S4() print_info("QRCode2_2:%s\r\n", Get_QRCode(QRCode_2, 2))
+
+#define Action_S1()                          \
+	Send_PresetData(1, "PresetData(1)", 14); \
+	print_info("Preset1:%s\r\n", Get_PresetData(1))
+#define Action_S2()                          \
+	Send_PresetData(2, "PresetData(2)", 14); \
+	print_info("Preset2:%s\r\n", Get_PresetData(2))
+#define Action_S3()                          \
+	Send_PresetData(3, "PresetData(3)", 14); \
+	print_info("Preset3:%s\r\n", Get_PresetData(3))
+#define Action_S4()                          \
+	Send_PresetData(3, "PresetData(3)", 14); \
+	print_info("Preset3:%s\r\n", Get_PresetData(3))
 
 #elif (KEY_CONFIGURATION == KEY_AGV_TEST)
 
@@ -172,7 +185,7 @@
 #define Action_S3()                                       \
 	uint8_t buf[] = {0x41, 0x45, 0x45, 0x56, 0x59, 0x55}; \
 	Alarm_ChangeCode(buf)
-#define Action_S4()  Task_F2()
+#define Action_S4() Task_F2()
 
 #endif
 
