@@ -801,9 +801,12 @@ void AGV_Task(DataToAGV_t agvData)
     {
         for (uint8_t i = 0; i < agvData.taskNumber; i++)
         {
-            uint8_t taskOrder = Get_TaskNumber(agvData.taskCoord[i].coord, agvRoute, 1);
+            int8_t taskOrder = Get_TaskNumber(agvData.taskCoord[i].coord, agvRoute, 1);
             print_info("Task%d: %d\r\n", i, taskOrder);
-            AGV_SetTaskID(taskOrder, agvData.taskCoord[i].taskID);
+            if (taskOrder != -1)
+            {
+                AGV_SetTaskID(taskOrder, agvData.taskCoord[i].taskID);
+            }
         }
     }
 
