@@ -13,32 +13,32 @@ RouteNode_t NextStatus;
 
 // 任务和路径设定
 RouteSetting_t Route_Task[] = {
-    {.coordinate = "F7", .Task = Task_F7, .node.dir = DIR_UP},
-    {.coordinate = "F6", .Task = Task_F6},
-    {.coordinate = "D6", .Task = Task_D6},
-    {.coordinate = "B6", .Task = Task_B6},
-    {.coordinate = "B4", .Task = Task_B4},
-    {.coordinate = "D4", .Task = Task_D4},
-    {.coordinate = "F4", .Task = Task_F4},
+    {.coordinate = "F1", .Task = Task_F1, .node.dir = DIR_DOWN},
     {.coordinate = "F2", .Task = Task_F2},
     {.coordinate = "D2", .Task = Task_D2},
     {.coordinate = "B2", .Task = Task_B2},
-    {.coordinate = "A2", .Task = Task_A2},
+    {.coordinate = "B4", .Task = Task_B4},
+    {.coordinate = "C4", .Task = Task_C4},
+    {.coordinate = "D4", .Task = Task_D4},
+    {.coordinate = "F4", .Task = Task_F4},
+    {.coordinate = "F5", .Task = Task_F5},
+    {.coordinate = "F6", .Task = Task_F6},
+    {.coordinate = "D6", .Task = Task_D6},
+    {.coordinate = "D7", .Task = Task_D7},
 };
 // RouteSetting_t Route_Task[] = {
-//     {.coordinate = "F7", .Task = Task_F7, .node.dir = DIR_UP},
+//     {.coordinate = "F1", .Task = Task_F1, .node.dir = DIR_DOWN},
+//     {.coordinate = "F2", .Task = Task_F2},
+//     {.coordinate = "D2", .Task = Task_D2},
+//     {.coordinate = "B2", .Task = Task_B2},
+//     {.coordinate = "B4", .Task = Task_B4},
+//     {.coordinate = "C4", .Task = Task_C4},
+//     {.coordinate = "D4", .Task = Task_D4},
+//     {.coordinate = "F4", .Task = Task_F4},
+//     {.coordinate = "F5", .Task = Task_F5},
 //     {.coordinate = "F6", .Task = Task_F6},
 //     {.coordinate = "D6", .Task = Task_D6},
-//     {.coordinate = "B6", .Task = Task_B6},
-//     {.coordinate = "B4", .Task = Task_B4},
-//     {.coordinate = "B2", .Task = Task_B2},
-//     {.coordinate = "D2", .Task = Task_D2},
-//     {.coordinate = "F2", .Task = Task_F2},
-//     {.coordinate = "F4", .Task = Task_F4},
-//     {.coordinate = "D4", .Task = Task_D4},
-//     {.coordinate = "D6", .Task = Task_D6_2},
-//     {.coordinate = "F6", .Task = Task_F6_2},
-//     // {.coordinate = "F7", .Task = Task_F7_2},
+//     {.coordinate = "D7", .Task = Task_D7},
 // };
 
 // 任务点个数
@@ -127,6 +127,7 @@ uint8_t *ReCoordinate_Convert(RouteNode_t coordinate)
 }
 
 // 获取任务点在路径中出现第n次的位置，返回-1为错误
+// warning:此操作不会计算中间点
 int8_t Get_TaskNumber(uint8_t coordinate[3], uint8_t *route, uint8_t nTimes)
 {
     uint8_t count = 0;
