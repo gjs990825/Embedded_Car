@@ -13,18 +13,14 @@ RouteNode_t NextStatus;
 
 // 任务和路径设定
 RouteSetting_t Route_Task[] = {
-    {.coordinate = "F1", .Task = Task_F1, .node.dir = DIR_DOWN},
-    {.coordinate = "F2", .Task = Task_F2},
-    {.coordinate = "D2", .Task = Task_D2},
+    {.coordinate = "A2", .Task = Task_A2, .node.dir = DIR_RIGHT},
     {.coordinate = "B2", .Task = Task_B2},
+    {.coordinate = "B3", .Task = Task_B3},
     {.coordinate = "B4", .Task = Task_B4},
-    {.coordinate = "C4", .Task = Task_C4},
     {.coordinate = "D4", .Task = Task_D4},
     {.coordinate = "F4", .Task = Task_F4},
-    {.coordinate = "F5", .Task = Task_F5},
     {.coordinate = "F6", .Task = Task_F6},
     {.coordinate = "D6", .Task = Task_D6},
-    {.coordinate = "D7", .Task = Task_D7},
 };
 // RouteSetting_t Route_Task[] = {
 //     {.coordinate = "F1", .Task = Task_F1, .node.dir = DIR_DOWN},

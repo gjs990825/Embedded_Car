@@ -197,6 +197,7 @@ void RFIDx_End(void)
 
 Block_Info_t RFID1_Block[] = {
     {.block = 4, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
+    {.block = 4, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
 };
 
 Block_Info_t RFID2_Block[] = {

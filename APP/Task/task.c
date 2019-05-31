@@ -29,224 +29,194 @@
 uint16_t distanceMeasured = 0;
 uint8_t lightLevel = 1;
 
-int X, Y, N;
-
-void Task_F1(void)
+void Task_A2(void)
 {
     Start_Task();
 }
 
-void Task_F2(void)
+void Task_B2(void)
 {
-    TURN_TO(DIR_LEFT);
+    TURN_TO(DIR_UP);
+    lightLevel = StreetLight_AdjustTo(0);
+
+    TURN_TO(DIR_DOWN);
     TURN(45);
 
     MOVE(15);
+
     TFT_Task(TFT_A);
+
     MOVE(-15);
 
     uint8_t *plate = Get_PlateNumber(TFT_A);
-    uint8_t *tftInfo = Get_TFTInfo(TFT_A);
-
     TFT_Plate(TFT_A, plate);
 
     TURN(-45);
-    TURN(-45);
-
-    RotationLED_PlateAndCoord(tftInfo, Coordinate_Convert(&tftInfo[6]));
-
-    TURN(45);
 }
 
-void Task_D2(void)
+void Task_B3(void)
 {
-    TrafficLight_Task(TrafficLight_A);
+    QRCode_Task(QRCode_1);
 
-    uint8_t sector = Get_ColorNumber(TFT_A, Color_Red);
-    uint8_t block = Get_ShapeNumber(TFT_A, Shape_Diamond);
-
-    RFID1.blockInfo->block = sector * 4 + block;
+    RFID1.blockInfo[0].block = lightLevel * 4 + 0;
+    RFID1.blockInfo[1].block = lightLevel * 4 + 1;
 
     RFID1_Begin();
 }
 
-void Task_B2(void)
-{
-    QRCode_Task(QRCode_1);
-
-    distanceMeasured = DistanceMeasure_Task();
-    LEDDisplay_Distance(distanceMeasured + 1);
-}
-
 void Task_B4(void)
 {
-    // TURN_TO(DIR_LEFT);
+    TURN_TO(DIR_RIGHT);
 
-    TURN(90);
-
-    lightLevel = StreetLight_AdjustTo(0);
-    X = lightLevel;
-
-    TURN(180);
-
-    CurrentStatus.dir = DIR_RIGHT;
-
-    RFIDx_End();
-    Send_RFIDData(1, RFID1.blockInfo->data, 16);
-    SpecialRoad_Begin();
-}
-
-void Task_C4(void)
-{
+    TrafficLight_Task(TrafficLight_A);
 }
 
 void Task_D4(void)
 {
+    ETC_Task();
 }
 
 void Task_F4(void)
 {
-    Special_RoadSection = false;
-
-    uint8_t *towards = Get_RFIDInfo(1);
-    print_str(towards);
-    uint8_t dir = Get_Towards("D5", towards);
-    print_var(dir);
-
-    Y = Get_RFIDInfo(2)[0];
-
-    N = (((X * 3 - 1) * Y) % 4) + 1;
-
-    uint8_t *parking = NULL;
-
-    switch (N)
-    {
-    case 1:
-        parking = "B1";
-        break;
-    case 2:
-        parking = "D1";
-        break;
-    case 3:
-        parking = "F1";
-        break;
-    case 4:
-        parking = "G2";
-        break;
-
-    default:
-        parking = "G2";
-        break;
-    }
-
-    AGV_SendData(FromHost_AGVData1, parking, 3);
-    delay(500);
-
-    taskCoord_t taskCoord[3];
-    DataToAGV_t DataToAGV;
-
-    taskCoord[0].coord = "B5";
-    taskCoord[0].taskID = 0;
-    taskCoord[1].coord = "B4";
-    taskCoord[1].taskID = 1;
-    taskCoord[2].coord = "B6";
-    taskCoord[2].taskID = 2;
-
-    DataToAGV.currentCoord = "D5";                      // 坐标点
-    DataToAGV.direction = dir;                          // 车头朝向
-    DataToAGV.routeInfo = "D6B6B5B4";                     // 路径信息
-    DataToAGV.alarmData = NULL;                         // 报警码
-    DataToAGV.taskCoord = taskCoord;                    // 任务点和对应ID
-    DataToAGV.taskNumber = GET_ARRAY_LENGEH(taskCoord); // 任务数量
-    DataToAGV.barrierGateCoord = "C6";                  // 道闸位置
-    DataToAGV.avoidGarage = "G4";                       // 主车避让车库
-    DataToAGV.avoidGarage2 = "F7";                      // 主车备选避让车库
-    DataToAGV.streetLightLevel = 0;                     // 路灯档位
-    AGV_Task(DataToAGV);
-
-    Voice_Task();
-}
-
-void Task_F5(void)
-{
-    TURN(90);
-
-    uint8_t *alarm = Get_QRCode(QRCode_1, 1);
-
-    dump_array(alarm, 6);
-
-    Alarm_ON(alarm);
-
-    TURN(-90);
+    QRCode_Task(QRCode_2);
+    distanceMeasured = DistanceMeasure_Task();
+    TFT_Distance(TFT_A, distanceMeasured);
 }
 
 void Task_F6(void)
 {
+    RFIDx_End();
+    Send_RFIDData(1, RFID1.blockInfo[0].data, 16);
+    delay(500);
+    Send_RFIDData(2, RFID1.blockInfo[1].data, 16);
+    delay(500);
+
+    uint8_t *towards = Get_QRCode(QRCode_1, 1);
+    uint8_t dir = Get_Towards("D5", towards);
+    uint8_t *parking = Get_RFIDInfo(1);
+    uint8_t light = Get_RFIDInfo(2)[0];
+
+    AGV_SendData(1, parking, 2);
+    AGV_SendData(2, &light, 1);
+
+    taskCoord_t taskCoord[1];
+    DataToAGV_t DataToAGV;
+
+    taskCoord[0].coord = "F2";
+    taskCoord[0].taskID = 0;
+
+    DataToAGV.currentCoord = "D5";                      // 坐标点
+    DataToAGV.direction = dir;                          // 车头朝向
+    DataToAGV.routeInfo = "D5D6F6F4F2D2B2";             // 路径信息
+    DataToAGV.alarmData = NULL;                         // 报警码
+    DataToAGV.taskCoord = taskCoord;                    // 任务点和对应ID
+    DataToAGV.taskNumber = GET_ARRAY_LENGEH(taskCoord); // 任务数量
+    DataToAGV.barrierGateCoord = "F3";                  // 道闸位置
+    DataToAGV.avoidGarage = "F7";                       // 主车避让车库
+    DataToAGV.avoidGarage2 = "G6";                      // 主车备选避让车库
+    DataToAGV.streetLightLevel = light;                 // 路灯档位
+    AGV_Task(DataToAGV);
+
+    Voice_Task();
+
+    uint8_t *tftInfo = Get_TFTInfo(TFT_A);
+
     TURN_TO(DIR_LEFT);
-    ETC_Task();
+    TURN(-45);
+    RotationLED_PlateAndCoord(tftInfo, RFID1.coordinate);
+    TURN(45);
 }
 
 void Task_D6(void)
 {
-    Auto_ReverseParcking(&CurrentStatus, "D7", NULL);
+    TURN(-45);
+    Alarm_ON(Infrared_AlarmON);
+    TURN(45);
 
-    StereoGarage_ToLayer(StereoGarage_A, 2);
+    uint8_t *parking = Get_QRCode(1, 2);
+
+    Auto_ReverseParcking(&CurrentStatus, parking, NULL);
 
     End_Task();
-    SevenSegmentDisplay_Update(21);
+
+    SevenSegmentDisplay_Update(66);
     while (1)
     {
         SevenSegmentDisplay_Refresh();
         delay_ms(10);
     }
+    
 }
 
-void Task_D7(void)
-{
-}
+// int X, Y, N;
 
-// void Task_F7(void)
+// void Task_F1(void)
 // {
 //     Start_Task();
 // }
 
-// void Task_F6(void)
+// void Task_F2(void)
 // {
 //     TURN_TO(DIR_LEFT);
+//     TURN(45);
 
-//     TrafficLight_Task(TrafficLight_A);
+//     MOVE(15);
+//     TFT_Task(TFT_A);
+//     MOVE(-15);
+
+//     uint8_t *plate = Get_PlateNumber(TFT_A);
+//     uint8_t *tftInfo = Get_TFTInfo(TFT_A);
+
+//     TFT_Plate(TFT_A, plate);
+
+//     TURN(-45);
+//     TURN(-45);
+
+//     RotationLED_PlateAndCoord(tftInfo, Coordinate_Convert(&tftInfo[6]));
+
+//     TURN(45);
 // }
 
-// void Task_D6(void)
+// void Task_D2(void)
+// {
+//     TrafficLight_Task(TrafficLight_A);
+
+//     uint8_t sector = Get_ColorNumber(TFT_A, Color_Red);
+//     uint8_t block = Get_ShapeNumber(TFT_A, Shape_Diamond);
+
+//     RFID1.blockInfo->block = sector * 4 + block;
+
+//     RFID1_Begin();
+// }
+
+// void Task_B2(void)
 // {
 //     QRCode_Task(QRCode_1);
-// }
 
-// void Task_B6(void)
-// {
-//     TFT_Task(TFT_A);
+//     distanceMeasured = DistanceMeasure_Task();
+//     LEDDisplay_Distance(distanceMeasured + 1);
 // }
 
 // void Task_B4(void)
 // {
-//     TURN(-90);
-//     CurrentStatus.dir = DIR_LEFT;
+//     // TURN_TO(DIR_LEFT);
 
-//     MOVE(-15);
+//     TURN(90);
 
-//     distanceMeasured = Ultrasonic_GetAverage(20);
-//     LEDDisplay_Distance(distanceMeasured);
+//     lightLevel = StreetLight_AdjustTo(0);
+//     X = lightLevel;
 
-//     RFID1.blockInfo->block = (distanceMeasured / 100) % 3 + 4;
+//     TURN(180);
 
-//     uint8_t *key = Get_QRCode(QRCode_1, 1);
+//     CurrentStatus.dir = DIR_RIGHT;
 
-//     dump_array(key, 6);
-//     // memcpy(RFID1.blockInfo->key, key, 6);
+//     RFIDx_End();
+//     Send_RFIDData(1, RFID1.blockInfo->data, 16);
+//     SpecialRoad_Begin();
+// }
 
-//     MOVE(15);
-
-//     RFID1_Begin();
+// void Task_C4(void)
+// {
 // }
 
 // void Task_D4(void)
@@ -255,64 +225,94 @@ void Task_D7(void)
 
 // void Task_F4(void)
 // {
-//     RFIDx_End();
+//     Special_RoadSection = false;
 
-//     TURN_TO(DIR_UP);
+//     uint8_t *towards = Get_RFIDInfo(1);
+//     print_str(towards);
+//     uint8_t dir = Get_Towards("D5", towards);
+//     print_var(dir);
 
-//     TURN(-45);
+//     Y = Get_RFIDInfo(2)[0];
 
-//     uint8_t *plate = Get_PlateNumber(TFT_A);
-//     RotationLED_PlateAndCoord(plate, RFID1.coordinate);
+//     N = (((X * 3 - 1) * Y) % 4) + 1;
 
-//     TURN(45);
+//     uint8_t *parking = NULL;
 
-//     BarrierGate_Task(plate);
-// }
+//     switch (N)
+//     {
+//     case 1:
+//         parking = "B1";
+//         break;
+//     case 2:
+//         parking = "D1";
+//         break;
+//     case 3:
+//         parking = "F1";
+//         break;
+//     case 4:
+//         parking = "G2";
+//         break;
 
-// void Task_F2(void)
-// {
-//     // Voice_Recognition();
-//     uint8_t id = Start_VoiceCommandRecognition(3);
+//     default:
+//         parking = "G2";
+//         break;
+//     }
 
-//     uint8_t data[3] = {0xDC, 0x01, id % 100};
+//     AGV_SendData(FromHost_AGVData1, parking, 3);
+//     delay(500);
 
-//     TFT_HexData(TFT_A, data);
-// }
-
-// void Task_D2(void)
-// {
-//     taskCoord_t taskCoord[1];
+//     taskCoord_t taskCoord[3];
 //     DataToAGV_t DataToAGV;
 
-//     taskCoord[0].coord = "D4";
+//     taskCoord[0].coord = "B5";
 //     taskCoord[0].taskID = 0;
+//     taskCoord[1].coord = "B4";
+//     taskCoord[1].taskID = 1;
+//     taskCoord[2].coord = "B6";
+//     taskCoord[2].taskID = 2;
 
-//     DataToAGV.currentCoord = "G2",                          // 坐标点
-//         DataToAGV.direction = DIR_LEFT,                     // 车头朝向
-//         DataToAGV.routeInfo = RFID1.blockInfo->data,        // 路径信息
-//         DataToAGV.alarmData = Infrared_AlarmON,             // 报警码
-//         DataToAGV.taskCoord = taskCoord,                    // 任务点和对应ID
-//         DataToAGV.taskNumber = GET_ARRAY_LENGEH(taskCoord), // 任务数量
-//         DataToAGV.barrierGateCoord = "F3",                  // 道闸位置
-//         DataToAGV.avoidGarage = "D1",                       // 主车避让车库
-//         DataToAGV.avoidGarage2 = "A2",                      // 主车备选避让车库
-//         DataToAGV.streetLightLevel = 0;                     // 路灯档位
-
+//     DataToAGV.currentCoord = "D5";                      // 坐标点
+//     DataToAGV.direction = dir;                          // 车头朝向
+//     DataToAGV.routeInfo = "D6B6B5B4";                     // 路径信息
+//     DataToAGV.alarmData = NULL;                         // 报警码
+//     DataToAGV.taskCoord = taskCoord;                    // 任务点和对应ID
+//     DataToAGV.taskNumber = GET_ARRAY_LENGEH(taskCoord); // 任务数量
+//     DataToAGV.barrierGateCoord = "C6";                  // 道闸位置
+//     DataToAGV.avoidGarage = "G4";                       // 主车避让车库
+//     DataToAGV.avoidGarage2 = "F7";                      // 主车备选避让车库
+//     DataToAGV.streetLightLevel = 0;                     // 路灯档位
 //     AGV_Task(DataToAGV);
+
+//     Voice_Task();
 // }
 
-// void Task_B2(void)
+// void Task_F5(void)
 // {
-//     TURN_TO(DIR_UP);
-//     uint8_t level = Get_ShapeColorNumber(TFT_A, Shape_Rectangle, Color_Red);
-//     print_var(level);
-//     StreetLight_AdjustTo(level);
+//     TURN(90);
 
-//     Auto_ReverseParcking(&CurrentStatus, "A2", NULL);
+//     uint8_t *alarm = Get_QRCode(QRCode_1, 1);
+
+//     dump_array(alarm, 6);
+
+//     Alarm_ON(alarm);
+
+//     TURN(-90);
+// }
+
+// void Task_F6(void)
+// {
+//     TURN_TO(DIR_LEFT);
+//     ETC_Task();
+// }
+
+// void Task_D6(void)
+// {
+//     Auto_ReverseParcking(&CurrentStatus, "D7", NULL);
+
+//     StereoGarage_ToLayer(StereoGarage_A, 2);
 
 //     End_Task();
-
-//     SevenSegmentDisplay_Update(12);
+//     SevenSegmentDisplay_Update(21);
 //     while (1)
 //     {
 //         SevenSegmentDisplay_Refresh();
@@ -320,6 +320,6 @@ void Task_D7(void)
 //     }
 // }
 
-// void Task_A2(void)
+// void Task_D7(void)
 // {
 // }

@@ -29,10 +29,6 @@ GLOBAL void Can_ZigBeeRx_Save(uint8_t res);
 
 void Can_WifiRx_Check(void);
 void Can_ZigBeeRx_Check(void);
-void Red_Card_Track(uint8_t sp);
-extern uint8_t ETC_open_Flag;
-extern void ETC_move(uint8_t sp, uint16_t mp);
-void Full_End_Car(void);
 
 #undef GLOBAL
 
