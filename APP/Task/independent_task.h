@@ -179,5 +179,6 @@ void ETC_Task(void);
 void AGV_Task(DataToAGV_t agvData);
 
 void QRCode_Task_Towards(uint8_t QRCode_x, uint8_t centerCoord[3], uint8_t dir);
+void SpecialRoad_Preprocess(uint8_t specialRoadDir);
 
 #endif // _INDEPENDENT_TASK_H

@@ -49,8 +49,8 @@ void Normal_data(void) // 正常接收8字节控制指令
 
     if (Wifi_Rx_Buf[7] == 0xbb) // 判断包尾
     {
-        //主指令与三位副指令左求和校验
-        //注意：在求和溢出时应该对和做256取余。
+        // 主指令与三位副指令左求和校验
+        // warning：在求和溢出时应该对和做256取余。
         sum = (Wifi_Rx_Buf[2] + Wifi_Rx_Buf[3] + Wifi_Rx_Buf[4] + Wifi_Rx_Buf[5]) % 256;
         if (sum == Wifi_Rx_Buf[6])
         {
@@ -108,7 +108,7 @@ void Can_WifiRx_Check(void)
             {
                 Send_ZigbeeData_To_Fifo(Wifi_Rx_Buf, (Wifi_Rx_num + 1));
             }
-            else if (Wifi_Rx_Buf[0] == 0x55) // 普通WIFI指令
+            else if (Wifi_Rx_Buf[0] == 0x55) // 普通WIFI/ZigBee指令
             {
                 Normal_data();
             }

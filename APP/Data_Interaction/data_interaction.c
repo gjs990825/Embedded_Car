@@ -101,6 +101,7 @@ void ZigBee_CmdHandler(uint8_t *cmd)
                 AGV_QRCodeIsReceived = true;
                 AGV_QRCodeLength = cmd[4];
                 memcpy(AGV_QRCodeData, &cmd[5], AGV_QRCodeLength);
+                Send_QRCodeData(AGV_QRCodeData, AGV_QRCodeLength);
             }
             break;
 

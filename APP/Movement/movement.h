@@ -50,6 +50,9 @@ typedef enum TurnMethod_Struct
 // 根据循迹线转到某个方向，自动记录方向变化
 #define TURN_TO(target) Turn_ToDirection(&CurrentStatus.dir, target, TurnOnce_TrackMethod)
 
+// 跳跃节点控制
+extern int8_t skipNodes;
+
 // 基本运动控制
 void Move_ByEncoder(int speed, float distance);
 

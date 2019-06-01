@@ -144,9 +144,13 @@ typedef struct ZigBee_DataStatus_Sturuct
 // AGV预设任务
 enum
 {
-    AGVPresetTask_AdjustBarrier = 9,  // 障碍点设置
-    AGVPresetTask_QRCodeDistance = 8, // 扫描二维码并上传
-    AGVPresetTask_Streetlight = 7,    // 调整路灯档位
+    AGVPreasetTask_AdjustBarrier = 9, // 障碍点设置
+    AGVPreasetTask_QRCode = 8,        // 扫描二维码并上传
+    AGVPreasetTask_Streetlight = 7,   // 调整路灯档位
+    AGVPreasetTask_Distance = 6,      // 上传距离信息
+    AGVPreasetTask_SpecialRoad = 5,   // 特殊地形
+    AGVPreasetTask_TrafficLight = 4,  // 交通灯识别
+    AGVPreasetTask_Image = 3,         // 图像识别
 };
 
 // AGV预设数据

@@ -13,29 +13,10 @@ RouteNode_t NextStatus;
 
 // 任务和路径设定
 RouteSetting_t Route_Task[] = {
-    {.coordinate = "A2", .Task = Task_A2, .node.dir = DIR_RIGHT},
-    {.coordinate = "B2", .Task = Task_B2},
-    {.coordinate = "B3", .Task = Task_B3},
-    {.coordinate = "B4", .Task = Task_B4},
-    {.coordinate = "D4", .Task = Task_D4},
-    {.coordinate = "F4", .Task = Task_F4},
-    {.coordinate = "F6", .Task = Task_F6},
-    {.coordinate = "D6", .Task = Task_D6},
+    {.coordinate = "D7", .Task = BEEP_Twice, .node.dir = DIR_UP},
+    {.coordinate = "D6", .Task = specialRoadTest},
+    {.coordinate = "F6", .Task = BEEP_Twice},
 };
-// RouteSetting_t Route_Task[] = {
-//     {.coordinate = "F1", .Task = Task_F1, .node.dir = DIR_DOWN},
-//     {.coordinate = "F2", .Task = Task_F2},
-//     {.coordinate = "D2", .Task = Task_D2},
-//     {.coordinate = "B2", .Task = Task_B2},
-//     {.coordinate = "B4", .Task = Task_B4},
-//     {.coordinate = "C4", .Task = Task_C4},
-//     {.coordinate = "D4", .Task = Task_D4},
-//     {.coordinate = "F4", .Task = Task_F4},
-//     {.coordinate = "F5", .Task = Task_F5},
-//     {.coordinate = "F6", .Task = Task_F6},
-//     {.coordinate = "D6", .Task = Task_D6},
-//     {.coordinate = "D7", .Task = Task_D7},
-// };
 
 // 任务点个数
 uint8_t ROUTE_TASK_NUMBER = GET_ARRAY_LENGEH(Route_Task);
@@ -439,4 +420,34 @@ RouteNode_t Get_TowardsCoordinate(RouteNode_t center, uint8_t towards)
         break;
     }
     return center;
+}
+
+// 获取相反的方向
+Direction_t Get_OppositeDirection(Direction_t dir)
+{
+    // 非常规方向
+    if (dir > DIR_RIGHT || dir == DIR_NOTSET)
+        return DIR_NOTSET;
+
+    Direction_t oppositeDir = DIR_NOTSET;
+
+    switch (dir)
+    {
+    case DIR_UP:
+        oppositeDir = DIR_DOWN;
+        break;
+    case DIR_LEFT:
+        oppositeDir = DIR_RIGHT;
+        break;
+        case DIR_DOWN:
+        oppositeDir = DIR_UP;
+        break;
+        case DIR_RIGHT:
+        oppositeDir = DIR_LEFT;
+        break;
+    
+    default:
+        break;
+    }
+    return oppositeDir;
 }

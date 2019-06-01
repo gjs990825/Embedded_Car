@@ -34,7 +34,7 @@
 #define KEY_TEMP 5
 
 // 配置按键调试方案
-#define KEY_CONFIGURATION KEY_DATA_INTERACTION
+#define KEY_CONFIGURATION KEY_TEMP
 
 #if (KEY_CONFIGURATION == KEY_DEFAULT)
 
@@ -185,7 +185,10 @@
 #define Action_S3()                                       \
 	uint8_t buf[] = {0x41, 0x45, 0x45, 0x56, 0x59, 0x55}; \
 	Alarm_ChangeCode(buf)
-#define Action_S4() Task_F2()
+#define Action_S4()                         \
+	CurrentStatus = Coordinate_Convert("B6"); \
+	CurrentStatus.dir = DIR_UP;             \
+	Auto_ReverseParcking(&CurrentStatus, "D5", NULL);
 
 #endif
 

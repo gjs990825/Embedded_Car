@@ -952,3 +952,30 @@ void QRCode_Task_Towards(uint8_t QRCode_x, uint8_t centerCoord[3], uint8_t dir)
     }
     delay(2000);
 }
+
+// 特殊地形预处理
+// 输入特殊地形在车的那个方向
+void SpecialRoad_Preprocess(uint8_t specialRoadDir)
+{
+    Direction_t oppositeDir = Get_OppositeDirection((Direction_t)specialRoadDir);
+
+    print_info("opp\r\n");
+    // 反向
+    TURN_TO(oppositeDir);
+
+    Track_ByEncoder(Track_Speed, LongTrack_Value);
+    WaitForFlag(Stop_Flag, FORBACKCOMPLETE);
+
+    
+    print_info("normal\r\n");
+    // 正向
+    Turn_ToDirection(&CurrentStatus.dir, (Direction_t)specialRoadDir, TurnOnce_EncoderMethod);
+
+    Start_Tracking(Track_Speed);
+    WaitForFlag(Stop_Flag, CROSSROAD);
+    Stop();
+
+    print_info("cross\r\n");
+    // 过黑线，可以开始循迹
+    MOVE(5);
+}

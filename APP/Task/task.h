@@ -4,6 +4,13 @@
 #include "sys.h"
 #include "independent_task.h"
 
+static inline void specialRoadTest(void)
+{
+    SpecialRoad_Begin();
+    SpecialRoad_Preprocess(DIR_RIGHT);
+    BEEP_Twice();
+}
+
 void Task_A2(void);
 void Task_B2(void);
 void Task_B3(void);

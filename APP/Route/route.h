@@ -62,6 +62,7 @@ Direction_t Get_TowardsByNode(RouteNode_t currentNode, RouteNode_t towardsNode);
 Direction_t Get_Towards(uint8_t current[3], uint8_t towards[3]);
 
 RouteNode_t Get_TowardsCoordinate(RouteNode_t center, uint8_t towards);
+Direction_t Get_OppositeDirection(Direction_t dir);
 
 // 根据当前方向转到指定方向
 

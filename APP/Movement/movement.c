@@ -42,13 +42,12 @@ void Auto_DriveBetweenNodes(RouteNode_t *current, RouteNode_t next)
 	free(route);
 }
 
+int8_t skipNodes = 0;
 // 行驶到下一个节点
 // 两个节点必须相邻
 void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 {
 	// 节点跳过操作，请注意前后状态对应
-	static int8_t skipNodes = 0;
-
 	if (skipNodes > 0)
 	{
 		skipNodes--;
