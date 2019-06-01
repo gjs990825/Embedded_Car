@@ -16,7 +16,7 @@ void Auto_Run(RouteSetting_t *routeTask, uint8_t taskNumber, RouteNode_t *curren
 
 	for (uint8_t i = 0; i < taskNumber; i++)
 	{
-		Auto_RouteTask(current, routeTask[i].node);
+		Auto_DriveBetweenNodes(current, routeTask[i].node);
 		if (routeTask[i].Task != NULL)
 		{
 			routeTask[i].Task(); // 任务非空时执行任务
@@ -24,8 +24,9 @@ void Auto_Run(RouteSetting_t *routeTask, uint8_t taskNumber, RouteNode_t *curren
 	}
 }
 
-// 从当前任务点行驶到下一个任务点
-void Auto_RouteTask(RouteNode_t *current, RouteNode_t next)
+// 从当前点自动寻路到下一个点
+// 两点可间隔，但要在合法坐标点上
+void Auto_DriveBetweenNodes(RouteNode_t *current, RouteNode_t next)
 {
 	RouteNode_t *route = malloc(sizeof(RouteNode_t) * 12); // 两点间最多12途径点
 	uint8_t routeCount = 0;
@@ -42,6 +43,7 @@ void Auto_RouteTask(RouteNode_t *current, RouteNode_t next)
 }
 
 // 行驶到下一个节点
+// 两个节点必须相邻
 void Go_ToNextNode(RouteNode_t *current, RouteNode_t next)
 {
 	// 节点跳过操作，请注意前后状态对应

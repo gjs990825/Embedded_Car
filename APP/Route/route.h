@@ -14,11 +14,15 @@ typedef struct RouteNode_Struct
 // 方向定义
 typedef enum
 {
-	DIR_NOTSET = 0,
-	DIR_UP,
-	DIR_LEFT,
-	DIR_DOWN,
-	DIR_RIGHT
+	DIR_NOTSET = 0,		// 未设定
+	DIR_UP = 1,			// 上
+	DIR_LEFT = 2,		// 左
+	DIR_DOWN = 3,		// 下
+	DIR_RIGHT = 4,		// 右
+	DIR_LEFT_UP = 5,	// 左上
+	DIR_LEFT_DOWN = 6,  // 左下
+	DIR_RIGHT_UP = 7,   // 右上
+	DIR_RIGHT_DOWN = 8, // 右下
 } Direction_t;
 
 // 设定任务点（转换字符串生成坐标信息）
@@ -56,6 +60,8 @@ bool RouteString_Process(uint8_t *prefix, uint8_t *route, uint8_t *buffer);
 int8_t Is_ContainCoordinate(uint8_t *stringRoute, uint8_t coord[3]);
 Direction_t Get_TowardsByNode(RouteNode_t currentNode, RouteNode_t towardsNode);
 Direction_t Get_Towards(uint8_t current[3], uint8_t towards[3]);
+
+RouteNode_t Get_TowardsCoordinate(RouteNode_t center, uint8_t towards);
 
 // 根据当前方向转到指定方向
 

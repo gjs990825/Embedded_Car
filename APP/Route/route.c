@@ -75,10 +75,14 @@ uint8_t RFID_TESTROUTE_NUMBER = GET_ARRAY_LENGEH(RFID_TestRoute);
 // 坐标数据处理函数↓ //
 //////////////////////
 
+// 错误的字符串坐标
+static const char *badCoordinate = "\0\0\0";
+// 错误的节点坐标
+static const RouteNode_t badNode = {.x = -1, .y = -1, .dir = DIR_NOTSET};
+
 // 转换字符串到坐标点
 RouteNode_t Coordinate_Convert(uint8_t coordinate[3])
 {
-    static const RouteNode_t badNode = {.x = -1, .y = -1, .dir = DIR_NOTSET};
     RouteNode_t outNode;
     outNode.dir = DIR_NOTSET;
 
@@ -102,7 +106,6 @@ RouteNode_t Coordinate_Convert(uint8_t coordinate[3])
 // 转换坐标点到字符串
 uint8_t *ReCoordinate_Convert(RouteNode_t coordinate)
 {
-    static const char *badCoordinate = "\0\0\0";
     static uint8_t tempCoordinate[3];
 
     if (coordinate.x >= 0 && coordinate.x <= 6)
@@ -269,6 +272,12 @@ Direction_t Get_TowardsByNode(RouteNode_t currentNode, RouteNode_t towardsNode)
     int8_t dx = towardsNode.x - currentNode.x;
     int8_t dy = towardsNode.y - currentNode.y;
 
+    if ((dx > 1 || dy > 1 || dx < -1 || dy < -1) || (dx != 0 && dy != 0))
+    {
+        print_info("illegal Node!!\r\n");
+        return DIR_NOTSET;
+    }
+
     if (dx > 0)
         return DIR_RIGHT;
 
@@ -299,6 +308,10 @@ Direction_t Get_Towards(uint8_t current[3], uint8_t towards[3])
 // void (*Turn_Once)(Direction_t) 为左/右转向90度使用的函数
 void Turn_ToDirection(int8_t *current, Direction_t target, void (*Turn_Once)(Direction_t))
 {
+    // 非常规方向
+    if (target > DIR_RIGHT || target == DIR_NOTSET)
+        return;
+
     switch (*current)
     {
     case DIR_UP:
@@ -385,4 +398,45 @@ void Turn_ToDirection(int8_t *current, Direction_t target, void (*Turn_Once)(Dir
         break;
     }
     *current = target;
+}
+
+// 计算当前点和朝向计算出朝向的坐标点
+RouteNode_t Get_TowardsCoordinate(RouteNode_t center, uint8_t towards)
+{
+    switch (towards)
+    {
+    case DIR_UP:
+        center.y++;
+        break;
+    case DIR_LEFT:
+        center.x--;
+        break;
+    case DIR_DOWN:
+        center.y--;
+        break;
+    case DIR_RIGHT:
+        center.x++;
+        break;
+    case DIR_LEFT_UP:
+        center.x--;
+        center.y++;
+        break;
+    case DIR_LEFT_DOWN:
+        center.x--;
+        center.y--;
+        break;
+    case DIR_RIGHT_UP:
+        center.x++;
+        center.y++;
+        break;
+    case DIR_RIGHT_DOWN:
+        center.x++;
+        center.y--;
+        break;
+
+    default:
+        center = badNode;
+        break;
+    }
+    return center;
 }
