@@ -197,24 +197,28 @@ void RFIDx_End(void)
 
 Block_Info_t RFID1_Block[] = {
     {.block = 4, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
-    {.block = 4, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
 };
 
 Block_Info_t RFID2_Block[] = {
     {.block = 4, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
-    {.block = 5, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
 };
 
 Block_Info_t RFID3_Block[] = {
     {.block = 5, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
-    {.block = 6, .authMode = PICC_AUTHENT1A, .key = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}},
 };
 
 // RFID卡片定义
 
-#define DefineRFIDCard(RFIDx)                          \
-    RFID_Info_t RFIDx## = {.blockInfo = RFIDx##_Block, \
-                           .blockNumber = GET_ARRAY_LENGEH(RFIDx##_Block)}
+#define DefineRFIDCard(RFIDx)                           \
+    RFID_Info_t RFIDx## = {                             \
+        .blockInfo = RFIDx##_Block,                     \
+        .blockNumber = GET_ARRAY_LENGEH(RFIDx##_Block), \
+        .coordinate = {                                 \
+            .x = 0,                                     \
+            .y = 0,                                     \
+            .dir = DIR_NOTSET,                          \
+        },                                              \
+    }
 
 DefineRFIDCard(RFID1);
 DefineRFIDCard(RFID2);
@@ -418,6 +422,43 @@ void RotationLED_Default(void)
 {
     Infrared_RotationLEDData[1] = RotationLEDMode_Default;
     Infrared_Send_A(Infrared_RotationLEDData);
+}
+
+// 旋转LED显示坐标和距离
+void RotationLED_CoordAndDistance(uint16_t distance)
+{
+    uint8_t coord[6];
+    memcpy(coord, ReCoordinate_Convert(RFID1.coordinate), 2);
+    memcpy(&coord[2], ReCoordinate_Convert(RFID2.coordinate), 2);
+    memcpy(&coord[4], ReCoordinate_Convert(RFID3.coordinate), 2);
+
+    distance /= 10;
+
+    uint8_t distanceStr[3];
+    distanceStr[0] = ((distance % 100) / 10) + 0x30;
+    distanceStr[1] = (distance % 10) + 0x30;
+
+    Infrared_RotationLEDData[1] = RotationLEDMode_PlateFront4BytesData;
+    memcpy(&Infrared_RotationLEDData[2], coord, 4);
+    Infrared_Send_A(Infrared_RotationLEDData);
+    delay_ms(600);
+
+    Infrared_RotationLEDData[1] = RotationLEDMode_PlateBack2BytesAndCoordInfo;
+    memcpy(&Infrared_RotationLEDData[2], &coord[4], 2);
+    memcpy(&Infrared_RotationLEDData[4], distanceStr, 2);
+    Infrared_Send_A(Infrared_RotationLEDData);
+
+
+    // RotationLED_Distance(distance / 10);
+
+    // delay(500);
+
+    // uint8_t coord[6];
+    // memcpy(coord, ReCoordinate_Convert(RFID1.coordinate), 2);
+    // memcpy(&coord[2], ReCoordinate_Convert(RFID2.coordinate), 2);
+    // memcpy(&coord[4], ReCoordinate_Convert(RFID3.coordinate), 2);
+
+    // RotationLED_PlateAndCoord(coord, Coordinate_Convert("A1"));
 }
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ TFT显示屏部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
@@ -653,7 +694,7 @@ uint8_t StreetLight_AdjustTo(uint8_t targetLevel)
             delay(1000);
         }
     }
-    
+
     return currentLevel;
 }
 
@@ -700,12 +741,9 @@ void BarrierGate_Task(uint8_t plate[6])
         {
             BarrierGate_Control(true);
         }
-        delay(100);
 
         if (Get_BarrierGateStatus())
             break;
-        else
-            delay(100);
     }
 }
 
@@ -862,4 +900,55 @@ void AGV_Task(DataToAGV_t agvData)
     {
         MOVE(35);
     }
+}
+
+// 调整当前车身到二维码正前方并识别
+// 未做斜向二维码处理
+void QRCode_Task_Towards(uint8_t QRCode_x, uint8_t centerCoord[3], uint8_t dir)
+{
+    RouteNode_t centerNode = Coordinate_Convert(centerCoord);
+    RouteNode_t towardsNode = Get_TowardsCoordinate(centerNode, dir);
+
+    Auto_DriveBetweenNodes(&CurrentStatus, towardsNode);
+
+    uint8_t toDir = Get_TowardsByNode(CurrentStatus, centerNode);
+
+    if (toDir != DIR_NOTSET)
+    {
+        Turn_ToDirection(&CurrentStatus.dir, (Direction_t)toDir, TurnOnce_EncoderMethod);
+        // QRCode_Task(QRCode_x);
+    }
+    else
+    {
+        switch (dir)
+        {
+        case DIR_LEFT_UP:
+            TURN_TO(DIR_RIGHT);
+            TURN(40);
+            // QRCode_Task(QRCode_x);
+            TURN(-40);
+            break;
+        case DIR_LEFT_DOWN:
+            TURN_TO(DIR_RIGHT);
+            TURN(-40);
+            // QRCode_Task(QRCode_x);
+            TURN(40);
+            break;
+        case DIR_RIGHT_UP:
+            TURN_TO(DIR_LEFT);
+            TURN(-40);
+            // QRCode_Task(QRCode_x);
+            TURN(40);
+            break;
+        case DIR_RIGHT_DOWN:
+            TURN_TO(DIR_LEFT);
+            TURN(40);
+            // QRCode_Task(QRCode_x);
+            TURN(-40);
+            break;
+        default:
+            break;
+        }
+    }
+    delay(2000);
 }

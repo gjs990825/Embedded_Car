@@ -1,6 +1,7 @@
 #include "seven_segment_display.h"
 #include "analog_switch.h"
 #include "my_lib.h"
+#include "delay.h"
 
 #define SerialInput PCout(13) // SER
 #define LatchClock PFout(11)  // RCK
@@ -101,4 +102,17 @@ void SevenSegmentDisplay_Update(uint8_t data)
 void SevenSegmentDisplay_UpdateHex(uint8_t data)
 {
     displayData = data;
+}
+
+// 显示数字，循环显示数字
+// 死循环
+void Display_Number(uint8_t number)
+{
+    SevenSegmentDisplay_Update(number);
+
+    while (1)
+    {
+        SevenSegmentDisplay_Refresh();
+        delay_ms(10);
+    }
 }

@@ -119,6 +119,8 @@ void RotationLED_Color(Color_t color);
 void RotationLED_RouteStatus(RouteStatus_t status);
 void RotationLED_Default(void);
 
+void RotationLED_CoordAndDistance(uint16_t distance);
+
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ TFT显示器部分 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 void TFT_ShowPicture(uint8_t TFTx, uint8_t picNumber);
@@ -175,5 +177,7 @@ void Voice_Task(void);
 uint16_t DistanceMeasure_Task(void);
 void ETC_Task(void);
 void AGV_Task(DataToAGV_t agvData);
+
+void QRCode_Task_Towards(uint8_t QRCode_x, uint8_t centerCoord[3], uint8_t dir);
 
 #endif // _INDEPENDENT_TASK_H
