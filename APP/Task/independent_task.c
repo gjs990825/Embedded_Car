@@ -903,7 +903,6 @@ void AGV_Task(DataToAGV_t agvData)
 }
 
 // 调整当前车身到二维码正前方并识别
-// 未做斜向二维码处理
 void QRCode_Task_Towards(uint8_t QRCode_x, uint8_t centerCoord[3], uint8_t dir)
 {
     RouteNode_t centerNode = Coordinate_Convert(centerCoord);
@@ -916,7 +915,7 @@ void QRCode_Task_Towards(uint8_t QRCode_x, uint8_t centerCoord[3], uint8_t dir)
     if (toDir != DIR_NOTSET)
     {
         Turn_ToDirection(&CurrentStatus.dir, (Direction_t)toDir, TurnOnce_EncoderMethod);
-        // QRCode_Task(QRCode_x);
+        QRCode_Task(QRCode_x);
     }
     else
     {
@@ -925,32 +924,31 @@ void QRCode_Task_Towards(uint8_t QRCode_x, uint8_t centerCoord[3], uint8_t dir)
         case DIR_LEFT_UP:
             TURN_TO(DIR_RIGHT);
             TURN(40);
-            // QRCode_Task(QRCode_x);
+            QRCode_Task(QRCode_x);
             TURN(-40);
             break;
         case DIR_LEFT_DOWN:
             TURN_TO(DIR_RIGHT);
             TURN(-40);
-            // QRCode_Task(QRCode_x);
+            QRCode_Task(QRCode_x);
             TURN(40);
             break;
         case DIR_RIGHT_UP:
             TURN_TO(DIR_LEFT);
             TURN(-40);
-            // QRCode_Task(QRCode_x);
+            QRCode_Task(QRCode_x);
             TURN(40);
             break;
         case DIR_RIGHT_DOWN:
             TURN_TO(DIR_LEFT);
             TURN(40);
-            // QRCode_Task(QRCode_x);
+            QRCode_Task(QRCode_x);
             TURN(-40);
             break;
         default:
             break;
         }
     }
-    delay(2000);
 }
 
 // 特殊地形预处理

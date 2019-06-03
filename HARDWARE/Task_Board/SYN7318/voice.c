@@ -337,11 +337,17 @@ uint8_t Start_VoiceCommandRecognition(uint8_t retryTimes)
 // 定义ID对应的语音
 // #define STRING_ID "语音内容"
 
-#define STRING_101 "向右转弯"
-#define STRING_102 "禁止右转"
-#define STRING_103 "左侧行驶"
-#define STRING_104 "左行被禁"
-#define STRING_105 "原地掉头"
+// #define STRING_101 "向右转弯"
+// #define STRING_102 "禁止右转"
+// #define STRING_103 "左侧行驶"
+// #define STRING_104 "左行被禁"
+// #define STRING_105 "原地掉头"
+
+#define STRING_02 "美好生活"
+#define STRING_03 "秀丽山河"
+#define STRING_04 "追逐梦想"
+#define STRING_05 "扬帆起航"
+#define STRING_06 "齐头并进"
 
 #define CaseProcess(ID)       \
     case (##ID):              \
@@ -357,11 +363,11 @@ bool VoiceComand_Process(uint8_t *cmd)
     {
         switch (cmd[5])
         {
-            CaseProcess(101);
-            CaseProcess(102);
-            CaseProcess(103);
-            CaseProcess(104);
-            CaseProcess(105);
+            CaseProcess(02);
+            CaseProcess(03);
+            CaseProcess(04);
+            CaseProcess(05);
+            CaseProcess(06);
         default:
             break;
         }
